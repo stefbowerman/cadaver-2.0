@@ -1,0 +1,8 @@
+.ambient-video {
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.31, 0.3, 0.31, 0.87);
+
+  &.is-ready {
+    opacity: 1;
+  }
+}

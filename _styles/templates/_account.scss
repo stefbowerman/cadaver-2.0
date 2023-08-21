@@ -1,0 +1,17 @@
+.account-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gutter);
+
+  max-width: 1150px;
+  margin: 0 auto;
+
+  @include bp-up(lg) {
+    flex-direction: row;
+  }
+}
+
+.account-form-wrapper {
+  max-width: 700px;
+  margin: 0 auto;
+}

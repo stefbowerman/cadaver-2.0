@@ -1,0 +1,53 @@
+/* Color */
+
+$black: #000;
+$white: #FFF;
+
+$body-bg:    $white;
+$color-text: $black;
+
+$selection-bg-color: $color-text;
+$selection-color: $body-bg;
+
+$spacer: 1rem; // I think we need to drop this..
+
+/* Typography */
+$font-family-base: 'Helvetica Neue', Arial, sans-serif;
+$font-family-headings: $font-family-base;
+
+$font-weight-lighter:     lighter;
+$font-weight-thin:        100;
+$font-weight-extra-light: 200;
+$font-weight-light:       300;
+$font-weight-normal:      400;
+$font-weight-medium:      500;
+$font-weight-semi-bold:   600;
+$font-weight-bold:        700;
+$font-weight-extra-bold:  800;
+$font-weight-black:       900;
+$font-weight-bolder:      bolder;
+
+$font-size-base: 1rem;
+
+$line-height-base: 1.375; // 22/16
+
+
+$breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 900px,
+  xl: 1280px,
+  xxl: 1480px,
+  xxxl: 1800px
+);
+
+$layout-vertical-padding-mobile: 126px;
+$layout-vertical-padding: 126px;
+
+$headings-margin-bottom: $spacer;
+$paragraph-margin-bottom: $spacer;
+$label-margin-bottom: $spacer;
+
+// Misc
+$image-opacity-transition: opacity cubic-bezier(0.42, 0.33, 0.21, 0.82) 0.32s;

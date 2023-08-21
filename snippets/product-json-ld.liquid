@@ -1,0 +1,44 @@
+{% comment %} Taken from: https://gist.github.com/akopcz2/7e252243cde6c2b8b0eec2221f4f61e1 {% endcomment %}
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org/",
+    "@type": "Product",
+    "name": {{ product.title | json }},
+    "url": "{{ shop.url }}{{ product.url }}",
+    "brand": {
+      "@type": "Thing",
+      "name": {{ product.vendor | json }}
+    },
+    "description": {{ product.description | strip_html | escape | json }},
+    "image": "https:{{ product.featured_image.src | image_url: width: 1000 }}",
+    {% if product.metafields.yotpo.reviews_count and product.metafields.yotpo.reviews_count != "0" %}
+      "aggregateRating": "{{ product.metafields.yotpo.reviews_average }}",
+      "review": "{{ product.metafields.yotpo.reviews_count }}",
+    {% endif %}
+    {% if product.variants %}
+      "offers": [
+        {% for variant in product.variants %}
+          {
+            "@type": "Offer",
+            "priceCurrency": "{{ shop.currency }}",
+            "price": "{{ variant.price | money_without_currency | remove: "," }}",
+            "itemCondition": "http://schema.org/NewCondition",
+            "availability": "http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}",
+            "url": "{{ shop.url }}{{ variant.url }}",
+            "itemOffered": {
+              "@type" : "Product",
+              {% if variant.image %}
+                {% assign variant_image_size = variant.image.width | append: 'x' %}
+                "image": "http:{{ variant.image.src | image_url: width: variant_image_size }}",
+              {% endif %}
+              {% if variant.title != blank %}
+                "name" : {{ variant.title | json }},
+              {% endif %}
+              "url": "{{ shop.url }}{{ variant.url }}"
+            }
+          }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ]
+    {% endif %}
+  }
+</script>

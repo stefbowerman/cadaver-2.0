@@ -1,0 +1,43 @@
+table {
+  width: 100%;
+  max-width: 100%;
+  // margin-bottom: 1rem;
+  background-color: transparent;
+  border-spacing: 0;
+
+  // Override any styles that get set from Shopify WYSIWYG
+  tr, td {
+    height: auto !important;
+    width: auto !important;
+  }
+
+  td, th {
+    padding: 12px 5px;
+    border-bottom: 1px solid $color-text;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  th {
+    vertical-align: bottom;
+  }
+
+  td {
+    vertical-align: top;
+  }
+
+  tfoot tr:first-child td {
+    padding-top: 36px; // Triple it to provide some spacing
+    border-top: 1px solid $color-text;
+  }
+}
+
+.table--account {
+  text-align: right;
+
+  // tbody, tfoot {
+  //   @include text-sm;
+  // }
+}

@@ -1,0 +1,60 @@
+{%- comment %}
+  Product Option Colors List Snippet
+  ------------------------------------------------------------------------------
+  Usage:
+
+  {% include 'product-option-colors-list',
+              product: { product } - required
+              option_with_values: { option } - required
+              current_variant: { variant } - optional
+  %}
+{% endcomment -%}
+
+{% unless option_with_values == blank %}
+  {%- liquid
+    assign position = option_with_values.position
+    assign position_label = 'option' | append: position
+    assign selected_value = option_with_values.selected_value
+    assign swatch_count = 0
+
+    if current_variant
+      assign selected_value = current_variant[position_label]
+    endif
+  %}
+
+  {%- capture swatches -%}
+    {% for value in option_with_values.values %}
+      {% for variant in product.variants %}
+        {% if variant[position_label] == value and variant.featured_image != blank %}
+          <div
+            class="swatch{% if selected_value == value %} is-active{% endif %}"
+            data-variant-option-value="{{ value }}"
+            title="Color: {{ value }}"
+            role="button"
+          >
+            <img
+              src="{{ variant.featured_image | image_url: width: 50 }}"
+              height="25"
+              width="25"
+              loading="lazy"
+            />
+          </div>
+
+          {% assign swatch_count = swatch_count | plus: 1 %}
+          {% break %}
+        {% endif %}
+      {% endfor %}   
+    {% endfor %}  
+  {%- endcapture -%}
+
+  {% comment %} Make sure we have swatches for every color {% endcomment %}
+  {% if swatches != blank and swatch_count == option_with_values.values.size %}
+    <div
+      class="swatch-group"
+      data-option-position="{{ option_with_values.position }}"
+      data-variant-option-value-list
+    >
+      {{ swatches }}
+    </div>
+  {% endif %}
+{% endunless %}

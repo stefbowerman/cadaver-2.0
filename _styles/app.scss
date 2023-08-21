@@ -1,0 +1,19 @@
+@import 'core';
+@import 'components';
+@import 'templates';
+
+.container {
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+
+html.js body {
+  &.is-loading {
+    opacity: 0;
+    transition: opacity 1s cubic-bezier(0.33, 0.01, 0.49, 1.02) 0.25s;
+  }
+
+  &.is-loaded {
+    opacity: 1;
+  }
+}

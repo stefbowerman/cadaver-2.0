@@ -1,0 +1,61 @@
+.expander-group {
+
+}
+
+.expander {
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: $font-weight-bold;
+    line-height: 1;
+    cursor: pointer;
+    padding: 16px 0 13px;
+    border-bottom: 1px solid var(--color-grayer);
+  }
+
+  &__icon {
+    margin-right: 19px;
+
+    svg {
+      height: 12px;
+      width: auto;
+      transition: transform 150ms ease-out;
+    }
+
+    path {
+      transition: opacity 150ms ease-out;
+    }
+  }
+
+  &__body {
+    display: none;
+  }
+
+  &__body-inner {
+    padding: 17px 0 14px;
+    opacity: 0;
+    transition: opacity 150ms ease-out;
+  }
+
+  // Remove bottom padding on the body of the last expander
+  &:last-child .expander__body-inner {
+    padding-bottom: 0;
+  }
+
+  &.is-open {
+    .expander__body-inner {
+      opacity: 1;
+      transition: opacity 300ms ease-in 60ms;
+    }
+
+    .expander__icon svg {
+      transform: rotate(90deg);
+    }
+
+    .expander__icon path:first-child {
+      opacity: 0;
+    }
+  }
+}

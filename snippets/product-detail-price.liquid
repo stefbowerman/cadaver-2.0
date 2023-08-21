@@ -1,0 +1,38 @@
+{%- comment %}
+  Product Details Price Snippet
+  ------------------------------------------------------------------------------
+
+  Usage:
+
+  {% include 'product-detail-price',
+              product: { product } - required
+              current_variant: current_variant
+  %}
+
+{% endcomment -%}
+
+{% comment %} Defaults {% endcomment %}
+{%- liquid
+  if current_variant == blank
+    assign current_variant = product.selected_or_first_available_variant
+  endif
+%}
+{% comment %} End Defaults {% endcomment %}
+
+<div data-product-detail-price>
+  <span data-price>
+    {{ current_variant.price | money_without_trailing_zeros }}
+  </span>
+
+  {% if product.compare_at_price_max > product.price %}
+    <span class="visually-hidden" data-compare-text>
+      {{ 'products.product.regular_price' | t }}
+    </span>
+    
+    <s data-compare-price>
+      {% if current_variant.compare_at_price > current_variant.price %}
+        {{ current_variant.compare_at_price | money_without_trailing_zeros }}
+      {% endif %}
+    </s>
+  {% endif %}
+</div>    

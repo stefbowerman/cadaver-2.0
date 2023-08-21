@@ -1,0 +1,19 @@
+<div class="layout-content-wrapper">
+  <h1>Collections</h1>
+  
+  <ul>
+    {% for collection in collections %}
+      <li>
+        <a href="{{ collection.url }}">
+          {{ collection.title }}
+        </a>
+      </li>    
+    {% endfor %}
+  </ul>
+
+  {% if paginate.pages > 1 %}
+  <div>
+    {{ paginate | default_pagination }}
+  </div>
+  {% endif %}  
+</div>

@@ -1,0 +1,30 @@
+.article-card {
+  display: block;
+  flex: 1;
+  width: 100%;
+}
+
+.article-card__frame {
+  --aspect-ratio: 1.47;
+
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: var(--aspect-ratio);
+
+  img {
+    @include fill;
+  }
+}
+
+.article-card__meta {
+  margin: 12px 0 7px;
+  text-transform: uppercase;
+}
+
+.article-card__title {
+  max-width: max(23em, 80%);
+
+  @include bp-up(xl) {
+    font-size: 20px;
+  }
+}

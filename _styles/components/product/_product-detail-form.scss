@@ -1,0 +1,61 @@
+.product-detail-form {
+  @include bp-up(lg) {
+    position: sticky;
+    top: 0;
+  }
+}
+
+.product-detail-form__inner {
+  @include bp-up(lg) {
+    padding-top: 111px;
+  }
+}
+
+.pdf-title {
+  margin-bottom: 5px;
+  font-size: 40px;
+  text-transform: uppercase;
+
+  @include bp-up(lg) {
+    margin-bottom: 11px;
+  }
+}
+
+.pdf-price {
+  font-size: 20px;
+  line-height: 26px;
+}
+
+@include bp-down(md) {
+  .pdf-title,
+  .pdf-price {
+    text-align: center;
+  }
+}
+
+.pdf-expander-group {
+  @include bp-up(lg) {
+    display: none;
+  }
+}
+
+.pdf-detail-group {
+  display: none;
+
+  @include bp-up(lg) {
+    display: block;
+  }
+}
+
+.option-value {
+  margin-right: 10px;
+
+  &.is-active {
+    border-bottom: 1px solid black;
+  }
+
+  &.is-disabled {
+    text-decoration: line-through;
+    cursor: not-allowed;
+  }
+}

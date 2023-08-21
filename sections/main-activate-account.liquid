@@ -1,0 +1,27 @@
+<h1 class="section-header__title">Activate Account</h1>
+
+<p>Create your password to activate your account.</p>
+
+{% comment %}
+  This form must use 'activate_customer_password'
+{% endcomment %}
+{% form 'activate_customer_password' %}
+
+  <p>{{ form.errors | default_errors }}</p>
+  
+  <fieldset class="form-group">
+    <label for="customer-password">Password</label>
+    <input type="password" value="" name="customer[password]" id="customer-password" class="form-control">
+  </fieldset>
+
+  <label for="customer-password-confirmation">Password Confirm</label>
+  <input type="password" value="" name="customer[password_confirmation]" id="customer-password-confirmation" class="form-control">
+
+  <p>
+    <input type="submit" class="btn btn-primary" value="{{ 'customer.activate_account.submit' | t }}">
+  </p>
+  <p>
+    <input type="submit" class="btn btn-secondary" name="decline" value="{{ 'customer.activate_account.cancel' | t }}">  
+  </p>
+
+{% endform %}

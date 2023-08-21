@@ -1,0 +1,85 @@
+@import 'article/article-card';
+
+$article-container-w: 600px;
+
+.article-hero {
+  height: 100vh;
+
+  img {
+    @include fill;
+    object-fit: cover;
+    pointer-events: none;
+  }  
+}
+
+.article-header {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  margin: 20px 0;
+  text-align: center;
+
+  &__title {
+    max-width: $article-container-w;
+    margin: 0;
+    // Kind of a one-off since it's not responsive?
+    font-size: 36px;
+    line-height: 42px;
+    font-weight: $font-weight-medium;
+  }
+
+  &__subtitle {
+    display: flex;
+    gap: 1rem;
+    font-weight: $font-weight-medium;
+    text-transform: uppercase;
+  }
+}
+
+.article-container {
+  max-width: $article-container-w;
+  margin: 0 auto;
+}
+
+.article-content {
+  // Default spacing between elements is a little larger here...
+  p {
+    margin-bottom: 1.5rem;
+  }
+
+  img {
+    margin: 1.5em 0;
+    width: 100%;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    text-align: center;
+  }
+
+  h1, h2 {
+    margin-bottom: 40px;
+    font-size: 36px;
+    line-height: 42px;
+    font-weight: normal;    
+  }
+
+  h3, h4 {
+    margin-bottom: 20px;
+  }
+
+  h5, h6 {
+    margin-bottom: 20px;
+  }
+}
+
+.article-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: 41px;
+
+  @include bp-up(lg) {
+    gap: 25px 40px;
+    grid-template-columns: 1fr 1fr;
+  }
+}

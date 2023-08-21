@@ -1,0 +1,175 @@
+{%- liquid
+  assign current_year = 'now' | date: '%Y' 
+%}
+
+<footer class="footer" data-section-id="{{ section.id }}" data-section-type="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-area__newsletter">
+        <h3 class="footer-title">
+          {{ section.settings.newsletter_title | default: 'Newsletter Signup' }}
+        </h3>
+
+        {% if section.settings.newsletter_message != blank %}
+          <div class="form-group">
+            {{ section.settings.newsletter_message }}
+          </div>
+        {% endif %}
+
+        <form
+          method="post"
+          class="newsletter-form"
+          data-newsletter-form
+          data-list-id="{{ settings.newsletter_klaviyo_list_id }}"        
+        >
+          <div class="newsletter-form-contents" data-form-contents>
+            <div class="newsletter-form-inputs">
+              <div class="form-group">
+                <div class="minimal-input">
+                  <label class="label-hidden">Enter your email</label>
+                  <input type="email" class="form-control" placeholder="Your Email" />
+                  <button class="minimal-input__btn">Join</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="newsletter-form-message"
+              data-form-message
+              data-success="{{ section.settings.newsletter_success_message | default: 'Thank you for subscribing' }}"
+              data-already-subscribed="This email address is already subscribed"
+              data-fail="Please check your email and try again">
+              <!-- -->
+            </div>
+          </div>
+        </form>
+      </div>
+
+    <div class="footer-area__socials">
+      <h3 class="footer-title">
+        {{ section.settings.socials_title }}
+      </h3>
+      
+      {%- if section.settings.socials_menu != blank -%}
+        <div class="footer-menu footer-menu--socials">
+          <ul>
+            {%- for link in section.settings.socials_menu.links -%}
+              <li>
+                <a href="{{ link.url }}">
+                  {{ link.title }}
+                </a>
+              </li>
+            {%- endfor -%}              
+          </ul>
+        </div>
+      {%- endif -%}
+    </div>
+    
+    {% comment %} Menus {% endcomment %}
+    <div class="footer-area__menus">
+      <div class="footer-menus" style="--menu-count: {{ section.blocks.size }};">
+        {% for block in section.blocks %}
+          <div class="footer-menu" {{ block.shopify_attributes }}>
+            <div class="footer-menu__title">{{ block.settings.title }}</div>
+
+            {%- if block.settings.menu != blank -%}
+              <ul>
+                {%- for link in block.settings.menu.links -%}
+                  <li>
+                    <a href="{{ link.url }}">
+                      {{ link.title }}
+                    </a>
+                  </li>
+                {%- endfor -%}              
+              </ul>
+            {%- endif -%}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    
+    {% if section.settings.copyright_text != blank %}
+      <div class="footer-area__copyright">
+        {{ section.settings.copyright_text | replace: '$year', current_year }}
+      </div>
+    {% endif %}
+  </div>
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Newsletter",
+      "info": "Klaviyo list ID must be set in the general theme settings."
+    },
+    {
+      "type": "text",
+      "id": "newsletter_title",
+      "label": "Title",
+      "default": "Newsletter Signup"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "newsletter_message",
+      "label": "Message"
+    },
+    {
+      "type": "textarea",
+      "id": "newsletter_success_message",
+      "label": "Success Message",
+      "info": "Displays when someone signs up successfully"
+    },
+    {
+      "type": "header",
+      "content": "Socials"
+    },
+    {
+      "type": "text",
+      "id": "socials_title",
+      "label": "Title",
+      "default": "Follow Us"
+    },
+    {
+      "type": "link_list",
+      "id": "socials_menu",
+      "label": "Menu"
+    },
+    {
+      "type": "header",
+      "content": "Menus",
+      "info": "Menus are controlled using blocks."
+    },
+    {
+      "type": "header",
+      "content": "Copyright"
+    },
+    {
+      "type": "text",
+      "id": "copyright_text",
+      "label": "Copyright Text",
+      "info": "Use $year to include the current year"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Menu",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

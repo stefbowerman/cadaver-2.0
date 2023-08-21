@@ -1,0 +1,33 @@
+{%- comment %}
+
+  Article Card
+  ------------------------------------------------------------------------------
+
+  Usage:
+
+  {% render 'article-card',
+             article: { article } - required
+  %}
+
+{% endcomment -%}
+
+{% if article %}
+  <a href="{{ article.url }}" class="article-card">
+    <div class="article-card__frame">
+      <img
+        src="{{ article.image | image_url: width: '600' }}"
+        srcset="{{ article.image | image_url: width: '180' }} 180w,
+                {{ article.image | image_url: width: '360' }} 360w,
+                {{ article.image | image_url: width: '540' }} 540w,
+                {{ article.image | image_url: width: '720' }} 720w"      
+        class="lazyload lazy-image"
+        width="{{ article.image.width }}"
+        height="{{ article.image.height }}"
+        alt="{{ article.image.alt | default: article.title | escape }}"
+      >
+    </div>
+    
+    <div class="article-card__meta">{{- article.published_at | time_tag: format: 'date' -}}</div>
+    <div class="article-card__title">{{ article.title }}</div>
+  </a>
+{% endif %}

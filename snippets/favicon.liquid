@@ -1,0 +1,10 @@
+{% if settings.touch_icon_image != blank %}
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ settings.touch_icon_image | image_url: width: 180, height: 180, crop: 'center' }}">
+{% elsif settings.favicon_image != blank %}
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ settings.favicon_image | image_url: width: 180, height: 180, crop: 'center' }}">
+{% endif %} 
+
+{% if settings.favicon_image != blank %}
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ settings.favicon_image | image_url: width: 32, height: 32, crop: 'center' }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ settings.favicon_image | image_url: width: 16, height: 16, crop: 'center' }}">
+{% endif %}

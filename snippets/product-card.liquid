@@ -1,0 +1,56 @@
+{%- comment %}
+
+  Product Card
+  ------------------------------------------------------------------------------
+
+  Usage:
+
+  {% render 'product-card',
+             product: { product } - required
+  %}
+
+{% endcomment -%}
+
+{% if product %}
+  {%- capture alt_text %}
+    {% if product.featured_image.alt %}
+      {{ product.featured_image.alt }}
+    {% else %}
+      "{{ product.title }}" Featured Image
+    {% endif %}
+  {%- endcapture %}
+
+
+  <div class="product-card{% if product.available == false %} product-card--sold-out{% endif %}" data-product-card>
+    <div class="product-card__contents">
+      <div class="product-card__gallery">
+        <a href="{{ product.url }}">
+          <div class="product-card__gallery-item">
+            <img
+              data-src="{{ product.featured_image | image_url: width: '600' }}"
+              data-srcset="{{ product.featured_image | image_url: width: '540' }} 540w,
+                            {{ product.featured_image | image_url: width: '720' }} 720w,
+                            {{ product.featured_image | image_url: width: '900' }} 900w"
+              data-sizes="auto"                             
+              alt="{{ alt_text | escape }}"
+              height="{{ product.featured_image.height }}"
+              width="{{ product.featured_image.width }}"
+              class="lazyload lazy-image"
+            >                
+          </div>
+        </a>
+      </div> 
+
+      <div class="product-card__info">
+        <p class="product-card__info-title">{{ product.title }}</p>
+        <p class="product-card__info-price">
+          {% if product.available %}
+            {{ product.selected_or_first_available_variant.price | money_without_trailing_zeros }}
+          {% else %}
+            Sold Out
+          {% endif %}
+        </p>
+      </div>      
+    </div>
+  </div>
+{% endif %}

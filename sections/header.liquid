@@ -1,0 +1,69 @@
+<header
+  class="header"
+  data-section-id="{{ section.id }}"
+  data-section-type="header"
+  role="banner"
+>
+  <a href="/" itemprop="url" title="{{ shop.name }}" class="header-logo">
+    Logo Goes Here
+    <span class="visually-hidden">{{ shop.name }} logo</span>
+  </a> 
+
+  <div class="container">
+    <div class="header-main">
+      <div class="header-nav">
+        <nav class="header-nav__list">
+          <a
+            href="#"
+            class="header-nav__item"
+            data-taxi-ignore
+            data-mobile-menu-toggle
+          >
+            Menu
+          </a>
+
+          {% for link in linklists[section.settings.primary_menu].links %}
+            <a href="{{ link.url }}" class="header-nav__item">
+              {{ link.title }}
+            </a>
+          {% endfor %}
+        </nav>  
+      </div>
+    
+      <div class="header-nav header-nav--right">
+        <nav class="header-nav__list">
+          <a
+            href="/cart"
+            class="header-nav__item {% if cart.item_count > 0 %} has-items{% endif %}"
+            data-taxi-ignore
+            data-ajax-cart-toggle
+          >
+              Cart <span class="header-cart-count" data-cart-count>{{ cart.item_count }}</span>
+          </a>
+        
+          <a
+            href="{{ routes.search_url }}"
+            class="header-nav__item"
+            data-taxi-ignore
+          >
+            {% render 'svg-icon-search' %}
+            <span class="visually-hidden">Search icon</span>
+          </a>
+        </nav>  
+      </div>
+    </div>
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "primary_menu",
+      "label": "Primary Menu" 
+    }
+  ]
+}
+{% endschema %}

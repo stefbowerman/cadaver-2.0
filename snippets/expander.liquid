@@ -1,0 +1,49 @@
+{%- comment %}
+  Expander
+  ------------------------------------------------------------------------------
+
+  Usage:
+
+  {% include 'expander',
+              title: { string }
+              content: { string }
+              id: { optional }
+              url: { optional } - If this is passed, only the expander header will render as a link
+  %}
+
+{% endcomment -%}
+
+<div class="expander">
+  {% if url %}
+    <a href="{{ url }}" class="expander__header">
+      {{ title }}
+    </a>
+  {% else %}
+    <div
+      class="expander__header"
+      aria-expanded="false"
+      {% if id %}
+        id="{{ id }}-header"
+        aria-controls="{{ id }}-body"
+      {% endif %}
+    >
+      {{ title }}
+
+      <div class="expander__icon">
+        {% render 'svg-icon-plus' %}
+      </div>
+    </div>
+
+    <div
+      class="expander__body"
+      {% if id %}
+        id="{{ id }}-body"
+        aria-labelledby="{{ id }}-header"
+      {% endif %}
+    >
+      <div class="expander__body-inner">
+        {{ content }}
+      </div>
+    </div>
+  {% endif %}
+</div>

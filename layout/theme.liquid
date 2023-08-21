@@ -1,0 +1,119 @@
+<!doctype html>
+<!--[if IE 9]> <html class="ie9 no-js" lang="{{ shop.locale }}"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js" lang="{{ shop.locale }}"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
+    <link rel="preconnect" href="https://monorail-edge.shopifysvc.com">  
+    
+    {%- if canonical_url != blank -%}
+      <link rel="canonical" href="{{ canonical_url }}">
+    {%- endif -%}
+
+    {% render 'favicon' %}
+
+    {% capture seo_title %}
+      {% if template.name == '404' %}
+        404
+      {% elsif template.name == 'search' %}
+        {% if search.performed %}
+          Search Results for "{{ search.terms | escape }}"
+        {% else %}
+          Search
+        {% endif %}
+      {% else %}
+        {{ page_title }}
+      {% endif %}
+
+      {% if current_tags %}
+        {%- assign meta_tags = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags -}}
+      {% endif %}
+      {% if current_page != 1 %}
+        &ndash; {{ 'general.meta.page' | t: page: current_page }}
+      {% endif %}
+      {% unless page_title contains shop.name or template.name == 'index' %}
+        &ndash; {{ shop.name }}
+      {% endunless %}
+    {% endcapture %}
+
+    <title>{{- seo_title -}}</title>
+
+    {% if page_description %}
+      <meta name="description" content="{{ page_description | escape }}">
+    {% endif %}    
+
+    {% render 'social-meta-tags' %}
+    {% render 'font-face' %}
+    
+    {{ 'app.bundle.css' | asset_url | stylesheet_tag }}
+
+    {% render 'scripts-head' %}
+
+    {{ content_for_header }}   
+  </head>
+
+  {% capture body_class %}
+    template-{{ template.name | handle }}
+    {% if template.suffix != blank %} template-{{ template.name | append: '-' | append: template.suffix | handle }} {% endif %}
+  {% endcapture %}
+
+  {%- liquid
+    assign view = template.name | handle
+
+    comment
+      Whitelist the views for templates with suffixes here
+    endcomment
+    if template.suffix != blank
+      if template.name == 'blog'
+        assign view = view | append: '-' | append: template.suffix
+      endif
+    endif
+
+    comment
+      Make sure views are labeled using strings, not numbers
+    endcomment
+    if view == '404'
+      assign view = 'error'
+    endif
+
+    assign view = view | handle
+  %}
+
+  <body id="{{ page_title | handle }}" class="{{ body_class | strip | strip_newlines }}">
+    <a class="visually-hidden skip-link" data-in-page-link href="#view-container">
+      {{ 'general.accessibility.skip_to_content' | t }}
+    </a>
+
+    {% section 'header' %}
+    {% section 'mobile-menu' %}
+
+    <div class="layout">
+      <main id="view-container" class="view-container" role="main" data-taxi>
+        <div data-taxi-view="{{ view }}">
+          {{ content_for_layout }}
+        </div>
+      </main>
+
+      {% section 'footer' %}
+    </div>
+
+    {% section 'ajax-cart' %}
+
+    {% if settings.developer_hide_preview_bar == true %}
+      <style>
+        html {
+          padding-bottom: 0 !important; /* Shopify admin bar messes this up */
+        }
+
+        #preview-bar-iframe,
+        #admin-bar-iframe,
+        .shopify-preview-bar {
+          display: none;
+        }
+      </style>
+    {% endif %}    
+  </body>
+</html>

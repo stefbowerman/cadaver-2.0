@@ -1,0 +1,69 @@
+<div data-section-id="{{ section.id }}" data-section-type="ajax-cart">
+  <div class="ajax-cart" data-ajax-cart>
+    <form action="{{ routes.cart_url }}" method="post" novalidate>
+      <div class="ajax-cart__header">
+        <a href="#" data-taxi-ignore data-ajax-cart-close>Close</a>
+      </div>
+
+      <div class="ajax-cart__body" data-body>
+        {% comment %} Filled in via JS {% endcomment %}
+      </div>
+      
+      <div class="ajax-cart__footer">
+        <div class="ajax-cart__footer-row text-right">
+          <span style="padding-right: 20px;">Sub-Total</span> <span class="ajax-cart__total-price" data-total-price></span>
+        </div>
+        <div class="ajax-cart__footer-row">
+          <button type="submit" name="checkout" class="btn btn--primary btn--block">
+            {{ section.settings.checkout_button_text | default: 'Proceed To Checkout' }}
+          </button>
+        </div>
+        {% if section.settings.checkout_message != blank %}
+          <div class="ajax-cart__footer-row" style="display: flex; justify-content: space-between;">
+            <div>
+            </div>
+            <div class="text-right">
+              {{ section.settings.checkout_message }}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+      
+      <div class="ajax-cart__empty">
+        <div class="ajax-cart__empty-text">
+          {% if section.settings.empty_text != blank %}
+            {{ section.settings.empty_text }}
+          {% else %}
+            Your cart is empty
+          {% endif %}
+        </div>
+      </div>         
+    </form> 
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Ajax Cart",
+  "settings": [
+    {
+      "id": "checkout_button_text",
+      "type": "text",
+      "label": "Checkout Button Text",
+      "default": "Proceed To Checkout"
+    },
+    {
+      "id": "checkout_message",
+      "type": "text",
+      "label": "Checkout Message",
+      "info": "e.g. 'Taxes will be calculated at checkout'"
+    },
+    {
+      "id": "empty_text",
+      "type": "textarea",
+      "label": "Empty Cart Text",
+      "default": "Looks like you have some shopping to do."
+    }
+  ]
+}
+{% endschema %}

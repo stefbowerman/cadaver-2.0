@@ -1,0 +1,111 @@
+<section>
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-header__title">
+        Order {{ order.name }}
+      </h1>
+      <div class="page-header__subtitle">
+        <a href="/account">Return to Account Details</a>
+      </div>
+    </div>
+
+    <div class="account-main">
+      <div style="flex:1">
+        <h3>Order Items</h3>
+        <table class="table table--account" style="text-align: left;">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Price</th>
+              <th>Qty</th>
+              <th>Total</th>
+            </tr>
+          </thead>          
+          <tbody>
+            {% for line_item in order.line_items %} 
+              <tr>
+                <td>
+                  <div>{{ line_item.product.title | link_to: line_item.product.url }}</div>
+                  {% comment %} Only show this line if there is non-default content {% endcomment %}
+                  {% if line_item.variant.title != "Default Title" %}
+                    <div class="text-muted">{{ line_item.variant.title }}</div>
+                  {% endif %}                
+                </td>
+                <td>{{ line_item.price | money }}</td>
+                <td>{{ line_item.quantity }}</td>
+                <td>{{ line_item.quantity | times: line_item.price | money }}</td>                
+              </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3">{{ 'customer.order.subtotal' | t }}</td>
+              <td>{{ order.subtotal_price | money }}</td>
+            </tr>
+
+            {% for discount in order.discounts %}
+              <tr>
+                <td colspan="3">{{ discount.code }} {{ 'customer.order.discount' | t }}</td>
+                <td>{{ discount.savings | money }}</td>
+              </tr>
+            {% endfor %}
+
+            {% for shipping_method in order.shipping_methods %}
+              <tr>
+                <td colspan="3">{{ 'customer.order.shipping' | t }} ({{ shipping_method.title }})</td>
+                <td>
+                  {% if shipping_method.price == 0 %}
+                    Free
+                  {% else %}
+                    {{ shipping_method.price | money }}
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+
+            {% for tax_line in order.tax_lines %}
+              <tr>
+                <td colspan="3">{{ 'customer.order.tax' | t }} ({{ tax_line.title }} {{ tax_line.rate | times: 100 }}%)</td>
+                <td>{{ tax_line.price | money }}</td>
+              </tr>
+            {% endfor %}
+
+            <tr>
+              <td colspan="3">{{ 'customer.order.total' | t }}</td>
+              <td>
+                {% if order.total_price == 0 %}
+                  Free
+                {% else %}
+                  {{ order.total_price | money }}
+                {% endif %}
+              </td>              
+            </tr>
+          </tfoot>          
+        </table>
+      </div>
+
+      <div>
+        <h3>Details</h3>
+
+        <p>
+          <span class="text-muted">{{ 'customer.order.payment_status' | t }}: </span> {{- order.financial_status_label -}}
+          <br />
+          <span class="text-muted">{{ 'customer.order.fulfillment_status' | t }}: </span> {{- order.fulfillment_status_label -}}
+        </p>
+        
+        <br />
+        <p class="type-fine">Shipping Status</p>
+        {{- order.shipping_address | format_address -}}
+        
+        <br />
+        <p class="type-fine">Billing Address</p>
+        {{- order.billing_address | format_address -}}
+
+        <br />
+        <p>
+          <a href="/account" class="btn btn--primary">View Account</a>
+        </p>        
+      </div>
+    </div>
+  </div>
+</section>

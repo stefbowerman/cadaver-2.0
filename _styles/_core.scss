@@ -1,0 +1,35 @@
+@import 'core/variables';
+@import 'core/mixins';
+@import 'core/css-variables';
+@import 'core/normalize';
+@import 'core/reboot';
+@import 'core/typography';
+@import 'core/helpers';
+@import 'core/forms';
+@import 'core/buttons';
+@import 'core/pills';
+@import 'core/layout';
+@import 'core/grid';
+@import 'core/tables';
+@import 'core/rte';
+
+.image-responsive {
+  object-position: var(--object-position-mobile, 50% 50%);
+
+  @include bp-up(lg) {
+    object-position: var(--object-position-desktop, 50% 50%);
+  }
+}
+
+.lazy-image {
+  transition: $image-opacity-transition;
+  opacity: 0;
+
+  &.lazyload {
+    opacity: 0;
+  }
+
+  &.lazyloaded {
+    opacity: 1;
+  } 
+}

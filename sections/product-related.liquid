@@ -1,0 +1,49 @@
+{%- if recommendations.performed? -%}
+  {%- liquid
+    if recommendations.products_count > 0
+      for product in recommendations.products
+        echo '<div class="product-card-set__grid-item">'
+          render 'product-card', product: product
+        echo '</div>'
+      endfor
+    endif
+  %}
+{%- else -%}   
+  <section
+    class="product-related"
+    data-section-id="{{ section.id }}"
+    data-section-type="product-related"
+    data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit=3&intent=related"
+  >
+    {% if section.settings.title != blank %}
+      <div class="container">        
+        <h3 class="product-related__title">
+          {{ section.settings.title }}
+        </h3>
+      </div>
+    {% endif %}
+
+    <div
+      class="product-card-set"
+      data-product-card-set
+    >
+      <div class="product-card-set__grid" data-content>
+        <!-- Cards go here... -->
+      </div>     
+    </div>
+  </section>
+{%- endif -%}
+
+{% comment %} @TODO - Add setting to adjust URL limit param {% endcomment %}
+{% schema %}
+{
+  "name": "Product - Related",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title"
+    }
+  ]
+}
+{% endschema %}

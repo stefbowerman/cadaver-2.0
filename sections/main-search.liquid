@@ -1,0 +1,94 @@
+<div data-section-id="{{ section.id }}" data-section-type="search">
+  <div class="container">
+    <div class="page-header">
+      <div class="page-header__title">
+        {% if search.performed %}
+          Your Results for
+        {% else %}
+          Search Our Site
+        {% endif %}
+      </div>
+      <div class="page-header__subtitle">
+        <form action="{{ routes.search_url }}" method="get" role="search" style="max-width: 625px; margin: 0 auto var(--spacing-40)">
+          <div class="minimal-input">
+            <label class="label-hidden">Search our site</label>
+            <input type="search" name="q" class="form-control" placeholder="Search store..." value="{{ search.terms | escape }}" />
+            {% comment %} <button class="minimal-input__btn">Search</button> {% endcomment %}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  {% if search.performed %}
+    {% paginate search.results by 500 %}
+    
+      {% if search.results_count == 0 %}
+        <div class="container">
+          <p class="text-center text-muted">
+            Your search for "{{ search.terms }}" did not yield any results.
+          </p>
+        </div>
+      {% else %}
+        {%- liquid
+          assign product_card_set_html = ''
+          assign article_grid_html = ''
+
+          for item in search.results
+            if item.object_type == 'product'
+              capture card_html
+                echo '<div class="product-card-set__grid-item">'
+                  render 'product-card', product: item
+                echo '</div>'
+              endcapture
+
+              assign product_card_set_html = product_card_set_html | append: card_html
+            elsif item.object_type == 'article'
+              capture card_html
+                echo '<div>'
+                  render 'article-card', article: item
+                echo '</div>'
+              endcapture
+
+              assign article_grid_html = article_grid_html | append: card_html
+            endif
+          endfor
+        %}
+
+        {% if product_card_set_html != blank %}
+          <div
+            class="product-card-set"
+            data-product-card-set
+          >
+            <div class="product-card-set__grid">              
+              {{ product_card_set_html }}
+            </div>
+          </div>
+          <div class="spacer"></div>
+        {% endif %}
+
+        {% if article_grid_html != blank %}
+          <div class="container">
+            <div class="section-header">
+              <h3 class="section-header__title">
+                Articles
+              </h3>
+            </div>
+
+            <div class="article-grid">
+              {{ article_grid_html }}
+            </div>
+          </div>
+        {% endif %}        
+      {% endif %}
+
+      {% comment %} @TODO - Add infinite scroll here? {% endcomment %}
+      {% comment %} {% if paginate.pages > 1 %}
+        <div id="pagination">
+          {{ paginate | default_pagination }}
+        </div>
+      {% endif %} {% endcomment %}
+      
+    {% endpaginate %}    
+  {% endif %}  
+</div>

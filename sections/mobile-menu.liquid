@@ -1,0 +1,91 @@
+<div
+  class="mobile-menu"
+  data-section-id="{{ section.id }}"
+  data-section-type="mobile-menu"
+>
+  <div class="mobile-menu__body">
+    <a href="#" data-mobile-menu-toggle data-taxi-ignore>Close</a>
+
+    {%- if section.settings.primary_menu != blank -%}
+      <div class="expander-group" data-expander-group>
+        {%- for link in section.settings.primary_menu.links -%}
+          {%- assign link_id = section.id | append: '-link-' | append: forloop.index %}
+
+          {% if link.links.size > 0 %}
+            {%- capture content -%}
+              <div class="mm-sublist">
+                {% for sublink in link.links %}
+                  <div class="mm-sublist__item">
+                    <a href="{{ sublink.url }}" class="mm-sublist__item-inner">
+                      {{ sublink.title }}
+                    </a>
+                  </div>
+                {% endfor %}
+              </div>
+            {%- endcapture -%}
+
+            {% render 'expander'
+                       title: link.title,
+                       content: content,
+                       id: link_id
+            %}
+          {% else %}
+            {% render 'expander'
+                       title: link.title,
+                       url: link.url
+            %}        
+          {% endif %}
+        {%- endfor -%}  
+      </div>           
+    {%- endif -%}
+
+
+    <div style="width: 100%; max-width: 260px; margin: 50px 0;">
+      <form action="{{ routes.search_url }}" method="get" role="search" data-search-form>
+        <div class="minimal-input has-icon-btn">
+          <label class="label-hidden">Enter search query</label>
+          <input
+            type="search"
+            name="q"
+            placeholder="Search"
+            class="form-control"
+          />
+          <button class="minimal-input__icon-btn" aria-label="search">
+            {% render 'svg-icon-search' %}
+          </button>
+        </div>
+      </form>
+    </div>
+
+
+    {%- if section.settings.secondary_menu != blank -%}
+      <ul class="mobile-menu__secondary-menu">
+        {%- for link in section.settings.secondary_menu.links -%}
+          <li>
+            <a href="{{ link.url }}">
+              {{ link.title }}
+            </a>
+          </li>
+        {%- endfor -%}              
+      </ul>
+    {%- endif -%}
+  </div>
+</div>
+  
+{% schema %}
+{
+  "name": "Mobile Menu",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "primary_menu",
+      "label": "Primary Menu"
+    },
+    {
+      "type": "link_list",
+      "id": "secondary_menu",
+      "label": "Secondary Menu"
+    }
+  ]
+}
+{% endschema %}

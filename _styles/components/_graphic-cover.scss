@@ -1,0 +1,18 @@
+.graphic-cover {
+  &, img, video {
+    @include fill;
+    pointer-events: none;
+  }
+
+  img, video {
+    object-fit: cover;
+  }
+  
+  img {
+    z-index: 1;
+  }
+
+  video {
+    z-index: 2;
+  }  
+}

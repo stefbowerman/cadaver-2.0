@@ -1,0 +1,128 @@
+{%- liquid
+  assign product_count = 0
+
+  capture product_card_set_items
+    if section.settings.source == 'product_list'
+      if section.settings.product_list.count > 0
+        for product in section.settings.product_list
+          echo '<div class="product-card-set__grid-item">'
+            render 'product-card', product: product
+          echo '</div>'
+
+          assign product_count = product_count | plus: 1
+        endfor          
+      endif
+    elsif section.settings.source == 'collection'
+      if section.settings.collection.all_products_count > 0
+        for product in section.settings.collection.products
+          echo '<div class="product-card-set__grid-item">'
+            render 'product-card', product: product
+          echo '</div>'
+
+          assign product_count = product_count | plus: 1
+        endfor
+      endif          
+    endif
+  endcapture
+%}
+
+{% if product_count > 0 %}
+  <section
+    data-section-id="{{ section.id }}"
+    data-section-type="featured-products"
+  >
+    {% if section.settings.title != blank %}
+      <div class="container">
+        <div class="section-header">
+          <h3 class="section-header__title">
+            {{ section.settings.title }}
+          </h3>
+        
+          {% if section.settings.cta_title and section.settings.cta_url %}
+            <div class="section-header__subtitle">
+              <a href="{{ section.settings.cta_url }}" class="btn">
+                {{ section.settings.cta_title }}
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+  
+    {% if product_card_set_items != blank %}
+      <div
+        class="product-card-set"
+        data-product-card-set
+      >
+        <div class="product-card-set__grid">
+          {{ product_card_set_items }}
+        </div>
+      </div>
+    {% endif %}    
+  </section>  
+{% endif %}
+
+{% schema %}
+{
+  "name": "Featured Products",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Featured Products"
+    },
+    {
+      "type": "header",
+      "content": "Call To Action"
+    },
+    {
+      "type": "text",
+      "id": "cta_title",
+      "label": "Title"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "URL"
+    },
+    {
+      "type": "header",
+      "content": "Products"
+    },
+    {
+      "type": "select",
+      "id": "source",
+      "label": "Source",
+      "options": [
+        {
+          "value": "product_list",
+          "label": "Product List"
+        },
+        {
+          "value": "collection",
+          "label": "Collection"
+        }
+      ]
+    },
+    {
+      "type": "product_list",
+      "id": "product_list",
+      "label": "Product List"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Products",
+      "settings": {
+        "title": "Featured Products"
+      }
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,67 @@
+body.mobile-menu-open {
+  overflow: hidden;
+}
+
+.mobile-menu {
+  position: fixed;
+  z-index: var(--z-mobile-menu);
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  background-color: var(--drawer-bg-color);
+  transform: translateX(100%);
+  transition: var(--transition-drawer-out);
+
+  @include overflow-scroll;
+  @include hide-scrollbar;
+
+  &.is-open {
+    transform: translateX(0);
+    transition: var(--transition-drawer-in);
+  }
+}
+
+.mobile-menu__body {
+  padding: 85px 30px;
+}
+
+.mobile-menu__secondary-menu {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 17px;
+  text-transform: uppercase;
+
+  a {
+    color: var(--color-dark-gray); // This is supposed to be #555 but this is close enough?
+  }
+}
+
+.mm-sublist {
+  --sublist-item-spacing: 20px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 21px;
+
+  padding: 10px 10px;
+
+  svg {
+    height: 1.1em;
+    width: auto;
+  }
+}
+
+.mm-sublist__item {
+  padding: 0 var(--sublist-item-spacing);
+}
+
+.mm-sublist__item-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--sublist-item-spacing);
+}

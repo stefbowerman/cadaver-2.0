@@ -1,0 +1,112 @@
+{% comment %}
+  This is a drop-in replacement for {{ product | json }} that allows us to add additional product information not outputted by default
+
+  Added properties:
+    - product.metafields
+    - product.options_with_values (nicer version of product.options)
+    - product.has_only_default_variant
+    - variant.inventory_management
+    - variant.metafields
+
+{% endcomment %}
+
+{% if product %}
+  
+  {% capture product_json %}
+
+    {
+      "id": {{ product.id }},
+      "title": {{ product.title | json }},
+      "handle": {{ product.handle | json }},
+      "description": {{ product.description | json }},
+      "content": {{ product.content | json }},
+      "vendor": {{ product.vendor | json }},
+      "type": {{ product.type | json }},
+      "tags": [
+        {% for tag in product.tags %}
+          {{ tag | json }}
+          {% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ],
+      "price": {{ product.price }},
+      "price_max": {{ product.price_max }},
+      "price_min": {{ product.price_min }},
+      "available": {{ product.available }},
+      "price_varies": {{ product.price_varies }},
+      "compare_at_price_max": {{ product.compare_at_price_max }},
+      "compare_at_price_min": {{ product.compare_at_price_min }},
+      "compare_at_price_varies": {{ product.compare_at_price_varies }},
+      "has_only_default_variant": {{ product.has_only_default_variant }},
+      "variants": [
+        {% for variant in product.variants %}
+          {
+            "available": {{ variant.available }},
+            "barcode": {{ variant.barcode | json }},
+            "compare_at_price": {{ variant.compare_at_price | json }},
+            "featured_image": {
+              {% if variant.image %}
+                "id": {{ variant.image.id }},
+                "product_id": {{ product.id }},
+                "position": {{ variant.image.position }},
+                "alt:": {{ variant.image.alt | json }},
+                "width": {{ variant.image.width }},
+                "height": {{ variant.image.height }},
+                "src": {{ variant.image.src | json }}
+              {% endif %}
+            },
+            "id": {{ variant.id }},
+            "inventory_management": {{ variant.inventory_management | json }},
+            "name": {{ product.title | append: ' - ' | append: variant.title | json }},
+            "option1": {{ variant.option1 | json }},
+            "option2": {{ variant.option2 | json }},
+            "option3": {{ variant.option3 | json }},
+            "price": {{ variant.price }},
+            "requires_shipping": {{ variant.requires_shipping }},
+            "sku": {{ variant.sku | json }},
+            "taxable": {{ variant.taxable | json }},
+            "title": {{ variant.title | json }},
+            "weight": {{ variant.weight }},
+            "metafields": {
+
+            }            
+          }      
+          {% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ],
+      "images": [
+        {% for image in product.images %}
+          {{ image | img_url | json }}
+          {% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ],
+      "featured_image": {{ product.featured_image | json }},
+      "options": [
+        {% for option in product.options_with_values %}
+          {{ option.name | json }}{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ],
+      "options_with_values": [
+        {% for option in product.options_with_values %}
+          {
+            "name": {{ option.name | json }},
+            "position": {{ forloop.index }},
+            "values": [
+              {% for v in option.values %}
+                {{ v | json }}
+                {% unless forloop.last %},{% endunless %}
+              {% endfor %}
+            ]
+          }
+          {% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ],
+      "metafields": {
+        "_": 0 {% comment %} Add an extra field here to ensure we don't have a dangling comma {% endcomment %}
+      }
+    }
+
+  {% endcapture %}
+
+  {{ product_json | strip_newlines | strip }}
+
+{% endif %}

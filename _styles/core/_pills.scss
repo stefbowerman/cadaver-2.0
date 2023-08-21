@@ -1,0 +1,27 @@
+.pill-group {
+  display: flex;
+  column-gap: 20px;
+  row-gap: 32px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  display: inline-block;
+  height: var(--pill-height);
+  padding: 7px 18px 6px;
+  white-space: nowrap; // prevent text line wrapping
+  
+  color: var(--pill-color);
+  border: 1px solid var(--pill-border-color);
+  background-color: var(--pill-bg-color);
+  border-radius: 50px;
+
+
+  cursor: pointer;
+
+  // @include has-hover {
+  //   &:hover {
+
+  //   }
+  // }
+}

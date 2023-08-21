@@ -1,0 +1,51 @@
+.btn {
+  @include button-reset;
+  
+  // Button Styling
+  padding: 14px 23px 12px;
+  border-radius: var(--btn-radius);
+  font-size: 14px;
+  text-transform: uppercase;
+  color: var(--btn-color);  
+  text-align: center;
+  background-color: var(--btn-bg-color);
+  border: 1px solid var(--btn-border-color);  
+  transition: all 200ms ease;
+
+  @include has-hover {
+    &:not(:disabled):hover,
+    &:not(:disabled):focus {
+      color: var(--btn-active-color);
+      background-color: var(--btn-active-bg-color);
+      border-color: var(--btn-active-border-color);
+    }
+  }
+
+  &.disabled,
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: 0;
+  }
+}
+
+.btn--primary {
+  --btn-border-color: var(--btn-primary-border-color);
+  --btn-color: var(--btn-primary-color);
+  --btn-bg-color: var(--btn-primary-bg-color);
+  --btn-active-color: var(--btn-primary-active-color);
+  --btn-active-bg-color: var(--btn-primary-active-bg-color);
+  --btn-active-border-color: var(--btn-primary-active-border-color);
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn-group {
+  display: flex;
+  column-gap: 40px;
+  row-gap: 20px;
+}

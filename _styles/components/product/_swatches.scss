@@ -1,0 +1,28 @@
+.swatch-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px 16px;
+}
+
+.swatch {
+  position: relative;
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid transparent;
+  transition: border-color 250ms ease;
+  cursor: pointer;
+
+  &.is-active {
+    border-color: var(--color-black);
+    transition-duration: 150ms;
+    cursor: auto;
+  }
+  
+  img {
+    @include fill;
+    object-fit: cover;
+    transform: scale(2);
+  }
+} 

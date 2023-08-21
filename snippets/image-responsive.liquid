@@ -1,0 +1,70 @@
+{%- comment %}
+
+  Image Responsive
+  ------------------------------------------------------------------------------
+
+  Usage:
+
+  {% render 'image-responsive',
+             image: { image } - optional
+             image_mobile: { image } - optional
+             loading: { string } - optional
+  %}
+
+{% endcomment -%}
+
+
+{% if image != blank %}
+  {%- liquid
+    assign mobile = image_mobile
+    assign desktop = image
+
+    if mobile == blank
+      assign mobile = desktop
+    endif 
+
+    capture styles
+      if desktop.presentation.focal_point
+        echo '--object-position-desktop: ' | append: desktop.presentation.focal_point | append: ';'
+      endif
+      if mobile.presentation.focal_point
+        echo '--object-position-mobile: ' | append: mobile.presentation.focal_point | append: ';'
+      endif
+    endcapture
+
+    assign styles = styles | strip
+  %}
+
+  <picture>
+    <source
+      srcset="
+        {{ mobile | image_url: width: 300 }} 300w,
+        {{ mobile | image_url: width: 600 }} 400w,
+        {{ mobile | image_url: width: 900 }} 700w
+      "
+      media="(max-width: 899.99px)"
+    >
+    <source
+      srcset="
+        {{ desktop | image_url: width: 900 }} 900w,
+        {{ desktop | image_url: width: 1200 }} 1200w,
+        {{ desktop | image_url: width: 1400 }} 1400w,
+        {{ desktop | image_url: width: 1600 }} 1600w,
+        {{ desktop | image_url: width: 1800 }} 1800w
+      "
+      media="(min-width: 900px)"
+    >
+
+    <img
+      src="{{ desktop | image_url: width: 1000 }}"
+      alt="{{ desktop.alt | escape }}"
+      loading="{{ loading | default: 'eager' }}"
+      width="{{ desktop.width }}"
+      height="{{ desktop.height }}"
+      class="image-responsive"
+      {% if styles != blank %}
+        style="{{ styles }}"
+      {% endif %}
+    >            
+  </picture>
+{% endif %}

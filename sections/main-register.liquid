@@ -1,0 +1,40 @@
+<div class="container">
+  <div class="page-header">
+    <h1 class="page-header__title">
+      Create Account
+    </h1>
+  </div>
+
+  <div class="grid-10">
+    <div class="page-content-column">
+      {% form 'create_customer' %}
+
+        {{ form.errors | default_errors }}
+        
+        <fieldset class="form-group">
+          <label for="first-name">First Name</label>
+          <input type="text" name="customer[first_name]" id="first-name" class="form-control" {% if form.first_name %}value="{{ form.first_name }}"{% endif %} autocapitalize="words" autofocus>
+        </fieldset>
+      
+        <fieldset class="form-group">
+          <label for="last-name">Last Name</label>
+          <input type="text" name="customer[last_name]" id="last-name" class="form-control" {% if form.last_name %}value="{{ form.last_name }}"{% endif %} autocapitalize="words">
+        </fieldset>
+      
+        <fieldset class="form-group{% if form.errors contains "email" %} has-error{% endif %}">
+          <label for="email">Email</label>
+          <input type="email" name="customer[email]" id="email" class="form-control"{% if form.email != blank %} value="{{ form.email }}"{% endif %} autocorrect="off" autocapitalize="off">
+        </fieldset>
+        
+        <fieldset class="form-group{% if form.errors contains "password" %} has-error{% endif %}">
+          <label for="create-password">Password</label>
+          <input type="password" name="customer[password]" id="create-password" class="form-control">
+        </fieldset>
+      
+        <div class="form-group text-center">
+          <button type="submit" class="btn btn-block">Create</button>
+        </div>
+      {% endform %}      
+    </div>
+  </div>  
+</div>

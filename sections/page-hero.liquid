@@ -1,0 +1,56 @@
+<div
+  class="page-hero"
+  data-section-id="{{ section.id }}"
+  data-section-type="page-hero"
+>
+  <div class="page-hero__graphic">
+    {% render 'graphic-cover'
+               image: section.settings.image,
+               video: section.settings.video,
+               image_mobile: section.settings.image_mobile
+    %}
+  </div>
+
+  <div class="page-hero__content">
+    <h1 class="page-hero__title">
+      {{ section.settings.title }}
+    </h1>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Page Hero",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Graphic"
+      }, 
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image"
+      },
+      {
+        "type": "image_picker",
+        "id": "image_mobile",
+        "label": "Image - Mobile",
+        "info": "Optional - If left blank, above image will be used"
+      },      
+      {
+        "type": "video",
+        "id": "video",
+        "label": "Video"
+      },      
+      {
+        "type": "header",
+        "content": "Content"
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Title"
+      }
+    ]    
+  }
+{% endschema %}

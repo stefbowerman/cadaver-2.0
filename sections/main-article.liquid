@@ -1,0 +1,39 @@
+<div
+  data-section-id="{{ section.id }}"
+  data-section-type="article"
+>
+  <div class="container">
+    <div class="article-header">
+      <h1 class="article-header__title">
+        {{ article.title }}
+      </h1>
+
+      <div class="article-header__subtitle">
+        {{- article.published_at | time_tag: format: 'date' -}}
+        
+        {% if section.settings.show_author %}
+          By: {{ article.author }}
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="article-container" style="margin-top: 45px;">
+      <div class="article-content rte">
+        {{ article.content }}
+      </div>
+    </div>
+  </div>    
+</div>
+
+{% schema %}
+{
+  "name": "Article - Main",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show Author"
+    }
+  ]
+}
+{% endschema %}

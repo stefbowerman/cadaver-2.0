@@ -1,0 +1,66 @@
+{% comment %}
+  A lighter version of 'product-json.liquid' that only includes the fields required by productDetailForm.js
+
+{% endcomment %}
+
+{% if product %}
+  {% capture product_json %}
+    {
+      "id": {{ product.id }},
+      "title": {{ product.title | json }},
+      "handle": {{ product.handle | json }},
+      "available": {{ product.available }},
+      "variants": [
+        {% for variant in product.variants %}
+          {
+            "available": {{ variant.available }},
+            "compare_at_price": {{ variant.compare_at_price | json }},
+            "featured_image": {
+              {% if variant.image %}
+                "id": {{ variant.image.id }},
+                "product_id": {{ product.id }},
+                "position": {{ variant.image.position }},
+                "alt:": {{ variant.image.alt | json }},
+                "width": {{ variant.image.width }},
+                "height": {{ variant.image.height }},
+                "src": {{ variant.image.src | json }}
+              {% endif %}
+            },
+            "id": {{ variant.id }},
+            "inventory_management": {{ variant.inventory_management | json }},
+            "name": {{ product.title | append: ' - ' | append: variant.title | json }},
+            "option1": {{ variant.option1 | json }},
+            "option2": {{ variant.option2 | json }},
+            "option3": {{ variant.option3 | json }},
+            "price": {{ variant.price }},
+            "title": {{ variant.title | json }}   
+          }      
+          {% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ],
+      "options": [
+        {% for option in product.options_with_values %}
+          {{ option.name | json }}{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ],
+      "options_with_values": [
+        {% for option in product.options_with_values %}
+          {
+            "name": {{ option.name | json }},
+            "position": {{ forloop.index }},
+            "values": [
+              {% for v in option.values %}
+                {{ v | json }}
+                {% unless forloop.last %},{% endunless %}
+              {% endfor %}
+            ]
+          }
+          {% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ]
+    }
+  {% endcapture %}
+
+  {{ product_json | strip_newlines | strip }}
+
+{% endif %}

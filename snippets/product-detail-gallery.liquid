@@ -1,0 +1,138 @@
+{%- comment %}
+
+  Product Detail Gallery
+  ------------------------------------------------------------------------------
+
+  {% include 'product-detail-gallery',
+              product: { product } - required
+  %}
+
+{% endcomment -%}
+
+{%- liquid
+  comment
+    This block of logic loops through all product images and checks if we have at least 1 with valid alt text for *each* color option.
+  endcomment
+  assign current_variant = product.selected_or_first_available_variant
+  assign color_galleries_possible = false
+
+  for option in product.options_with_values
+    assign option_name_upcase = option.name | upcase
+
+    if option_name_upcase == 'COLOR'
+      assign colors_with_images = 0
+      
+      for color in option.values
+        assign color_upcase = color | upcase
+
+        for image in product.images
+          assign image_alt_upcase = image.alt | upcase
+
+          if image_alt_upcase contains color_upcase
+            assign colors_with_images = colors_with_images | plus: 1
+            break
+          endif
+        endfor
+      endfor
+
+      if colors_with_images == option.values.size
+        assign color_galleries_possible = true
+      endif
+    endif 
+  endfor
+%}
+
+{% comment %} If possible, make a gallery for each color option value {% endcomment %}
+{% if color_galleries_possible %}
+  {% for option in product.options_with_values %}
+    {% assign option_name_upcase = option.name | upcase %}
+    {% assign option_position_label = 'option' | append: option.position %}
+
+    {% if option_name_upcase == "COLOR" %}
+      {% for color in option.values %}    
+        {%- liquid
+          assign color_upcase = color | upcase
+          assign list_items = ''
+          assign slides = ''
+          assign is_active = false
+          
+          if current_variant[option_position_label] == color
+            assign is_active = true
+          endif 
+
+          for image in product.images
+            assign image_alt_upcase = image.alt | upcase
+
+            if image_alt_upcase contains color_upcase
+              capture list_item
+                render 'product-detail-gallery-item', image: image
+              endcapture
+
+              capture slide
+                render 'product-detail-gallery-slide', image: image
+              endcapture
+
+              assign list_items = list_items | append: list_item
+              assign slides = slides | append: slide              
+            endif
+          endfor
+        -%}
+        
+        <div
+          class="product-detail-gallery{% if is_active %} is-active{% endif %}"
+          data-product-detail-gallery
+          data-color="{{ color }}"
+        >
+          <div class="product-detail-gallery__slideshow-wrapper swiper-container" data-slideshow>
+            <div class="product-detail-gallery__slideshow swiper-wrapper">
+              {{ slides }}
+            </div>
+          </div>
+
+          <div class="product-detail-gallery__list">
+            {{ list_items }}
+          </div>       
+        </div>         
+      {% endfor %}
+    {% endif %}
+  {% endfor %}
+{% else %}
+  {%- liquid
+    comment
+      Make one gallery for all colors ....
+    endcomment
+
+    assign list_items = ''
+    assign slides = ''
+
+    for image in product.images
+      assign image_alt_upcase = image.alt | upcase
+
+      capture list_item
+        render 'product-detail-gallery-item', image: image
+      endcapture
+
+      capture slide
+        render 'product-detail-gallery-slide', image: image
+      endcapture
+
+      assign list_items = list_items | append: list_item
+      assign slides = slides | append: slide              
+    endfor
+  -%}
+
+  <div
+    class="product-detail-gallery is-active"
+    data-product-detail-gallery
+  >
+    <div class="product-detail-gallery__slideshow-wrapper swiper-container" data-slideshow>
+      <div class="product-detail-gallery__slideshow swiper-wrapper">
+        {{ slides }}
+      </div>
+    </div>
+
+    <div class="product-detail-gallery__list">
+      {{ list_items }}
+    </div>   
+  </div>    
+{% endif %}

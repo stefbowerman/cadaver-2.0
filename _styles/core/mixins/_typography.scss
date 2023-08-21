@@ -1,0 +1,14 @@
+@mixin text-sm {
+  // 
+}
+
+@mixin type-fine {
+  @include text-sm;
+}
+
+
+@mixin type-responsive {
+  @include bp-down(lg) {
+    // @include text-sm;
+  }
+}

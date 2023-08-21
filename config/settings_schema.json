@@ -1,0 +1,49 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Cadaver 2.0",
+    "theme_version": "1.0.0",
+    "theme_author": "Stefan Bowerman",
+    "theme_support_url": "https://github.com/funkhaus/cadaver-2.0/",
+    "theme_documentation_url": "https://github.com/funkhaus/cadaver-2.0/"
+  },
+  {
+    "name": "Favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "favicon_image",
+        "label": "Favicon Image",
+        "info": "Should be at least 32px x 32px"
+      },
+      {
+        "type": "image_picker",
+        "id": "touch_icon_image",
+        "label": "Touch Icon Image",
+        "info": "Should be at least 180px x 180px.  If left blank, the favicon image will be used as a fallback."
+      }
+    ]
+  },
+  {
+    "name": "Sharing",
+    "settings": [
+       {
+        "type": "video",
+        "id": "share_video",
+        "label": "Video URL",
+        "info": "Video for use with sharing dialogs."
+      }
+    ]
+  },
+  {
+    "name": "Developer Settings",
+    "settings": [
+       {
+        "type": "checkbox",
+        "id": "developer_hide_preview_bar",
+        "label": "Hide Preview Bar",
+        "default": false
+      }
+    ]
+  }  
+]

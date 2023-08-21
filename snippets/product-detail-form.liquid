@@ -1,0 +1,186 @@
+{%- comment %}
+
+  Product Detail Form Snippet
+  ------------------------------------------------------------------------------
+
+  Usage:
+
+  {% include 'product-detail-form',
+              product: { product } - required
+              current_variant: { variant } - optional,
+  %}
+
+{% endcomment -%}
+
+{% comment %} Assign Defaults {% endcomment %} 
+{%- liquid
+  if current_variant == blank
+    assign current_variant = product.selected_or_first_available_variant
+  endif
+%}
+{% comment %} End Assign Defaults {% endcomment %}
+
+{% comment %} We need to capture this so that we can reuse it across desktop and mobile UI {% endcomment %}
+{%- capture description_content -%}
+  {% if product.description != blank %}
+    <div class="pdf-content">
+      {{ product.description }}
+    </div>
+  {% endif %}
+{%- endcapture -%}
+
+<div style="height: 100%" data-product-detail-form>
+  {% form 'product', product, data-add-to-cart-form: true, style: 'height: 100%' %} 
+    <div class="product-detail-form">
+      <div class="product-detail-form__inner">
+        <h1 class="pdf-title">{{ product.title }}</h1>
+
+        <div class="pdf-price">
+          {% render 'product-detail-price',
+                    product: product,
+                    current_variant: current_variant
+          %}
+        </div>
+
+        <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+          <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+          <meta itemprop="price" content="{{ current_variant.price | divided_by: 100.00 }}">
+          <link itemprop="availability" href="http://schema.org/{% if current_variant.available %}InStock{% else %}OutOfStock{% endif %}">
+
+            {% unless product.has_only_default_variant %}
+              {% for option in product.options_with_values %}
+
+                {%- liquid
+                  assign select_tag_id = 'SingleOptionSelector-' | append: forloop.index0
+                  assign option_is_color = false
+                  assign option_is_size = false
+                  assign option_has_single_value = false
+                  assign can_show_sold_out_ui_for_option = false
+                  assign option_name_upcase = option.name | upcase
+
+                  if option_name_upcase == 'COLOR'
+                    assign option_is_color = true
+                  endif
+
+                  if option_name_upcase == 'SIZE'
+                    assign option_is_size = true
+                  endif              
+
+                  if option.values.size == 1
+                    assign option_has_single_value = true
+                  endif
+
+                  if product.options.size == 1
+                    assign can_show_sold_out_ui_for_option = true
+                  elsif product.options.size == 2 and option.position == 2 and product.options_with_values[0].values.size == 1
+                    assign can_show_sold_out_ui_for_option = true
+                  endif
+
+                  capture option_alt_ui
+                    if option_is_color
+                      render 'product-option-colors-list', product: product, option_with_values: option, current_variant: current_variant
+                    endif
+                  endcapture
+                -%}
+
+                <div class="selector-wrapper form-group js">
+                  <label for="{{ select_tag_id }}">
+                    {{ option.name }}
+                  </label>
+
+                  <select
+                    id="{{ select_tag_id }}"
+                    class="form-control"
+                    data-single-option-selector
+                    data-index="option{{ option.position }}"
+                    data-name="{{ option.name }}"
+                    style="width: auto; {% unless option_is_size %}display: none{% endunless %}">
+                    {% for value in option.values %}
+                      <option
+                        value="{{ value | escape }}"
+                        {% if option.selected_value == value %}selected="selected"{% endif %}>
+                          {{ value }}
+                      </option>
+                    {% endfor %}
+                  </select>
+
+                  {% if option_is_size %}
+                    {% comment %} Do nothing {% endcomment %}
+                  {% elsif option_alt_ui != blank %}
+                    {{ option_alt_ui }}
+                  {% else %}
+                    {% render 'product-option-value-list'
+                      option: option
+                      current_variant: current_variant,
+                      is_color: option_is_color,
+                      can_show_sold_out_ui_for_option: can_show_sold_out_ui_for_option
+                    %}    
+                  {% endif %}
+                </div>
+              {% endfor %}
+            {% endunless %}
+
+            <label class="visually-hidden" for="no-js-variant-select">Select Variant</label>
+            <select name="id" class="no-js" id="no-js-variant-select" data-product-select>
+              {% for variant in product.variants %}
+                <option
+                  {% if variant == current_variant %}selected="selected"{% endif %}
+                  {% unless variant.available %}disabled="disabled"{% endunless %}
+                  value="{{ variant.id }}"
+                >
+                    {{ variant.title }}
+                </option>
+              {% endfor %}
+            </select>
+
+            <input type="hidden" value="1" name="quantity" />
+
+            <button
+              type="submit"
+              name="add"
+              class="btn btn--primary"
+              data-add-to-cart-btn
+              {% if product.available == false %}
+                disabled="disabled"
+              {% endif %}
+            >
+              <span data-add-to-cart-text>
+                {% if product.available %}
+                  Add To Cart
+                {% else %}
+                  Sold Out
+                {% endif %}
+              </span>
+            </button>  
+
+            <div style="margin: var(--spacing-30) 0;">
+              <div class="pdf-content">
+                {{ form | payment_terms }}
+              </div>
+            </div>
+
+          {% if description_content != blank %}
+            <div class="pdf-detail-group">
+              {% if product.description != blank %}
+                <label>Description</label>
+              {% endif %}
+
+              {{ description_content }}
+            </div>
+          {% endif %}
+
+          {% render 'product-detail-expander-group'
+                    description_content: description_content,
+                    current_variant: current_variant
+          %}
+        </div>
+      </div>
+
+      {% unless product == empty %}
+        <script type="application/json" data-product-json>
+          {% render 'product-json-lite', product: product %}
+        </script>
+      {% endunless %}
+    </div>
+  {% endform %}
+</div>

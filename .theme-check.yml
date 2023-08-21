@@ -1,0 +1,6 @@
+DeprecateLazySizes:
+  enabled: false
+ImgLazyLoading:
+  enabled: false
+PaginationSize:
+  enabled: false
