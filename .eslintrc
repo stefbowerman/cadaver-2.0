@@ -9,8 +9,7 @@
     "app": "readonly",
     "$": "readonly",
     "jQuery": "readonly",
-    "Shopify": "readonly",
-    "GeolizrAPI": "readonly"
+    "Shopify": "readonly"
   },
   "rules": {
     "no-unused-vars": ["warn", {
