@@ -18,8 +18,8 @@
 
       <div class="pdf-form-wrapper">
         {% render 'product-detail-form',
-                  product: product,
-                  current_variant: current_variant
+                   product: product,
+                   current_variant: current_variant
         %}
       </div>
     </div>
@@ -32,59 +32,7 @@
 {
   "name": "Product - Main",
   "settings": [
-    {
-      "type": "header",
-      "content": "Messaging"
-    },
-    {
-      "type": "inline_richtext",
-      "id": "help_message",
-      "label": "Help Message",
-      "info": "e.g. 'Want a more personalized shopping experience?...'"
-    },
-    {
-      "type": "header",
-      "content": "Blue Light Lens Upgrade",
-      "info": "See 'Theme Settings -> Product'"
-    },
-    {
-      "type": "inline_richtext",
-      "id": "blue_lens_help_message",
-      "label": "Help Message",
-      "info": "e.g. Please allow 5-7 business days..."
-    },
-    {
-      "type": "header",
-      "content": "Monogram Case",
-      "info": "See 'Theme Settings -> Product'"
-    },
-    {
-      "type": "header",
-      "content": "Size Guide"
-    },
-    {
-      "type": "checkbox",
-      "id": "size_guide_enabled",
-      "label": "Enabled",
-      "default": false
-    },
-    {
-      "type": "text",
-      "id": "size_guide_title",
-      "label": "Title",
-      "info": "e.g. 'Size Guide'"
-    },
-    {
-      "type": "image_picker",
-      "id": "size_guide_image",
-      "label": "Image"
-    },
-    {
-      "type": "image_picker",
-      "id": "size_guide_image_mobile",
-      "label": "Image - Mobile",
-      "info": "Optional - If left blank, above image will be used"
-    }
+
   ]
 }
 {% endschema %}
