@@ -32,12 +32,4 @@ export default class HeaderSection extends BaseSection {
     this.$cartCount.text(cart.item_count)
     this.$cartToggle.toggleClass(classes.hasItems, cart.item_count > 0)
   }
-
-  onNavigateOut() {
-    //
-  }
-
-  onNavigateIn({ page }) {
-    //
-  }
 }

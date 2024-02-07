@@ -96,4 +96,8 @@ export default class MobileMenuSection extends BaseSection {
   onUnload() {
     this.destroy()
   }
+
+  onNavigateOut() {
+    this.close()
+  }
 }

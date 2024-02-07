@@ -15,6 +15,12 @@ export default class BaseSection {
     //   MOUSEENTER: `mouseenter${this.namespace}`,
     //   MOUSELEAVE: `mouseleave${this.namespace}`
     // };
+
+
+    $(window)
+      .on('taxi.navigateOut', this.onNavigateOut.bind(this))
+      .on('taxi.navigateIn', this.onNavigateIn.bind(this))
+      .on('taxi.navigateEnd', this.onNavigateEnd.bind(this))    
   }
 
   onUnload(e) {
@@ -40,4 +46,16 @@ export default class BaseSection {
   onBlockDeselect(e) {
 
   }
+
+  onNavigateOut({ from, trigger }) {
+
+  }
+
+  onNavigateIn({ to, trigger }) {
+
+  }
+
+  onNavigateEnd({ to, from, trigger }) {
+
+  }  
 }

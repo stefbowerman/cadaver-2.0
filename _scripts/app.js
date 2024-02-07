@@ -11,8 +11,7 @@ import {
   userAgentBodyClass,
   isThemeEditor,
   setViewportHeightProperty,
-  targetBlankExternalLinks,
-  getQueryParams
+  targetBlankExternalLinks
 } from './core/utils'
 
 // Renderers
@@ -47,6 +46,7 @@ window.app.taxi = null;
     console.warn('jQuery must be loaded before app.js')
   }
 
+  const $window = $(window)
   const $body = $(document.body)
   const $main = $('main#view-container')
   const TEMPLATE_REGEX = /(^|\s)template-\S+/g;  
@@ -61,14 +61,7 @@ window.app.taxi = null;
   sectionManager.register('mobile-menu', MobileMenuSection)
   sectionManager.register('ajax-cart', AJAXCartSection)
 
-  // Get back the instances for use in callbacks
-  const ajaxCart = sectionManager.getSingleInstance('ajax-cart')  
-  const header = sectionManager.getSingleInstance('header')
-  const mobileMenu = sectionManager.getSingleInstance('mobile-menu')
-  // const footer = sectionManager.getSingleInstance('footer')
-
   // START Taxi
-  
   if (isThemeEditor()) {
     $('a').attr('data-taxi-ignore', true) // Prevent highway js from running inside the theme editor
   }
@@ -108,15 +101,13 @@ window.app.taxi = null;
 
   // This event is sent before the `onLeave()` method of a transition is run to hide a `data-router-view`
   taxi.on('NAVIGATE_OUT', ({ from, trigger }) => {
-    ajaxCart.close()
-    mobileMenu.close()
-    header.onNavigateOut()
-
     for (let [key] of taxi.cache) {
       if (key.split('/').includes('products') || key.split('/').includes('account')) {
         taxi.cache.delete(key)
       }
     }
+
+    $window.trigger($.Event('taxi.navigateOut', { from, trigger }))
   })
   
   // This event is sent everytime a `data-taxi-view` is added to the DOM
@@ -129,16 +120,14 @@ window.app.taxi = null;
       return to.page.body.classList.value.split(' ').map(c => c.match(TEMPLATE_REGEX)).join(' ');
     })
 
-    header.onNavigateIn(to)
+    $window.trigger($.Event('taxi.navigateIn', { to, trigger }))
   })
 
   // This event is sent everytime the `done()` method is called in the `onEnter()` method of a transition
   taxi.on('NAVIGATE_END', ({ to, from, trigger }) => {
-    if (getQueryParams().cart) {
-      ajaxCart.open({ delay: true })
-    }
-
     targetBlankExternalLinks();
+
+    $window.trigger($.Event('taxi.navigateEnd', { to, from, trigger }))
   })
 
   window.app.taxi = taxi

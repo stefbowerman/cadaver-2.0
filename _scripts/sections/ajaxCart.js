@@ -61,4 +61,14 @@ export default class AJAXCartSection extends BaseSection {
   onDeselect() {
     this.close()
   }
+
+  onNavigateOut() {
+    this.close()
+  }
+
+  onNavigateIn() {
+    if (getQueryParams().cart) {
+      this.open({ delay: true })
+    } 
+  }
 }

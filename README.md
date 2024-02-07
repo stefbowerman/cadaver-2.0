@@ -68,8 +68,9 @@ webpack.*.js
 sections/
 snippets/
 assets/
-layouts/
+layout/
 templates/cart.json.liquid
+config/settings_schema.json
 ```
 
 Next:
