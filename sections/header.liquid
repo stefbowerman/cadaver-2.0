@@ -33,7 +33,7 @@
       <div class="header-nav header-nav--right">
         <nav class="header-nav__list">
           <a
-            href="/cart"
+            href="{{ routes.cart_url }}"
             class="header-nav__item {% if cart.item_count > 0 %} has-items{% endif %}"
             data-taxi-ignore
             data-ajax-cart-toggle

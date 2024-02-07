@@ -63,9 +63,11 @@ export default class MobileMenuSection extends BaseSection {
   onSearchFormSubmit(e) {
     if (window.app.taxi) {
       e.preventDefault()
-      const q = this.$searchForm.find('[name="q"]').val() // Could probably use $.fn.serialize here...
 
-      window.app.taxi.navigateTo(`/search?q=${q}`)
+      const q = this.$searchForm.find('[name="q"]').val() // Could probably use $.fn.serialize here...
+      const type = this.$searchForm.find('[name="type"]').val() || 'product'
+
+      window.app.taxi.navigateTo(`${this.$searchForm.attr('action')}?type=${type}&q=${q}`)
 
       return false
     }

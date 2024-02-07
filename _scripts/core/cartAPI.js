@@ -74,7 +74,7 @@ export const getCart = () => {
 
   $.ajax({
     type: 'get',
-    url: '/cart?view=json',
+    url: `${window.app.routes.cart_url}?view=json`,
     success: (data) => {
       // Theme editor adds HTML comments to JSON response, strip these
       data = data.replace(/<\/?[^>]+>/gi, '');
@@ -105,7 +105,7 @@ export const addItemFromForm = ($form) => {
   $.ajax({
     type: 'post',
     dataType: 'json',
-    url: '/cart/add.js',
+    url: window.app.routes.cart_add_url,
     data: $form.serialize(),
     success: () => {
       getCart().then((cart) => {
@@ -137,7 +137,7 @@ export const changeLineItemQuantity = (id, qty) => {
   $.ajax({
     type: 'post',
     dataType: 'json',
-    url: '/cart/change.js',
+    url: window.app.routes.cart_change_url,
     data: `quantity=${qty}&id=${id}`,
     success: () => {
       getCart().then((cart) => {
