@@ -38,8 +38,10 @@ import MobileMenuSection from './sections/mobileMenu'
 import AJAXCartSection from './sections/ajaxCart'
 
 // Use this to expose anything needed throughout the rest of the app
-window.app = window.app || {}
+window.app = window.app || {};
 window.app.taxi = null;
+
+window.lazySizes && window.lazySizes.init();
 
 (($) => {
   if (typeof $ === undefined) {

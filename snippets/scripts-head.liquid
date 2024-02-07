@@ -16,6 +16,11 @@
       cart_url: {{ routes.cart_url | json }}
     }    
   };
+
+  window.lazySizesConfig = window.lazySizesConfig || {};
+  window.lazySizesConfig.init = false;
+  window.lazySizesConfig.expand = 1000;
+  window.lazySizesConfig.expFactor = 3;
 </script>
 
 <script src="{{ 'jquery-3.6.4.min.js' | asset_url }}" defer="defer"></script>
