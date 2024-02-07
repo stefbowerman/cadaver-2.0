@@ -5,6 +5,7 @@
 {% layout none %}
 {
   "total_price": {{ cart.total_price }},
+  "total_price_formatted": {{ cart.total_price | money_without_trailing_zeros | json }},
   "original_total_price": {{ cart.original_total_price }},
   "total_discount": {{ cart.total_discount }},
   "total_weight": {{ cart.total_weight }},
@@ -29,6 +30,7 @@
         "key": {{ item.key | json }},
         "title": {{ item.title | json }},
         "price": {{ item.price }},
+        "price_formatted": {{ item.price | money_without_trailing_zeros | json }},
         "line_price": {{ item.line_price }},
         "final_line_price": {{ item.final_line_price }},
         "original_line_price": {{ item.original_line_price }},

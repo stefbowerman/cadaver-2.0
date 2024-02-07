@@ -1,6 +1,5 @@
 {% comment %}
   A lighter version of 'product-json.liquid' that only includes the fields required by productDetailForm.js
-
 {% endcomment %}
 
 {% if product %}
@@ -15,6 +14,7 @@
           {
             "available": {{ variant.available }},
             "compare_at_price": {{ variant.compare_at_price | json }},
+            "compare_at_price_formatted": {{ variant.compare_at_price | money_without_trailing_zeros | json }},
             "featured_image": {
               {% if variant.image %}
                 "id": {{ variant.image.id }},
@@ -33,6 +33,7 @@
             "option2": {{ variant.option2 | json }},
             "option3": {{ variant.option3 | json }},
             "price": {{ variant.price }},
+            "price_formatted": {{ variant.price | money_without_trailing_zeros | json }},
             "title": {{ variant.title | json }}   
           }      
           {% unless forloop.last %},{% endunless %}

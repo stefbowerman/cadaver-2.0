@@ -5,6 +5,9 @@
  *
  * Current contents
  * - formatMoney - Takes an amount in cents and returns it as a formatted dollar value.
+ * 
+ * @deprecated - Because Shopify now supports local currencies, it's easier to do all price formatting on the server (See cart.json.liquid or product-json-lite.liquid)
+ *               We don't need this file anymore but there's no reason to get rid of it just yet...
  *
  */
 

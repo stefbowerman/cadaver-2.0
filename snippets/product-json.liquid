@@ -5,8 +5,10 @@
     - product.metafields
     - product.options_with_values (nicer version of product.options)
     - product.has_only_default_variant
+    - product.price_formatted
     - variant.inventory_management
     - variant.metafields
+    - variant.price_formatted
 
 {% endcomment %}
 
@@ -29,6 +31,7 @@
         {% endfor %}
       ],
       "price": {{ product.price }},
+      "price_formatted": {{ product.price | money_without_trailing_zeros | json }},
       "price_max": {{ product.price_max }},
       "price_min": {{ product.price_min }},
       "available": {{ product.available }},
@@ -61,6 +64,7 @@
             "option2": {{ variant.option2 | json }},
             "option3": {{ variant.option3 | json }},
             "price": {{ variant.price }},
+            "price_formatted": {{ variant.price | money_without_trailing_zeros | json }},
             "requires_shipping": {{ variant.requires_shipping }},
             "sku": {{ variant.sku | json }},
             "taxable": {{ variant.taxable | json }},

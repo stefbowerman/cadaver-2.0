@@ -1,5 +1,3 @@
-import { formatMoney, stripZeroCents } from '../../core/currency'
-
 const selectors = {
   price: '[data-price]',
   compareText: '[data-compare-text]',
@@ -19,13 +17,10 @@ export default class ProductDetailPrice {
 
   update(variant) {
     if (variant) {
-      const price = stripZeroCents(formatMoney(variant.price, app.moneyFormat))
-      const comparePrice = stripZeroCents(formatMoney(variant.compare_at_price, app.moneyFormat))
-
-      this.$price.html(price)
+      this.$price.html(variant.price_formatted)
 
       if (variant.compare_at_price > variant.price) {
-        this.$comparePrice.html(comparePrice)
+        this.$comparePrice.html(variant.compare_at_price_formatted)
         this.$compareEls.show()
       }
       else {

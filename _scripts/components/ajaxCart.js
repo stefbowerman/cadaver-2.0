@@ -58,7 +58,7 @@ export default class AJAXCart {
     this.$el.on(events.CLICK, selectors.itemRemove, this.callbacks.itemRemoveClick)
     this.$el.on(events.CLICK, selectors.itemIncrement, this.onItemIncrementClick.bind(this))
     this.$el.on(events.CLICK, selectors.itemDecrement, this.onItemDecrementClick.bind(this))    
-    this.$backdrop.on('click', this.close.bind(this))
+    this.$backdrop.on(events.CLICK, this.close.bind(this))
     $body.on(events.CLICK, selectors.toggle, this.callbacks.bodyToggleClick)
     $body.on(events.CLICK, selectors.close, this.callbacks.bodyCloseClick)
   }
@@ -72,7 +72,7 @@ export default class AJAXCart {
   itemInfoTemplate(item) {
     const {
       product_title,
-      price,
+      price_formatted,
       handle,
       variant_options,
       properties,
@@ -80,6 +80,7 @@ export default class AJAXCart {
       is_addable
     } = item
 
+    // @TODO - Add routes.product here?
     return `
       <div>
         <div class="ajax-cart__item-header">
@@ -96,6 +97,7 @@ export default class AJAXCart {
               </div>
             `).join('')
           }
+
           ${properties.map(property => `
               <div class="ajax-cart__item-detail">
                 ${property.name} - ${property.value}
@@ -120,7 +122,7 @@ export default class AJAXCart {
           </a>
         </div>
 
-        <div class="ajax-cart__item-price">${price}</div>
+        <div class="ajax-cart__item-price">${price_formatted}</div>
       </div>
     `
   }
@@ -202,11 +204,11 @@ export default class AJAXCart {
         this.$body.html(this.bodyTemplate(cart))
       }
       else if (slot === 'price') {
-        this.$totalPrice.html(cart.total_price)
+        this.$totalPrice.html(cart.total_price_formatted)
       }
       else {
         this.$body.html(this.bodyTemplate(cart))
-        this.$totalPrice.html(cart.total_price)
+        this.$totalPrice.html(cart.total_price_formatted)
       }
     }    
 
