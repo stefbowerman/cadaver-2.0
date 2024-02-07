@@ -6,6 +6,8 @@ const selectors = {
   comparePrice: '[data-compare-price]'
 }
 
+export const selector = '[data-product-detail-price]'
+
 export default class ProductDetailPrice {
   constructor(el) {
     this.$el = $(el)

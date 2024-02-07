@@ -23,6 +23,8 @@ const classes = {
 
 const namespace = '.ajaxCart'
 
+export const selector = '[data-ajax-cart]'
+
 export const events = {
   CLICK: `click${namespace}`,
   RENDER: `render${namespace}`

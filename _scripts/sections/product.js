@@ -1,23 +1,18 @@
 import animateScrollTo from 'animated-scroll-to'
 
 import BaseSection from './base'
-import ProductDetailForm from '../components/product/productDetailForm'
-import ProductDetailGallery from '../components/product/productDetailGallery'
-
-const selectors = {
-  form: '[data-product-detail-form]',
-  gallery: '[data-product-detail-gallery]'
-}
+import ProductDetailForm, { selector as productDetailFormSelector } from '../components/product/productDetailForm'
+import ProductDetailGallery, { selector as productDetailGallerySelector } from '../components/product/productDetailGallery'
 
 export default class ProductSection extends BaseSection {
   constructor(container) {
     super(container, 'product')
 
-    this.productDetailForm = new ProductDetailForm($(selectors.form, this.$container).first(), {
+    this.productDetailForm = new ProductDetailForm($(productDetailFormSelector, this.$container).first(), {
       onVariantChange: this.onVariantChange.bind(this)
     })
 
-    this.galleries = $.map($(selectors.gallery, this.$container), el => new ProductDetailGallery(el))
+    this.galleries = $.map($(productDetailGallerySelector, this.$container), el => new ProductDetailGallery(el))
   }
 
   onUnload() {

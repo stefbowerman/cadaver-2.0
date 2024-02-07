@@ -2,11 +2,7 @@ import BaseSection from './base'
 import AJAXFormManager, { events } from '../core/ajaxFormManager'
 import { getCart } from '../core/cartAPI'
 import { getQueryParams } from '../core/utils'
-import AJAXCart from '../components/ajaxCart'
-
-const selectors = {
-  ajaxCart: '[data-ajax-cart]'
-}
+import AJAXCart, { selector as ajaxCartSelector } from '../components/ajaxCart'
 
 const $window = $(window)
 
@@ -14,7 +10,7 @@ export default class AJAXCartSection extends BaseSection {
   constructor(container) {
     super(container, 'ajax-cart')
 
-    this.ajaxCart = new AJAXCart($(selectors.ajaxCart, this.$container).first())
+    this.ajaxCart = new AJAXCart($(ajaxCartSelector, this.$container).first())
     this.ajaxFormManager = new AJAXFormManager()
 
     // Store callbacks so we can remove them later

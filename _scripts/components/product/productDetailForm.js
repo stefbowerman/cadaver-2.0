@@ -1,7 +1,7 @@
 import { events as AJAXFormManagerEvents } from '../../core/ajaxFormManager'
 import Variants from './variants'
-import ProductDetailPrice from './productDetailPrice'
-import ExpanderGroup from '../expanderGroup'
+import ProductDetailPrice, { selector as productDetailPriceSelector } from './productDetailPrice'
+import ExpanderGroup, { selector as expanderGroupSelector } from '../expanderGroup'
 
 const selectors = {
   form: 'form[data-add-to-cart-form]',
@@ -10,7 +10,6 @@ const selectors = {
   originalSelectorId: '[data-product-select]',
   variantOptionValueList: '[data-variant-option-value-list][data-option-position]',
   variantOptionValue: '[data-variant-option-value]',  
-  productDetailPrice: '[data-product-detail-price]',
   addToCartBtn: '[data-add-to-cart-btn]',
   addToCartText: '[data-add-to-cart-text]'
 }
@@ -18,6 +17,8 @@ const selectors = {
 const classes = {
   variantOptionValueActive: 'is-active'
 }
+
+export const selector = '[data-product-detail-form]'
 
 const $window = $(window)
 
@@ -42,13 +43,12 @@ export default class ProductDetailForm {
     this.$form = $(selectors.form, this.$el);
     this.$singleOptionSelectors = $(selectors.singleOptionSelector, this.$el);
     this.$variantOptionValueList = $(selectors.variantOptionValueList, this.$el); // Alternate UI that takes the place of a single option selector (could be swatches, dots, buttons, whatever..)    
-    this.$productDetailPrice = $(selectors.productDetailPrice, this.$el);
     this.$addToCartBtn = $(selectors.addToCartBtn, this.$el);
     this.$addToCartBtnText = $(selectors.addToCartText, this.$el); // Text inside the add to cart button
     this.defaultButtonText = 'Add to Cart'; // this.$addToCartBtnText.text()
 
     this.product = JSON.parse($(selectors.productJSON, this.$el).html())
-    this.price = new ProductDetailPrice(this.$productDetailPrice)
+    this.price = new ProductDetailPrice($(productDetailPriceSelector, this.$el).first())
     
     this.variants = new Variants({
       $container: this.$el,
@@ -58,7 +58,7 @@ export default class ProductDetailForm {
       product: this.product
     })
 
-    this.expanderGroup = new ExpanderGroup(this.$el.find('[data-expander-group]'))
+    this.expanderGroup = new ExpanderGroup($(expanderGroupSelector, this.$el).first())
 
     this.onAddStart = this.onAddStart.bind(this)
     this.onAddDone = this.onAddDone.bind(this)    

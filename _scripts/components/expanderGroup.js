@@ -8,6 +8,8 @@ const classes = {
   isOpen: 'is-open'
 }
 
+export const selector = '[data-expander-group]'
+
 class Expander {
   constructor(el, options = {}) {
     this.$el = $(el)
