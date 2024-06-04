@@ -1,7 +1,14 @@
 import { Renderer } from '@unseenco/taxi'
 
 import SectionManager from '../core/sectionManager'
-import FeaturedProductsSection from '../sections/featuredProducts'
+import FeaturedProducts from '../sections/featuredProducts'
+import Addresses from '../sections/addresses'
+import Article from '../sections/article'
+import Blog from '../sections/blog'
+import Collection from '../sections/collection'
+import Product from '../sections/product'
+import Login from '../sections/login'
+import Search from '../sections/search'
 
 export default class BaseRenderer extends Renderer {
   constructor(properties) {
@@ -12,8 +19,14 @@ export default class BaseRenderer extends Renderer {
 
   onEnter() {
     // run after the new content has been added to the Taxi container
-    // Add any sections here that might show up on *any* page on the site
-    this.sectionManager.register('featured-products', FeaturedProductsSection)
+    this.sectionManager.register('featured-products', FeaturedProducts)
+    this.sectionManager.register('addresses', Addresses)
+    this.sectionManager.register('article', Article)
+    this.sectionManager.register('blog', Blog)
+    this.sectionManager.register('collection', Collection)
+    this.sectionManager.register('product', Product)
+    this.sectionManager.register('login', Login)
+    this.sectionManager.register('search', Search)
   }
 
   onEnterCompleted() {

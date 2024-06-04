@@ -16,16 +16,7 @@ import {
 
 // Renderers
 import BaseRenderer from './renderers/base'
-import IndexRenderer from './renderers/index'
-import CollectionRenderer from './renderers/collection'
-import ProductRenderer from './renderers/product'
 import CartRenderer from './renderers/cart'
-import PageRenderer from './renderers/page'
-import BlogRenderer from './renderers/blog'
-import ArticleRenderer from './renderers/article'
-import SearchRenderer from './renderers/search'
-import AddressesRenderer from './renderers/addresses'
-import LoginRenderer from './renderers/login'
 
 // Transitions
 import PageTransition from './transitions/page'
@@ -71,24 +62,24 @@ window.lazySizes && window.lazySizes.init();
   const taxi = new TaxiCore({
     renderers: {
       default: BaseRenderer,
-      index: IndexRenderer,
-      collection: CollectionRenderer,
-      product: ProductRenderer,
-      page: PageRenderer,
-      cart: CartRenderer,
-      blog: BlogRenderer,
-      article: ArticleRenderer,
-      search: SearchRenderer,
-      addresses: AddressesRenderer,
-      login: LoginRenderer,
-      // All of these use the default renderer
+      index: BaseRenderer,
+      collection: BaseRenderer,
+      product: BaseRenderer,
+      page: BaseRenderer,
+      blog: BaseRenderer,
+      article: BaseRenderer,
+      search: BaseRenderer,
+      addresses: BaseRenderer,
+      login: BaseRenderer,
       password: BaseRenderer,
       'list-collections': BaseRenderer,
       account: BaseRenderer,
       register: BaseRenderer,
       order: BaseRenderer,
       'reset-password': BaseRenderer,
-      error: BaseRenderer
+      error: BaseRenderer,
+
+      cart: CartRenderer
     },
     transitions: {
       default: PageTransition

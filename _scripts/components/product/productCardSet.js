@@ -11,5 +11,5 @@ export default class ProductCardSet {
 
   destroy() {
     this.productCards.forEach(p => p.destroy())
-  }  
+  }
 }
