@@ -1,5 +1,3 @@
-export const selector = '[data-newsletter-form]'
-
 const selectors = {
   form: 'form',
   formContents: '[data-form-contents]',
@@ -12,6 +10,8 @@ const classes = {
 };
 
 export default class NewsletterForm {
+  static selector = '[data-newsletter-form]'
+
   /**
    * NewsletterForm constructor
    *

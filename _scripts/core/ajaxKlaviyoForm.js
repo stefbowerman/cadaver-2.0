@@ -11,10 +11,12 @@ const noop = () => {};
  *   import AJAXKlaviyoForm from './ajaxKlaviyoForm';
  *
  *   const $form = $('form');
+ *   const apiKey = $form.data('api-key');
  *   const listId = $form.data('list-id');
  *   const source = $form.data('source');
  *
  *   const options = {
+ *     apiKey: apiKey
  *     listId: listId,
  *     source: source,
  *     onSubscribeSuccess: function() { .. },
@@ -32,6 +34,7 @@ const noop = () => {};
  *
  * @param {HTMLElement | jQuery} form - Form element
  * @param {Object} options
+ * @param {String} options.apiKey - Klaviyo Public API Key
  * @param {String} options.listId - Klaviyo List ID
  * @param {String} options.source - Klaviyo custom $source property
  * @param {Function} options.onInit
@@ -51,6 +54,7 @@ export default class AJAXKlaviyoForm {
     };
 
     const defaults = {
+      apiKey: null,
       listId: null,
       source: 'Shopify Form',
       onInit: noop,
@@ -70,6 +74,11 @@ export default class AJAXKlaviyoForm {
     this.$submit = this.$form.find('[type="submit"]');
     this.settings = $.extend({}, defaults, options);
     this.isSubmitting = false;
+
+    if (!this.settings.apiKey) {
+      console.log(`[${this.name}] - Valid Klaviyo API Key required to initialize`) // eslint-disable-line no-console
+      return false
+    }
 
     if (!this.settings.listId) {
       console.log(`[${this.name}] - Valid Klaviyo List ID required to initialize`) // eslint-disable-line no-console
@@ -112,15 +121,14 @@ export default class AJAXKlaviyoForm {
     return false;
   }
 
-  onSubmitDone(response) {
+  onSubmitDone(successful) {
     this.$submit.prop('disabled', false);
 
-    if (response.success) {
-      this.settings.onSubscribeSuccess(response);
+    if (successful) {
+      this.settings.onSubscribeSuccess();
     }
     else {
-      this.logErrors(response.errors);
-      this.settings.onSubscribeFail(response);
+      this.settings.onSubscribeFail();
     }
   }
 
@@ -134,25 +142,52 @@ export default class AJAXKlaviyoForm {
   onFormSubmit(e) {
     e.preventDefault();
 
+    // See: https://developers.klaviyo.com/en/reference/create_client_subscription
+    const url = `https://a.klaviyo.com/client/subscriptions/?company_id=${this.settings.apiKey}`
+    const data = JSON.stringify({
+      data: {
+        type: 'subscription',
+        attributes: {
+          custom_source: this.settings.source,
+          profile: {
+            data: {
+              type: 'profile',
+              attributes: {
+                email: this.$input.val()
+              }
+            }
+          }
+        },
+        relationships: {
+          list: {
+            data: {
+              type: 'list',
+              id: this.settings.listId
+            }
+          }
+        }
+      }
+    })
+ 
+
     $.ajax({
       async: true,
       crossDomain: true,
-      url: '//manage.kmail-lists.com/ajax/subscriptions/subscribe',
+      url,
       method: 'POST',
       headers: {
-        'content-type': 'application/x-www-form-urlencoded',
+        'revision': '2024-02-15',
+        'content-type': 'application/json',
         'cache-control': 'no-cache'
       },
-      data: {
-        g: this.settings.listId,
-        $fields: '$source',
-        email: this.$input.val(),
-        $source: this.settings.source
-      },
+      data,
       beforeSend: this.onBeforeSend.bind(this)
     })
-      .done((response) => {
-        this.onSubmitDone(response);
+      .done((response, textStatus, jqXHR) => {
+        // New Klaviyo API endpoints don't return any info in the response
+        const success = textStatus === 'success' || jqXHR.status === 202
+
+        this.onSubmitDone(success);
       })
       .fail((jqXHR, textStatus) => {
         let errors = [];

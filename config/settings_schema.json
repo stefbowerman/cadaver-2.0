@@ -36,6 +36,23 @@
     ]
   },
   {
+    "name": "Klaviyo",
+    "settings": [
+      {
+        "type": "text",
+        "id": "klaviyo_public_api_key",
+        "label": "Public API Key",
+        "info": "Public API Key for the organization.  [See Here](https://help.klaviyo.com/hc/en-us/articles/115005062267)"
+      },      
+      {
+        "type": "text",
+        "id": "klaviyo_list_id",
+        "label": "Newsletter List ID",
+        "info": "ID of the list for newsletter signups.  e.g. 'WszisB'"
+      }
+    ]
+  },  
+  {
     "name": "Developer Settings",
     "settings": [
        {

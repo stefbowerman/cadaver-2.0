@@ -20,7 +20,8 @@
           method="post"
           class="newsletter-form"
           data-newsletter-form
-          data-list-id="{{ settings.newsletter_klaviyo_list_id }}"        
+          data-api-key="{{ settings.klaviyo_public_api_key }}"
+          data-list-id="{{ settings.klaviyo_list_id }}"        
         >
           <div class="newsletter-form-contents" data-form-contents>
             <div class="newsletter-form-inputs">
@@ -44,54 +45,55 @@
         </form>
       </div>
 
-    <div class="footer-area__socials">
-      <h3 class="footer-title">
-        {{ section.settings.socials_title }}
-      </h3>
-      
-      {%- if section.settings.socials_menu != blank -%}
-        <div class="footer-menu footer-menu--socials">
-          <ul>
-            {%- for link in section.settings.socials_menu.links -%}
-              <li>
-                <a href="{{ link.url }}">
-                  {{ link.title }}
-                </a>
-              </li>
-            {%- endfor -%}              
-          </ul>
-        </div>
-      {%- endif -%}
-    </div>
-    
-    {% comment %} Menus {% endcomment %}
-    <div class="footer-area__menus">
-      <div class="footer-menus" style="--menu-count: {{ section.blocks.size }};">
-        {% for block in section.blocks %}
-          <div class="footer-menu" {{ block.shopify_attributes }}>
-            <div class="footer-menu__title">{{ block.settings.title }}</div>
-
-            {%- if block.settings.menu != blank -%}
-              <ul>
-                {%- for link in block.settings.menu.links -%}
-                  <li>
-                    <a href="{{ link.url }}">
-                      {{ link.title }}
-                    </a>
-                  </li>
-                {%- endfor -%}              
-              </ul>
-            {%- endif -%}
+      <div class="footer-area__socials">
+        <h3 class="footer-title">
+          {{ section.settings.socials_title }}
+        </h3>
+        
+        {%- if section.settings.socials_menu != blank -%}
+          <div class="footer-menu footer-menu--socials">
+            <ul>
+              {%- for link in section.settings.socials_menu.links -%}
+                <li>
+                  <a href="{{ link.url }}">
+                    {{ link.title }}
+                  </a>
+                </li>
+              {%- endfor -%}              
+            </ul>
           </div>
-        {% endfor %}
+        {%- endif -%}
       </div>
-    </div>
     
-    {% if section.settings.copyright_text != blank %}
-      <div class="footer-area__copyright">
-        {{ section.settings.copyright_text | replace: '$year', current_year }}
+      {% comment %} Menus {% endcomment %}
+      <div class="footer-area__menus">
+        <div class="footer-menus" style="--menu-count: {{ section.blocks.size }};">
+          {% for block in section.blocks %}
+            <div class="footer-menu" {{ block.shopify_attributes }}>
+              <div class="footer-menu__title">{{ block.settings.title }}</div>
+
+              {%- if block.settings.menu != blank -%}
+                <ul>
+                  {%- for link in block.settings.menu.links -%}
+                    <li>
+                      <a href="{{ link.url }}">
+                        {{ link.title }}
+                      </a>
+                    </li>
+                  {%- endfor -%}              
+                </ul>
+              {%- endif -%}
+            </div>
+          {% endfor %}
+        </div>
       </div>
-    {% endif %}
+      
+      {% if section.settings.copyright_text != blank %}
+        <div class="footer-area__copyright">
+          {{ section.settings.copyright_text | replace: '$year', current_year }}
+        </div>
+      {% endif %}
+    </div>
   </div>
 </footer>
 
