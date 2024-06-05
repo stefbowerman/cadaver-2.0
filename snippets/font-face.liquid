@@ -1,9 +1,20 @@
+{% # theme-check-disable AssetPreload %}
+
+{% comment %}
+  NOTE:
+    If you need to use a custom font, add it to the `/assets` directory and then reference it here in both the <liink rel="preload"> and the @font-face directive
+{% endcomment %}
+
+
+{% comment %}
+<link rel="preload" as="font" href="{{ 'Font-File.woff2' | asset_url }}" type="font/woff2" crossorigin>
+<link rel="preload" as="font" href="{{ 'Font-FileBold.woff2' | asset_url }}" type="font/woff2" crossorigin>
+
 <style>
   {%- capture content -%}
     @font-face {
       font-family: 'Font Name';
-        src: url("{{ 'Font-File.woff' | asset_url }}") format('woff'),
-            url("{{ 'Font-File.woff2' | asset_url }}") format('woff2');
+      src: url("{{ 'Font-File.woff2' | asset_url }}") format('woff2');
       font-weight: 400;
       font-style: normal;
       font-display: swap;
@@ -11,8 +22,7 @@
 
     @font-face {
       font-family: 'Font Name';
-        src: url("{{ 'Font-FileBold.woff' | asset_url }}") format('woff'),
-            url("{{ 'Font-FileBold.woff2' | asset_url }}") format('woff2');
+      src: url("{{ 'Font-FileBold.woff2' | asset_url }}") format('woff2');
       font-weight: 700;
       font-style: normal;
       font-display: swap;
@@ -21,3 +31,4 @@
 
   {{ content | strip_newlines | strip }}
 </style>
+{% endcomment %}

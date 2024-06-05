@@ -14,7 +14,7 @@
 
 {% endcomment -%}
 
-<div data-graphic-cover class="graphic-cover">
+<div class="graphic-cover">
   {% if video != nil %}
     {{ video | video_tag: muted: true, playsinline: true, autoplay: true, loop: true, class: "ambient-video" }}
   {% endif %}
