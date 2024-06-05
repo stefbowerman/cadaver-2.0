@@ -16,6 +16,8 @@ export default class ProductSection extends BaseSection {
   }
 
   onUnload() {
+    super.onUnload()
+    
     this.productDetailForm.destroy()
     this.galleries.forEach(g => g.destroy())
   }

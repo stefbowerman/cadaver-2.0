@@ -49,7 +49,7 @@ export function getSizedImageUrl(src, size) {
     return removeProtocol(src);
   }
 
-  const match = src.match(/\.(jpg|jpeg|gif|png|bmp|bitmap|tiff|tif)(\?v=\d+)?$/i);
+  const match = src.match(/\.(jpg|jpeg|gif|png|bmp|bitmap|tiff|tif|webp)(\?v=\d+)?$/i);
   let url = null;
 
   if (match) {

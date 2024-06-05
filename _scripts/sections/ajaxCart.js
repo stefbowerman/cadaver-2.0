@@ -33,6 +33,8 @@ export default class AJAXCartSection extends BaseSection {
   }
 
   onUnload() {
+    super.onUnload()
+    
     this.ajaxCart.destroy()
     this.ajaxFormManager.destroy()
 

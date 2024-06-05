@@ -4,27 +4,35 @@ export default class BaseSection {
     this.id = this.$container.data('section-id');
     this.type = this.$container.data('section-type');
     this.name = name;
-    this.namespace = `.${this.name}`;
+    this.namespace = `.${this.name}`; // @TODO - This should be camelCased just incase
 
-    // Commenting these out for now because I don't think we need them...
-    
-    // this.events = {
-    //   SCROLL: `scroll${this.namespace}`,
-    //   CLICK:  `click${this.namespace}`,
-    //   RESIZE: `resize${this.namespace}`,
-    //   MOUSEENTER: `mouseenter${this.namespace}`,
-    //   MOUSELEAVE: `mouseleave${this.namespace}`
-    // };
-
+    this.onNavigateOut = this.onNavigateOut.bind(this)
+    this.onNavigateIn  = this.onNavigateIn.bind(this)
+    this.onNavigateEnd = this.onNavigateEnd.bind(this)
 
     $(window)
-      .on('taxi.navigateOut', this.onNavigateOut.bind(this))
-      .on('taxi.navigateIn', this.onNavigateIn.bind(this))
-      .on('taxi.navigateEnd', this.onNavigateEnd.bind(this))    
+      .on('taxi.navigateOut', this.onNavigateOut)
+      .on('taxi.navigateIn',  this.onNavigateIn)
+      .on('taxi.navigateEnd', this.onNavigateEnd)    
   }
 
+  findWithin(selector) {
+    return $(selector, this.$container) // Not implemented on any sections yet
+  }  
+
   onUnload(e) {
-    
+    $(window)
+      .off('taxi.navigateOut', this.onNavigateOut)
+      .off('taxi.navigateIn',  this.onNavigateIn)
+      .off('taxi.navigateEnd', this.onNavigateEnd)
+
+    // Testing section component autodestroy
+    // for (let key in this) {
+    //   console.log(this[key])
+    //   if (this[key].destroy) {
+    //     console.log('has destroy method!')
+    //   }
+    // }      
   }
 
   onSelect(e) {

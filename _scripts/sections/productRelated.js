@@ -30,6 +30,8 @@ export default class ProductRelatedSection extends BaseSection {
   }
 
   onUnload() {
+    super.onUnload()
+
     this.productCardSet && this.productCardSet.destroy()
   }
 }

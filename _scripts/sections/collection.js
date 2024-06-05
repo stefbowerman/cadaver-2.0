@@ -9,6 +9,8 @@ export default class CollectionSection extends BaseSection {
   }
 
   onUnload() {
+    super.onUnload()
+    
     this.productCardSet.destroy()
   }
 }

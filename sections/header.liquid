@@ -38,13 +38,12 @@
             data-taxi-ignore
             data-ajax-cart-toggle
           >
-              Cart <span class="header-cart-count" data-cart-count>{{ cart.item_count }}</span>
+            Cart <span class="header-cart-count" data-cart-count>{{ cart.item_count }}</span>
           </a>
         
           <a
             href="{{ routes.search_url }}"
             class="header-nav__item"
-            data-taxi-ignore
           >
             {% render 'svg-icon-search' %}
             <span class="visually-hidden">Search icon</span>

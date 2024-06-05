@@ -9,6 +9,8 @@ export default class SearchSection extends BaseSection {
   }
 
   onUnload() {
+    super.onUnload()
+    
     this.productCardSet.destroy()
   }
 }

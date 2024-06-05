@@ -25,6 +25,8 @@ export default class HeaderSection extends BaseSection {
   }
 
   onUnload() {
+    super.onUnload()
+    
     $window.off(AJAXCartEvents.RENDER, this.onAJAXCartRender)
   }
 

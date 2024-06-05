@@ -22,20 +22,21 @@ export default class MobileMenuSection extends BaseSection {
     this.$searchForm = $(selectors.searchForm, this.$container) // I don't think this selector
 
     this.isOpen = false
-    this.callbacks = {
-      bodyToggleClick: this.onToggleClick.bind(this),
-      breakpointChange: this.onBreakpointChange.bind(this)
-    }
+
+    this.onToggleClick = this.onToggleClick.bind(this)
+    this.onBreakpointChange = this.onBreakpointChange.bind(this)
 
     this.$searchForm.on('submit', this.onSearchFormSubmit.bind(this))
 
-    $body.on('click', selectors.toggle, this.callbacks.bodyToggleClick)
-    $window.on(breakpointEvents.BREAKPOINT_CHANGE, this.callbacks.breakpointChange)
+    $body.on('click', selectors.toggle, this.onToggleClick)
+    $window.on(breakpointEvents.BREAKPOINT_CHANGE, this.onBreakpointChange)
   }
 
-  destroy() {
-    $body.off('click', selectors.toggle, this.callbacks.bodyToggleClick)
-    $window.off(breakpointEvents.BREAKPOINT_CHANGE, this.callbacks.breakpointChange)
+  onUnload() {
+    super.onUnload()
+
+    $body.off('click', selectors.toggle, this.onToggleClick)
+    $window.off(breakpointEvents.BREAKPOINT_CHANGE, this.onBreakpointChange)
   }
 
   open() {
@@ -93,10 +94,6 @@ export default class MobileMenuSection extends BaseSection {
 
   onDeselect() {
     this.close()
-  }
-
-  onUnload() {
-    this.destroy()
   }
 
   onNavigateOut() {

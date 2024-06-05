@@ -1,4 +1,4 @@
-import Swiper from 'swiper'
+import { Swiper } from 'swiper'
 
 const selectors = {
   slideshow: '[data-slideshow]',

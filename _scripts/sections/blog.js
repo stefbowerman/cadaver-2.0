@@ -19,6 +19,8 @@ export default class BlogSection extends BaseSection {
   }
 
   onUnload() {
+    super.onUnload()
+    
     this.infiniteScroll.destroy()
   }
 
