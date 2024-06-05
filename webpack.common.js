@@ -3,6 +3,7 @@ const path = require('path')
 
 // Plugins
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
 // Directories
 const rootDir = path.resolve(__dirname)
@@ -32,6 +33,11 @@ module.exports = {
       filename: '[name].bundle.css'
     })
   ],
+  optimization: {
+    minimizer: [
+      new CssMinimizerPlugin()
+    ]
+  },
   module: {
     rules: [
       // Bundling JS
@@ -53,20 +59,22 @@ module.exports = {
           MiniCssExtractPlugin.loader,
           
           // Translates CSS into CommonJS
-          'css-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1
+            }
+          },
 
           // Postcss
-          // @TODO - Look into this! -> https://www.npmjs.com/package/postcss-merge-rules
-          // {
-          //   loader: 'postcss-loader',
-          //   options: {
-          //     postcssOptions: require(path.join(
-          //       configDir,
-          //       'postcss.config.js'
-          //     )),
-          //   },
-          // },
-          
+          // @TODO - Look into this? -> https://www.npmjs.com/package/postcss-merge-rules
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: require(path.join(rootDir, 'postcss.config.js')),
+            }
+          },
+
           // Compile to CSS
           'sass-loader'
         ]
