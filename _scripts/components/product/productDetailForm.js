@@ -1,7 +1,7 @@
 import { events as AJAXFormManagerEvents } from '../../core/ajaxFormManager'
 import Variants from './variants'
-import ProductDetailPrice, { selector as productDetailPriceSelector } from './productDetailPrice'
-import ExpanderGroup, { selector as expanderGroupSelector } from '../expanderGroup'
+import ProductPrice from './productPrice'
+import ExpanderGroup from '../expanderGroup'
 
 const selectors = {
   form: 'form[data-add-to-cart-form]',
@@ -48,7 +48,7 @@ export default class ProductDetailForm {
     this.defaultButtonText = 'Add to Cart'; // this.$addToCartBtnText.text()
 
     this.product = JSON.parse($(selectors.productJSON, this.$el).html())
-    this.price = new ProductDetailPrice($(productDetailPriceSelector, this.$el).first())
+    this.price = new ProductPrice($(ProductPrice.selector, this.$el).first())
     
     this.variants = new Variants({
       $container: this.$el,
@@ -58,7 +58,7 @@ export default class ProductDetailForm {
       product: this.product
     })
 
-    this.expanderGroup = new ExpanderGroup($(expanderGroupSelector, this.$el).first())
+    this.expanderGroup = new ExpanderGroup($(ExpanderGroup.selector, this.$el).first())
 
     this.onAddStart = this.onAddStart.bind(this)
     this.onAddDone = this.onAddDone.bind(this)    

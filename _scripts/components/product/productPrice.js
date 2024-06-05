@@ -4,9 +4,9 @@ const selectors = {
   comparePrice: '[data-compare-price]'
 }
 
-export const selector = '[data-product-detail-price]'
+export default class ProductPrice {
+  static selector = '[data-product-price]'
 
-export default class ProductDetailPrice {
   constructor(el) {
     this.$el = $(el)
     this.$price = $(selectors.price, this.$el)
