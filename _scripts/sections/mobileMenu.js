@@ -12,9 +12,6 @@ const classes = {
   bodyIsOpen: 'mobile-menu-open'
 }
 
-const $window = $(window)
-const $body = $(document.body)
-
 export default class MobileMenuSection extends BaseSection {
   constructor(container) {
     super(container, 'mobile-menu')

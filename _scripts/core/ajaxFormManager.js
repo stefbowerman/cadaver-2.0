@@ -5,9 +5,6 @@ const selectors = {
   submit: '[type="submit"]'
 }
 
-const $window = $(window)
-const $body   = $(document.body)
-
 const namespace = '.ajaxFormManager'
 
 export const events = {

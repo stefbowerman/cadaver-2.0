@@ -39,8 +39,9 @@ window.lazySizes && window.lazySizes.init();
     console.warn('jQuery must be loaded before app.js')
   }
 
-  const $window = $(window)
-  const $body = $(document.body)
+  window.$window = $(window) // Create a global $window variable to trigger events through
+  window.$body = $(document.body) // Global $body variable so we don't need to redefine it in every component
+
   const $main = $('main#view-container')
   const TEMPLATE_REGEX = /(^|\s)template-\S+/g;  
 

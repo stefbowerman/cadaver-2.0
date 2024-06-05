@@ -10,8 +10,6 @@ const classes = {
   hasItems: 'has-items'
 }
 
-const $window = $(window)
-
 export default class HeaderSection extends BaseSection {
   constructor(container) {
     super(container, 'header');

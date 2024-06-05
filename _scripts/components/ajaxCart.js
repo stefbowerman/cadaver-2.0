@@ -30,9 +30,6 @@ export const events = {
   RENDER: `render${namespace}`
 }
 
-const $window = $(window)
-const $body = $(document.body)
-
 export default class AJAXCart {
   constructor(el) {
     this.isOpen = false
@@ -80,7 +77,6 @@ export default class AJAXCart {
       is_addable
     } = item
 
-    // @TODO - Add routes.product here?
     return `
       <div>
         <div class="ajax-cart__item-header">

@@ -5,8 +5,6 @@ const selectors = {
   nextPageLink: '[data-next-page]'
 }
 
-const $window = $(window)
-
 export default class InfiniteScroll {
   constructor(el, options = {}) {
     this.isLoading = false

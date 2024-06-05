@@ -20,8 +20,6 @@ const classes = {
 
 export const selector = '[data-product-detail-form]'
 
-const $window = $(window)
-
 export default class ProductDetailForm {
   /**
    * ProductDetailForm constructor

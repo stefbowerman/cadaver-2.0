@@ -6,7 +6,6 @@
  *
  */
 
-const $window = $(window)
 let cachedWindowWidth = window.innerWidth
 
 // Match those set in variables.scss

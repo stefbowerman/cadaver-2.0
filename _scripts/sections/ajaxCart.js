@@ -4,8 +4,6 @@ import { getCart } from '../core/cartAPI'
 import { getQueryParams } from '../core/utils'
 import AJAXCart, { selector as ajaxCartSelector } from '../components/ajaxCart'
 
-const $window = $(window)
-
 export default class AJAXCartSection extends BaseSection {
   constructor(container) {
     super(container, 'ajax-cart')
