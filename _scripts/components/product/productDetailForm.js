@@ -18,9 +18,9 @@ const classes = {
   variantOptionValueActive: 'is-active'
 }
 
-export const selector = '[data-product-detail-form]'
-
 export default class ProductDetailForm {
+  static selector = '[data-product-detail-form]'
+
   /**
    * ProductDetailForm constructor
    *

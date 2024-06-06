@@ -1,11 +1,11 @@
 import BaseSection from './base'
-import ProductCardSet, { selector as productCardSetSelector } from '../components/product/productCardSet'
+import ProductCardSet from '../components/product/productCardSet'
 
 export default class ProductRelatedSection extends BaseSection {
   constructor(container) {
     super(container, 'product-related')
 
-    this.$productCardSet = $(productCardSetSelector, this.$container)
+    this.$productCardSet = $(ProductCardSet.selector, this.$container)
     this.$content = $('[data-content]', this.$container)
 
     $.ajax({

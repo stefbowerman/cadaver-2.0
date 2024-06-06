@@ -10,9 +10,9 @@ const classes = {
   slideshowDisabled: 'is-disabled'
 }
 
-export const selector = '[data-product-detail-gallery]'
-
 export default class ProductDetailGallery {
+  static selector = '[data-product-detail-gallery]'
+
   constructor(el) {
     this.$el = $(el)
     this.$images = $('img', this.$el)

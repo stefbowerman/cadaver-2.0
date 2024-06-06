@@ -23,14 +23,14 @@ const classes = {
 
 const namespace = '.ajaxCart'
 
-export const selector = '[data-ajax-cart]'
-
 export const events = {
   CLICK: `click${namespace}`,
   RENDER: `render${namespace}`
 }
 
 export default class AJAXCart {
+  static selector = '[data-ajax-cart]'
+
   constructor(el) {
     this.isOpen = false
     this.hasBeenRendered = false
