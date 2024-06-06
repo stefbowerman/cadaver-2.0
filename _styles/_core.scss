@@ -22,7 +22,7 @@
 }
 
 .lazy-image {
-  transition: $image-opacity-transition;
+  transition: var(--transition-image-in);
   opacity: 0;
 
   &.lazyload {

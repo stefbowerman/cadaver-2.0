@@ -69,8 +69,8 @@
 ==============================================================================*/
 .skip-link:focus {
   @include visually-shown(absolute);
-  color: $color-text;
-  background-color: $body-bg;
+  color: var(--color-text);
+  background-color: var(--color-body);
   padding: 15px;
   z-index: var(--z-skip-to);
   transition: none;

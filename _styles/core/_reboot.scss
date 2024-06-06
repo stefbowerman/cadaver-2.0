@@ -27,7 +27,7 @@ html {
   line-height: 1.15; // 3
   -webkit-text-size-adjust: 100%; // 4
   -ms-text-size-adjust: 100%;
-  -webkit-tap-highlight-color: rgba($black, 0); // 5
+  -webkit-tap-highlight-color: rgba(0,0,0,0); // 5
 }
 
 *,
@@ -38,8 +38,8 @@ html {
 
 body {
   margin: 0;
-  background-color: $body-bg;
-  color: $color-text;
+  background-color: var(--color-body);
+  color: var(--color-text);
   font-family: $font-family-base;
   font-size: $font-size-base;
   line-height: $line-height-base;
@@ -80,7 +80,7 @@ hr {
 // stylelint-disable-next-line selector-list-comma-newline-after
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
-  margin-bottom: $headings-margin-bottom;
+  margin-bottom: 1rem;
 }
 
 // Reset margins on paragraphs
@@ -89,7 +89,7 @@ h1, h2, h3, h4, h5, h6 {
 // bottom margin to use `rem` units instead of `em`.
 p {
   margin-top: 0;
-  margin-bottom: $paragraph-margin-bottom;
+  margin-bottom: 1rem;
 
   &:last-child {
     margin-bottom: 0;
@@ -125,7 +125,7 @@ small {
 
 a {
   text-decoration: none;
-  color: $color-text;
+  color: var(--color-text);
 }
 
 img {
@@ -142,7 +142,7 @@ svg {
 }
 
 address {
-  margin-bottom: $paragraph-margin-bottom;
+  margin-bottom: 1rem;
   font-style: normal;
 }
 
@@ -153,7 +153,7 @@ address {
 label {
   // Allow labels to use `margin` for spacing.
   display: inline-block;
-  margin-bottom: $label-margin-bottom;
+  margin-bottom: 1rem;
 }
 
 // Remove the default `border-radius` that macOS Chrome adds.
@@ -335,11 +335,11 @@ template {
 }
 
 ::-moz-selection {
-  background-color: $selection-bg-color;
-  color: $selection-color;
+  background-color: var(--color-text);
+  color: var(--color-body);
 }
 
 ::selection {
-  background-color: $selection-bg-color;
-  color: $selection-color;
+  background-color: var(--color-text);
+  color: var(--color-body);
 }
