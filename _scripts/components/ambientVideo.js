@@ -24,8 +24,8 @@ export default class AmbientVideo {
     }, 150)
 
     setTimeout(() => {
-      // Autoplay failed, mark the video as loaded (fallback to a poster?)
-      if (!this.videoIsPlaying()) {
+      // Autoplay failed, mark the video as loaded if it has a poster available
+      if (!this.videoIsPlaying() && !!this.$video.attr('poster')) {
         this.onVideoPlay();
       }
     }, 300)       
