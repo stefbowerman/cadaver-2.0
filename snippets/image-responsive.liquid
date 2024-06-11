@@ -8,7 +8,7 @@
   {% render 'image-responsive',
              image: { image } - optional
              image_mobile: { image } - optional
-             loading: { string } - optional
+             loading: { string } - optional - default: 'eager'
   %}
 
 {% endcomment -%}
@@ -16,6 +16,10 @@
 
 {% if image != blank %}
   {%- liquid
+    if loading == blank
+      assign loading = 'eager'
+    endif
+
     assign mobile = image_mobile
     assign desktop = image
 
@@ -39,20 +43,20 @@
     <source
       srcset="
         {{ mobile | image_url: width: 300 }} 300w,
-        {{ mobile | image_url: width: 600 }} 400w,
-        {{ mobile | image_url: width: 900 }} 700w
+        {{ mobile | image_url: width: 600 }} 600w,
+        {{ mobile | image_url: width: 900 }} 900w,
+        {{ mobile | image_url: width: 1000 }} 1000w
       "
-      media="(max-width: 899.99px)"
+      media="(max-width: 1023.99px)"
     >
     <source
       srcset="
-        {{ desktop | image_url: width: 900 }} 900w,
-        {{ desktop | image_url: width: 1200 }} 1200w,
+        {{ desktop | image_url: width: 1100 }} 1100w,
         {{ desktop | image_url: width: 1400 }} 1400w,
         {{ desktop | image_url: width: 1600 }} 1600w,
         {{ desktop | image_url: width: 1800 }} 1800w
       "
-      media="(min-width: 900px)"
+      media="(min-width: 1024px)"
     >
 
     <img
@@ -61,7 +65,7 @@
       loading="{{ loading | default: 'eager' }}"
       width="{{ desktop.width }}"
       height="{{ desktop.height }}"
-      class="image-responsive"
+      class="image-responsive {% if loading != 'eager' %}image-lazy lazyload{% endif %}"
       {% if styles != blank %}
         style="{{ styles }}"
       {% endif %}
