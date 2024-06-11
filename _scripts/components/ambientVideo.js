@@ -3,6 +3,8 @@ const classes = {
 }
 
 export default class AmbientVideo {
+  static selector = '.ambient-video'
+
   constructor(video) {
     this.$video = $(video)
     this.video = this.$video.get(0)

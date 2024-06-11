@@ -9,6 +9,7 @@ import Collection from '../sections/collection'
 import Product from '../sections/product'
 import Login from '../sections/login'
 import Search from '../sections/search'
+import PageHero from '../sections/pageHero'
 
 export default class BaseRenderer extends Renderer {
   constructor(properties) {
@@ -27,6 +28,7 @@ export default class BaseRenderer extends Renderer {
     this.sectionManager.register('product', Product)
     this.sectionManager.register('login', Login)
     this.sectionManager.register('search', Search)
+    this.sectionManager.register('page-hero', PageHero)
   }
 
   onEnterCompleted() {
