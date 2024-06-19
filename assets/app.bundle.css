@@ -928,6 +928,7 @@ h1, h2, h3, h4, h5, h6 {
   margin-right: auto;
 }
 
+.sr-only,
 .visually-hidden {
   position: absolute !important;
   overflow: hidden;
@@ -1000,7 +1001,8 @@ h1, h2, h3, h4, h5, h6 {
   transition: none;
 }
 
-label {
+label,
+.label {
   font-weight: var(--font-medium);
 }
 
@@ -1390,10 +1392,6 @@ table tfoot tr:first-child td {
   height: 100%;
   display: flex;
   align-items: center;
-}
-
-.header-nav-item__link {
-  cursor: pointer;
 }
 
 header.header {

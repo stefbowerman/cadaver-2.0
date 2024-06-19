@@ -29,6 +29,7 @@
 // Helper Classes
 // -------------------------
 
+.sr-only,
 .visually-hidden {
   @include visually-hidden();
 }

@@ -68,8 +68,7 @@
         },        
         "handle": {{ product.handle | json }},
         "requires_shipping": {{ item.requires_shipping }},
-        {% comment %} @TODO - Convert to product-json-lite ?  Only place we use this is 'product.options[i]' inside cartAPI.js{% endcomment %}
-        "product": {% render 'product-json', product: product %},
+        "product": {% render 'product-json-lite', product: product %},
         "product_id": {{ product.id }},
         "product_title": {{ product.title | json }},
         "product_description": {{ product.description | json }},

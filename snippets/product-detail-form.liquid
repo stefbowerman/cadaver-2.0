@@ -1,3 +1,6 @@
+{% # theme-check-disable RemoteAsset %}
+{% # theme-check-disable UnusedAssign %}
+
 {%- comment %}
 
   Product Detail Form Snippet
@@ -162,7 +165,7 @@
           {% if description_content != blank %}
             <div class="pdf-detail-group">
               {% if product.description != blank %}
-                <label>Description</label>
+                <div class="label">Description</div>
               {% endif %}
 
               {{ description_content }}

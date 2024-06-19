@@ -12,9 +12,11 @@
   </div>
 
   <div class="page-hero__content">
-    <h1 class="page-hero__title">
-      {{ section.settings.title }}
-    </h1>
+    {% if section.settings.title != blank %}
+      <h1 class="page-hero__title">
+        {{ section.settings.title }}
+      </h1>
+    {% endif %}
   </div>
 </div>
 
