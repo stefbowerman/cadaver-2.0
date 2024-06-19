@@ -253,7 +253,6 @@
 /*!*************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[1].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[1].use[2]!./node_modules/sass-loader/dist/cjs.js!./_styles/app.scss ***!
   \*************************************************************************************************************************************************************************************************************/
-/* Typography */
 :root {
   --color-black: #000;
   --color-gray: #CCC;
@@ -261,6 +260,19 @@
   --color-red: #F00;
   --color-body: var(--color-white);
   --color-text: var(--color-black);
+  --font-lighter: lighter;
+  --font-thin: 100;
+  --font-extra-light: 200;
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semi-bold: 600;
+  --font-bold: 700;
+  --font-extra-bold: 800;
+  --font-black: 900;
+  --font-bolder: bolder;
+  --font-family-base: "Helvetica Neue", Arial, sans-serif;
+  --font-family-headings: var(--font-family-base);
   --gutter: 30px;
   --grid-column-gap: 10px;
   --layout-vertical-padding: 60px;
@@ -653,7 +665,7 @@ body {
   margin: 0;
   background-color: var(--color-body);
   color: var(--color-text);
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-base);
   font-size: 1rem;
   line-height: 1.375;
   text-align: left;
@@ -705,7 +717,7 @@ blockquote {
 
 b,
 strong {
-  font-weight: bolder;
+  font-weight: var(--font-bolder);
 }
 
 small {
@@ -879,15 +891,16 @@ template {
 }
 
 .font-base {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-base);
 }
 
-.text-uppercase {
-  text-transform: uppercase;
+.font-headings {
+  font-family: var(--font-family-headings);
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 700;
+  font-family: var(--font-family-headings);
+  font-weight: var(--font-bold);
 }
 
 .text-left {
@@ -904,6 +917,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .text-muted {
   color: var(--color-gray);
+}
+
+.text-uppercase {
+  text-transform: uppercase;
 }
 
 .mx-auto {
@@ -984,7 +1001,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 label {
-  font-weight: 500;
+  font-weight: var(--font-medium);
 }
 
 .form-group {
@@ -1003,7 +1020,7 @@ label {
   padding: 15px 15px 12px;
   border-radius: 10px;
   font-size: 14px;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-base);
   color: var(--color-text);
 }
 @media screen and (-webkit-min-device-pixel-ratio: 0) and (max-device-width: 768px) {
@@ -1080,7 +1097,7 @@ select.form-control {
   align-items: center;
   gap: 3px;
   font-size: 14px;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-family-base);
 }
 .quantity-adjuster__button {
   position: relative;
@@ -2114,12 +2131,12 @@ body.ajax-cart-open {
   margin: 0;
   font-size: 36px;
   line-height: 42px;
-  font-weight: 500;
+  font-weight: var(--font-medium);
 }
 .article-header__subtitle {
   display: flex;
   gap: 1rem;
-  font-weight: 500;
+  font-weight: var(--font-medium);
   text-transform: uppercase;
 }
 
@@ -2185,7 +2202,7 @@ body.ajax-cart-open {
   margin: 0;
 }
 .section-header__subtitle {
-  font-weight: 500;
+  font-weight: var(--font-medium);
 }
 
 .section-footer {
@@ -2196,7 +2213,7 @@ body.ajax-cart-open {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-weight: 700;
+  font-weight: var(--font-bold);
   line-height: 1;
   cursor: pointer;
   padding: 16px 0 13px;
@@ -2340,7 +2357,7 @@ body.ajax-cart-open {
   margin: 0;
 }
 .page-header__subtitle {
-  font-weight: 500;
+  font-weight: var(--font-medium);
 }
 
 .graphic-cover, .graphic-cover img, .graphic-cover video {

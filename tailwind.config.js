@@ -1,3 +1,5 @@
+// const defaultTheme = require('tailwindcss/defaultTheme')
+
 module.exports = {
   content: [
     './_scripts/**/*.js',
@@ -7,11 +9,28 @@ module.exports = {
     './layout/**/*.liquid',
     './sections/**/*.liquid'
   ],
+  future: {
+    hoverOnlyWhenSupported: true
+  },  
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        // sans: [
+        //   'Helvetica Neue',
+        //   ...defaultTheme.fontFamily.sans
+        // ],
+        // mono: [
+        //   'courier'
+        // ]        
+      }
+    },
   },
   variants: {
-    extend: {},
+    extend: {
+      // zIndex: {
+      //   'header': 101
+      // }      
+    },
   },
   plugins: [],
 }

@@ -25,6 +25,6 @@
   }
 
   &__subtitle {
-    font-weight: $font-weight-medium;
+    font-weight: var(--font-medium);
   }
 }

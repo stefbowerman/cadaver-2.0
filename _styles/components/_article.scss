@@ -26,13 +26,13 @@ $article-container-w: 600px;
     // Kind of a one-off since it's not responsive?
     font-size: 36px;
     line-height: 42px;
-    font-weight: $font-weight-medium;
+    font-weight: var(--font-medium);
   }
 
   &__subtitle {
     display: flex;
     gap: 1rem;
-    font-weight: $font-weight-medium;
+    font-weight: var(--font-medium);
     text-transform: uppercase;
   }
 }

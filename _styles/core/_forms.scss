@@ -1,5 +1,5 @@
 label {
-  font-weight: $font-weight-medium;
+  font-weight: var(--font-medium);
 }
 
 .form-group {
@@ -14,7 +14,7 @@ label {
   padding: 15px 15px 12px;
   border-radius: 10px;
   font-size: 14px;
-  font-family: $font-family-base;
+  font-family: var(--font-family-base);
   color: var(--color-text);
 
   @media screen and (-webkit-min-device-pixel-ratio:0) and (max-device-width: 768px) {
@@ -103,7 +103,7 @@ select.form-control {
   align-items: center;
   gap: 3px;
   font-size: 14px;
-  font-family: $font-family-base;
+  font-family: var(--font-family-base);
 
   &__button {
     position: relative;

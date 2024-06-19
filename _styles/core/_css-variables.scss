@@ -2,10 +2,27 @@
   --color-black: #000;
   --color-gray:  #CCC;
   --color-white: #FFF;
-  --color-red: #F00;
+  --color-red:   #F00;
 
   --color-body: var(--color-white);
   --color-text: var(--color-black);
+
+  // Font weights
+  --font-lighter:     lighter;
+  --font-thin:        100;
+  --font-extra-light: 200;
+  --font-light:       300;
+  --font-normal:      400;
+  --font-medium:      500;
+  --font-semi-bold:   600;
+  --font-bold:        700;
+  --font-extra-bold:  800;
+  --font-black:       900;
+  --font-bolder:      bolder;  
+
+  // Font families
+  --font-family-base: 'Helvetica Neue', Arial, sans-serif;
+  --font-family-headings: var(--font-family-base);
 
   // Container gutter
   --gutter: 30px;

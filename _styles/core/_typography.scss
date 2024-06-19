@@ -1,16 +1,16 @@
 // Helpers
 .font-base {
-  font-family: $font-family-base;
+  font-family: var(--font-family-base);
 }
 
-.text-uppercase {
-  text-transform: uppercase;
+.font-headings {
+  font-family: var(--font-family-headings);
 }
 
 // Core Typography
 h1, h2, h3, h4, h5, h6 {
-  // @TODO - Add header font family
-  font-weight: $font-weight-bold;
+  font-family: var(--font-family-headings);
+  font-weight: var(--font-bold);
 }
 
 // h1 {

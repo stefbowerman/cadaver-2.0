@@ -1,22 +1,4 @@
-/* Typography */
-$font-family-base: 'Helvetica Neue', Arial, sans-serif;
-$font-family-headings: $font-family-base;
-
-$font-weight-lighter:     lighter;
-$font-weight-thin:        100;
-$font-weight-extra-light: 200;
-$font-weight-light:       300;
-$font-weight-normal:      400;
-$font-weight-medium:      500;
-$font-weight-semi-bold:   600;
-$font-weight-bold:        700;
-$font-weight-extra-bold:  800;
-$font-weight-black:       900;
-$font-weight-bolder:      bolder;
-
-$font-size-base: 1rem;
-$line-height-base: 1.375; // 22/16
-
+// Leaving these here since we still need them in mixins/breakpoints
 $breakpoints: (
   xs: 0,
   sm: 640px,

@@ -40,9 +40,9 @@ body {
   margin: 0;
   background-color: var(--color-body);
   color: var(--color-text);
-  font-family: $font-family-base;
-  font-size: $font-size-base;
-  line-height: $line-height-base;
+  font-family: var(--font-family-base);
+  font-size: 1rem;
+  line-height: 1.375; // 22/16
   text-align: left;
   text-rendering: optimizeLegibility;
   -moz-osx-font-smoothing: grayscale;
@@ -116,7 +116,7 @@ blockquote {
 
 b,
 strong {
-  font-weight: $font-weight-bolder; // Add the correct font weight in Chrome, Edge, and Safari
+  font-weight: var(--font-bolder); // Add the correct font weight in Chrome, Edge, and Safari
 }
 
 small {
