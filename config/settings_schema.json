@@ -8,8 +8,8 @@
     "theme_documentation_url": "https://github.com/stefbowerman/cadaver-2.0/"
   },
   {
-    "name": "Favicon",
-    "settings": [
+    "name": "Metadata",
+    "settings": [      
       {
         "type": "image_picker",
         "id": "favicon_image",
@@ -21,18 +21,17 @@
         "id": "touch_icon_image",
         "label": "Touch Icon Image",
         "info": "Should be at least 180px x 180px.  If left blank, the favicon image will be used as a fallback."
-      }
-    ]
-  },
-  {
-    "name": "Sharing",
-    "settings": [
-       {
+      },
+      {
+        "type": "header",
+        "content": "Sharing / Open Graph"
+      },
+      {
         "type": "video",
         "id": "share_video",
-        "label": "Video URL",
+        "label": "Video",
         "info": "Video for use with sharing dialogs."
-      }
+      }         
     ]
   },
   {
