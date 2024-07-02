@@ -26,7 +26,7 @@
   <div class="product-card{% if product.available == false %} product-card--sold-out{% endif %}" data-product-card>
     <div class="product-card__contents">
       <div class="product-card__gallery">
-        <a href="{{ product.url }}">
+        <a href="{{ product.url }}" title="{{ product.title }}">
           <div class="product-card__gallery-item">
             <img
               data-src="{{ product.featured_image | image_url: width: '600' }}"
@@ -43,16 +43,18 @@
         </a>
       </div> 
 
-      <div class="product-card__info">
-        <p class="product-card__info-title">{{ product.title }}</p>
-        <p class="product-card__info-price">
-          {% if product.available %}
-            {{ product.selected_or_first_available_variant.price | money_without_trailing_zeros }}
-          {% else %}
-            Sold Out
-          {% endif %}
-        </p>
-      </div>      
+      <a href="{{ product.url }}" title="{{ product.title }}">
+        <div class="product-card__info">
+          <div class="product-card__info-title">{{ product.title }}</div>
+          <div class="product-card__info-price">
+            {% if product.available %}
+              {{ product.selected_or_first_available_variant.price | money_without_trailing_zeros }}
+            {% else %}
+              Sold Out
+            {% endif %}
+          </div>
+        </div>
+      </a>
     </div>
   </div>
 {% endif %}

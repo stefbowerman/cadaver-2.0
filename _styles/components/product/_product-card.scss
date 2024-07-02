@@ -6,9 +6,9 @@
   height: 100%;
 }
 
-.product-card__contents {
-  display: block;
-}
+// .product-card__contents {
+
+// }
 
 .product-card__gallery {
   position: relative;
@@ -27,14 +27,6 @@
 .product-card__info {
   text-align: center;
   padding: 0 15px;
-
-  p {
-    margin-bottom: 0;
-
-    & + p {
-      margin-top: 2px;
-    }
-  }
 }
 
 // .product-card__info {}
