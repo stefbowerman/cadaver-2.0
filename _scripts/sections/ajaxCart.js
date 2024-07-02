@@ -41,7 +41,7 @@ export default class AJAXCartSection extends BaseSection {
     $window.off(events.ADD_FAIL, this.callbacks.changeFail)    
   }  
 
-  open({ delay = false }) {
+  open({ delay = false } = {}) {
     setTimeout(() => {
       this.ajaxCart.open()
     }, (delay ? 500 : 0))
