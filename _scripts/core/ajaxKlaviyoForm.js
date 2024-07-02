@@ -1,3 +1,4 @@
+import KlaviyoAPI from './klaviyoAPI'
 
 const noop = () => {};
 
@@ -75,6 +76,8 @@ export default class AJAXKlaviyoForm {
     this.settings = $.extend({}, defaults, options);
     this.isSubmitting = false;
 
+    this.klaviyoAPI = new KlaviyoAPI({ companyId: this.settings.apiKey })
+
     if (!this.settings.apiKey) {
       console.log(`[${this.name}] - Valid Klaviyo API Key required to initialize`) // eslint-disable-line no-console
       return false
@@ -84,6 +87,11 @@ export default class AJAXKlaviyoForm {
       console.log(`[${this.name}] - Valid Klaviyo List ID required to initialize`) // eslint-disable-line no-console
       return false
     }
+
+    if (this.$input.length === 0) {
+      console.warn(`[${this.name}] - Email input missing`) // eslint-disable-line no-console
+      return false
+    }    
 
     this.$form.on(this.events.SUBMIT, this.onFormSubmit.bind(this));
 
@@ -108,11 +116,6 @@ export default class AJAXKlaviyoForm {
     }
 
     if (this.$input.val() && this.$input.val().length) {
-      this.$submit.prop('disabled', true);
-      this.isSubmitting = true;
-
-      this.settings.onSubmitStart();
-
       return true;
     }
 
@@ -142,66 +145,41 @@ export default class AJAXKlaviyoForm {
   onFormSubmit(e) {
     e.preventDefault();
 
-    // See: https://developers.klaviyo.com/en/reference/create_client_subscription
-    const url = `https://a.klaviyo.com/client/subscriptions/?company_id=${this.settings.apiKey}`
-    const data = JSON.stringify({
-      data: {
-        type: 'subscription',
-        attributes: {
-          custom_source: this.settings.source,
-          profile: {
-            data: {
-              type: 'profile',
-              attributes: {
-                email: this.$input.val()
-              }
-            }
-          }
-        },
-        relationships: {
-          list: {
-            data: {
-              type: 'list',
-              id: this.settings.listId
-            }
-          }
-        }
-      }
-    })
- 
+    if (this.onBeforeSend() === false) {
+      return false
+    }
 
-    $.ajax({
-      async: true,
-      crossDomain: true,
-      url,
-      method: 'POST',
-      headers: {
-        'revision': '2024-02-15',
-        'content-type': 'application/json',
-        'cache-control': 'no-cache'
-      },
-      data,
-      beforeSend: this.onBeforeSend.bind(this)
-    })
-      .done((response, textStatus, jqXHR) => {
-        // New Klaviyo API endpoints don't return any info in the response
-        const success = textStatus === 'success' || jqXHR.status === 202
+    const email = this.$input.val()
 
-        this.onSubmitDone(success);
+    // This prop validation should probably be handled in a promise rejection from the KlaviyoAPI...?
+    if (!email) {
+      console.warn(`[${this.name}] - Email is required`) // eslint-disable-line no-console
+      return
+    }    
+
+    this.isSubmitting = true;
+
+    this.$submit.prop('disabled', true);
+
+    this.settings.onSubmitStart();
+
+    this.klaviyoAPI.createClientSubscription({
+      email,
+      source: this.settings.source,
+      listId: this.settings.listId
+    })
+      .then(success => {
+        this.onSubmitDone(success)
       })
-      .fail((jqXHR, textStatus) => {
-        let errors = [];
-
-        if (jqXHR && jqXHR.responseJSON && jqXHR.responseJSON.hasOwnProperty('errors')) {
-          errors = jqXHR.responseJSON.errors;
-        }
-
-        this.onSubmitFail(errors);
+      .catch(err => {
+        console.log('error', err) // eslint-disable-line no-console
       })
       .always(() => {
-        this.isSubmitting = false;
-      });
+        this.$submit.prop('disabled', false);
 
-    return false;
+        this.isSubmitting = false
+      })
+
+    return false
   }
 }
