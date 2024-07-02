@@ -1,6 +1,5 @@
-@import 'core/variables';
 @import 'core/mixins';
-@import 'core/css-variables';
+@import 'core/css-variables'; // Must come after mixins
 @import 'core/normalize';
 @import 'core/reboot';
 @import 'core/typography';
