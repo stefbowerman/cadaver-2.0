@@ -5,12 +5,12 @@
     "email": "stefbowerman@gmail.com"
   },
   "engines": {
-    "node": "16.x"
+    "node": "20.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "webpack-cli watch --config webpack.dev.js",
-    "build": "webpack --config webpack.prod.js"
+    "dev": "source $HOME/.nvm/nvm.sh; nvm use && webpack-cli watch --config webpack.dev.js",
+    "build": "source $HOME/.nvm/nvm.sh; nvm use && webpack --config webpack.prod.js"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.21.3",

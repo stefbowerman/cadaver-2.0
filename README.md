@@ -3,7 +3,7 @@
 Cadaver is a starter Shopify Online 2.0 Theme.
 
 ##### Node
-`v16.18.0`
+`v20.8.0`
 
 __Features:__
 - Minimal JS framework for working with Shopify sections.
