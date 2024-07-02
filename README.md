@@ -61,10 +61,6 @@ Second, when pulling down changes, we *only* want to pull json template files as
 ```
 # .shopifyignore
 
-package-lock.json
-package.json
-webpack.*.js
-
 sections/
 snippets/
 assets/
@@ -93,12 +89,11 @@ Because of this, any code changes made to `.json` templates will be overwritten.
 
 At this stage, we've pulled the settings from the (duplicated) live theme onto our local copy which contains the latest `main` branch code.  Since the `main` branch is ahead of the live theme, we now need to reverse the process and push our local changes.
 
-First, update the `.shopifyignore` file to remove the lines added earlier.  It should look like this:
+First, update the `.shopifyignore` file to remove the lines added earlier.  It should be empty:
 
 ```
-package-lock.json
-package.json
-webpack.*.js
+# .shopifyignore
+
 ```
 
 Next:

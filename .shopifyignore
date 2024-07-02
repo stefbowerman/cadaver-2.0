@@ -1,3 +1,2 @@
-package-lock.json
-package.json
-webpack.*.js
+templates/*.json
+config/settings_data.json
