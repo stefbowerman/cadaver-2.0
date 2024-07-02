@@ -19,7 +19,7 @@
   --row-gap: 41px;
 
   display: grid;
-  grid-template-columns: repeat(var(--column-count), 1fr);
+  grid-template-columns: repeat(var(--column-count), minmax(0, 1fr));
   row-gap: var(--row-gap);
   column-gap: var(--column-gap);
     

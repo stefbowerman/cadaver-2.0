@@ -28,7 +28,7 @@ $footer-grid-bp: 'lg';
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   column-gap: var(--grid-column-gap);
   row-gap: 37px;
   grid-template-areas:
@@ -38,7 +38,7 @@ $footer-grid-bp: 'lg';
     'copyright';
 
   @include bp-up($footer-grid-bp) {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     row-gap: 71px;
     grid-template-areas:
       'newsletter socials'
@@ -107,11 +107,11 @@ $footer-grid-bp: 'lg';
   &--socials {
     ul {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       column-gap: var(--grid-column-gap);
 
       @include bp-up(lg) {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         row-gap: 16px;
       }
 
@@ -126,11 +126,11 @@ $footer-grid-bp: 'lg';
 
 .footer-menus {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   column-gap: var(--grid-column-gap);
   row-gap: 37px;
 
   @include bp-up($footer-grid-bp) {
-    grid-template-columns: repeat(var(--menu-count), 1fr);
+    grid-template-columns: repeat(var(--menu-count), minmax(0, 1fr));
   }
 }
