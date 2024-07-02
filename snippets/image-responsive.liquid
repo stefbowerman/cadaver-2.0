@@ -65,7 +65,7 @@
       loading="{{ loading | default: 'eager' }}"
       width="{{ desktop.width }}"
       height="{{ desktop.height }}"
-      class="image-responsive {% if loading != 'eager' %}image-lazy lazyload{% endif %}"
+      class="image-responsive {% if loading != 'eager' %}lazy-image lazyload{% endif %}"
       {% if styles != blank %}
         style="{{ styles }}"
       {% endif %}
