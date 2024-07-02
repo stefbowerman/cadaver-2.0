@@ -89,7 +89,8 @@ window.lazySizes && window.lazySizes.init();
       // Whitelist any scripts here that need to be reloaded on page change
 
       return element.dataset.taxiReload !== undefined || $main.has(element).length > 0
-    }
+    },
+    allowInterruption: true
   })
 
 

@@ -6,14 +6,16 @@ export default class PageTransition extends Transition {
    * @param { { from: HTMLElement, trigger: string|HTMLElement|false, done: function } } props
    */
   onLeave({ from, trigger, done }) {
-    $(from).fadeOut({
-      duration: 400,
-      easing: 'easeInQuart',
-      complete: () => {
-        window.scrollTo && window.scrollTo(0, 0);
-        done()
-      }
-    })  
+    $(from)
+      .stop()
+      .fadeOut({
+        duration: 350,
+        easing: 'easeOutQuart',
+        complete: () => {
+          window.scrollTo && window.scrollTo(0, 0);
+          done()
+        }
+      })
   }
 
   /**
@@ -22,10 +24,11 @@ export default class PageTransition extends Transition {
    */
   onEnter({ to, trigger, done }) {
     $(to)
+      .stop()
       .hide()
       .fadeIn({
-        duration: 500,
-        easing: 'easeOutCubic',
+        duration: 450,
+        easing: 'easeInCubic',
         complete: () => {
           done()
         }
