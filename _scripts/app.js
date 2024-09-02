@@ -95,7 +95,6 @@ window.lazySizes && window.lazySizes.init();
 
   // This event is sent before the `onLeave()` method of a transition is run to hide a `data-router-view`
   taxi.on('NAVIGATE_OUT', ({ from, trigger }) => {
-
     $window.trigger($.Event('taxi.navigateOut', { from, trigger }))
   })
   
@@ -105,7 +104,6 @@ window.lazySizes && window.lazySizes.init();
 
     // Remove any body classes that match the template regex
     Array.from(body.classList).forEach(cn => {
-      console.log('a', cn)
       if (TEMPLATE_REGEX.test(cn)) {
         body.classList.remove(cn)
       }
@@ -113,20 +111,10 @@ window.lazySizes && window.lazySizes.init();
 
     // Add any body classes for the *new* page that match the template regex
     Array.from(to.page.body.classList).forEach(cn => {
-      console.log('b', cn)
-
       if (TEMPLATE_REGEX.test(cn)) {
         body.classList.add(cn)
       }
     })
-        
-    // $body.removeClass((i, currentClasses) => {
-    //   return currentClasses.split(' ').map(c => c.match(TEMPLATE_REGEX)).join(' ');
-    // });
-
-    // $body.addClass(() => {
-    //   return to.page.body.classList.value.split(' ').map(c => c.match(TEMPLATE_REGEX)).join(' ');
-    // })
 
     $window.trigger($.Event('taxi.navigateIn', { to, trigger }))
   })
