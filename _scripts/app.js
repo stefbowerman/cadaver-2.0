@@ -40,8 +40,8 @@ window.lazySizes && window.lazySizes.init();
   window.$window = $(window) // Create a global $window variable to trigger events through
   window.$body = $(document.body) // Global $body variable so we don't need to redefine it in every component
 
-  const $main = $('main#view-container')
-  const TEMPLATE_REGEX = /(^|\s)template-\S+/g;  
+  const viewContainer = document.querySelector('main#view-container')
+  const TEMPLATE_REGEX = /\btemplate-\w*/
 
   initializeBreakpoints()
   initializeAnimations()
@@ -55,7 +55,8 @@ window.lazySizes && window.lazySizes.init();
 
   // START Taxi
   if (isThemeEditor()) {
-    $('a').attr('data-taxi-ignore', true) // Prevent highway js from running inside the theme editor
+    // Prevent taxi js from running
+    Array.from(document.getElementsByTagName('a')).forEach(a => a.setAttribute('data-taxi-ignore', true))
   }
 
   const taxi = new TaxiCore({
@@ -86,7 +87,7 @@ window.lazySizes && window.lazySizes.init();
     reloadJsFilter: (element) => {
       // Whitelist any scripts here that need to be reloaded on page change
 
-      return element.dataset.taxiReload !== undefined || $main.has(element).length > 0
+      return element.dataset.taxiReload !== undefined || viewContainer.contains(element)
     },
     allowInterruption: true
   })
@@ -94,30 +95,51 @@ window.lazySizes && window.lazySizes.init();
 
   // This event is sent before the `onLeave()` method of a transition is run to hide a `data-router-view`
   taxi.on('NAVIGATE_OUT', ({ from, trigger }) => {
-    for (let [key] of taxi.cache) {
-      if (key.split('/').includes('products') || key.split('/').includes('account')) {
-        taxi.cache.delete(key)
-      }
-    }
 
     $window.trigger($.Event('taxi.navigateOut', { from, trigger }))
   })
   
   // This event is sent everytime a `data-taxi-view` is added to the DOM
   taxi.on('NAVIGATE_IN', ({ to, trigger }) => {
-    $body.removeClass((i, currentClasses) => {
-      return currentClasses.split(' ').map(c => c.match(TEMPLATE_REGEX)).join(' ');
-    });
+    const body = document.body
 
-    $body.addClass(() => {
-      return to.page.body.classList.value.split(' ').map(c => c.match(TEMPLATE_REGEX)).join(' ');
+    // Remove any body classes that match the template regex
+    Array.from(body.classList).forEach(cn => {
+      console.log('a', cn)
+      if (TEMPLATE_REGEX.test(cn)) {
+        body.classList.remove(cn)
+      }
     })
+
+    // Add any body classes for the *new* page that match the template regex
+    Array.from(to.page.body.classList).forEach(cn => {
+      console.log('b', cn)
+
+      if (TEMPLATE_REGEX.test(cn)) {
+        body.classList.add(cn)
+      }
+    })
+        
+    // $body.removeClass((i, currentClasses) => {
+    //   return currentClasses.split(' ').map(c => c.match(TEMPLATE_REGEX)).join(' ');
+    // });
+
+    // $body.addClass(() => {
+    //   return to.page.body.classList.value.split(' ').map(c => c.match(TEMPLATE_REGEX)).join(' ');
+    // })
 
     $window.trigger($.Event('taxi.navigateIn', { to, trigger }))
   })
 
   // This event is sent everytime the `done()` method is called in the `onEnter()` method of a transition
   taxi.on('NAVIGATE_END', ({ to, from, trigger }) => {
+
+    taxi.cache.forEach((_, key) => {
+      if (key.includes('products') || key.includes('account')) {
+        taxi.cache.delete(key)
+      }
+    })
+
     targetBlankExternalLinks();
 
     $window.trigger($.Event('taxi.navigateEnd', { to, from, trigger }))
@@ -138,7 +160,5 @@ window.lazySizes && window.lazySizes.init();
     window.history.scrollRestoration = 'manual'
   }
 
-  $(() => {
-    document.body.classList.add('is-loaded')
-  })
+  document.body.classList.add('is-loaded')
 })(window.jQuery)
