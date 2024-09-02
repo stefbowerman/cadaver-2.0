@@ -95,7 +95,7 @@ window.lazySizes && window.lazySizes.init();
 
   // This event is sent before the `onLeave()` method of a transition is run to hide a `data-router-view`
   taxi.on('NAVIGATE_OUT', ({ from, trigger }) => {
-    $window.trigger($.Event('taxi.navigateOut', { from, trigger }))
+    window.dispatchEvent(new CustomEvent('taxi.navigateOut', { detail: e }))
   })
   
   // This event is sent everytime a `data-taxi-view` is added to the DOM
@@ -116,7 +116,7 @@ window.lazySizes && window.lazySizes.init();
       }
     })
 
-    $window.trigger($.Event('taxi.navigateIn', { to, trigger }))
+    window.dispatchEvent(new CustomEvent('taxi.navigateIn', { detail: e }))
   })
 
   // This event is sent everytime the `done()` method is called in the `onEnter()` method of a transition
@@ -130,7 +130,7 @@ window.lazySizes && window.lazySizes.init();
 
     targetBlankExternalLinks();
 
-    $window.trigger($.Event('taxi.navigateEnd', { to, from, trigger }))
+    window.dispatchEvent(new CustomEvent('taxi.navigateEnd', { detail: e }))
   })
 
   window.app.taxi = taxi
