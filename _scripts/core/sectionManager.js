@@ -1,3 +1,4 @@
+import { isThemeEditor } from '../core/utils'
 import BaseSection from '../sections/base'
 
 const SECTION_TYPE_ATTR = 'data-section-type'
@@ -18,27 +19,34 @@ export default class SectionManager {
       reorder: this.onReorder.bind(this),
       blockSelect: this.onBlockSelect.bind(this),
       blockDeselect: this.onBlockDeselect.bind(this)
-    };
-
-    if (window.Shopify && window.Shopify.designMode) {
-      $document
-        .on('shopify:section:load', this.handlers.sectionLoad)
-        .on('shopify:section:unload', this.handlers.sectionUnload)
-        .on('shopify:section:select', this.handlers.select)
-        .on('shopify:section:deselect', this.handlers.deselect)
-        .on('shopify:section:reorder', this.handlers.reorder)
-        .on('shopify:block:select', this.handlers.blockSelect)
-        .on('shopify:block:deselect', this.handlers.blockDeselect)
     }
+
+    this.attachEvents()
   }
 
   destroy() {
-    this.instances.forEach(section => {
-      section.onUnload && section.onUnload()
-    })
+    this.instances.forEach(section => section.onUnload?.call(section))
 
     this.instances = []
 
+    this.removeEvents()
+  }
+
+  attachEvents() {
+    if (!isThemeEditor()) return
+
+    // @TODO Convert to CustomEvent
+    $document
+      .on('shopify:section:load', this.handlers.sectionLoad)
+      .on('shopify:section:unload', this.handlers.sectionUnload)
+      .on('shopify:section:select', this.handlers.select)
+      .on('shopify:section:deselect', this.handlers.deselect)
+      .on('shopify:section:reorder', this.handlers.reorder)
+      .on('shopify:block:select', this.handlers.blockSelect)
+      .on('shopify:block:deselect', this.handlers.blockDeselect)
+  }
+
+  removeEvents() {
     $document
       .off('shopify:section:load', this.handlers.sectionLoad)
       .off('shopify:section:unload', this.handlers.sectionUnload)
@@ -47,8 +55,9 @@ export default class SectionManager {
       .off('shopify:section:reorder', this.handlers.reorder)
       .off('shopify:block:select', this.handlers.blockSelect)
       .off('shopify:block:deselect', this.handlers.blockDeselect)
-  }  
+  }
 
+  // @TODO - Modernize
   getInstanceById(id) {
     let instance
 
@@ -61,6 +70,7 @@ export default class SectionManager {
     return instance
   }
 
+  // @TODO - Modernize
   getSingleInstance(type) {
     let instance
 
@@ -127,7 +137,7 @@ export default class SectionManager {
 
     if (instance && typeof instance[func] === 'function') {
       instance[func].call(instance, e)
-    }
+    }    
   }
 
   onSelect(e) {
