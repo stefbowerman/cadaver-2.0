@@ -461,9 +461,3 @@ export function targetBlankExternalLinks() {
     }
   }
 }
-
-export function setViewportHeightProperty() {
-  // If mobile / tablet, set var to window height. This fixes the 100vh iOS bug/feature.
-  const v = window.innerWidth <= 1024 ? `${window.innerHeight}px` : '100vh';
-  document.documentElement.style.setProperty('--viewport-height', v);
-}

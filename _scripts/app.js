@@ -1,5 +1,4 @@
 import { Core as TaxiCore } from '@unseenco/taxi'
-import { throttle } from 'throttle-debounce'
 import 'lazysizes'
 import 'swiper/css'
 import 'swiper/css/effect-fade'
@@ -10,7 +9,6 @@ import { pageLinkFocus } from './core/a11y'
 import {
   userAgentBodyClass,
   isThemeEditor,
-  setViewportHeightProperty,
   targetBlankExternalLinks
 } from './core/utils'
 
@@ -131,12 +129,7 @@ window.lazySizes && window.lazySizes.init();
   // a11y
   $('[data-in-page-link]').on('click', e => pageLinkFocus($(e.currentTarget.hash)));
   pageLinkFocus($(window.location.hash));  
-  
-  // We might not need these at some point?  If we switch to dvh units
-  window.addEventListener('resize', throttle(250, setViewportHeightProperty))
-  document.addEventListener('scroll', throttle(100, setViewportHeightProperty))  
 
-  setViewportHeightProperty();
   userAgentBodyClass(); 
   targetBlankExternalLinks(); // All external links open in a new tab  
 

@@ -1,3 +1,4 @@
+// @TODO -  If we remove this core class, we can fully drop throttle-debounce
 import { throttle } from 'throttle-debounce'
 import { getScrollY } from './utils'
 

@@ -1312,7 +1312,7 @@ select.form-control {
 
 .view-container {
   min-height: 100vh;
-  min-height: var(--viewport-height);
+  min-height: 100dvh;
 }
 
 .layout-content-wrapper,

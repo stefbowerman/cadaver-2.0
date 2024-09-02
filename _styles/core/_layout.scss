@@ -10,7 +10,7 @@
   
 .view-container {
   min-height: 100vh;
-  min-height: var(--viewport-height);
+  min-height: 100dvh;
 }
 
 // Use this as the only direct child of main#MainContent on pages where you don't want the content flush to the header and footer
