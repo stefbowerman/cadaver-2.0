@@ -5,7 +5,7 @@ import 'swiper/css/effect-fade'
 
 import { initialize as initializeBreakpoints } from './core/breakpoints'
 import { initialize as initializeAnimations } from './core/animations'
-import { pageLinkFocus } from './core/a11y'
+// import { pageLinkFocus } from './core/a11y'
 import {
   userAgentBodyClass,
   isThemeEditor,
@@ -32,7 +32,7 @@ window.app.taxi = null;
 
 window.lazySizes && window.lazySizes.init();
 
-(($) => {
+function init() {
   if (typeof $ === undefined) {
     console.warn('jQuery must be loaded before app.js')
   }
@@ -89,7 +89,8 @@ window.lazySizes && window.lazySizes.init();
 
       return element.dataset.taxiReload !== undefined || viewContainer.contains(element)
     },
-    allowInterruption: true
+    allowInterruption: true,
+    enablePrefetch: true
   })
 
 
@@ -128,7 +129,7 @@ window.lazySizes && window.lazySizes.init();
     // const { to, from, trigger } = e
 
     taxi.cache.forEach((_, key) => {
-      if (key.includes('products') || key.includes('account')) {
+      if (key.includes('products') || key.includes('account') || key.includes('cart')) {
         taxi.cache.delete(key)
       }
     })
@@ -141,9 +142,9 @@ window.lazySizes && window.lazySizes.init();
   window.app.taxi = taxi
   // END Taxi
 
-  // a11y
-  $('[data-in-page-link]').on('click', e => pageLinkFocus($(e.currentTarget.hash)));
-  pageLinkFocus($(window.location.hash));  
+  // // a11y
+  // $('[data-in-page-link]').on('click', e => pageLinkFocus($(e.currentTarget.hash)));
+  // pageLinkFocus($(window.location.hash));  
 
   userAgentBodyClass(); 
   targetBlankExternalLinks(); // All external links open in a new tab  
@@ -154,4 +155,10 @@ window.lazySizes && window.lazySizes.init();
   }
 
   document.body.classList.add('is-loaded')
-})(window.jQuery)
+
+  if (isThemeEditor()) {
+    document.documentElement.classList.add('is-theme-editor')
+  }  
+}
+
+document.addEventListener('DOMContentLoaded', init)

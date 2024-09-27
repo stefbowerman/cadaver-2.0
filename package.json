@@ -34,6 +34,7 @@
     "@unseenco/taxi": "^1.2.2",
     "animated-scroll-to": "^2.3.0",
     "lazysizes": "^5.3.2",
+    "lodash-es": "^4.17.21",
     "npm": "^9.6.2",
     "swiper": "^9.4.1",
     "throttle-debounce": "^5.0.0"

@@ -15,22 +15,12 @@ export default class BaseSection {
     window.addEventListener('taxi.navigateEnd', this.onNavigateEnd) 
   }
 
-  findWithin(selector) {
-    return $(selector, this.$container) // Not implemented on any sections yet
-  }  
-
   onUnload(e) {
     window.removeEventListener('taxi.navigateOut', this.onNavigateOut)
     window.removeEventListener('taxi.navigateIn', this.onNavigateIn)
     window.removeEventListener('taxi.navigateEnd', this.onNavigateEnd)
 
-    // Testing section component autodestroy
-    // for (let key in this) {
-    //   console.log(this[key])
-    //   if (this[key].destroy) {
-    //     console.log('has destroy method!')
-    //   }
-    // }      
+    // do component cleanup
   }
 
   onSelect(e) {
