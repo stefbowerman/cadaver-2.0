@@ -1,54 +1,26 @@
 {% # theme-check-disable RemoteAsset %}
 
 <!doctype html>
-<!--[if IE 9]> <html class="ie9 no-js" lang="{{ shop.locale }}"> <![endif]-->
-<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js" lang="{{ shop.locale }}"> <!--<![endif]-->
+<html class="no-js" lang="{{ request.locale.iso_code }}">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
+    <link rel="canonical" href="{{ canonical_url }}">
     <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
     <link rel="preconnect" href="https://monorail-edge.shopifysvc.com">  
     
-    {%- if canonical_url != blank -%}
-      <link rel="canonical" href="{{ canonical_url }}">
-    {%- endif -%}
 
-    {% render 'favicon' %}
+    {% render 'head-favicon' %}
 
-    {% capture seo_title %}
-      {% if template.name == '404' %}
-        404
-      {% elsif template.name == 'search' %}
-        {% if search.performed %}
-          Search Results for "{{ search.terms | escape }}"
-        {% else %}
-          Search
-        {% endif %}
-      {% else %}
-        {{ page_title }}
-      {% endif %}
-
-      {% if current_tags %}
-        {%- assign meta_tags = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags -}}
-      {% endif %}
-      {% if current_page != 1 %}
-        &ndash; {{ 'general.meta.page' | t: page: current_page }}
-      {% endif %}
-      {% unless page_title contains shop.name or template.name == 'index' %}
-        &ndash; {{ shop.name }}
-      {% endunless %}
-    {% endcapture %}
-
-    <title>{{- seo_title -}}</title>  
-
-    {% render 'meta-tags' %}
-    {% render 'font-face' %}
+    {% render 'head-meta-title' %}
+    {% render 'head-meta-tags' %}
+    {% render 'head-font-face' %}
     
     {{ 'app.bundle.css' | asset_url | stylesheet_tag }}
 
-    {% render 'scripts-head' %}
+    {% render 'head-scripts' %}
 
     {{ content_for_header }}   
   </head>

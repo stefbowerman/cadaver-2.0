@@ -1,0 +1,29 @@
+{% capture title %}
+  {% if template.name == '404' %}
+    404
+  {% elsif template.name == 'password' %}
+    Password    
+  {% elsif template.name == 'search' %}
+    {% if search.performed %}
+      Search Results for "{{ search.terms | escape }}"
+    {% else %}
+      Search
+    {% endif %}
+  {% else %}
+    {{ page_title }}
+  {% endif %}
+
+  {% if current_tags %}
+    {%- assign meta_tags = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags -}}
+  {% endif %}
+
+  {% if current_page != 1 %}
+    &ndash; {{ 'general.meta.page' | t: page: current_page }}
+  {% endif %}
+
+  {% unless page_title contains shop.name or template.name == 'index' %}
+    &ndash; {{ shop.name }}
+  {% endunless %}
+{% endcapture %}
+
+<title>{{- title | strip | strip_newlines -}}</title>
