@@ -6,6 +6,8 @@ import { getQueryParams } from '../core/utils'
 import AJAXCart from '../components/ajaxCart'
 
 export default class AJAXCartSection extends BaseSection {
+  static TYPE = 'ajax-cart'
+
   constructor(container) {
     super(container, 'ajax-cart')
 
@@ -51,11 +53,11 @@ export default class AJAXCartSection extends BaseSection {
     this.ajaxCart.close()
   }
 
-  onSelect() {
+  onSectionSelect() {
     this.open()
   }
 
-  onDeselect() {
+  onSectionDeselect() {
     this.close()
   }
 

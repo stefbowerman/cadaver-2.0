@@ -2,6 +2,8 @@ import BaseSection from './base'
 import ProductCardSet from '../components/product/productCardSet'
 
 export default class ProductRelatedSection extends BaseSection {
+  static TYPE = 'product-related'
+
   constructor(container) {
     super(container, 'product-related')
 
@@ -30,8 +32,8 @@ export default class ProductRelatedSection extends BaseSection {
   }
 
   onUnload() {
-    super.onUnload()
-
     this.productCardSet && this.productCardSet.destroy()
+
+    super.onUnload()
   }
 }

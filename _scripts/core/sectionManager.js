@@ -1,25 +1,33 @@
+import { startCase } from 'lodash-es'
+
 import { isThemeEditor } from '../core/utils'
 import BaseSection from '../sections/base'
 
 const SECTION_TYPE_ATTR = 'data-section-type'
 const SECTION_ID_ATTR = 'data-section-id'
 
-const $document = $(document)
+const THEME_EDITOR_EVENTS = [
+  'shopify:section:load',
+  'shopify:section:unload',
+  'shopify:section:select',
+  'shopify:section:deselect',
+  'shopify:section:reorder',
+  'shopify:block:select',
+  'shopify:block:deselect'
+]
+
+// Turns 'shopify:section:load' => 'onSectionLoad'
+// Turns 'shopify:block:select' => 'onBlockSelect'
+function getEventHandlerName(event) {
+  let name = event.split(':').splice(1).map(startCase).join('')
+
+  return `on${name}`
+}
 
 export default class SectionManager {
   constructor() {
     this.constructors = {}
     this.instances = []
-
-    this.handlers = {
-      sectionLoad: this.onSectionLoad.bind(this),
-      sectionUnload: this.onSectionUnload.bind(this),
-      select: this.onSelect.bind(this),
-      deselect: this.onDeselect.bind(this),
-      reorder: this.onReorder.bind(this),
-      blockSelect: this.onBlockSelect.bind(this),
-      blockDeselect: this.onBlockDeselect.bind(this)
-    }
 
     this.attachEvents()
   }
@@ -35,83 +43,93 @@ export default class SectionManager {
   attachEvents() {
     if (!isThemeEditor()) return
 
-    // @TODO Convert to CustomEvent
-    $document
-      .on('shopify:section:load', this.handlers.sectionLoad)
-      .on('shopify:section:unload', this.handlers.sectionUnload)
-      .on('shopify:section:select', this.handlers.select)
-      .on('shopify:section:deselect', this.handlers.deselect)
-      .on('shopify:section:reorder', this.handlers.reorder)
-      .on('shopify:block:select', this.handlers.blockSelect)
-      .on('shopify:block:deselect', this.handlers.blockDeselect)
+    THEME_EDITOR_EVENTS.forEach(ev => {
+      const handlerName = getEventHandlerName(ev)
+      const handler = this[handlerName]
+
+      if (handler) {
+        window.document.addEventListener(ev, handler.bind(this))
+      }
+    })
   }
 
   removeEvents() {
-    $document
-      .off('shopify:section:load', this.handlers.sectionLoad)
-      .off('shopify:section:unload', this.handlers.sectionUnload)
-      .off('shopify:section:select', this.handlers.select)
-      .off('shopify:section:deselect', this.handlers.deselect)
-      .off('shopify:section:reorder', this.handlers.reorder)
-      .off('shopify:block:select', this.handlers.blockSelect)
-      .off('shopify:block:deselect', this.handlers.blockDeselect)
+    THEME_EDITOR_EVENTS.forEach(ev => {
+      const handlerName = getEventHandlerName(ev)
+      const handler = this[handlerName]
+
+      if (handler) {
+        window.document.removeEventListener(ev, handler)
+      }
+    })
   }
 
-  // @TODO - Modernize
   getInstanceById(id) {
-    let instance
-
-    for (let i = 0; i < this.instances.length; i++) {
-      if (this.instances[i].id === id) {
-        instance = this.instances[i]
-        break
-      }
-    }
-    return instance
+    return this.instances.find(instance => instance.id === id)
   }
 
-  // @TODO - Modernize
   getSingleInstance(type) {
-    let instance
-
-    for (let i = 0; i < this.instances.length; i++) {
-      if (this.instances[i].type === type) {
-        instance = this.instances[i]
-        break;
-      }
-    }
-
-    return instance
-  }  
+    return this.instances.find(instance => instance.type === type)
+  }
 
   load(container, constructor) {
-    const $container = $(container)
-    const id = $container.attr(SECTION_ID_ATTR)
-    const type = $container.attr(SECTION_TYPE_ATTR)
+    const type = container.getAttribute(SECTION_TYPE_ATTR)
     const Konstructor = constructor || this.constructors[type] // No param re-assignment
 
     if (typeof Konstructor === 'undefined') {
       return
     }
 
-    const instance = $.extend(new Konstructor(container), { id, type, container })
+    const instance = new Konstructor(container)
 
     this.instances.push(instance)
   }
 
   unload(id) {
-    let i = this.instances.length
+    const index = this.instances.findIndex(instance => instance.id === id)
 
-    while (i--) {
-      if (this.instances[i].id === id) {
-        this.instances.splice(i, 1)
-        break
-      }
+    if (index !== -1) {
+      this.instances.splice(index, 1)
     }
   }
 
+  register(constructor) {
+    if (!(constructor.prototype instanceof BaseSection)) {
+      return
+    }
+
+    const { TYPE } = constructor
+
+    if (!TYPE) {
+      console.warn('Missing static "TYPE" property for constructor ', constructor)
+      return    
+    }
+
+    if (this.constructors[TYPE]) {
+      console.warn(`Constructor of type "${TYPE}" has already been registered`)
+      return
+    }
+
+
+    this.constructors[TYPE] = constructor
+
+    document.querySelectorAll(`[${SECTION_TYPE_ATTR}="${TYPE}"]`).forEach(container => {
+      this.load(container, constructor)
+    })
+  }
+
+  // Generic event is a non section:{load/unload} event
+  // Simply triggers the appropriate instance method if available
+  onGenericEvent(e, func) {
+    const instance = this.getInstanceById(e.detail.sectionId)
+
+    if (instance && typeof instance[func] === 'function') {
+      instance[func].call(instance, e)
+    }    
+  }
+
   onSectionLoad(e) {
-    const container = $(`[${SECTION_ID_ATTR}]`, e.target)[0]
+    const container = e.target.querySelector(`[${SECTION_ID_ATTR}]`)
 
     if (container) {
       this.load(container)
@@ -128,28 +146,18 @@ export default class SectionManager {
     instance.onUnload(e)
 
     this.unload(e.detail.sectionId)
+  }  
+
+  onSectionSelect(e) {
+    this.onGenericEvent(e, 'onSectionSelect')
   }
 
-  // Generic event is a non section load/unload
-  // Simply triggers the appropriate instance method if available
-  onGenericEvent(e, func) {
-    const instance = this.getInstanceById(e.detail.sectionId)
-
-    if (instance && typeof instance[func] === 'function') {
-      instance[func].call(instance, e)
-    }    
+  onSectionDeselect(e) {
+    this.onGenericEvent(e, 'onSectionDeselect')
   }
 
-  onSelect(e) {
-    this.onGenericEvent(e, 'onSelect')
-  }
-
-  onDeselect(e) {
-    this.onGenericEvent(e, 'onDeselect')
-  }
-
-  onReorder(e) {
-    this.onGenericEvent(e, 'onReorder')
+  onSectionReorder(e) {
+    this.onGenericEvent(e, 'onSectionReorder')
   }
 
   onBlockSelect(e) {
@@ -158,18 +166,5 @@ export default class SectionManager {
 
   onBlockDeselect(e) {
     this.onGenericEvent(e, 'onBlockDeselect')
-  }
-
-  register(type, constructor) {
-    // Need to make sure we're working with actual sections here..
-    if (!(constructor.prototype instanceof BaseSection)) {
-      return
-    }
-
-    this.constructors[type] = constructor
-
-    $(`[${SECTION_TYPE_ATTR}=${type}]`).each((index, container) => {
-      this.load(container, constructor)
-    })
-  }
+  } 
 }

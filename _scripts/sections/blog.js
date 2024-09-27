@@ -7,6 +7,8 @@ const selectors = {
 }
 
 export default class BlogSection extends BaseSection {
+  static TYPE = 'blog'
+
   constructor(container) {
     super(container, 'blog')
 
@@ -19,9 +21,9 @@ export default class BlogSection extends BaseSection {
   }
 
   onUnload() {
-    super.onUnload()
-    
     this.infiniteScroll.destroy()
+
+    super.onUnload()    
   }
 
   onFetchComplete($selection) {

@@ -4,6 +4,8 @@ import NewsletterForm from '../components/newsletterForm'
 import AJAXKlaviyoForm from '../core/ajaxKlaviyoForm'
 
 export default class FooterSection extends BaseSection {
+  static TYPE = 'footer'
+
   constructor(container) {
     super(container, 'footer')
 

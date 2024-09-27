@@ -10,6 +10,8 @@ const selectors = {
 }
 
 export default class AddressesSection extends BaseSection {
+  static TYPE = 'addresses'
+  
   constructor(container) {
     super(container, 'addresses')
 

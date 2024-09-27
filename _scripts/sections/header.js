@@ -11,6 +11,8 @@ const classes = {
 }
 
 export default class HeaderSection extends BaseSection {
+  static TYPE = 'header'
+
   constructor(container) {
     super(container, 'header');
     
@@ -22,10 +24,10 @@ export default class HeaderSection extends BaseSection {
     $window.on(AJAXCartEvents.RENDER, this.onAJAXCartRender)
   }
 
-  onUnload() {
-    super.onUnload()
-    
+  onUnload() {    
     $window.off(AJAXCartEvents.RENDER, this.onAJAXCartRender)
+
+    super.onUnload()
   }
 
   onAJAXCartRender({ cart }) {

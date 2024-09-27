@@ -48,10 +48,10 @@ function init() {
 
   const sectionManager = new SectionManager()
 
-  sectionManager.register('header', HeaderSection)
-  sectionManager.register('footer', FooterSection)
-  sectionManager.register('mobile-menu', MobileMenuSection)
-  sectionManager.register('ajax-cart', AJAXCartSection)
+  sectionManager.register(HeaderSection)
+  sectionManager.register(FooterSection)
+  sectionManager.register(MobileMenuSection)
+  sectionManager.register(AJAXCartSection)
 
   // START Taxi
   if (isThemeEditor()) {

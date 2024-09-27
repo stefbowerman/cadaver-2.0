@@ -13,6 +13,8 @@ const classes = {
 }
 
 export default class MobileMenuSection extends BaseSection {
+  static TYPE = 'mobile-menu'
+
   constructor(container) {
     super(container, 'mobile-menu')
 
@@ -85,11 +87,11 @@ export default class MobileMenuSection extends BaseSection {
     this.toggle()
   }  
 
-  onSelect() {
+  onSectionSelect() {
     this.open()
   }
 
-  onDeselect() {
+  onSectionDeselect() {
     this.close()
   }
 

@@ -1,10 +1,12 @@
 export default class BaseSection {
-  constructor(container, name) {
-    this.$container = container instanceof $ ? container : $(container); // @TODO - Eventually this will get converted to this.container
-    this.id = this.$container.data('section-id');
-    this.type = this.$container.data('section-type');
-    this.name = name;
-    this.namespace = `.${this.name}`; // @TODO - This should be camelCased just incase
+  constructor(container) {
+    this.container = container
+    this.id = this.container.dataset.sectionId
+    this.type = this.constructor.TYPE
+    this.parent = this.container.parentElement // Automatically generated wrapper element
+    this.parentId = this.parent.id
+
+    this.$container = $(container); // @TODO - this needs to get removed
 
     this.onNavigateOut = this.onNavigateOut.bind(this)
     this.onNavigateIn  = this.onNavigateIn.bind(this)
@@ -20,18 +22,18 @@ export default class BaseSection {
     window.removeEventListener('taxi.navigateIn', this.onNavigateIn)
     window.removeEventListener('taxi.navigateEnd', this.onNavigateEnd)
 
-    // do component cleanup
+    // @TODO do component cleanup
   }
 
-  onSelect(e) {
+  onSectionSelect(e) {
     
   }
 
-  onDeselect(e) {
+  onSectionDeselect(e) {
 
   }
 
-  onReorder(e) {
+  onSectionReorder(e) {
 
   }
 
@@ -43,15 +45,15 @@ export default class BaseSection {
 
   }
 
-  onNavigateOut({ from, trigger }) {
-
+  onNavigateOut(e) {
+    // const { from, trigger } = e.detail
   }
 
-  onNavigateIn({ to, trigger }) {
-
+  onNavigateIn(e) {
+    // const { to, trigger } = e.detail
   }
 
-  onNavigateEnd({ to, from, trigger }) {
-
-  }  
+  onNavigateEnd(e) {
+    // const { to, from, trigger } = e.detail
+  }    
 }

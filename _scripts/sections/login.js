@@ -9,6 +9,8 @@ const selectors = {
 }
 
 export default class LoginSection extends BaseSection {
+  static TYPE = 'login'
+
   constructor(container) {
     super(container, 'login')
 

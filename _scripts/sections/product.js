@@ -5,6 +5,8 @@ import ProductDetailForm from '../components/product/productDetailForm'
 import ProductDetailGallery from '../components/product/productDetailGallery'
 
 export default class ProductSection extends BaseSection {
+  static TYPE = 'product'
+
   constructor(container) {
     super(container, 'product')
 
