@@ -142,13 +142,13 @@
               type="submit"
               name="add"
               class="btn btn--primary"
-              data-add-to-cart-btn
-              {% if product.available == false %}
+              {% if current_variant.available == false %}
                 disabled="disabled"
               {% endif %}
+              data-component="atc-button"
             >
-              <span data-add-to-cart-text>
-                {% if product.available %}
+              <span data-label>
+                {% if current_variant.available %}
                   Add To Cart
                 {% else %}
                   Sold Out

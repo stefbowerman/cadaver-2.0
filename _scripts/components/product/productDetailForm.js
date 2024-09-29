@@ -1,6 +1,7 @@
 import { events as AJAXFormManagerEvents } from '../../core/ajaxFormManager'
 import Variants from './variants'
 import ProductPrice from './productPrice'
+import ATCButton from './atcButton'
 import ExpanderGroup from '../expanderGroup'
 
 const selectors = {
@@ -9,9 +10,7 @@ const selectors = {
   singleOptionSelector: '[data-single-option-selector]',
   originalSelectorId: '[data-product-select]',
   variantOptionValueList: '[data-variant-option-value-list][data-option-position]',
-  variantOptionValue: '[data-variant-option-value]',  
-  addToCartBtn: '[data-add-to-cart-btn]',
-  addToCartText: '[data-add-to-cart-text]'
+  variantOptionValue: '[data-variant-option-value]'
 }
 
 const classes = {
@@ -41,9 +40,6 @@ export default class ProductDetailForm {
     this.$form = $(selectors.form, this.$el);
     this.$singleOptionSelectors = $(selectors.singleOptionSelector, this.$el);
     this.$variantOptionValueList = $(selectors.variantOptionValueList, this.$el); // Alternate UI that takes the place of a single option selector (could be swatches, dots, buttons, whatever..)    
-    this.$addToCartBtn = $(selectors.addToCartBtn, this.$el);
-    this.$addToCartBtnText = $(selectors.addToCartText, this.$el); // Text inside the add to cart button
-    this.defaultButtonText = 'Add to Cart'; // this.$addToCartBtnText.text()
 
     this.product = JSON.parse($(selectors.productJSON, this.$el).html())
     this.price = new ProductPrice(this.$el.get(0).querySelector(ProductPrice.SELECTOR))
@@ -56,6 +52,7 @@ export default class ProductDetailForm {
       product: this.product
     })
 
+    this.atcButton = new ATCButton(this.$el.get(0).querySelector(ATCButton.SELECTOR))
     this.expanderGroup = new ExpanderGroup($(ExpanderGroup.selector, this.$el).first())
 
     this.onAddStart = this.onAddStart.bind(this)
@@ -96,38 +93,12 @@ export default class ProductDetailForm {
     }
   }
 
-  /**
-   * Updates the DOM state of the add to cart button
-   *
-   * @param {Object} variant - Shopify variant object
-   */
-  updateAddToCartState(variant) {
-    let btnText = '';
-    let btnDisabled = false;
-
-    if (variant) {
-      if (variant.available) {
-        btnDisabled = false
-        btnText = app.strings.addToCart
-      }
-      else {
-        btnDisabled = true
-        btnText = app.strings.soldOut
-      }      
-    }
-    else {
-      btnDisabled = true
-      btnText = app.strings.unavailable
-    }
-
-    this.$addToCartBtn.prop('disabled', btnDisabled);
-    this.$addToCartBtnText.text(btnText);
-  }
-
   onVariantChange({ variant, currentOptions }) {
     this.updateVariantOptionValues(variant)
-    this.updateAddToCartState(variant)
+    
+    this.atcButton.update(variant)
     this.price.update(variant)
+
     this.settings.onVariantChange(variant, currentOptions)
   }
 
@@ -155,12 +126,13 @@ export default class ProductDetailForm {
   onAddStart({ relatedTarget }) {
     if (!this.$form.is(relatedTarget)) return
       
-    this.$addToCartBtnText.text('Adding...')
+    this.atcButton.onAddStart()
   }
 
+  // @TODO - Change this to onAddSuccess ?
   onAddDone({ relatedTarget }) {
     if (!this.$form.is(relatedTarget)) return
 
-    this.$addToCartBtnText.text(this.defaultButtonText)
+    this.atcButton.onAddSuccess()
   }
 }
