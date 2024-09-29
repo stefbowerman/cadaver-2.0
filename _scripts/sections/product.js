@@ -8,7 +8,7 @@ export default class ProductSection extends BaseSection {
   static TYPE = 'product'
 
   constructor(container) {
-    super(container, 'product')
+    super(container)
 
     this.productDetailForm = new ProductDetailForm($(ProductDetailForm.selector, this.$container).first(), {
       onVariantChange: this.onVariantChange.bind(this)

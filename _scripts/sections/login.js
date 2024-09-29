@@ -12,7 +12,7 @@ export default class LoginSection extends BaseSection {
   static TYPE = 'login'
 
   constructor(container) {
-    super(container, 'login')
+    super(container)
 
     this.resetSuccess = this.$container.data('reset-success')
 

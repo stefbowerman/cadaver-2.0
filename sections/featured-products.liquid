@@ -26,41 +26,37 @@
   endcapture
 %}
 
-{% if product_count > 0 %}
-  <section
-    data-section-id="{{ section.id }}"
-    data-section-type="featured-products"
+<section
+  data-section-id="{{ section.id }}"
+  data-section-type="featured-products"
+>
+  {% if section.settings.title != blank %}
+    <div class="container">
+      <div class="section-header">
+        <h3 class="section-header__title">
+          {{ section.settings.title }}
+        </h3>
+      
+        {% if section.settings.cta_title and section.settings.cta_url %}
+          <div class="section-header__subtitle">
+            <a href="{{ section.settings.cta_url }}" class="btn">
+              {{ section.settings.cta_title }}
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  <div
+    class="product-card-set"
+    data-component="product-card-set"
   >
-    {% if section.settings.title != blank %}
-      <div class="container">
-        <div class="section-header">
-          <h3 class="section-header__title">
-            {{ section.settings.title }}
-          </h3>
-        
-          {% if section.settings.cta_title and section.settings.cta_url %}
-            <div class="section-header__subtitle">
-              <a href="{{ section.settings.cta_url }}" class="btn">
-                {{ section.settings.cta_title }}
-              </a>
-            </div>
-          {% endif %}
-        </div>
-      </div>
-    {% endif %}
-  
-    {% if product_card_set_items != blank %}
-      <div
-        class="product-card-set"
-        data-product-card-set
-      >
-        <div class="product-card-set__grid">
-          {{ product_card_set_items }}
-        </div>
-      </div>
-    {% endif %}    
-  </section>  
-{% endif %}
+    <div class="product-card-set__grid">
+      {{ product_card_set_items }}
+    </div>
+  </div>
+</section>  
 
 {% schema %}
 {

@@ -15,7 +15,8 @@ export const doComponentCleanup = (instance) => {
   Object.values(instance).forEach(value => {
     if (value instanceof BaseComponent) {
       value.destroy() // console.log('calling destroy on', value)
-    } else if (Array.isArray(value)) {
+    }
+    else if (Array.isArray(value)) {
       value.forEach(item => { // console.log('found an array => ', value)
         if (item instanceof BaseComponent) {
           item.destroy()

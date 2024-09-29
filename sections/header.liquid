@@ -13,6 +13,7 @@
     <div class="header-main">
       <div class="header-nav">
         <nav class="header-nav__list">
+          {% comment %} @TODO - Add <ul> list here {% endcomment %}
           <a
             href="#"
             class="header-nav__item"
@@ -37,8 +38,9 @@
             class="header-nav__item {% if cart.item_count > 0 %} has-items{% endif %}"
             data-taxi-ignore
             data-ajax-cart-toggle
+            data-component="header-cart-control"
           >
-            Cart <span class="header-cart-count" data-cart-count>{{ cart.item_count }}</span>
+            Cart <span class="header-cart-count" data-count>{{ cart.item_count }}</span>
           </a>
         
           <a

@@ -5,14 +5,12 @@ export default class SearchSection extends BaseSection {
   static TYPE = 'search'
 
   constructor(container) {
-    super(container, 'search')
+    super(container)
     
-    this.productCardSet = new ProductCardSet($(ProductCardSet.selector, this.$container).first())
-  }
 
-  onUnload() {    
-    this.productCardSet.destroy()
-
-    super.onUnload()
+    // @TODO - This needs to work with article cards as well
+    if (this.container.querySelector(ProductCardSet.SELECTOR)) {
+      this.productCardSet = new ProductCardSet(this.container.querySelector(ProductCardSet.SELECTOR))
+    }
   }
 }

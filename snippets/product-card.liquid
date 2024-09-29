@@ -23,7 +23,10 @@
   {%- endcapture %}
 
 
-  <div class="product-card{% if product.available == false %} product-card--sold-out{% endif %}" data-product-card>
+  <div
+    class="product-card{% if product.available == false %} product-card--sold-out{% endif %}"
+    data-component="product-card"
+  >
     <div class="product-card__contents">
       <div class="product-card__gallery">
         <a href="{{ product.url }}" title="{{ product.title }}">

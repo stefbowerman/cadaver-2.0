@@ -13,7 +13,7 @@ export default class AddressesSection extends BaseSection {
   static TYPE = 'addresses'
   
   constructor(container) {
-    super(container, 'addresses')
+    super(container)
 
     this.$toggleNew = $(selectors.toggleNew, this.$container)
     this.$newForm = $(selectors.newForm, this.$container)

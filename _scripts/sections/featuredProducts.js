@@ -5,14 +5,8 @@ export default class FeaturedProductsSection extends BaseSection {
   static TYPE = 'featured-products'
 
   constructor(container) {
-    super(container, 'featured-products')
+    super(container)
 
-    this.productCardSet = new ProductCardSet($(ProductCardSet.selector, this.$container).first())
-  }
-
-  onUnload() {   
-    this.productCardSet.destroy()
-    
-    super.onUnload()
+    this.productCardSet = new ProductCardSet(this.container.querySelector(ProductCardSet.SELECTOR))
   }
 }

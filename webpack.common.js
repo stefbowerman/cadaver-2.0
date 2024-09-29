@@ -4,6 +4,7 @@ const path = require('path')
 // Plugins
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+// @TODO - Add TerserPlugin
 
 // Directories
 const rootDir = path.resolve(__dirname)

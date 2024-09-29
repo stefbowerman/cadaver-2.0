@@ -1,3 +1,5 @@
+import { doComponentCleanup } from '../components/base'
+
 export default class BaseSection {
   constructor(container) {
     this.container = container
@@ -22,7 +24,7 @@ export default class BaseSection {
     window.removeEventListener('taxi.navigateIn', this.onNavigateIn)
     window.removeEventListener('taxi.navigateEnd', this.onNavigateEnd)
 
-    // @TODO do component cleanup
+    doComponentCleanup(this) // This automatically calls this.destroy() up all components (+ subcomponents)
   }
 
   onSectionSelect(e) {

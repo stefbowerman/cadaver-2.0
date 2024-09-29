@@ -7,7 +7,7 @@ export default class FooterSection extends BaseSection {
   static TYPE = 'footer'
 
   constructor(container) {
-    super(container, 'footer')
+    super(container)
 
     this.$newsletterForm = $(NewsletterForm.selector, this.$container)
 

@@ -9,11 +9,9 @@
 
     <link rel="canonical" href="{{ canonical_url }}">
     <link rel="preconnect" href="https://cdn.shopify.com" crossorigin>
-    <link rel="preconnect" href="https://monorail-edge.shopifysvc.com">  
+    <link rel="preconnect" href="https://monorail-edge.shopifysvc.com">   {% comment %} @TODO - Remove this, I think? {% endcomment %}
     
-
     {% render 'head-favicon' %}
-
     {% render 'head-meta-title' %}
     {% render 'head-meta-tags' %}
     {% render 'head-font-face' %}
@@ -53,7 +51,8 @@
   %}
 
   <body id="{{ page_title | handle }}" class="{{ body_class | strip | strip_newlines }}">
-    <a class="visually-hidden skip-link" data-in-page-link href="#view-container">
+    {% comment %} @TODO - Rename these classes to use tailwind sr-only {% endcomment %}
+    <a class="visually-hidden skip-link" href="#view-container">
       {{ 'general.accessibility.skip_to_content' | t }}
     </a>
 

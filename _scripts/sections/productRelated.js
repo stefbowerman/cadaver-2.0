@@ -5,7 +5,7 @@ export default class ProductRelatedSection extends BaseSection {
   static TYPE = 'product-related'
 
   constructor(container) {
-    super(container, 'product-related')
+    super(container)
 
     this.$productCardSet = $(ProductCardSet.selector, this.$container)
     this.$content = $('[data-content]', this.$container)
@@ -23,7 +23,7 @@ export default class ProductRelatedSection extends BaseSection {
         }
 
         this.$content.html($sectionContents)
-        this.productCardSet = new ProductCardSet(this.$productCardSet)
+        this.productCardSet = new ProductCardSet(this.$productCardSet) // @TODO - vanilla-ify this
       },
       error: () => {
         this.$container.hide()

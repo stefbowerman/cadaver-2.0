@@ -9,7 +9,7 @@ export default class AJAXCartSection extends BaseSection {
   static TYPE = 'ajax-cart'
 
   constructor(container) {
-    super(container, 'ajax-cart')
+    super(container)
 
     this.ajaxCart = new AJAXCart($(AJAXCart.selector, this.$container).first())
     this.ajaxFormManager = new AJAXFormManager()

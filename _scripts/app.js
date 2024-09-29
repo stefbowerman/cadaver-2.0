@@ -5,7 +5,6 @@ import 'swiper/css/effect-fade'
 
 import { initialize as initializeBreakpoints } from './core/breakpoints'
 import { initialize as initializeAnimations } from './core/animations'
-// import { pageLinkFocus } from './core/a11y'
 import {
   userAgentBodyClass,
   isThemeEditor,
@@ -17,7 +16,7 @@ import BaseRenderer from './renderers/base'
 import CartRenderer from './renderers/cart'
 
 // Transitions
-import PageTransition from './transitions/page'
+import DefaultTransition from './transitions/default'
 
 // Sections
 import SectionManager from './core/sectionManager'
@@ -82,7 +81,7 @@ function init() {
       cart: CartRenderer
     },
     transitions: {
-      default: PageTransition
+      default: DefaultTransition
     },
     reloadJsFilter: (element) => {
       // Whitelist any scripts here that need to be reloaded on page change
@@ -141,10 +140,6 @@ function init() {
 
   window.app.taxi = taxi
   // END Taxi
-
-  // // a11y
-  // $('[data-in-page-link]').on('click', e => pageLinkFocus($(e.currentTarget.hash)));
-  // pageLinkFocus($(window.location.hash));  
 
   userAgentBodyClass(); 
   targetBlankExternalLinks(); // All external links open in a new tab  

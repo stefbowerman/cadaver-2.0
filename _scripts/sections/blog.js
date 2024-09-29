@@ -10,7 +10,7 @@ export default class BlogSection extends BaseSection {
   static TYPE = 'blog'
 
   constructor(container) {
-    super(container, 'blog')
+    super(container)
 
     this.$grid = $(selectors.grid, this.$container)
 

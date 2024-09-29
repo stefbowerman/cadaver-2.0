@@ -16,7 +16,7 @@ export default class MobileMenuSection extends BaseSection {
   static TYPE = 'mobile-menu'
 
   constructor(container) {
-    super(container, 'mobile-menu')
+    super(container)
 
     this.$searchForm = $(selectors.searchForm, this.$container) // I don't think this selector
 

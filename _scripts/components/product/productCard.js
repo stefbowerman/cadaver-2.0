@@ -1,11 +1,10 @@
-export default class ProductCard {
-  static selector = '[data-product-card]'
+import BaseComponent from '../base'
+
+export default class ProductCard extends BaseComponent {
+  static TYPE = 'product-card'
 
   constructor(el) {
-    this.$el = $(el)
-  }
+    super(el)
 
-  destroy() {
-    // 
   }
 }

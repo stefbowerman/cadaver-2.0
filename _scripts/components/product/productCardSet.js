@@ -1,15 +1,12 @@
+import BaseComponent from '../base'
 import ProductCard from './productCard'
 
-export default class ProductCardSet {
-  static selector = '[data-product-card-set]'
+export default class ProductCardSet extends BaseComponent {
+  static TYPE = 'product-card-set'
 
   constructor(el) {
-    this.$el = $(el)  
-    
-    this.productCards = $.map(this.$el.find(ProductCard.selector), el => new ProductCard(el))
-  }
+    super(el)
 
-  destroy() {
-    this.productCards.forEach(p => p.destroy())
+    this.productCards = [...this.el.querySelectorAll(ProductCard.SELECTOR)].map(el => new ProductCard(el))
   }
 }

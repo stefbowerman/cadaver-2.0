@@ -5,14 +5,8 @@ export default class CollectionSection extends BaseSection {
   static TYPE = 'collection'
 
   constructor(container) {
-    super(container, 'collection')
+    super(container)
 
-    this.productCardSet = new ProductCardSet($(ProductCardSet.selector).first())
-  }
-
-  onUnload() {    
-    this.productCardSet.destroy()
-    
-    super.onUnload()
+    this.productCardSet = new ProductCardSet(this.container.querySelector(ProductCardSet.SELECTOR))
   }
 }
