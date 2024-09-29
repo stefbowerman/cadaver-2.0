@@ -1,12 +1,13 @@
 {%- comment %}
-  Product Details Price Snippet
+
+  Product Price
   ------------------------------------------------------------------------------
 
   Usage:
 
-  {% include 'product-detail-price',
-              product: { product } - required
-              current_variant: current_variant
+  {% render 'product-price',
+             product: { product } - required
+             current_variant: current_variant
   %}
 
 {% endcomment -%}
@@ -16,23 +17,45 @@
   if current_variant == blank
     assign current_variant = product.selected_or_first_available_variant
   endif
+
+  comment
+    Template Vars
+  endcomment
+  assign has_compare = false
+  assign current_variant_on_sale = false
+
+  if product.compare_at_price_max > product.price
+    assign has_compare = true
+  endif
+
+  if current_variant.compare_at_price > current_variant.price
+    assign current_variant_on_sale = true
+  endif  
 %}
 {% comment %} End Defaults {% endcomment %}
 
-<div data-product-price>
+<div
+  data-component="product-price"
+  role="status"
+>
   <span data-price>
     {{ current_variant.price | money_without_trailing_zeros }}
   </span>
 
-  {% if product.compare_at_price_max > product.price %}
-    <span class="visually-hidden" data-compare-text>
-      {{ 'products.product.regular_price' | t }}
+  {% if has_compare %}
+    <span data-compare>
+      <span class="visually-hidden">
+        {{ 'products.product.regular_price' | t }}
+      </span>
+      
+      <s
+        {% if current_variant_on_sale != true %}style="display: none"{% endif %}
+        data-compare-price
+      >
+        {% if current_variant_on_sale %}
+          {{ current_variant.compare_at_price | money }}
+        {% endif %}
+      </s>
     </span>
-    
-    <s data-compare-price>
-      {% if current_variant.compare_at_price > current_variant.price %}
-        {{ current_variant.compare_at_price | money_without_trailing_zeros }}
-      {% endif %}
-    </s>
   {% endif %}
 </div>    

@@ -46,7 +46,7 @@ export default class ProductDetailForm {
     this.defaultButtonText = 'Add to Cart'; // this.$addToCartBtnText.text()
 
     this.product = JSON.parse($(selectors.productJSON, this.$el).html())
-    this.price = new ProductPrice($(ProductPrice.selector, this.$el).first())
+    this.price = new ProductPrice(this.$el.get(0).querySelector(ProductPrice.SELECTOR))
     
     this.variants = new Variants({
       $container: this.$el,
