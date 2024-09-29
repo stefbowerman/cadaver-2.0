@@ -25,23 +25,22 @@ export default class ProductDetailForm {
    *
    * @param { HTMLElement } el
    * @param { Object } options
-   * @param { Function } config.onVariantChange -  Called when a new variant has been selected from the form,
-   * @param { Boolean } config.enableHistoryState - If set to "true", turns on URL updating when switching variant
+   * @param { Function } options.onVariantChange -  Called when a new variant has been selected from the form,
+   * @param { Boolean } options.enableHistoryState - If set to "true", turns on URL updating when switching variant
    */  
-  constructor(el, options) {
-    const defaults = {
+  constructor(el, options = {}) {
+    this.settings = {
       onVariantChange: () => {},
-      enableHistoryState: true
-    };
-
-    this.settings = $.extend({}, defaults, options);
+      enableHistoryState: true,
+      ...options
+    }    
 
     this.$el = $(el);
     this.$form = $(selectors.form, this.$el);
     this.$singleOptionSelectors = $(selectors.singleOptionSelector, this.$el);
     this.$variantOptionValueList = $(selectors.variantOptionValueList, this.$el); // Alternate UI that takes the place of a single option selector (could be swatches, dots, buttons, whatever..)    
 
-    this.product = JSON.parse($(selectors.productJSON, this.$el).html())
+    this.product = JSON.parse(this.$el.get(0).querySelector(selectors.productJSON).textContent)
     this.price = new ProductPrice(this.$el.get(0).querySelector(ProductPrice.SELECTOR))
     
     this.variants = new Variants({
