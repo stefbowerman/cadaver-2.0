@@ -53,7 +53,7 @@
   <body id="{{ page_title | handle }}" class="{{ body_class | strip | strip_newlines }}">
     {% comment %} @TODO - Rename these classes to use tailwind sr-only {% endcomment %}
     <a class="visually-hidden skip-link" href="#view-container">
-      {{ 'general.accessibility.skip_to_content' | t }}
+      {{ 'accessibility.skip_to_content' | t }}
     </a>
 
     {% section 'header' %}
@@ -70,6 +70,10 @@
     </div>
 
     {% section 'ajax-cart' %}
+
+    <ul hidden>
+      <li id="a11y-new-window-message">{{ 'accessibility.link_messages.new_window' | t }}</li>
+    </ul>      
 
     {% if settings.developer_hide_preview_bar == true %}
       <style>

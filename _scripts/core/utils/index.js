@@ -274,14 +274,58 @@ export function credits() {
 }
 
 export function targetBlankExternalLinks() {
-  for(var c = document.getElementsByTagName("a"), a = 0;a < c.length;a++) {
+  for(var c = document.getElementsByTagName('a'), a = 0;a < c.length;a++) {
     var b = c[a];
 
-    if (b.getAttribute("href") && b.hostname !== location.hostname) {
-      b.target = "_blank"
-
-      // This is for a11y
-      b.setAttribute('aria-label', 'Link opens in a new window')
+    if (b.getAttribute('href') && b.hostname !== location.hostname) {
+      b.target = '_blank'
+      b.setAttribute('aria-describedby', 'a11y-new-window-message')
     }
   }
+}
+
+/**
+ * Ensure we are working with a valid number
+ *
+ * @param {int|string} qty
+ * @param {int} defaultQty
+ * @return {int} - Integer quantity.
+ */
+export function validateQty(qty, defaultQty = 1) {
+  return (parseFloat(qty) === parseInt(qty)) && !Number.isNaN(qty) ? parseInt(qty) : defaultQty;
+}
+
+/**
+ * Returns an index in the array by wrapping around if the specified index does not exist in arr.length - 1
+ *
+ * @param {Array} arr
+ * @param {int} index
+ * @return {int} - index
+ */
+export function getWrappedIndex(arr, index) {
+  const len = arr.length
+
+  return ((index % len) + len) % len
+}
+
+/**
+ * Generates a pseudo-random number based on a seed.
+ *
+ * @param {number} [seed=0.1] - The seed used to generate the pseudo-random number. Defaults to 0.1 if not provided.
+ * @returns {number} A pseudo-random number between 0 and 1.
+ */
+export const randomFromSeed = (seed = 0.1) => {
+  const x = Math.sin(seed) * 1000
+
+  return x - Math.floor(x)
+}
+
+/**
+ * Generates a unique identifier (UUID) based on the current timestamp.
+ *
+ * @param {number} [length=9] - The length of the UUID to be generated. Defaults to 9 characters.
+ * @returns {string} A unique identifier (UUID) of the specified length.
+ */
+export function getUUID(length = 9) {
+  return randomFromSeed(Date.now()).toString(36).slice(2, length + 2)
 }
