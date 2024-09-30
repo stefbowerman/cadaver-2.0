@@ -1,4 +1,4 @@
-import { compact } from '../../core/utils'
+import { compact } from 'lodash-es'
 
 /**
  * Variant Selection scripts
@@ -9,21 +9,31 @@ import { compact } from '../../core/utils'
  * price or image changes.
  *
  */
-export default class Variants {
+export default class VariantsController {
   /**
    * Variant constructor
    *
    * @param {object} options
-   */  
+   */
   constructor(options) {
-    this.$container = options.$container;
-    this.product = options.product;
-    this.singleOptionSelector = options.singleOptionSelector;
-    this.originalSelectorId = options.originalSelectorId;
-    this.enableHistoryState = options.enableHistoryState;
-    this.currentVariant = this._getVariantFromOptions();
+    this.container = options.container
+    this.product = options.product
+    this.singleOptionSelector = options.singleOptionSelector
+    this.originalSelectorId = options.originalSelectorId
+    this.enableHistoryState = options.enableHistoryState
+    this.currentVariant = this._getVariantFromOptions()
 
-    $(this.singleOptionSelector, this.$container).on('change', this._onSelectChange.bind(this));
+    this._onSelectChange = this._onSelectChange.bind(this)
+
+    this.container.querySelectorAll(this.singleOptionSelector).forEach((element) => {
+      element.addEventListener('change', this._onSelectChange)
+    })
+  }
+
+  destroy() {
+    this.container.querySelectorAll(this.singleOptionSelector).forEach((element) => {
+      element.removeEventListener('change', this._onSelectChange)
+    })
   }
 
   /**
@@ -33,64 +43,60 @@ export default class Variants {
    * @return {array} options - Values of currently selected variants
    */
   _getCurrentOptions() {
-    let currentOptions = $.map($(this.singleOptionSelector, this.$container), (element) => {
-      const $element = $(element);
-      const type = $element.attr('type');
+    let currentOptions = Array.from(this.container.querySelectorAll(this.singleOptionSelector)).map((element) => {
+      const type = element.getAttribute('type')
 
       const currentOption = {
-        value: $element.val(),
-        index: $element.data('index'),
-        name: $element.data('name')
-      };
+        value: element.value,
+        index: element.dataset.index,
+        name: element.dataset.name
+      }
 
-      /* eslint-disable */
       // Shopify wrote this code...
       if (type === 'radio' || type === 'checkbox') {
-        if ($element[0].checked) {
-          return currentOption;
+        if (element.checked) {
+          return currentOption
         }
         else {
-          return false;
+          return false
         }
       }
       else {
-        return currentOption;
+        return currentOption
       }
-      /* eslint-enable */
-    });
+    })
 
     // remove any unchecked input values if using radio buttons or checkboxes
-    currentOptions = compact(currentOptions);
+    currentOptions = compact(currentOptions)
 
-    return currentOptions;
+    return currentOptions
   }
 
   /**
    * Find variant based on selected values.
    *
-   * @param  {array} selectedValues - Values of variant inputs
    * @return {object || undefined} found - Variant object from product.variants
    */
   _getVariantFromOptions() {
-    const selectedValues = this._getCurrentOptions();
-    const variants = this.product.variants;
-    let found = false;
+    const selectedValues = this._getCurrentOptions()
+    const variants = this.product.variants
+    let found = false
 
     variants.forEach((variant) => {
-      let satisfied = true;
+      let satisfied = true
 
       selectedValues.forEach((option) => {
         if (satisfied) {
-          satisfied = (option.value === variant[option.index]);
+          satisfied = (option.value === variant[option.index])
         }
-      });
+      })
 
       if (satisfied) {
-        found = variant;
+        found = variant
       }
-    });
+    })
 
-    return found || null;
+    return found || null
   }
 
   /**
@@ -100,44 +106,28 @@ export default class Variants {
     const variant = this._getVariantFromOptions()
     const currentOptions = this._getCurrentOptions()
 
-    this.$container.trigger({
-      type: 'variantChange',
-      variant,
-      currentOptions
-    });
+    // Trigger a custom event
+    const event = new CustomEvent('variantChange', {
+      detail: {
+        variant,
+        currentOptions
+      }
+    })
+
+    this.container.dispatchEvent(event)
 
     if (!variant) {
-      return;
+      return
     }
 
-    this._updateMasterSelect(variant);
-    this._updateImages(variant);
-    this._updatePrice(variant);
-    this.currentVariant = variant;
+
+    this._updateMasterSelect(variant)
+    this._updatePrice(variant)
+    this.currentVariant = variant
 
     if (this.enableHistoryState) {
-      this._updateHistoryState(variant);
+      this._updateHistoryState(variant)
     }
-  }
-
-  /**
-   * Trigger event when variant image changes
-   *
-   * @param  {object} variant - Currently selected variant
-   * @return {event}  variantImageChange
-   */
-  _updateImages(variant) {
-    const variantImage = variant.featured_image || {};
-    const currentVariantImage = this.currentVariant.featured_image || {};
-
-    if (!variant.featured_image || variantImage.src === currentVariantImage.src) {
-      return;
-    }
-
-    this.$container.trigger({
-      type: 'variantImageChange',
-      variant: variant
-    });
   }
 
   /**
@@ -151,10 +141,13 @@ export default class Variants {
       return;
     }
 
-    this.$container.trigger({
-      type: 'variantPriceChange',
-      variant: variant
+    // Trigger a custom event
+    const event = new CustomEvent('variantPriceChange', {
+      detail: {
+        variant: variant
+      }
     });
+    this.container.dispatchEvent(event);
   }
 
   /**
@@ -178,6 +171,10 @@ export default class Variants {
    * @param  {variant} variant - Currently selected variant
    */
   _updateMasterSelect(variant) {
-    $(this.originalSelectorId, this.$container)[0].value = variant.id;
+    const selectElement = this.container.querySelector(this.originalSelectorId)
+
+    if (selectElement) {
+      selectElement.value = variant.id
+    }
   }
 }

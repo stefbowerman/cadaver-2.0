@@ -1,5 +1,6 @@
 import { events as AJAXFormManagerEvents } from '../../core/ajaxFormManager'
-import Variants from './variants'
+import VariantsController from '../../core/product/variantsController'
+
 import ProductPrice from './productPrice'
 import ATCButton from './atcButton'
 import ExpanderGroup from '../expanderGroup'
@@ -43,13 +44,13 @@ export default class ProductDetailForm {
     this.product = JSON.parse(this.$el.get(0).querySelector(selectors.productJSON).textContent)
     this.price = new ProductPrice(this.$el.get(0).querySelector(ProductPrice.SELECTOR))
     
-    this.variants = new Variants({
-      $container: this.$el,
+    this.variantsController = new VariantsController({
+      container: this.$el.get(0),
       enableHistoryState: this.settings.enableHistoryState,
       singleOptionSelector: selectors.singleOptionSelector,
       originalSelectorId: selectors.originalSelectorId,
       product: this.product
-    })
+    }) 
 
     this.atcButton = new ATCButton(this.$el.get(0).querySelector(ATCButton.SELECTOR))
     this.expanderGroup = new ExpanderGroup($(ExpanderGroup.selector, this.$el).first())
@@ -64,6 +65,8 @@ export default class ProductDetailForm {
   }
 
   destroy() {
+    this.variantsController.destroy()
+
     $window.off(AJAXFormManagerEvents.ADD_START, this.onAddStart)
     $window.off(AJAXFormManagerEvents.ADD_DONE, this.onAddDone)
   }
@@ -92,7 +95,9 @@ export default class ProductDetailForm {
     }
   }
 
-  onVariantChange({ variant, currentOptions }) {
+  onVariantChange(e) {
+    const { variant, currentOptions } = e.detail
+
     this.updateVariantOptionValues(variant)
     
     this.atcButton.update(variant)
