@@ -14,5 +14,14 @@
 
   video {
     z-index: 2;
+  }
+
+  video {
+    opacity: 0;
+    transition: var(--transition-image-in); 
+  
+    &.is-ready {
+      opacity: 1;
+    }
   }  
 }

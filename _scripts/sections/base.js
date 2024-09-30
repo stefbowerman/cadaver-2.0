@@ -1,4 +1,5 @@
 import { doComponentCleanup } from '../components/base'
+import GraphicCover from '../components/graphicCover'
 
 export default class BaseSection {
   constructor(container) {
@@ -16,7 +17,12 @@ export default class BaseSection {
 
     window.addEventListener('taxi.navigateOut', this.onNavigateOut)
     window.addEventListener('taxi.navigateIn', this.onNavigateIn)
-    window.addEventListener('taxi.navigateEnd', this.onNavigateEnd) 
+    window.addEventListener('taxi.navigateEnd', this.onNavigateEnd)
+
+    // Below are standard components that can be initialized at the base section level (until there's a reason for them to get pushed down somewhere more specific)
+    this.graphicCovers = [...container.querySelectorAll(GraphicCover.SELECTOR)].map(el => {
+      return new GraphicCover(el)
+    })    
   }
 
   onUnload(e) {
