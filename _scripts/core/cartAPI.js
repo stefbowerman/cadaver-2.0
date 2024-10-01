@@ -1,4 +1,4 @@
-import { getSizedImageUrl } from './image'
+import { getSizedImageUrl } from './utils/image'
 
 /**
  * Formats the cart object to be consumed by the handlebars template

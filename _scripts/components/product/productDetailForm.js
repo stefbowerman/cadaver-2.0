@@ -36,22 +36,23 @@ export default class ProductDetailForm {
     }    
 
     this.$el = $(el);
+    this.el = this.$el.get(0)
     this.$form = $(selectors.form, this.$el);
     this.$singleOptionSelectors = $(selectors.singleOptionSelector, this.$el);
     this.$variantOptionValueList = $(selectors.variantOptionValueList, this.$el); // Alternate UI that takes the place of a single option selector (could be swatches, dots, buttons, whatever..)    
 
-    this.product = JSON.parse(this.$el.get(0).querySelector(selectors.productJSON).textContent)
-    this.price = new ProductPrice(this.$el.get(0).querySelector(ProductPrice.SELECTOR))
+    this.product = JSON.parse(this.el.querySelector(selectors.productJSON).textContent)
+    this.price = new ProductPrice(this.el.querySelector(ProductPrice.SELECTOR))
     
     this.variantsController = new VariantsController({
-      container: this.$el.get(0),
+      container: this.el,
       enableHistoryState: this.settings.enableHistoryState,
       singleOptionSelector: selectors.singleOptionSelector,
       originalSelectorId: selectors.originalSelectorId,
       product: this.product
     }) 
 
-    this.atcButton = new ATCButton(this.$el.get(0).querySelector(ATCButton.SELECTOR))
+    this.atcButton = new ATCButton(this.el.querySelector(ATCButton.SELECTOR))
 
     this.onAddStart = this.onAddStart.bind(this)
     this.onAddDone = this.onAddDone.bind(this)    

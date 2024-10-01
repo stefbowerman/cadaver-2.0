@@ -43,7 +43,7 @@ export default class BaseComponent {
   }
 
   _log(...args) {
-    console.log(`[${this.type}]`, ...args)
+    console.log(`[${this.type}]`, ...args) // eslint-disable-line no-console
   }
 
   destroy() {

@@ -70,6 +70,6 @@ export function formatMoney(cents, format) {
  * @param  {string} value - formatted price (see above)
  * @return {string} value - formatted value
  */
-export function stripZeroCents(string) {
+export function stripTrailingZeros(string) {
   return string.replace(/\.00$/, '');
 }
