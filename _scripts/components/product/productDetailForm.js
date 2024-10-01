@@ -3,7 +3,6 @@ import VariantsController from '../../core/product/variantsController'
 
 import ProductPrice from './productPrice'
 import ATCButton from './atcButton'
-import ExpanderGroup from '../expanderGroup'
 
 const selectors = {
   form: 'form[data-add-to-cart-form]',
@@ -53,7 +52,6 @@ export default class ProductDetailForm {
     }) 
 
     this.atcButton = new ATCButton(this.$el.get(0).querySelector(ATCButton.SELECTOR))
-    this.expanderGroup = new ExpanderGroup($(ExpanderGroup.selector, this.$el).first())
 
     this.onAddStart = this.onAddStart.bind(this)
     this.onAddDone = this.onAddDone.bind(this)    

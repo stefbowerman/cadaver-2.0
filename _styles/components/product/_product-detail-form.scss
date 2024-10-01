@@ -33,12 +33,6 @@
   }
 }
 
-.pdf-expander-group {
-  @include bp-up(lg) {
-    display: none;
-  }
-}
-
 .pdf-detail-group {
   display: none;
 

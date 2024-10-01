@@ -7,36 +7,28 @@
     <a href="#" data-mobile-menu-toggle data-taxi-ignore>Close</a>
 
     {%- if section.settings.primary_menu != blank -%}
-      <div class="expander-group" data-expander-group>
-        {%- for link in section.settings.primary_menu.links -%}
-          {%- assign link_id = section.id | append: '-link-' | append: forloop.index %}
+      {%- for link in section.settings.primary_menu.links -%}
+        {%- assign link_id = section.id | append: '-link-' | append: forloop.index %}
 
-          {% if link.links.size > 0 %}
-            {%- capture content -%}
-              <div class="mm-sublist">
-                {% for sublink in link.links %}
-                  <div class="mm-sublist__item">
-                    <a href="{{ sublink.url }}" class="mm-sublist__item-inner">
-                      {{ sublink.title }}
-                    </a>
-                  </div>
-                {% endfor %}
-              </div>
-            {%- endcapture -%}
-
-            {% render 'expander'
-                       title: link.title,
-                       content: content,
-                       id: link_id
-            %}
-          {% else %}
-            {% render 'expander'
-                       title: link.title,
-                       url: link.url
-            %}        
-          {% endif %}
-        {%- endfor -%}  
-      </div>           
+        {% if link.links.size > 0 %}
+          <div>
+            <div>{{ link.title }}</div>
+            <div class="mm-sublist">
+              {% for sublink in link.links %}
+                <div class="mm-sublist__item">
+                  <a href="{{ sublink.url }}" class="mm-sublist__item-inner">
+                    {{ sublink.title }}
+                  </a>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% else %}
+          <a href="{{ link.url }}">
+            {{ link.title }}
+          </a>       
+        {% endif %}
+      {%- endfor -%}  
     {%- endif -%}
 
 
