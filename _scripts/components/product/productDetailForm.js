@@ -35,8 +35,8 @@ export default class ProductDetailForm {
       ...options
     }    
 
-    this.$el = $(el);
-    this.el = this.$el.get(0)
+    this.el = el
+    this.$el = $(el)
     this.$form = $(selectors.form, this.$el);
     this.$singleOptionSelectors = $(selectors.singleOptionSelector, this.$el);
     this.$variantOptionValueList = $(selectors.variantOptionValueList, this.$el); // Alternate UI that takes the place of a single option selector (could be swatches, dots, buttons, whatever..)    

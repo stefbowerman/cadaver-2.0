@@ -14,16 +14,17 @@ export default class ProductDetailGallery {
   static selector = '[data-product-detail-gallery]'
 
   constructor(el) {
-    this.$el = $(el)
-    this.$images = $('img', this.$el)
-    this.$slideshow = $(selectors.slideshow, this.$el)
-    this.$slides = $(selectors.slide, this.$el)    
+    this.el = el
+    this.$el = $(el) // Still need this because it gets used in sections/product.js
+    this.images = this.el.querySelectorAll('img')
 
-    this.slideCount = this.$slides.length // Swiper can't give you the total count without duplicates..
-    this.color = this.$el.data('color')
-    this.isActive = this.$el.hasClass(classes.isActive) 
+    this.slideshow = this.el.querySelector(selectors.slideshow)
 
-    this.swiper = new Swiper(this.$slideshow.get(0), {     
+    this.slideCount = this.el.querySelectorAll(selectors.slide).length // Swiper can't give you the total count without duplicates.. Also don't set this to a variable since it changes as soon as swiper is initialized
+    this.color = this.el.dataset.color
+    this.isActive = this.el.classList.contains(classes.isActive)
+
+    this.swiper = new Swiper(this.slideshow, {     
       init: false,
       loop: this.slideCount > 1,
       effect: 'slide',
@@ -39,7 +40,7 @@ export default class ProductDetailGallery {
     this.swiper.init()
 
     if (this.slideCount === 1) {
-      this.$slideshow.addClass(classes.slideshowDisabled)
+      this.slideshow.classList.add(classes.slideshowDisabled)
     }    
   }
 
@@ -50,17 +51,13 @@ export default class ProductDetailGallery {
   activate() {
     if (this.isActive) return
 
-    this.$el.addClass(classes.isActive)
-    this.$images.attr('loading', 'eager')
-    this.isActive = true;
+    this.el.classList.add(classes.isActive)
+    this.images.forEach(img => img.setAttribute('loading', 'eager'))
+    this.isActive = true
   }
 
   deactivate() {
-    this.$el.removeClass(classes.isActive)
+    this.el.classList.remove(classes.isActive)
     this.isActive = false
-  }
-
-  findImageById(id) {
-    return this.$images.filter(`[data-image-id="${id}"]`).get(0)
-  }   
+  }  
 }

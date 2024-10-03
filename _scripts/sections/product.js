@@ -10,11 +10,11 @@ export default class ProductSection extends BaseSection {
   constructor(container) {
     super(container)
 
-    this.productDetailForm = new ProductDetailForm($(ProductDetailForm.selector, this.$container).first(), {
+    this.productDetailForm = new ProductDetailForm(this.container.querySelector(ProductDetailForm.selector), {
       onVariantChange: this.onVariantChange.bind(this)
     })
 
-    this.galleries = $.map($(ProductDetailGallery.selector, this.$container), el => new ProductDetailGallery(el))
+    this.galleries = [...this.container.querySelectorAll(ProductDetailGallery.selector)].map(el => new ProductDetailGallery(el))
   }
 
   onUnload() {
