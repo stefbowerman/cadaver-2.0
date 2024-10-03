@@ -1,6 +1,6 @@
 import BaseSection from './base'
 
-import { events as breakpointEvents } from '../core/breakpoints'
+import BreakpointsController, { BREAKPOINTS } from '../core/breakpointsController'
 
 const selectors = {
   toggle: '[data-mobile-menu-toggle]',
@@ -28,14 +28,14 @@ export default class MobileMenuSection extends BaseSection {
     this.searchForm.addEventListener('submit', this.onSearchFormSubmit.bind(this))
 
     $body.on('click', selectors.toggle, this.onToggleClick)
-    $window.on(breakpointEvents.BREAKPOINT_CHANGE, this.onBreakpointChange)
+    window.addEventListener(BreakpointsController.events.CHANGE, this.onBreakpointChange)  
   }
 
   onUnload() {
     super.onUnload()
 
     $body.off('click', selectors.toggle, this.onToggleClick)
-    $window.off(breakpointEvents.BREAKPOINT_CHANGE, this.onBreakpointChange)
+    window.removeEventListener(BreakpointsController.events.CHANGE, this.onBreakpointChange)  
   }
 
   open() {
@@ -81,10 +81,10 @@ export default class MobileMenuSection extends BaseSection {
     return false
   }
 
-  onBreakpointChange(e) {
+  onBreakpointChange({ detail: { breakpoint } }) {
     if (!this.isOpen) return
 
-    if (!['xs', 'sm'].includes(e.bpMinWidthKey)) {
+    if (breakpoint > BREAKPOINTS.sm) {
       this.close()
     }
   }

@@ -3,7 +3,7 @@ import 'lazysizes'
 import 'swiper/css'
 import 'swiper/css/effect-fade'
 
-import { initialize as initializeBreakpoints } from './core/breakpoints'
+import BreakpointsController from './core/breakpointsController'
 import { initialize as initializeAnimations } from './core/animations'
 import {
   userAgentBodyClass,
@@ -42,7 +42,7 @@ function init() {
   const viewContainer = document.querySelector('main#view-container')
   const TEMPLATE_REGEX = /\btemplate-\w*/
 
-  initializeBreakpoints()
+  window.app.breakpointsController = new BreakpointsController()
   initializeAnimations()
 
   const sectionManager = new SectionManager()
