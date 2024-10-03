@@ -18,14 +18,14 @@ export default class MobileMenuSection extends BaseSection {
   constructor(container) {
     super(container)
 
-    this.$searchForm = $(selectors.searchForm, this.$container) // I don't think this selector
+    this.searchForm = this.container.querySelector(selectors.searchForm)
 
     this.isOpen = false
 
     this.onToggleClick = this.onToggleClick.bind(this)
     this.onBreakpointChange = this.onBreakpointChange.bind(this)
 
-    this.$searchForm.on('submit', this.onSearchFormSubmit.bind(this))
+    this.searchForm.addEventListener('submit', this.onSearchFormSubmit.bind(this))
 
     $body.on('click', selectors.toggle, this.onToggleClick)
     $window.on(breakpointEvents.BREAKPOINT_CHANGE, this.onBreakpointChange)
@@ -61,16 +61,24 @@ export default class MobileMenuSection extends BaseSection {
   }
 
   onSearchFormSubmit(e) {
-    if (window.app.taxi) {
-      e.preventDefault()
-
-      const q = this.$searchForm.find('[name="q"]').val() // Could probably use $.fn.serialize here...
-      const type = this.$searchForm.find('[name="type"]').val() || 'product'
-
-      window.app.taxi.navigateTo(`${this.$searchForm.attr('action')}?type=${type}&q=${q}`)
-
-      return false
+    if (!window.app.taxi) {
+      return
     }
+
+    e.preventDefault()
+
+    const data = new FormData(this.searchForm)
+
+    const q = data.get('q')
+    const type = data.get('type') || 'product'
+
+    if (!q) {
+      return // @TODO - Show error ?
+    }
+
+    window.app.taxi.navigateTo(`${this.searchForm.action}?type=${type}&q=${q}`)
+
+    return false
   }
 
   onBreakpointChange(e) {
