@@ -13,8 +13,7 @@
     "app": "readonly",
     "$": "readonly",
     "jQuery": "readonly",
-    "Shopify": "readonly",
-    "$body": "readonly"
+    "Shopify": "readonly"
   },
   "rules": {
     "no-unused-vars": ["warn", {

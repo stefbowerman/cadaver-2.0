@@ -33,14 +33,14 @@ export default class AJAXCartSection extends BaseSection {
     })
   }
 
-  onUnload() {
-    super.onUnload()
-    
+  onUnload() {    
     this.ajaxCart.destroy()
     this.ajaxFormManager.destroy()
 
     window.removeEventListener(events.ADD_SUCCESS, this.callbacks.changeSuccess)
     window.removeEventListener(events.ADD_FAIL, this.callbacks.changeFail)
+
+    super.onUnload()
   }  
 
   open({ delay = false } = {}) {

@@ -36,8 +36,6 @@ function init() {
     console.warn('jQuery must be loaded before app.js')
   }
 
-  window.$body = $(document.body) // Global $body variable so we don't need to redefine it in every component
-
   const viewContainer = document.querySelector('main#view-container')
   const TEMPLATE_REGEX = /\btemplate-\w*/
 

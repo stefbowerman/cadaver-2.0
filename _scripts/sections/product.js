@@ -17,11 +17,11 @@ export default class ProductSection extends BaseSection {
     })
   }
 
-  onUnload() {
-    super.onUnload()
-    
+  onUnload() {    
     this.productDetailForm.destroy()
     this.galleries.forEach(g => g.destroy())
+
+    super.onUnload()
   }
 
   /**

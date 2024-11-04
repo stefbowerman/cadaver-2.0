@@ -18,21 +18,26 @@ export default class AJAXFormManager {
   constructor() {
     this.requestInProgress = false
 
-    this.onSubmit = this.onSubmit.bind(this)
+    this.onBodySubmit = this.onBodySubmit.bind(this)
 
-    $body.on('submit', selectors.form, this.onSubmit)
+    document.body.addEventListener('submit', this.onBodySubmit)
   }
 
   destroy() {
-    $body.off('submit', selectors.form, this.onSubmit)
+    document.body.removeEventListener('submit', this.onBodySubmit)
   }
 
-  onSubmit(e) {
-    e.preventDefault()
+  onBodySubmit(e) {
+    if (e.target.closest(selectors.form)) {
+      e.preventDefault()
+      return this.onFormSubmit(e.target.closest(selectors.form))
+    }
+  }
 
+  onFormSubmit(form) {
     if (this.requestInProgress) return
 
-    const $form = $(e.currentTarget)
+    const $form = $(form)
     const $submit = $form.find(selectors.submit)
 
     const startEvent = new CustomEvent(events.ADD_START, { detail: { relatedTarget: $form } })
@@ -57,7 +62,7 @@ export default class AJAXFormManager {
         window.dispatchEvent(event)
       })
       .fail((data) => {
-        const event = new CustomEvent(events.ADD_SUCCESS, { detail: {
+        const event = new CustomEvent(events.ADD_FAIL, { detail: {
           message: data.message,
           description: data.description,
           relatedTarget: $form

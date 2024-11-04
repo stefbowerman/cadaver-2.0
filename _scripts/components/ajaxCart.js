@@ -37,8 +37,7 @@ export default class AJAXCart {
     this.requestInProgress = false
 
     this.callbacks = {
-      bodyToggleClick: this.onToggleClick.bind(this),
-      bodyCloseClick: this.onCloseClick.bind(this),
+      bodyClick: this.onBodyClick.bind(this),
       itemRemoveClick: this.onItemRemoveClick.bind(this),
       itemIncrementClick: this.onItemIncrementClick.bind(this),
       itemDecrementClick: this.onItemDecrementClick.bind(this)
@@ -50,20 +49,18 @@ export default class AJAXCart {
 
     this.$backdrop = $(document.createElement('div')).addClass(classes.backdrop)
     this.$backdrop.attr('title', 'Close Cart')
-    this.$backdrop.appendTo($body)    
+    this.$backdrop.appendTo(document.body)
 
     this.$el.on(events.CLICK, selectors.itemRemove, this.callbacks.itemRemoveClick)
     this.$el.on(events.CLICK, selectors.itemIncrement, this.onItemIncrementClick.bind(this))
     this.$el.on(events.CLICK, selectors.itemDecrement, this.onItemDecrementClick.bind(this))    
     this.$backdrop.on(events.CLICK, this.close.bind(this))
-    $body.on(events.CLICK, selectors.toggle, this.callbacks.bodyToggleClick)
-    $body.on(events.CLICK, selectors.close, this.callbacks.bodyCloseClick)
+    document.body.addEventListener('click', this.callbacks.bodyClick)
   }
 
   destroy() {
     this.$backdrop.remove()
-    $body.off(events.CLICK, selectors.toggle, this.callbacks.bodyToggleClick)
-    $body.off(events.CLICK, selectors.close, this.callbacks.bodyCloseClick)
+    document.body.removeEventListener('click', this.callbacks.bodyClick)
   }
 
   itemInfoTemplate(item) {
@@ -239,7 +236,7 @@ export default class AJAXCart {
     if (this.isOpen) return
 
     this.$el.addClass(classes.open)
-    $body.addClass(classes.bodyCartOpen)
+    document.body.classList.add(classes.bodyCartOpen)
     this.isOpen = true
   }
 
@@ -247,7 +244,7 @@ export default class AJAXCart {
     if (!this.isOpen) return
 
     this.$el.removeClass(classes.open)
-    $body.removeClass(classes.bodyCartOpen)
+    document.body.classList.remove(classes.bodyCartOpen)
     this.isOpen = false
   }  
 
@@ -341,6 +338,15 @@ export default class AJAXCart {
       .always(() => {
         this.requestInProgress = false
       })   
+  }
+
+  onBodyClick(e) {
+    if (e.target.closest(selectors.close)) {
+      return this.onCloseClick(e)
+    }
+    else if (e.target.closest(selectors.toggle)) {
+      return this.onToggleClick(e)
+    }
   }
 
   onToggleClick(e) {

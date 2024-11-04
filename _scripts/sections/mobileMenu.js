@@ -22,20 +22,21 @@ export default class MobileMenuSection extends BaseSection {
 
     this.isOpen = false
 
-    this.onToggleClick = this.onToggleClick.bind(this)
+    // this.onToggleClick = this.onToggleClick.bind(this)
     this.onBreakpointChange = this.onBreakpointChange.bind(this)
+    this.onBodyClick = this.onBodyClick.bind(this)
 
     this.searchForm.addEventListener('submit', this.onSearchFormSubmit.bind(this))
 
-    $body.on('click', selectors.toggle, this.onToggleClick)
+    document.body.addEventListener('click', this.onBodyClick)
     window.addEventListener(BreakpointsController.events.CHANGE, this.onBreakpointChange)  
   }
 
   onUnload() {
-    super.onUnload()
-
-    $body.off('click', selectors.toggle, this.onToggleClick)
+    document.body.removeEventListener('click', this.onBodyClick)
     window.removeEventListener(BreakpointsController.events.CHANGE, this.onBreakpointChange)  
+    
+    super.onUnload()
   }
 
   open() {
@@ -86,6 +87,12 @@ export default class MobileMenuSection extends BaseSection {
 
     if (breakpoint > BREAKPOINTS.sm) {
       this.close()
+    }
+  }
+
+  onBodyClick(e) {
+    if (e.target.closest(selectors.toggle)) {
+      return this.onToggleClick(e)
     }
   }
 
