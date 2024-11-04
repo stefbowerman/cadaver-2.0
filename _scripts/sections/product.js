@@ -1,5 +1,3 @@
-import animateScrollTo from 'animated-scroll-to'
-
 import BaseSection from './base'
 import ProductDetailForm from '../components/product/productDetailForm'
 import ProductDetailGallery from '../components/product/productDetailGallery'
@@ -14,7 +12,9 @@ export default class ProductSection extends BaseSection {
       onVariantChange: this.onVariantChange.bind(this)
     })
 
-    this.galleries = [...this.container.querySelectorAll(ProductDetailGallery.selector)].map(el => new ProductDetailGallery(el))
+    this.galleries = [...this.container.querySelectorAll(ProductDetailGallery.selector)].map(el => {
+      return new ProductDetailGallery(el)
+    })
   }
 
   onUnload() {
@@ -48,22 +48,12 @@ export default class ProductSection extends BaseSection {
         const selectedColorGallery = this.galleries.find(g => g.color === selectedColor)
 
         if (activeGallery !== selectedColorGallery) {
-          activeGallery.$el.stop().fadeTo(100, 0, 'easeOutQuad', function () {
-            activeGallery.deactivate()
-            selectedColorGallery.$el.css('opacity', 0)
-            selectedColorGallery.activate()
+          activeGallery.el.style.opacity = 0
+          activeGallery.deactivate()
 
-            // Maybe only do this if we're above the mobile breakpoint?
-            animateScrollTo(0, {
-              speed: 700,
-              minDuration: 300,
-              maxDuration: 1000
-            })
-
-            setTimeout(function () {
-              selectedColorGallery.$el.stop().fadeTo(700, 1, 'easeInQuad')
-            }, 20)
-          })
+          selectedColorGallery.el.style.opacity = 0
+          selectedColorGallery.activate()
+          selectedColorGallery.el.style.opacity = ''
         }
       }
     }

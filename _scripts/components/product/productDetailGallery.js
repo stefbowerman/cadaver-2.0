@@ -15,7 +15,6 @@ export default class ProductDetailGallery {
 
   constructor(el) {
     this.el = el
-    this.$el = $(el) // Still need this because it gets used in sections/product.js
     this.images = this.el.querySelectorAll('img')
 
     this.slideshow = this.el.querySelector(selectors.slideshow)
