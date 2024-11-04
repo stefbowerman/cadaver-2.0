@@ -15,11 +15,14 @@
     },
     moneyFormat: {{ shop.money_format | json }},
     routes: {
-      predictiveSearchUrl: {{ routes.predictive_search_url | json }},
+      predictive_search_url: {{ routes.predictive_search_url | json }},
       cart_add_url: {{ routes.cart_add_url | json }},
       cart_change_url: {{ routes.cart_change_url | json }},
       cart_update_url: {{ routes.cart_update_url | json }},
-      cart_url: {{ routes.cart_url | json }}
+      cart_clear_url: {{ routes.cart_clear_url | json }},
+      cart_url: {{ routes.cart_url | json }},
+      account_addresses_url: {{ routes.account_addresses_url | json }},
+      account_url: {{ routes.account_url | json }}
     }    
   };
 

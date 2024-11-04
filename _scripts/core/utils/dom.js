@@ -8,10 +8,6 @@ export const isElement = object => {
     return false
   }
 
-  if (typeof object.jquery !== 'undefined') {
-    object = object[0]
-  }
-
   return object instanceof Element || object instanceof Document
 }
 
