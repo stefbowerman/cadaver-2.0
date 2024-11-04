@@ -7,6 +7,7 @@ import Article from '../sections/article'
 import Blog from '../sections/blog'
 import Collection from '../sections/collection'
 import Product from '../sections/product'
+import ProductRelated from '../sections/productRelated'
 import Login from '../sections/login'
 import Search from '../sections/search'
 import PageHero from '../sections/pageHero'
@@ -29,6 +30,7 @@ export default class BaseRenderer extends Renderer {
     this.sectionManager.register(Blog)
     this.sectionManager.register(Collection)
     this.sectionManager.register(Product)
+    this.sectionManager.register(ProductRelated)
     this.sectionManager.register(Login)
     this.sectionManager.register(Search)
     this.sectionManager.register(PageHero)
@@ -40,8 +42,10 @@ export default class BaseRenderer extends Renderer {
 
   onLeave() {
     // run before the transition.onLeave method is called
-    this.sectionManager.destroy()
-    this.sectionManager = null
+    if (this.sectionManager) {
+      this.sectionManager.destroy()
+      this.sectionManager = null
+    }
   }
 
   onLeaveCompleted() {

@@ -60,7 +60,8 @@ export default class BreakpointsController {
     for (const [key, breakpoint] of BREAKPOINTS_MAP) {
       if (w >= breakpoint) {
         foundKey = key
-      } else {        
+      }
+      else {        
         break // key found, we can stop iterating
       }
     }
