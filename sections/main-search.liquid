@@ -82,13 +82,11 @@
         {% endif %}        
       {% endif %}
 
-      {% comment %} @TODO - Add infinite scroll here? {% endcomment %}
-      {% comment %} {% if paginate.pages > 1 %}
-        <div id="pagination">
+      {% if paginate.pages > 1 %}
+        <div>
           {{ paginate | default_pagination }}
         </div>
-      {% endif %} {% endcomment %}
-      
+      {% endif %}
     {% endpaginate %}    
   {% endif %}  
 </div>

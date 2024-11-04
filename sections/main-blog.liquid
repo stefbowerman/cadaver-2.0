@@ -1,10 +1,13 @@
 {% paginate blog.articles by 36 %}
-  <section data-section-id="{{ section.id }}" data-section-type="blog">
+  <section
+    data-section-id="{{ section.id }}" 
+    data-section-type="blog"
+  >
     <div class="layout-content-wrapper">
       <div class="container">
-        <div class="article-grid" data-grid>
+        <div class="article-grid">
           {% for article in blog.articles %}
-            <div data-grid-item>
+            <div>
               {% render 'article-card',
                         article: article
               %}
@@ -15,9 +18,7 @@
 
       {% if paginate.next.is_link %}
         <a
-          href="/blogs/{{ blog.handle }}?page={{ paginate.current_page | plus: 1 }}"
-          style="display: none"
-          data-next-page
+          href="{{ paginate.next.url }}"
         >
           {{ paginate.next.title }}
         </a>
