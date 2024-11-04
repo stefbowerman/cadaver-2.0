@@ -9,6 +9,10 @@ export default class BaseSection {
     this.parent = this.container.parentElement // Automatically generated wrapper element
     this.parentId = this.parent.id
 
+    if (!this.id) {
+      console.warn('Section ID not found', this)
+    }    
+
     this.$container = $(container); // @TODO - this needs to get removed
 
     this.onNavigateOut = this.onNavigateOut.bind(this)
