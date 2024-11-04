@@ -35,8 +35,8 @@ export default class AJAXFormManager {
     const $form = $(e.currentTarget)
     const $submit = $form.find(selectors.submit)
 
-    const startEvent = $.Event(events.ADD_START, { relatedTarget: $form })
-    $window.trigger(startEvent)
+    const startEvent = new CustomEvent(events.ADD_START, { detail: { relatedTarget: $form } })
+    window.dispatchEvent(startEvent)
 
     // Disable the button so the user knows the form is being submitted
     $submit.prop('disabled', true)
@@ -49,21 +49,21 @@ export default class AJAXFormManager {
         $submit.prop('disabled', false)
         this.requestInProgress = false
 
-        const event = $.Event(events.ADD_DONE, { relatedTarget: $form })
-        $window.trigger(event)
+        const event = new CustomEvent(events.ADD_DONE, { detail: { relatedTarget: $form }})
+        window.dispatchEvent(event)
       })      
       .then((data) => {
-        const event = $.Event(events.ADD_SUCCESS, { cart: data, relatedTarget: $form })
-        $window.trigger(event)
+        const event = new CustomEvent(events.ADD_SUCCESS, { detail: { cart: data, relatedTarget: $form } })
+        window.dispatchEvent(event)
       })
       .fail((data) => {
-        const event = $.Event(events.ADD_FAIL, {
+        const event = new CustomEvent(events.ADD_SUCCESS, { detail: {
           message: data.message,
           description: data.description,
           relatedTarget: $form
-        })
-        
-        $window.trigger(event)
+        }})
+
+        window.dispatchEvent(event)
       })
   }
 }

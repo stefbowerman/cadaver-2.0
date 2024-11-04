@@ -15,22 +15,21 @@ export default class HeaderCartControl extends BaseComponent {
   constructor(el) {
     super(el)
 
-    this.count = this.el.querySelector(selectors.count)
+    this.count = this.qs(selectors.count)
 
     // @TODO - Should be coming from a cart update event, not AJAXCartEvents.RENDER
     this.onAJAXCartRender = this.onAJAXCartRender.bind(this)
 
-    // @TODO - Convert to vanilla
-    $window.on(AJAXCartEvents.RENDER, this.onAJAXCartRender)
+    window.addEventListener(AJAXCartEvents.RENDER, this.onAJAXCartRender)
   }
 
   destroy() {
-    $window.off(AJAXCartEvents.RENDER, this.onAJAXCartRender)
+    window.removeEventListener(AJAXCartEvents.RENDER, this.onAJAXCartRender)
 
     super.destroy()
   }
 
-  onAJAXCartRender({ cart }) {
+  onAJAXCartRender({ detail: { cart } }) {
     this.count.innerText = cart.item_count
     this.el.classList.toggle(classes.hasItems, cart.item_count > 0)
   }

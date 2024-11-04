@@ -59,15 +59,15 @@ export default class ProductDetailForm {
 
     this.$el.on('variantChange', this.onVariantChange.bind(this))
     this.$el.on('click', selectors.variantOptionValue, this.onVariantOptionValueClick.bind(this))
-    $window.on(AJAXFormManagerEvents.ADD_START, this.onAddStart)
-    $window.on(AJAXFormManagerEvents.ADD_DONE, this.onAddDone)
+    window.addEventListener(AJAXFormManagerEvents.ADD_START, this.onAddStart)
+    window.addEventListener(AJAXFormManagerEvents.ADD_DONE, this.onAddDone)
   }
 
   destroy() {
     this.variantsController.destroy()
 
-    $window.off(AJAXFormManagerEvents.ADD_START, this.onAddStart)
-    $window.off(AJAXFormManagerEvents.ADD_DONE, this.onAddDone)
+    window.removeEventListener(AJAXFormManagerEvents.ADD_START, this.onAddStart)
+    window.removeEventListener(AJAXFormManagerEvents.ADD_DONE, this.onAddDone)
   }
 
   /**

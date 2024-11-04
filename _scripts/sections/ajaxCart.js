@@ -11,17 +11,17 @@ export default class AJAXCartSection extends BaseSection {
   constructor(container) {
     super(container)
 
-    this.ajaxCart = new AJAXCart($(AJAXCart.selector, this.$container).first())
+    this.ajaxCart = new AJAXCart(this.container.querySelector(AJAXCart.selector))
     this.ajaxFormManager = new AJAXFormManager()
 
     // Store callbacks so we can remove them later
     this.callbacks = {
-      changeSuccess: e => this.ajaxCart.onChangeSuccess(e.cart),
-      changeFail: e => this.ajaxCart.onChangeFail(e.description)
+      changeSuccess: e => this.ajaxCart.onChangeSuccess(e.detail.cart),
+      changeFail: e => this.ajaxCart.onChangeFail(e.detail.description)
     }
 
-    $window.on(events.ADD_SUCCESS, this.callbacks.changeSuccess)
-    $window.on(events.ADD_FAIL, this.callbacks.changeFail)
+    window.addEventListener(events.ADD_SUCCESS, this.callbacks.changeSuccess)
+    window.addEventListener(events.ADD_FAIL, this.callbacks.changeFail)
 
     getCart().then(cart => {
       this.ajaxCart.render(cart)
@@ -39,8 +39,8 @@ export default class AJAXCartSection extends BaseSection {
     this.ajaxCart.destroy()
     this.ajaxFormManager.destroy()
 
-    $window.off(events.ADD_SUCCESS, this.callbacks.changeSuccess)
-    $window.off(events.ADD_FAIL, this.callbacks.changeFail)    
+    window.removeEventListener(events.ADD_SUCCESS, this.callbacks.changeSuccess)
+    window.removeEventListener(events.ADD_FAIL, this.callbacks.changeFail)
   }  
 
   open({ delay = false } = {}) {

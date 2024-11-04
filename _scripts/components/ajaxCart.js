@@ -208,7 +208,8 @@ export default class AJAXCart {
       }
     }    
 
-    $window.trigger($.Event(events.RENDER, { cart }));
+    const event = new CustomEvent(events.RENDER, { detail: { cart } })
+    window.dispatchEvent(event)
 
     this.hasBeenRendered = true;
 

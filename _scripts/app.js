@@ -36,7 +36,6 @@ function init() {
     console.warn('jQuery must be loaded before app.js')
   }
 
-  window.$window = $(window) // Create a global $window variable to trigger events through
   window.$body = $(document.body) // Global $body variable so we don't need to redefine it in every component
 
   const viewContainer = document.querySelector('main#view-container')
