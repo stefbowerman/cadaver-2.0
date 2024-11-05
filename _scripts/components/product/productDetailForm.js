@@ -37,7 +37,9 @@ export default class ProductDetailForm {
 
     this.el = el
     this.$el = $(el)
-    this.$form = $(selectors.form, this.$el);
+
+    this.form = this.el.querySelector(selectors.form)
+
     this.$singleOptionSelectors = $(selectors.singleOptionSelector, this.$el);
     this.$variantOptionValueList = $(selectors.variantOptionValueList, this.$el); // Alternate UI that takes the place of a single option selector (could be swatches, dots, buttons, whatever..)    
 
@@ -126,15 +128,15 @@ export default class ProductDetailForm {
     $option.siblings().removeClass(classes.variantOptionValueActive)
   }
 
-  onAddStart({ relatedTarget }) {
-    if (!this.$form.is(relatedTarget)) return
+  onAddStart({ detail: { relatedTarget } }) {
+    if (this.form !== relatedTarget) return
       
     this.atcButton.onAddStart()
   }
 
   // @TODO - Change this to onAddSuccess ?
-  onAddDone({ relatedTarget }) {
-    if (!this.$form.is(relatedTarget)) return
+  onAddDone({ detail: { relatedTarget } }) {
+    if (this.form !== relatedTarget) return
 
     this.atcButton.onAddSuccess()
   }

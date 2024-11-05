@@ -96,11 +96,13 @@ export const getCart = () => {
 /**
  * AJAX submit an 'add to cart' form
  *
- * @param {jQuery} $form - jQuery instance of the form
+ * @param {HTMLFormElement} form - The form to submit
  * @return {Promise} - Resolve returns JSON cart | Reject returns an error message
  */
-export const addItemFromForm = ($form) => {
+export const addItemFromForm = (form) => {
   const promise = $.Deferred()
+
+  const $form = $(form)
 
   $.ajax({
     type: 'post',
