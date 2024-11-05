@@ -4,7 +4,6 @@ import 'swiper/css'
 import 'swiper/css/effect-fade'
 
 import BreakpointsController from './core/breakpointsController'
-import { initialize as initializeAnimations } from './core/animations'
 import {
   userAgentBodyClass,
   isThemeEditor,
@@ -40,7 +39,6 @@ function init() {
   const TEMPLATE_REGEX = /\btemplate-\w*/
 
   window.app.breakpointsController = new BreakpointsController()
-  initializeAnimations()
 
   const sectionManager = new SectionManager()
 

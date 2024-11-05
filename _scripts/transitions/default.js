@@ -21,7 +21,6 @@ export default class DefaultTransition extends Transition {
     //   .stop()
     //   .fadeOut({
     //     duration: 350,
-    //     easing: 'easeOutQuart',
     //     complete: () => {
     //       window.scrollTo && window.scrollTo(0, 0);
     //       done()
@@ -45,7 +44,6 @@ export default class DefaultTransition extends Transition {
     //   .hide()
     //   .fadeIn({
     //     duration: 450,
-    //     easing: 'easeInCubic',
     //     complete: () => {
     //       done()
     //     }

@@ -313,7 +313,6 @@ export default class AJAXCart {
         if (cart.item_count > 0 && newQty === 0) {
           $item.slideUp({
             duration: 300,
-            easing: 'easeOutQuart',
             
             // We only need to re-render the price and then remove the item
             start: () => {
