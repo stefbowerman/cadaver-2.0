@@ -50,10 +50,6 @@ export default class MobileMenuSection extends BaseSection {
     this.container.classList.remove(classes.isOpen)
     document.body.classList.remove(classes.bodyIsOpen)
 
-    if (this.$container.has(document.activeElement)) {
-      document.activeElement.blur()
-    }
-
     this.isOpen = false
   }
 

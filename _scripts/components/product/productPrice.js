@@ -12,11 +12,11 @@ export default class ProductPrice extends BaseComponent {
   constructor(el) {
     super(el)
 
-    this.price = this.el.querySelector(selectors.price)
+    this.price = this.qs(selectors.price)
      
     // These only exists if the item is on sale
-    this.compare = this.el.querySelector(selectors.compare)
-    this.comparePrice = this.el.querySelector(selectors.comparePrice)
+    this.compare = this.qs(selectors.compare)
+    this.comparePrice = this.qs(selectors.comparePrice)
   }
 
   /**

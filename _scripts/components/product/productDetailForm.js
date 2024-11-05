@@ -1,6 +1,7 @@
 import { events as AJAXFormManagerEvents } from '../../core/ajaxFormManager'
 import VariantsController from '../../core/product/variantsController'
 
+import BaseComponent from '../base'
 import ProductPrice from './productPrice'
 import ATCButton from './atcButton'
 
@@ -17,7 +18,8 @@ const classes = {
   variantOptionValueActive: 'is-active'
 }
 
-export default class ProductDetailForm {
+export default class ProductDetailForm extends BaseComponent {
+  static TYPE = 'product-detail-form'
   static selector = '[data-product-detail-form]'
 
   /**
@@ -29,21 +31,22 @@ export default class ProductDetailForm {
    * @param { Boolean } options.enableHistoryState - If set to "true", turns on URL updating when switching variant
    */  
   constructor(el, options = {}) {
+    super(el)
+
     this.settings = {
       onVariantChange: () => {},
       enableHistoryState: true,
       ...options
     }    
 
-    this.el = el
     this.$el = $(el)
 
-    this.form = this.el.querySelector(selectors.form)
+    this.form = this.qs(selectors.form)
 
-    this.$singleOptionSelectors = $(selectors.singleOptionSelector, this.$el);
-    this.$variantOptionValueList = $(selectors.variantOptionValueList, this.$el); // Alternate UI that takes the place of a single option selector (could be swatches, dots, buttons, whatever..)    
+    this.$singleOptionSelectors = $(selectors.singleOptionSelector, this.$el)
+    this.$variantOptionValueList = $(selectors.variantOptionValueList, this.$el) // Alternate UI that takes the place of a single option selector (could be swatches, dots, buttons, whatever..)    
 
-    this.product = JSON.parse(this.el.querySelector(selectors.productJSON).textContent)
+    this.product = JSON.parse(this.qs(selectors.productJSON).textContent)
     this.price = new ProductPrice(this.el.querySelector(ProductPrice.SELECTOR))
     
     this.variantsController = new VariantsController({
@@ -57,19 +60,19 @@ export default class ProductDetailForm {
     this.atcButton = new ATCButton(this.el.querySelector(ATCButton.SELECTOR))
 
     this.onAddStart = this.onAddStart.bind(this)
-    this.onAddDone = this.onAddDone.bind(this)    
+    this.onAddSuccess = this.onAddSuccess.bind(this)    
 
     this.$el.on('variantChange', this.onVariantChange.bind(this))
     this.$el.on('click', selectors.variantOptionValue, this.onVariantOptionValueClick.bind(this))
     window.addEventListener(AJAXFormManagerEvents.ADD_START, this.onAddStart)
-    window.addEventListener(AJAXFormManagerEvents.ADD_DONE, this.onAddDone)
+    window.addEventListener(AJAXFormManagerEvents.ADD_SUCCESS, this.onAddSuccess)
   }
 
   destroy() {
     this.variantsController.destroy()
 
     window.removeEventListener(AJAXFormManagerEvents.ADD_START, this.onAddStart)
-    window.removeEventListener(AJAXFormManagerEvents.ADD_DONE, this.onAddDone)
+    window.removeEventListener(AJAXFormManagerEvents.ADD_SUCCESS, this.onAddSuccess)
   }
 
   /**
@@ -134,8 +137,7 @@ export default class ProductDetailForm {
     this.atcButton.onAddStart()
   }
 
-  // @TODO - Change this to onAddSuccess ?
-  onAddDone({ detail: { relatedTarget } }) {
+  onAddSuccess({ detail: { relatedTarget } }) {
     if (this.form !== relatedTarget) return
 
     this.atcButton.onAddSuccess()
