@@ -43,81 +43,45 @@
             <meta itemprop="price" content="{{ current_variant.price | divided_by: 100.00 }}">
             <link itemprop="availability" href="http://schema.org/{% if current_variant.available %}InStock{% else %}OutOfStock{% endif %}">
 
-              {% unless product.has_only_default_variant %}
-                {% for option in product.options_with_values %}
+            <div
+              data-component="variant-picker"
+              {% if product.has_only_default_variant %}
+                style="display: none;"
+                aria-hidden="true"
+              {% endif %}
+            >
+              {% for option in product.options_with_values %}
+                {%- liquid
+                  assign option_name_handle = option.name | handle
+                  assign hide_option = false
+                  assign selection_type = 'select'
 
-                  {%- liquid
-                    assign select_tag_id = 'SingleOptionSelector-' | append: forloop.index0
-                    assign option_is_color = false
-                    assign option_is_size = false
-                    assign option_has_single_value = false
-                    assign can_show_sold_out_ui_for_option = false
-                    assign option_name_upcase = option.name | upcase
+                  if option_name_handle == 'color'
+                    assign selection_type = 'radio'
+                  endif
 
-                    if option_name_upcase == 'COLOR'
-                      assign option_is_color = true
-                    endif
+                  comment
+                    Add any logic needed to hide specific options
+                  endcomment
+                -%}
+                
+                <div
+                  {% if hide_option %}
+                    style="display: none;"
+                    aria-hidden="true"
+                  {% endif %}
+                >
 
-                    if option_name_upcase == 'SIZE'
-                      assign option_is_size = true
-                    endif              
-
-                    if option.values.size == 1
-                      assign option_has_single_value = true
-                    endif
-
-                    if product.options.size == 1
-                      assign can_show_sold_out_ui_for_option = true
-                    elsif product.options.size == 2 and option.position == 2 and product.options_with_values[0].values.size == 1
-                      assign can_show_sold_out_ui_for_option = true
-                    endif
-
-                    capture option_alt_ui
-                      if option_is_color
-                        render 'product-option-colors-list', product: product, option_with_values: option, current_variant: current_variant
-                      endif
-                    endcapture
-                  -%}
-
-                  <div class="selector-wrapper form-group js">
-                    <label for="{{ select_tag_id }}">
-                      {{ option.name }}
-                    </label>
-
-                    <select
-                      id="{{ select_tag_id }}"
-                      class="form-control"
-                      data-single-option-selector
-                      data-index="option{{ option.position }}"
-                      data-name="{{ option.name }}"
-                      style="width: auto; {% unless option_is_size %}display: none{% endunless %}">
-                      {% for value in option.values %}
-                        <option
-                          value="{{ value | escape }}"
-                          {% if option.selected_value == value %}selected="selected"{% endif %}>
-                            {{ value }}
-                        </option>
-                      {% endfor %}
-                    </select>
-
-                    {% if option_is_size %}
-                      {% comment %} Do nothing {% endcomment %}
-                    {% elsif option_alt_ui != blank %}
-                      {{ option_alt_ui }}
-                    {% else %}
-                      {% render 'product-option-value-list'
-                        option: option
-                        current_variant: current_variant,
-                        is_color: option_is_color,
-                        can_show_sold_out_ui_for_option: can_show_sold_out_ui_for_option
-                      %}    
-                    {% endif %}
-                  </div>
-                {% endfor %}
-              {% endunless %}
+                  {% render 'variant-picker-option',
+                            option: option,
+                            selection_type: selection_type
+                  %}                
+                </div>
+              {% endfor %}
+            </div>
 
               <label class="visually-hidden" for="no-js-variant-select">Select Variant</label>
-              <select name="id" class="no-js" id="no-js-variant-select" data-product-select>
+              <select name="id" class="no-js" id="no-js-variant-select">
                 {% for variant in product.variants %}
                   <option
                     {% if variant == current_variant %}selected="selected"{% endif %}
@@ -149,7 +113,7 @@
                 </span>
               </button>  
 
-              <div style="margin: var(--spacing-30) 0;">
+              <div>
                 <div class="pdf-content">
                   {{ form | payment_terms }}
                 </div>

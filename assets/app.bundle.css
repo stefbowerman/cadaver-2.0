@@ -1726,17 +1726,6 @@ body.mobile-menu-open {
   }
 }
 
-.option-value {
-  margin-right: 10px;
-}
-.option-value.is-active {
-  border-bottom: 1px solid black;
-}
-.option-value.is-disabled {
-  text-decoration: line-through;
-  cursor: not-allowed;
-}
-
 .product-detail-gallery {
   display: none;
 }

@@ -16,16 +16,6 @@ export default class DefaultTransition extends Transition {
     }
 
     done()
-
-    // $(from)
-    //   .stop()
-    //   .fadeOut({
-    //     duration: 350,
-    //     complete: () => {
-    //       window.scrollTo && window.scrollTo(0, 0);
-    //       done()
-    //     }
-    //   })
   }
 
   /**
@@ -38,15 +28,5 @@ export default class DefaultTransition extends Transition {
     }
 
     done()
-
-    // $(to)
-    //   .stop()
-    //   .hide()
-    //   .fadeIn({
-    //     duration: 450,
-    //     complete: () => {
-    //       done()
-    //     }
-    //   })  
   }
 }

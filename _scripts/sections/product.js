@@ -29,13 +29,13 @@ export default class ProductSection extends BaseSection {
    * If a matching gallery doesn't exist, look for the variant's featured image in the main gallery and switch to that
    *
    * @param {Object} variant - Shopify variant object
-   * @param {Array} currentOptions - Array of options
+   * @param {Array} selectedOptions - Array of options
    * @param {Object} [option]
    * @param {String} option.name  - i.e. "Color"
    * @param {String} option.value - i.e. "Gun Metal"
    */
-  onVariantChange(variant, currentOptions) {
-    this.updateGalleries(currentOptions)
+  onVariantChange({ variant, selectedOptions }) {
+    this.updateGalleries(selectedOptions)
   }
 
   updateGalleries(currentOptions) {

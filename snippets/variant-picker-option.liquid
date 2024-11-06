@@ -1,0 +1,102 @@
+{%- comment %}
+
+  Variant Picker Option
+  ------------------------------------------------------------------------------
+
+  Usage:
+
+  {% render 'variant-picker-option',
+             option: { option } - required,
+             selection_type: { 'select' | 'radio' } - optional
+  %}
+
+{% endcomment -%}
+
+{%- liquid
+  assign option_name_handle = option.name | handle
+  assign option_select_id = 'vpo-' | append: option_name_handle | append: '-' | append: section.id
+  assign is_radio = false
+
+  if selection_type == 'radio'
+    assign is_radio = true
+  endif
+-%}
+
+{% capture option_values_content %}
+  {% if is_radio %}
+    <div>
+      {%- for value in option.values -%}
+        {%- liquid
+          assign input_id = section.id | append: '-' | append: option_name_handle | append: '-' | append: forloop.index0
+        -%}
+      
+        <div>
+          <input
+            type="radio"
+            id="{{ input_id }}"
+            name="{{ option.name | escape }}"
+            value="{{ value | escape }}"
+            {% if value.selected %}
+              checked
+            {% endif %}
+            {% if value.available != true %}
+              disabled
+            {% endif %}
+          >
+
+          <label for="{{ input_id }}">
+            {{- value -}}
+          </label>
+        </div>
+      {%- endfor -%}
+    </div>
+  {% else %}
+    <select
+      id="{{ option_select_id }}"
+      name="{{ option.name | escape }}"
+      class="form-control"
+    >
+      {%- for value in option.values -%}
+        <option
+          value="{{ value | escape }}"
+          {% if value.selected %}
+            selected="selected"
+          {% endif %}
+          {% if value.available != true %}
+            disabled
+          {% endif %}                  
+        >
+          {{ value }}
+        </option>
+      {%- endfor -%}
+    </select>
+  {% endif %}
+{% endcapture %}
+
+{% capture option_label_content %}
+  {{- option.name -}}:
+{% endcapture %}
+
+<div
+  class="js"
+  data-component="variant-picker-option"
+>
+  {% comment %} Radio options require a fieldset since they use a list of inputs, each with their own label {% endcomment %}
+  {% if is_radio %}
+    <fieldset>
+      <legend style="font-weight: bold">
+        {{ option_label_content }}
+      </legend>
+
+      {{ option_values_content }}
+    </fieldset>
+  {% else %}
+    <div>
+      <label for="{{ option_select_id }}" style="font-weight: bold">
+        {{ option_label_content }}
+      </label>
+
+      {{ option_values_content }}
+    </div>
+  {% endif %}
+</div>
