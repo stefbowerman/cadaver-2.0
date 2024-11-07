@@ -12,7 +12,7 @@ export default class FooterSection extends BaseSection {
     this.$newsletterForm = $(NewsletterForm.selector, this.$container)
 
     if (this.$newsletterForm.length) {
-      this.newsletterForm = new NewsletterForm(this.$newsletterForm)
+      this.newsletterForm = new NewsletterForm(this.$newsletterForm.get(0))
 
       this.ajaxForm = new AJAXKlaviyoForm(this.$newsletterForm, {
         apiKey: this.$newsletterForm.data('api-key'),
@@ -23,6 +23,10 @@ export default class FooterSection extends BaseSection {
         onSubscribeSuccess: () => this.newsletterForm.onSubscribeSuccess(),
         onSubscribeFail: () => this.newsletterForm.onSubscribeFail()
       })
-    }    
+    }
+  }
+
+  onUnload() {
+    this.newsletterForm?.destroy()
   }
 }
