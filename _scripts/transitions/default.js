@@ -1,21 +1,21 @@
-import { Transition } from '@unseenco/taxi'
+/* eslint-disable no-unused-vars */
 
-export default class PageTransition extends Transition {
+import { Transition } from '@unseenco/taxi'
+import { prefersReducedMotion } from '../core/utils/a11y'
+
+export default class DefaultTransition extends Transition {
   /**
    * Handle the transition leaving the previous page.
    * @param { { from: HTMLElement, trigger: string|HTMLElement|false, done: function } } props
    */
   onLeave({ from, trigger, done }) {
-    $(from)
-      .stop()
-      .fadeOut({
-        duration: 350,
-        easing: 'easeOutQuart',
-        complete: () => {
-          window.scrollTo && window.scrollTo(0, 0);
-          done()
-        }
-      })
+    window.scrollTo && window.scrollTo(0, 0)
+
+    if (prefersReducedMotion()) {
+      // Disable transition animation ?
+    }
+
+    done()
   }
 
   /**
@@ -23,15 +23,10 @@ export default class PageTransition extends Transition {
    * @param { { to: HTMLElement, trigger: string|HTMLElement|false, done: function } } props
    */
   onEnter({ to, trigger, done }) {
-    $(to)
-      .stop()
-      .hide()
-      .fadeIn({
-        duration: 450,
-        easing: 'easeInCubic',
-        complete: () => {
-          done()
-        }
-      })  
+    if (prefersReducedMotion()) {
+      // Disable transition animation ?
+    }
+
+    done()
   }
 }

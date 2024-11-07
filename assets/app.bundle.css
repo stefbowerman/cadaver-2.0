@@ -1312,7 +1312,7 @@ select.form-control {
 
 .view-container {
   min-height: 100vh;
-  min-height: var(--viewport-height);
+  min-height: 100dvh;
 }
 
 .layout-content-wrapper,
@@ -1717,12 +1717,6 @@ body.mobile-menu-open {
     text-align: center;
   }
 }
-@media (min-width: 1024px) {
-  .pdf-expander-group {
-    display: none;
-  }
-}
-
 .pdf-detail-group {
   display: none;
 }
@@ -1730,17 +1724,6 @@ body.mobile-menu-open {
   .pdf-detail-group {
     display: block;
   }
-}
-
-.option-value {
-  margin-right: 10px;
-}
-.option-value.is-active {
-  border-bottom: 1px solid black;
-}
-.option-value.is-disabled {
-  text-decoration: line-through;
-  cursor: not-allowed;
 }
 
 .product-detail-gallery {
@@ -2197,49 +2180,6 @@ body.ajax-cart-open {
   text-align: center;
 }
 
-.expander__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-weight: var(--font-bold);
-  line-height: 1;
-  cursor: pointer;
-  padding: 16px 0 13px;
-  border-bottom: 1px solid var(--color-grayer);
-}
-.expander__icon {
-  margin-right: 19px;
-}
-.expander__icon svg {
-  height: 12px;
-  width: auto;
-  transition: transform 150ms ease-out;
-}
-.expander__icon path {
-  transition: opacity 150ms ease-out;
-}
-.expander__body {
-  display: none;
-}
-.expander__body-inner {
-  padding: 17px 0 14px;
-  opacity: 0;
-  transition: opacity 150ms ease-out;
-}
-.expander:last-child .expander__body-inner {
-  padding-bottom: 0;
-}
-.expander.is-open .expander__body-inner {
-  opacity: 1;
-  transition: opacity 300ms ease-in 60ms;
-}
-.expander.is-open .expander__icon svg {
-  transform: rotate(90deg);
-}
-.expander.is-open .expander__icon path:first-child {
-  opacity: 0;
-}
-
 .newsletter-form-contents {
   position: relative;
 }
@@ -2366,13 +2306,10 @@ body.ajax-cart-open {
 }
 .graphic-cover video {
   z-index: 2;
-}
-
-.ambient-video {
   opacity: 0;
-  transition: opacity 0.6s cubic-bezier(0.31, 0.3, 0.31, 0.87);
+  transition: var(--transition-image-in);
 }
-.ambient-video.is-ready {
+.graphic-cover video.is-ready {
   opacity: 1;
 }
 

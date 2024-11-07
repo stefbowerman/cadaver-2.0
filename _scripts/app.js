@@ -1,16 +1,12 @@
 import { Core as TaxiCore } from '@unseenco/taxi'
-import { throttle } from 'throttle-debounce'
 import 'lazysizes'
 import 'swiper/css'
 import 'swiper/css/effect-fade'
 
-import { initialize as initializeBreakpoints } from './core/breakpoints'
-import { initialize as initializeAnimations } from './core/animations'
-import { pageLinkFocus } from './core/a11y'
+import BreakpointsController from './core/breakpointsController'
 import {
   userAgentBodyClass,
   isThemeEditor,
-  setViewportHeightProperty,
   targetBlankExternalLinks
 } from './core/utils'
 
@@ -19,7 +15,7 @@ import BaseRenderer from './renderers/base'
 import CartRenderer from './renderers/cart'
 
 // Transitions
-import PageTransition from './transitions/page'
+import DefaultTransition from './transitions/default'
 
 // Sections
 import SectionManager from './core/sectionManager'
@@ -34,30 +30,23 @@ window.app.taxi = null;
 
 window.lazySizes && window.lazySizes.init();
 
-(($) => {
-  if (typeof $ === undefined) {
-    console.warn('jQuery must be loaded before app.js')
-  }
+function init() {
+  const viewContainer = document.querySelector('main#view-container')
+  const TEMPLATE_REGEX = /\btemplate-\w*/
 
-  window.$window = $(window) // Create a global $window variable to trigger events through
-  window.$body = $(document.body) // Global $body variable so we don't need to redefine it in every component
-
-  const $main = $('main#view-container')
-  const TEMPLATE_REGEX = /(^|\s)template-\S+/g;  
-
-  initializeBreakpoints()
-  initializeAnimations()
+  window.app.breakpointsController = new BreakpointsController()
 
   const sectionManager = new SectionManager()
 
-  sectionManager.register('header', HeaderSection)
-  sectionManager.register('footer', FooterSection)
-  sectionManager.register('mobile-menu', MobileMenuSection)
-  sectionManager.register('ajax-cart', AJAXCartSection)
+  sectionManager.register(HeaderSection)
+  sectionManager.register(FooterSection)
+  sectionManager.register(MobileMenuSection)
+  sectionManager.register(AJAXCartSection)
 
   // START Taxi
   if (isThemeEditor()) {
-    $('a').attr('data-taxi-ignore', true) // Prevent highway js from running inside the theme editor
+    // Prevent taxi js from running
+    Array.from(document.getElementsByTagName('a')).forEach(a => a.setAttribute('data-taxi-ignore', true))
   }
 
   const taxi = new TaxiCore({
@@ -83,60 +72,66 @@ window.lazySizes && window.lazySizes.init();
       cart: CartRenderer
     },
     transitions: {
-      default: PageTransition
+      default: DefaultTransition
     },
     reloadJsFilter: (element) => {
       // Whitelist any scripts here that need to be reloaded on page change
 
-      return element.dataset.taxiReload !== undefined || $main.has(element).length > 0
+      return element.dataset.taxiReload !== undefined || viewContainer.contains(element)
     },
-    allowInterruption: true
+    allowInterruption: true,
+    enablePrefetch: true
   })
 
 
   // This event is sent before the `onLeave()` method of a transition is run to hide a `data-router-view`
-  taxi.on('NAVIGATE_OUT', ({ from, trigger }) => {
-    for (let [key] of taxi.cache) {
-      if (key.split('/').includes('products') || key.split('/').includes('account')) {
-        taxi.cache.delete(key)
-      }
-    }
+  taxi.on('NAVIGATE_OUT', e => {
+    // const { from, trigger } = e
 
-    $window.trigger($.Event('taxi.navigateOut', { from, trigger }))
+    window.dispatchEvent(new CustomEvent('taxi.navigateOut', { detail: e }))
   })
   
   // This event is sent everytime a `data-taxi-view` is added to the DOM
-  taxi.on('NAVIGATE_IN', ({ to, trigger }) => {
-    $body.removeClass((i, currentClasses) => {
-      return currentClasses.split(' ').map(c => c.match(TEMPLATE_REGEX)).join(' ');
-    });
+  taxi.on('NAVIGATE_IN', e => {
+    const { to } = e
 
-    $body.addClass(() => {
-      return to.page.body.classList.value.split(' ').map(c => c.match(TEMPLATE_REGEX)).join(' ');
+    const body = document.body
+
+    // Remove any body classes that match the template regex
+    Array.from(body.classList).forEach(cn => {
+      if (TEMPLATE_REGEX.test(cn)) {
+        body.classList.remove(cn)
+      }
     })
 
-    $window.trigger($.Event('taxi.navigateIn', { to, trigger }))
+    // Add any body classes for the *new* page that match the template regex
+    Array.from(to.page.body.classList).forEach(cn => {
+      if (TEMPLATE_REGEX.test(cn)) {
+        body.classList.add(cn)
+      }
+    })
+
+    window.dispatchEvent(new CustomEvent('taxi.navigateIn', { detail: e }))
   })
 
   // This event is sent everytime the `done()` method is called in the `onEnter()` method of a transition
-  taxi.on('NAVIGATE_END', ({ to, from, trigger }) => {
-    targetBlankExternalLinks();
+  taxi.on('NAVIGATE_END', e => {
+    // const { to, from, trigger } = e
 
-    $window.trigger($.Event('taxi.navigateEnd', { to, from, trigger }))
+    taxi.cache.forEach((_, key) => {
+      if (key.includes('products') || key.includes('account') || key.includes('cart')) {
+        taxi.cache.delete(key)
+      }
+    })
+
+    targetBlankExternalLinks()
+
+    window.dispatchEvent(new CustomEvent('taxi.navigateEnd', { detail: e }))
   })
 
   window.app.taxi = taxi
   // END Taxi
 
-  // a11y
-  $('[data-in-page-link]').on('click', e => pageLinkFocus($(e.currentTarget.hash)));
-  pageLinkFocus($(window.location.hash));  
-  
-  // We might not need these at some point?  If we switch to dvh units
-  window.addEventListener('resize', throttle(250, setViewportHeightProperty))
-  document.addEventListener('scroll', throttle(100, setViewportHeightProperty))  
-
-  setViewportHeightProperty();
   userAgentBodyClass(); 
   targetBlankExternalLinks(); // All external links open in a new tab  
 
@@ -145,7 +140,11 @@ window.lazySizes && window.lazySizes.init();
     window.history.scrollRestoration = 'manual'
   }
 
-  $(() => {
-    document.body.classList.add('is-loaded')
-  })
-})(window.jQuery)
+  document.body.classList.add('is-loaded')
+
+  if (isThemeEditor()) {
+    document.documentElement.classList.add('is-theme-editor')
+  }  
+}
+
+document.addEventListener('DOMContentLoaded', init)

@@ -7,6 +7,7 @@ import Article from '../sections/article'
 import Blog from '../sections/blog'
 import Collection from '../sections/collection'
 import Product from '../sections/product'
+import ProductRelated from '../sections/productRelated'
 import Login from '../sections/login'
 import Search from '../sections/search'
 import PageHero from '../sections/pageHero'
@@ -14,21 +15,25 @@ import PageHero from '../sections/pageHero'
 export default class BaseRenderer extends Renderer {
   constructor(properties) {
     super(properties)
-
-    this.sectionManager = new SectionManager()
   }
 
   onEnter() {
     // run after the new content has been added to the Taxi container
-    this.sectionManager.register('featured-products', FeaturedProducts)
-    this.sectionManager.register('addresses', Addresses)
-    this.sectionManager.register('article', Article)
-    this.sectionManager.register('blog', Blog)
-    this.sectionManager.register('collection', Collection)
-    this.sectionManager.register('product', Product)
-    this.sectionManager.register('login', Login)
-    this.sectionManager.register('search', Search)
-    this.sectionManager.register('page-hero', PageHero)
+
+    // Taxi re-uses renderer instances when navigating between cache'd pages
+    // Create the section renderer onEnter rather than in the constructor to make sure we have a fresh one each time
+    this.sectionManager = new SectionManager()
+
+    this.sectionManager.register(FeaturedProducts)
+    this.sectionManager.register(Addresses)
+    this.sectionManager.register(Article)
+    this.sectionManager.register(Blog)
+    this.sectionManager.register(Collection)
+    this.sectionManager.register(Product)
+    this.sectionManager.register(ProductRelated)
+    this.sectionManager.register(Login)
+    this.sectionManager.register(Search)
+    this.sectionManager.register(PageHero)
   }
 
   onEnterCompleted() {
@@ -37,7 +42,10 @@ export default class BaseRenderer extends Renderer {
 
   onLeave() {
     // run before the transition.onLeave method is called
-    this.sectionManager.destroy()
+    if (this.sectionManager) {
+      this.sectionManager.destroy()
+      this.sectionManager = null
+    }
   }
 
   onLeaveCompleted() {

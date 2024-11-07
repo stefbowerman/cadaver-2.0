@@ -1,49 +1,49 @@
+import { doComponentCleanup } from '../components/base'
+import GraphicCover from '../components/graphicCover'
+
 export default class BaseSection {
-  constructor(container, name) {
-    this.$container = container instanceof $ ? container : $(container);
-    this.id = this.$container.data('section-id');
-    this.type = this.$container.data('section-type');
-    this.name = name;
-    this.namespace = `.${this.name}`; // @TODO - This should be camelCased just incase
+  constructor(container) {
+    this.container = container
+    this.id = this.container.dataset.sectionId
+    this.type = this.constructor.TYPE
+    this.parent = this.container.parentElement // Automatically generated wrapper element
+    this.parentId = this.parent.id
+
+    if (!this.id) {
+      console.warn('Section ID not found', this)
+    }    
 
     this.onNavigateOut = this.onNavigateOut.bind(this)
     this.onNavigateIn  = this.onNavigateIn.bind(this)
     this.onNavigateEnd = this.onNavigateEnd.bind(this)
 
-    $(window)
-      .on('taxi.navigateOut', this.onNavigateOut)
-      .on('taxi.navigateIn',  this.onNavigateIn)
-      .on('taxi.navigateEnd', this.onNavigateEnd)    
-  }
+    window.addEventListener('taxi.navigateOut', this.onNavigateOut)
+    window.addEventListener('taxi.navigateIn', this.onNavigateIn)
+    window.addEventListener('taxi.navigateEnd', this.onNavigateEnd)
 
-  findWithin(selector) {
-    return $(selector, this.$container) // Not implemented on any sections yet
-  }  
+    // Below are standard components that can be initialized at the base section level (until there's a reason for them to get pushed down somewhere more specific)
+    this.graphicCovers = [...container.querySelectorAll(GraphicCover.SELECTOR)].map(el => {
+      return new GraphicCover(el)
+    })    
+  }
 
   onUnload(e) {
-    $(window)
-      .off('taxi.navigateOut', this.onNavigateOut)
-      .off('taxi.navigateIn',  this.onNavigateIn)
-      .off('taxi.navigateEnd', this.onNavigateEnd)
+    window.removeEventListener('taxi.navigateOut', this.onNavigateOut)
+    window.removeEventListener('taxi.navigateIn', this.onNavigateIn)
+    window.removeEventListener('taxi.navigateEnd', this.onNavigateEnd)
 
-    // Testing section component autodestroy
-    // for (let key in this) {
-    //   console.log(this[key])
-    //   if (this[key].destroy) {
-    //     console.log('has destroy method!')
-    //   }
-    // }      
+    doComponentCleanup(this) // This automatically calls this.destroy() up all components (+ subcomponents)
   }
 
-  onSelect(e) {
+  onSectionSelect(e) {
     
   }
 
-  onDeselect(e) {
+  onSectionDeselect(e) {
 
   }
 
-  onReorder(e) {
+  onSectionReorder(e) {
 
   }
 
@@ -55,15 +55,15 @@ export default class BaseSection {
 
   }
 
-  onNavigateOut({ from, trigger }) {
-
+  onNavigateOut(e) {
+    // const { from, trigger } = e.detail
   }
 
-  onNavigateIn({ to, trigger }) {
-
+  onNavigateIn(e) {
+    // const { to, trigger } = e.detail
   }
 
-  onNavigateEnd({ to, from, trigger }) {
-
-  }  
+  onNavigateEnd(e) {
+    // const { to, from, trigger } = e.detail
+  }    
 }

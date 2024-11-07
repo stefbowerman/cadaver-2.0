@@ -32,8 +32,15 @@
             "option1": {{ variant.option1 | json }},
             "option2": {{ variant.option2 | json }},
             "option3": {{ variant.option3 | json }},
+            "options": [
+              {% for option in variant.options %}
+                {{ option | json }}
+                {% unless forloop.last %},{% endunless %}
+              {% endfor %}
+            ],            
             "price": {{ variant.price }},
             "price_formatted": {{ variant.price | money_without_trailing_zeros | json }},
+            "quantity_rule": {{ variant.quantity_rule | json }},
             "title": {{ variant.title | json }}   
           }      
           {% unless forloop.last %},{% endunless %}

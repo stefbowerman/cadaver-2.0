@@ -1,27 +1,29 @@
 import BaseSection from './base'
 import AJAXFormManager, { events } from '../core/ajaxFormManager'
-import { getCart } from '../core/cartAPI'
+import CartAPI from '../core/cartAPI'
 import { getQueryParams } from '../core/utils'
 
 import AJAXCart from '../components/ajaxCart'
 
 export default class AJAXCartSection extends BaseSection {
-  constructor(container) {
-    super(container, 'ajax-cart')
+  static TYPE = 'ajax-cart'
 
-    this.ajaxCart = new AJAXCart($(AJAXCart.selector, this.$container).first())
+  constructor(container) {
+    super(container)
+
+    this.ajaxCart = new AJAXCart(this.container.querySelector(AJAXCart.selector))
     this.ajaxFormManager = new AJAXFormManager()
 
     // Store callbacks so we can remove them later
     this.callbacks = {
-      changeSuccess: e => this.ajaxCart.onChangeSuccess(e.cart),
-      changeFail: e => this.ajaxCart.onChangeFail(e.description)
+      changeSuccess: e => this.ajaxCart.onChangeSuccess(e.detail.cart),
+      changeFail: e => this.ajaxCart.onChangeFail(e.detail.description)
     }
 
-    $window.on(events.ADD_SUCCESS, this.callbacks.changeSuccess)
-    $window.on(events.ADD_FAIL, this.callbacks.changeFail)
+    window.addEventListener(events.ADD_SUCCESS, this.callbacks.changeSuccess)
+    window.addEventListener(events.ADD_FAIL, this.callbacks.changeFail)
 
-    getCart().then(cart => {
+    CartAPI.getCart().then(cart => {
       this.ajaxCart.render(cart)
 
       // If redirected from the cart, show the ajax cart after a short delay
@@ -31,14 +33,14 @@ export default class AJAXCartSection extends BaseSection {
     })
   }
 
-  onUnload() {
-    super.onUnload()
-    
+  onUnload() {    
     this.ajaxCart.destroy()
     this.ajaxFormManager.destroy()
 
-    $window.off(events.ADD_SUCCESS, this.callbacks.changeSuccess)
-    $window.off(events.ADD_FAIL, this.callbacks.changeFail)    
+    window.removeEventListener(events.ADD_SUCCESS, this.callbacks.changeSuccess)
+    window.removeEventListener(events.ADD_FAIL, this.callbacks.changeFail)
+
+    super.onUnload()
   }  
 
   open({ delay = false } = {}) {
@@ -51,11 +53,11 @@ export default class AJAXCartSection extends BaseSection {
     this.ajaxCart.close()
   }
 
-  onSelect() {
+  onSectionSelect() {
     this.open()
   }
 
-  onDeselect() {
+  onSectionDeselect() {
     this.close()
   }
 

@@ -1,8 +1,5 @@
 {
   "general": {
-    "accessibility": {
-      "skip_to_content": "Skip to content"
-    },
     "meta": {
       "tags": "Tagged \"{{ tags }}\"",
       "page": "Page {{ page }}"
@@ -54,6 +51,12 @@
       "submit": "Search"
     }
   },
+  "accessibility": {
+    "skip_to_content": "Skip to content",
+    "link_messages": {
+      "new_window": "Link opens in a new window."
+    }      
+  },  
   "blogs": {
     "article": {
       "author_on_date_html": "By {{ author }} on {{ date }}",
@@ -93,8 +96,7 @@
       "cookies_required": "Enable cookies to use the shopping cart",
       "continue_browsing_html": "Continue browsing <a href=\"/collections/all\">here</a>.",
       "item_quantity": "Item quantity",
-      "savings": "You're saving",
-      "subtotal": "Subtotal"
+      "savings": "You're saving"
     },
     "label": {
       "product": "Product",

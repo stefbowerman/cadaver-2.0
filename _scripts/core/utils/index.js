@@ -1,43 +1,4 @@
 /**
- * Return an object from an array of objects that matches the provided key and value
- *
- * @param {array} array - Array of objects
- * @param {string} key - Key to match the value against
- * @param {string} value - Value to get match of
- */
-export function find(array, key, value) {
-  let found;
-  
-  for (let i = 0; i < array.length; i++) {
-    if (array[i][key] === value) {
-      found = array[i];
-      break;
-    }
-  }
-  
-  return found;
-}
-
-/**
- * Remove an object from an array of objects by matching the provided key and value
- *
- * @param {array} array - Array of objects
- * @param {string} key - Key to match the value against
- * @param {string} value - Value to get match of
- */
-export function remove(array, key, value) {
-  let i = array.length;
-  while (i--) {
-    if (array[i][key] === value) {
-      array.splice(i, 1);
-      break;
-    }
-  }
-
-  return array;
-}
-
-/**
  * _.compact from lodash
  * Remove empty/false items from array
  * Source: https://github.com/lodash/lodash/blob/master/compact.js
@@ -65,109 +26,14 @@ export function compact(array) {
  * @return {Object}
  */
 export function getQueryParams() {
-  const queryString = (window.location.search && window.location.search.substr(1)) || '';
-  const queryParams = {};
+  const queryParams = {}
+  const params = new URLSearchParams(window.location.search)
 
-  queryString
-    .split('&')
-    .filter(element =>  element.length)
-    .forEach((paramValue) => {
-      const splitted = paramValue.split('=');
-
-      if (splitted.length > 1) {
-        queryParams[splitted[0]] = splitted[1];
-      }
-      else {
-        queryParams[splitted[0]] = true;
-      }
-    });
-
-  return queryParams;
-}
-
-/**
- * Returns empty string or query string with '?' prefix
- *
- * @return (string)
- */
-export function getQueryString() {
-  let queryString = (window.location.search && window.location.search.substr(1)) || '';
-
-  // Add the '?' prefix if there is an actual query
-  if (queryString.length) {
-    queryString = `?${queryString}`;
+  for (const [key, value] of params.entries()) {
+    queryParams[key] = value || true
   }
 
-  return queryString;
-}
-
-/**
- * Constructs a version of the current URL with the passed in key value pair as part of the query string
- * Will also remove the key if an empty value is passed in
- * See: https://gist.github.com/niyazpk/f8ac616f181f6042d1e0
- *
- * @param {String} key
- * @param {String} value
- * @param {String} uri - optional, defaults to window.location.href
- * @return {String}
- */
-export function getUrlWithUpdatedQueryStringParameter(key, value, _uri) {
-  let uri = _uri || window.location.href;
-
-  // remove the hash part before operating on the uri
-  const i = uri.indexOf('#');
-  const hash = i === -1 ? ''  : uri.substr(i);
-  uri = i === -1 ? uri : uri.substr(0, i); // eslint-disable-line no-param-reassign
-
-  const re = new RegExp('([?&])' + key + '=.*?(&|$)', 'i'); // eslint-disable-line prefer-template
-  const separator = uri.indexOf('?') !== -1 ? '&' : '?';
-
-  if (!value) {
-    // remove key-value pair if value is empty
-    uri = uri.replace(new RegExp('([?&]?)' + key + '=[^&]*', 'i'), ''); // eslint-disable-line prefer-template
-    if (uri.slice(-1) === '?') {
-      uri = uri.slice(0, -1);
-    }
-    // replace first occurrence of & by ? if no ? is present
-    if (uri.indexOf('?') === -1) uri = uri.replace(/&/, '?');
-  }
-  else if (uri.match(re)) {
-    uri = uri.replace(re, '$1' + key + '=' + value + '$2'); // eslint-disable-line prefer-template
-  }
-  else {
-    uri = uri + separator + key + '=' + value; // eslint-disable-line prefer-template
-  }
-  return uri + hash;
-}
-
-/**
- * Constructs a version of the current URL with the passed in parameter key and associated value removed
- *
- * @param {String} key
- * @return {String}
- */
-export function getUrlWithRemovedQueryStringParameter(parameterKeyToRemove, _uri) {
-  const uri = _uri || window.location.href;
-
-  let rtn = uri.split('?')[0];
-  let param;
-  let paramsArr = [];
-  const queryString = (uri.indexOf('?') !== -1) ? uri.split('?')[1] : '';
-
-  if (queryString !== '') {
-    paramsArr = queryString.split('&');
-    for (let i = paramsArr.length - 1; i >= 0; i -= 1) {
-      param = paramsArr[i].split('=')[0];
-      if (param === parameterKeyToRemove) {
-        paramsArr.splice(i, 1);
-      }
-    }
-    if (paramsArr.length > 0) {
-      rtn = rtn + '?' + paramsArr.join('&');  // eslint-disable-line prefer-template
-    }
-  }
-
-  return rtn;
+  return queryParams
 }
 
 /**
@@ -177,30 +43,6 @@ export function getUrlWithRemovedQueryStringParameter(parameterKeyToRemove, _uri
  */
 export function isThemeEditor() {
   return window.Shopify && window.Shopify.designMode;
-}
-
-/**
- * Get the name of the correct 'transitionend' event for the browser we're in
- *
- * @return {string}
- */
-export function whichTransitionEnd() {
-  const el = document.createElement('fakeelement');
-  const transitions = {
-    transition: 'transitionend',
-    OTransition: 'oTransitionEnd',
-    MozTransition: 'transitionend',
-    WebkitTransition: 'webkitTransitionEnd'
-  };
-  let name;
-
-  Object.keys(transitions).forEach((t) => {
-    if (el.style[t] !== undefined) {
-      name = transitions[t];
-    }
-  });
-
-  return name;
 }
 
 /**
@@ -295,13 +137,17 @@ export function hashFromString(string) {
  * cookies are enabled in the browser.
  */
 export function cookiesEnabled() {
-  let cookieEnabled = navigator.cookieEnabled;
-
-  if (!cookieEnabled) {
-    document.cookie = 'testcookie';
-    cookieEnabled = (document.cookie.indexOf('testcookie') !== -1);
+  if (navigator.cookieEnabled) {
+    return true
   }
-  return cookieEnabled;
+
+  document.cookie = 'testcookie=1; SameSite=Strict; Secure'
+  const cookieEnabled = document.cookie.includes('testcookie')
+
+  // Remove after checking
+  document.cookie = 'testcookie=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Secure'
+
+  return cookieEnabled
 }
 
 /**
@@ -328,30 +174,6 @@ export function pluralize(num, singular, plural)  {
     }
   }
   return output;
-}
-
-/**
- * Retrieves an object property by the passed in string
- * i.e. this.getPropByString(window, 'property.subproperty'); => window.property.subproperty
- *
- * @param {Object} o
- * @return {String} s
- */
-export function getPropByString(o, s) {
-  // See: https://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-with-string-key
-  s = s.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
-  s = s.replace(/^\./, '');           // strip a leading dot
-  const a = s.split('.');
-  for (let i = 0, n = a.length; i < n; ++i) {
-    const k = a[i];
-    if (k in o) {
-      o = o[k];
-    }
-    else {
-      return null;
-    }
-  }
-  return o;
 }
 
 /**
@@ -452,18 +274,58 @@ export function credits() {
 }
 
 export function targetBlankExternalLinks() {
-  for(var c = document.getElementsByTagName("a"), a = 0;a < c.length;a++) {
+  for(var c = document.getElementsByTagName('a'), a = 0;a < c.length;a++) {
     var b = c[a];
 
-    if (b.getAttribute("href") && b.hostname !== location.hostname) {
-      b.target = "_blank"
-      b.setAttribute('aria-label', 'Link opens in a new window')
+    if (b.getAttribute('href') && b.hostname !== location.hostname) {
+      b.target = '_blank'
+      b.setAttribute('aria-describedby', 'a11y-new-window-message')
     }
   }
 }
 
-export function setViewportHeightProperty() {
-  // If mobile / tablet, set var to window height. This fixes the 100vh iOS bug/feature.
-  const v = window.innerWidth <= 1024 ? `${window.innerHeight}px` : '100vh';
-  document.documentElement.style.setProperty('--viewport-height', v);
+/**
+ * Ensure we are working with a valid number
+ *
+ * @param {int|string} qty
+ * @param {int} defaultQty
+ * @return {int} - Integer quantity.
+ */
+export function validateQty(qty, defaultQty = 1) {
+  return (parseFloat(qty) === parseInt(qty)) && !Number.isNaN(qty) ? parseInt(qty) : defaultQty;
+}
+
+/**
+ * Returns an index in the array by wrapping around if the specified index does not exist in arr.length - 1
+ *
+ * @param {Array} arr
+ * @param {int} index
+ * @return {int} - index
+ */
+export function getWrappedIndex(arr, index) {
+  const len = arr.length
+
+  return ((index % len) + len) % len
+}
+
+/**
+ * Generates a pseudo-random number based on a seed.
+ *
+ * @param {number} [seed=0.1] - The seed used to generate the pseudo-random number. Defaults to 0.1 if not provided.
+ * @returns {number} A pseudo-random number between 0 and 1.
+ */
+export const randomFromSeed = (seed = 0.1) => {
+  const x = Math.sin(seed) * 1000
+
+  return x - Math.floor(x)
+}
+
+/**
+ * Generates a unique identifier (UUID) based on the current timestamp.
+ *
+ * @param {number} [length=9] - The length of the UUID to be generated. Defaults to 9 characters.
+ * @returns {string} A unique identifier (UUID) of the specified length.
+ */
+export function getUUID(length = 9) {
+  return randomFromSeed(Date.now()).toString(36).slice(2, length + 2)
 }

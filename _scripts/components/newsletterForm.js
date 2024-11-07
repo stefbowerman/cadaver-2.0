@@ -18,21 +18,25 @@ export default class NewsletterForm {
    * @param {HTMLElement} el - Element used for scoping any element selection.  Can either be a containing element or the form element itself
    */  
   constructor(el) {
-    this.name = 'newsletterForm';
+    this.name = 'newsletterForm'
 
-    this.timeout = null;
+    this.timeout = null
 
-    this.$el = $(el);
-    this.$form = this.$el.is(selectors.form) ? this.$el : this.$el.find(selectors.form);
-    this.$formInput = $('input[type="email"]', this.$el);
+    this.el = el
+    this.form = this.el.tagName === 'FORM' ? this.el : this.el.querySelector(selectors.form)
     
-    if (!this.$form.length) {
-      console.warn(`[${this.name}] - Form element required to initialize`);
+    if (!this.form) {
+      console.warn(`[${this.name}] - Form element required to initialize`)
       return;
     }
 
-    this.$formContents = $(selectors.formContents, this.$el);
-    this.$formMessage  = $(selectors.formMessage, this.$el);
+    this.formInput = this.form.querySelector('input[type="email"]')
+    this.formContents = this.form.querySelector(selectors.formContents)
+    this.formMessage = this.form.querySelector(selectors.formMessage)
+  }
+
+  destroy() {
+    window.clearTimeout(this.timeout)
   }
 
   /**
@@ -41,8 +45,8 @@ export default class NewsletterForm {
    * @param {Boolean} reset - If true, will call this.reset when finished
    */  
   showMessageWithTimeout(message, reset = false) {
-    this.$formMessage.html(message);
-    this.$formContents.addClass(classes.showMessage);
+    this.formMessage.innerHTML = message
+    this.formContents.classList.add(classes.showMessage)
 
     window.clearTimeout(this.timeout);
 
@@ -51,12 +55,12 @@ export default class NewsletterForm {
         this.reset();
       } 
 
-      this.$formContents.removeClass(classes.showMessage);
+      this.formContents.classList.remove(classes.showMessage)
     }.bind(this), 3000);    
   }
 
   showFormContents() {
-    this.$form.addClass(classes.showContents);
+    this.form.classList.add(classes.showContents)
 
     setTimeout(() => {
       this.focusInput();
@@ -64,30 +68,30 @@ export default class NewsletterForm {
   }
 
   hideFormContents() {
-    this.$form.removeClass(classes.showContents);
+    this.form.classList.remove(classes.showContents)
   }
 
   // Allow external components to focus the input
   focusInput() {
-    this.$formInput.focus();
+    this.formInput.focus()
   }
 
   /**
    * Resets everything to it's initial state.  Only call when form content isn't visible
    */
   reset() {
-    this.$formInput.val('');
-    this.$formInput.trigger('change');
+    this.formInput.value = ''
+    this.formInput.dispatchEvent(new Event('change'))
   }
 
   onSubscribeSuccess(response) {
     const isSubscribed = response && response.data && response.data.is_subscribed;
-    const msgKey = isSubscribed ? 'already-subscribed' : 'success';
+    const msgKey = isSubscribed ? 'alreadySubscribed' : 'success';
 
     // Don't reset the form if they're already subscribed, they might want to just enter a different email
     const reset = !isSubscribed;
     
-    this.showMessageWithTimeout(this.$formMessage.data(msgKey), reset);
+    this.showMessageWithTimeout(this.formMessage.dataset[msgKey], reset);
   }
 
   onSubmitStart() {
@@ -100,6 +104,6 @@ export default class NewsletterForm {
   }
 
   onSubscribeFail() {
-    this.showMessageWithTimeout(this.$formMessage.data('fail'), false);
+    this.showMessageWithTimeout(this.formMessage.dataset.fail, false);
   }
 }

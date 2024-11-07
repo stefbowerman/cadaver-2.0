@@ -1,3 +1,9 @@
+{% comment %}
+  @TODO - Translate strings.
+  @TODO - Remove moneyFormat
+  @TODO - Remove lazySizesConfig
+{% endcomment %}
+
 <script>
   document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
   
@@ -9,12 +15,19 @@
     },
     moneyFormat: {{ shop.money_format | json }},
     routes: {
-      predictiveSearchUrl: {{ routes.predictive_search_url | json }},
+      predictive_search_url: {{ routes.predictive_search_url | json }},
       cart_add_url: {{ routes.cart_add_url | json }},
       cart_change_url: {{ routes.cart_change_url | json }},
       cart_update_url: {{ routes.cart_update_url | json }},
-      cart_url: {{ routes.cart_url | json }}
-    }    
+      cart_clear_url: {{ routes.cart_clear_url | json }},
+      cart_url: {{ routes.cart_url | json }},
+      account_addresses_url: {{ routes.account_addresses_url | json }},
+      account_url: {{ routes.account_url | json }}
+    },
+    klaviyo: {
+      companyId: {{ settings.klaviyo_public_api_key | json }},
+      listId: {{ settings.klaviyo_newsletter_list_id | json }}
+    },     
   };
 
   window.lazySizesConfig = window.lazySizesConfig || {};
@@ -23,7 +36,5 @@
   window.lazySizesConfig.expFactor = 3;
 </script>
 
-<script src="{{ 'jquery-3.6.4.min.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer="defer"></script> {% comment %} Needed for accounts {% endcomment %}
 <script src="{{ 'app.bundle.js' | asset_url }}" defer="defer"></script>
-<script src="{{ 'instant-page.min.js' | asset_url }}" defer="defer"></script>

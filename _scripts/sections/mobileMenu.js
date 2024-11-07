@@ -1,6 +1,6 @@
 import BaseSection from './base'
 
-import { events as breakpointEvents } from '../core/breakpoints'
+import BreakpointsController, { BREAKPOINTS } from '../core/breakpointsController'
 
 const selectors = {
   toggle: '[data-mobile-menu-toggle]',
@@ -13,43 +13,42 @@ const classes = {
 }
 
 export default class MobileMenuSection extends BaseSection {
-  constructor(container) {
-    super(container, 'mobile-menu')
+  static TYPE = 'mobile-menu'
 
-    this.$searchForm = $(selectors.searchForm, this.$container) // I don't think this selector
+  constructor(container) {
+    super(container)
+
+    this.searchForm = this.container.querySelector(selectors.searchForm)
 
     this.isOpen = false
 
-    this.onToggleClick = this.onToggleClick.bind(this)
+    // this.onToggleClick = this.onToggleClick.bind(this)
     this.onBreakpointChange = this.onBreakpointChange.bind(this)
+    this.onBodyClick = this.onBodyClick.bind(this)
 
-    this.$searchForm.on('submit', this.onSearchFormSubmit.bind(this))
+    this.searchForm.addEventListener('submit', this.onSearchFormSubmit.bind(this))
 
-    $body.on('click', selectors.toggle, this.onToggleClick)
-    $window.on(breakpointEvents.BREAKPOINT_CHANGE, this.onBreakpointChange)
+    document.body.addEventListener('click', this.onBodyClick)
+    window.addEventListener(BreakpointsController.events.CHANGE, this.onBreakpointChange)  
   }
 
   onUnload() {
+    document.body.removeEventListener('click', this.onBodyClick)
+    window.removeEventListener(BreakpointsController.events.CHANGE, this.onBreakpointChange)  
+    
     super.onUnload()
-
-    $body.off('click', selectors.toggle, this.onToggleClick)
-    $window.off(breakpointEvents.BREAKPOINT_CHANGE, this.onBreakpointChange)
   }
 
   open() {
-    this.$container.addClass(classes.isOpen)
-    $body.addClass(classes.bodyIsOpen)
+    this.container.classList.add(classes.isOpen)
+    document.body.classList.add(classes.bodyIsOpen)
     
     this.isOpen = true
   }
 
   close() {
-    this.$container.removeClass(classes.isOpen)
-    $body.removeClass(classes.bodyIsOpen)
-
-    if (this.$container.has(document.activeElement)) {
-      document.activeElement.blur()
-    }
+    this.container.classList.remove(classes.isOpen)
+    document.body.classList.remove(classes.bodyIsOpen)
 
     this.isOpen = false
   }
@@ -59,23 +58,37 @@ export default class MobileMenuSection extends BaseSection {
   }
 
   onSearchFormSubmit(e) {
-    if (window.app.taxi) {
-      e.preventDefault()
+    if (!window.app.taxi) {
+      return
+    }
 
-      const q = this.$searchForm.find('[name="q"]').val() // Could probably use $.fn.serialize here...
-      const type = this.$searchForm.find('[name="type"]').val() || 'product'
+    e.preventDefault()
 
-      window.app.taxi.navigateTo(`${this.$searchForm.attr('action')}?type=${type}&q=${q}`)
+    const data = new FormData(this.searchForm)
 
-      return false
+    const q = data.get('q')
+    const type = data.get('type') || 'product'
+
+    if (!q) {
+      return // @TODO - Show error ?
+    }
+
+    window.app.taxi.navigateTo(`${this.searchForm.action}?type=${type}&q=${q}`)
+
+    return false
+  }
+
+  onBreakpointChange({ detail: { breakpoint } }) {
+    if (!this.isOpen) return
+
+    if (breakpoint > BREAKPOINTS.sm) {
+      this.close()
     }
   }
 
-  onBreakpointChange(e) {
-    if (!this.isOpen) return
-
-    if (!['xs', 'sm'].includes(e.bpMinWidthKey)) {
-      this.close()
+  onBodyClick(e) {
+    if (e.target.closest(selectors.toggle)) {
+      return this.onToggleClick(e)
     }
   }
 
@@ -85,11 +98,11 @@ export default class MobileMenuSection extends BaseSection {
     this.toggle()
   }  
 
-  onSelect() {
+  onSectionSelect() {
     this.open()
   }
 
-  onDeselect() {
+  onSectionDeselect() {
     this.close()
   }
 

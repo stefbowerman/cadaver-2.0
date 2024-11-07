@@ -1,42 +1,23 @@
 import KlaviyoAPI from './klaviyoAPI'
 
-const noop = () => {};
+const noop = () => {}
 
 /**
- * AJAX Klaviyo Library
+ * AJAX Klaviyo Form
  * -----------------------------------------------------------------------------
+ *
  * Handles AJAX form submission and callback event
  *
- * Usage:
+ * NOTE: This has not been rigorously tested yet...
  *
- *   import AJAXKlaviyoForm from './ajaxKlaviyoForm';
- *
- *   const $form = $('form');
- *   const apiKey = $form.data('api-key');
- *   const listId = $form.data('list-id');
- *   const source = $form.data('source');
- *
- *   const options = {
- *     apiKey: apiKey
- *     listId: listId,
- *     source: source,
- *     onSubscribeSuccess: function() { .. },
- *     onSubmitFail: function(){ .. }
- *   };
- *
- *   const ajaxKlaviyoForm = new AJAXKlaviyoForm($form, options);
- *
- * @namespace ajaxKlaviyoForm
  */
 
 
 /**
  * AJAX Klaviyo Form Constructor
  *
- * @param {HTMLElement | jQuery} form - Form element
+ * @param {HTMLElement} form - Form element
  * @param {Object} options
- * @param {String} options.apiKey - Klaviyo Public API Key
- * @param {String} options.listId - Klaviyo List ID
  * @param {String} options.source - Klaviyo custom $source property
  * @param {Function} options.onInit
  * @param {Function} options.onBeforeSend - Prevent AJAX submission by returning false here
@@ -47,55 +28,40 @@ const noop = () => {};
  * @return {self}
  */
 export default class AJAXKlaviyoForm {
-  constructor(form, options) {
-    this.name = 'ajaxKlaviyoForm';
-    this.namespace = `.${this.name}`;
-    this.events = {
-      SUBMIT: 'submit' + this.namespace
-    };
+  constructor(el, options) {
+    this.name = 'ajaxKlaviyoForm'
 
-    const defaults = {
-      apiKey: null,
-      listId: null,
+    this.settings = {
       source: 'Shopify Form',
       onInit: noop,
       onBeforeSend: noop,
       onSubmitStart: noop,
       onSubmitFail: noop,
       onSubscribeSuccess: noop,
-      onSubscribeFail: noop
-    };
-
-    if (form.length === 0) {
-      return false;
+      onSubscribeFail: noop,
+      ...options
     }
 
-    this.$form = form instanceof $ ? form : $(form);
-    this.$input = this.$form.find('input[type="email"]');
-    this.$submit = this.$form.find('[type="submit"]');
-    this.settings = $.extend({}, defaults, options);
-    this.isSubmitting = false;
+    this.el = el
+    this.form = this.el.tagName === 'FORM' ? this.el : this.el.querySelector('form')
 
-    this.klaviyoAPI = new KlaviyoAPI({ companyId: this.settings.apiKey })
-
-    if (!this.settings.apiKey) {
-      console.log(`[${this.name}] - Valid Klaviyo API Key required to initialize`) // eslint-disable-line no-console
-      return false
+    if (!this.form) {
+      console.warn(`[${this.name}] - Form element required to initialize`)
+      return;
     }
 
-    if (!this.settings.listId) {
-      console.log(`[${this.name}] - Valid Klaviyo List ID required to initialize`) // eslint-disable-line no-console
-      return false
-    }
+    this.input = this.form.querySelector('input[type="email"]')
+    this.submit = this.form.querySelector('[type="submit"]')
+    this.isSubmitting = false
 
-    if (this.$input.length === 0) {
+    if (!this.input === 0) {
       console.warn(`[${this.name}] - Email input missing`) // eslint-disable-line no-console
       return false
     }    
 
-    this.$form.on(this.events.SUBMIT, this.onFormSubmit.bind(this));
+    this.form.addEventListener('submit', this.onFormSubmit.bind(this))
 
-    this.settings.onInit();
+    this.settings.onInit()
   }
 
   logErrors(errors) {
@@ -115,41 +81,28 @@ export default class AJAXKlaviyoForm {
       return false;
     }
 
-    if (this.$input.val() && this.$input.val().length) {
-      return true;
+    if (this.input.value && this.input.value.length) {
+      return true
     }
-
-    this.$input.parents('.form-group').addClass('alert-info');
 
     return false;
   }
 
-  onSubmitDone(successful) {
-    this.$submit.prop('disabled', false);
-
-    if (successful) {
-      this.settings.onSubscribeSuccess();
-    }
-    else {
-      this.settings.onSubscribeFail();
-    }
-  }
-
   onSubmitFail(errors) {
-    this.$submit.prop('disabled', false);
+    this.submit.removeAttribute('disabled')
 
-    this.logErrors(errors);
-    this.settings.onSubmitFail(errors);
+    this.logErrors(errors)
+    this.settings.onSubmitFail(errors)
   }
 
-  onFormSubmit(e) {
-    e.preventDefault();
+  async onFormSubmit(e) {
+    e.preventDefault()
 
-    if (this.onBeforeSend() === false) {
+    if (this.isSubmitting || this.onBeforeSend() === false) {
       return false
     }
 
-    const email = this.$input.val()
+    const email = this.input.value
 
     // This prop validation should probably be handled in a promise rejection from the KlaviyoAPI...?
     if (!email) {
@@ -157,28 +110,27 @@ export default class AJAXKlaviyoForm {
       return
     }    
 
-    this.isSubmitting = true;
+    try {
+      this.isSubmitting = true;
 
-    this.$submit.prop('disabled', true);
+      this.submit.setAttribute('disabled', true)
+      this.settings.onSubmitStart()
 
-    this.settings.onSubmitStart();
-
-    this.klaviyoAPI.createClientSubscription({
-      email,
-      source: this.settings.source,
-      listId: this.settings.listId
-    })
-      .then(success => {
-        this.onSubmitDone(success)
+      const success = await KlaviyoAPI.createClientSubscription({
+        email,
+        source: this.settings.source
       })
-      .catch(err => {
-        console.log('error', err) // eslint-disable-line no-console
-      })
-      .always(() => {
-        this.$submit.prop('disabled', false);
 
-        this.isSubmitting = false
-      })
+      success ? this.onSubmitSuccess() : this.onSubmitFail()
+    }
+    catch (e) {
+      console.log('error', e) // eslint-disable-line no-console
+    }
+    finally {
+      this.submit.removeAttribute('disabled')
+
+      this.isSubmitting = false
+    }
 
     return false
   }

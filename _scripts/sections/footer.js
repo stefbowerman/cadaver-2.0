@@ -4,23 +4,29 @@ import NewsletterForm from '../components/newsletterForm'
 import AJAXKlaviyoForm from '../core/ajaxKlaviyoForm'
 
 export default class FooterSection extends BaseSection {
+  static TYPE = 'footer'
+
   constructor(container) {
-    super(container, 'footer')
+    super(container)
 
-    this.$newsletterForm = $(NewsletterForm.selector, this.$container)
+    this.newsletterFormEl = this.container.querySelector(NewsletterForm.SELECTOR)
+    this.newsletterForm = null
+    this.ajaxForm = null
 
-    if (this.$newsletterForm.length) {
-      this.newsletterForm = new NewsletterForm(this.$newsletterForm)
+    if (this.newsletterFormEl) {
+      this.newsletterForm = new NewsletterForm(this.newsletterFormEl)
 
-      this.ajaxForm = new AJAXKlaviyoForm(this.$newsletterForm, {
-        apiKey: this.$newsletterForm.data('api-key'),
-        listId: this.$newsletterForm.data('list-id'),
-        source: this.$newsletterForm.data('source'),
+      this.ajaxForm = new AJAXKlaviyoForm(this.newsletterFormEl, {
+        source: this.newsletterFormEl.dataset.source,
         onSubmitStart: () => this.newsletterForm.onSubmitStart(),
         onSubmitFail: errors => this.newsletterForm.onSubmitFail(errors),
         onSubscribeSuccess: () => this.newsletterForm.onSubscribeSuccess(),
         onSubscribeFail: () => this.newsletterForm.onSubscribeFail()
       })
-    }    
+    }
+  }
+
+  onUnload() {
+    this.newsletterForm?.destroy()
   }
 }

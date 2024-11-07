@@ -9,35 +9,45 @@ const selectors = {
   deleteAddress: '[data-delete-address]'
 }
 
+function toggle(el) {
+  if (el.style.display == 'none') {
+    el.style.display = '';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
 export default class AddressesSection extends BaseSection {
+  static TYPE = 'addresses'
+  
   constructor(container) {
-    super(container, 'addresses')
+    super(container)
 
-    this.$toggleNew = $(selectors.toggleNew, this.$container)
-    this.$newForm = $(selectors.newForm, this.$container)
+    this.newForm = this.container.querySelector(selectors.newForm)
 
-    this.$toggleForm = $(selectors.toggleForm, this.$container)
-    this.$deleteAddress = $(selectors.deleteAddress, this.$container)
+    this.container.addEventListener('click', (e) => {
+      if (e.target.matches(selectors.toggleNew)) {
+        e.preventDefault()
+        toggle(this.newForm)
+        return
+      }
 
-    this.$toggleNew.on('click', (e) => {
-      e.preventDefault()
-      this.$newForm.toggle()
-    })
+      if (e.target.matches(selectors.toggleForm)) {
+        e.preventDefault()
+        toggle(this.container.querySelector(`#edit-address-${e.target.dataset.id}`))
+        return
+      }
 
-    this.$toggleForm.on('click', e => {
-      e.preventDefault()
-      const id = $(e.currentTarget).data('id')
+      if (e.target.matches(selectors.deleteAddress)) {
+        e.preventDefault()
 
-      $(`#edit-address-${id}`).toggle()
-    })
+        const id = e.target.dataset.id
+  
+        if (confirm('Are you sure you wish to delete this address?')) {
+          postLink('/account/addresses/' + id, {'parameters': {'_method': 'delete'}})
+        }
 
-    this.$deleteAddress.on('click', e => {
-      e.preventDefault()
-
-      const id = $(e.currentTarget).data('id')
-
-      if (confirm('Are you sure you wish to delete this address?')) {
-        postLink('/account/addresses/' + id, {'parameters': {'_method': 'delete'}})
+        return
       }
     })
 
@@ -46,12 +56,12 @@ export default class AddressesSection extends BaseSection {
       hideElement: 'address-province-container-new'
     })
 
-    $('[data-address-form]', this.$container).each((i, el) => {
+    this.container.querySelectorAll('[data-address-form]').forEach(el => {
       const id = el.dataset.id
 
       new Shopify.CountryProvinceSelector(`address-country-${id}`, `address-province-${id}`, {
         hideElement: `address-province-container-${id}`
       })
-    }) 
+    })
   }
 }

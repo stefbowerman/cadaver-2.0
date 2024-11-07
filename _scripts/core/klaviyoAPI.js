@@ -1,88 +1,47 @@
-export default class KlaviyoAPI {
-  constructor({ companyId, revision } = {}) {
-    this.companyId = companyId
-    this.revision = revision || '2024-02-15'
+const companyId = window.app.klaviyo && window.app.klaviyo.companyId
+const listId = window.app.klaviyo && window.app.klaviyo.listId
 
-    if (!this.companyId) {
-      console.warn(`[KlaviyoAPI] - Public API Key required`) // eslint-disable-line no-console
-    }
-  }
+if (!companyId) {
+  console.warn('[KlaviyoAPI] - Klaviyo company ID not found')
+}
 
-  phoneNumberIsValid(number) {
-    if (!number) return false
-  
-    number = number.replace(/\D/g, '') // Remove non-numeric characters
-  
-    return number.length && number.length >= 10
-  }
-  
-  sanitizePhoneNumber(number) {
-    let sanitized = number.replace(/\D/g, '') // Remove non-numeric characters
-  
-    if (sanitized.length === 10) {
-      sanitized = `1${sanitized}` // Add "1" if there's no country code, assume US
-    }
+if (!listId) {
+  console.warn('[KlaviyoAPI] - Klaviyo list ID not found')
+}
 
-    if (sanitized[0] !== '+') {
-      sanitized = `+${sanitized}` // Add "+"
-    }    
-    
-    return sanitized
-  }  
-
-  makeRequest(urlBase, data) {
-    const promise = $.Deferred()
-
-    $.ajax({
-      async: true,
-      crossDomain: true,
-      url: `${urlBase}?company_id=${this.companyId}`,
-      method: 'POST',
-      headers: {
-        'revision': this.revision,
-        'content-type': 'application/json',
-        'cache-control': 'no-cache'
-      },
-      data: JSON.stringify(data)
-    })
-      .done((response, textStatus, jqXHR) => {
-        // The new Klaviyo API endpoints don't return anything in the response
-        const success = textStatus === 'success' || jqXHR.status === 202
-
-        promise.resolve(success)
+const KlaviyoAPI = {
+  async makeRequest(path, data) {
+    try {
+      const response = await fetch(`https://a.klaviyo.com${path}?company_id=${companyId}`, {
+        method: 'POST',
+        headers: {
+          'revision': '2024-07-15',
+          'content-type': 'application/json',
+          'cache-control': 'no-cache'
+        },
+        body: JSON.stringify(data)
       })
-      .fail((jqXHR, textStatus) => {
-        let errors = [];
 
-        if (jqXHR && jqXHR.responseJSON && jqXHR.responseJSON.hasOwnProperty('errors')) {
-          errors = jqXHR.responseJSON.errors;
-        }
+      const success = response.ok || response.status === 202 // The new Klaviyo API endpoints don't return any data in the response
 
-        promise.reject({
-          message: 'Something went wrong',
-          errors
-        })
-      })
-      
-    return promise
-  }
+      return success
+    } catch (error) {
+      return {
+        message: 'Something went wrong',
+        errors: [error.message]
+      }
+    }
+  },
 
   // See: https://developers.klaviyo.com/en/reference/create_client_subscription
-  createClientSubscription({ email, phone, source, listId }) {
+  createClientSubscription({ email, source }) {
     // Email and List ID are requred
     if (!email || !listId) {
       return 
     }
 
-    const urlBase = 'https://a.klaviyo.com/client/subscriptions/'
     const profileAttributes = {
       email
-    }
-
-    if (this.phoneNumberIsValid(phone)) {
-      phone = this.sanitizePhoneNumber(phone)
-
-      profileAttributes.phone_number = phone
     }
 
     const data = {
@@ -108,17 +67,15 @@ export default class KlaviyoAPI {
       }
     }
     
-    return this.makeRequest(urlBase, data)
-  }
+    return this.makeRequest('/client/subscriptions', data)
+  },
 
   // see: https://developers.klaviyo.com/en/reference/create_client_back_in_stock_subscription
-  createBackInStockSubscription({ email, phone, variant, external_id }) {
+  createBackInStockSubscription({ email, variant, external_id }) {
     // Email and variant are requred
     if (!email || !variant) {
       return 
     }
-
-    const urlBase = 'https://a.klaviyo.com/client/back-in-stock-subscriptions/'
 
     const channels = ['EMAIL']
     const profileAttributes = {
@@ -128,13 +85,6 @@ export default class KlaviyoAPI {
     if (external_id) {
       profileAttributes.external_id = external_id
     }
-
-    if (this.phoneNumberIsValid(phone)) {
-      phone = this.sanitizePhoneNumber(phone)
-
-      profileAttributes.phone_number = phone
-      channels.push('SMS')
-    }    
 
     const data = {
       data: {
@@ -159,6 +109,8 @@ export default class KlaviyoAPI {
       }
     }    
 
-    return this.makeRequest(urlBase, data)
-  }
+    return this.makeRequest('/client/back-in-stock-subscriptions', data)
+  }  
 }
+
+export default KlaviyoAPI

@@ -3,46 +3,38 @@
 const selectors = {
   loginForm: '#customer-login-form',
   recoverForm: '#recover-password-form',
-
-  hideRecoverForm: '[data-hide-recover]',
-  showRecoverForm: '[data-show-recover]'
+  toggleRecover: '[data-toggle-recover]'
 }
 
 export default class LoginSection extends BaseSection {
+  static TYPE = 'login'
+
   constructor(container) {
-    super(container, 'login')
+    super(container)
 
-    this.resetSuccess = this.$container.data('reset-success')
-
-    this.$loginForm = $(selectors.loginForm, this.$container)
-    this.$recoverForm = $(selectors.recoverForm, this.$container)
-
-    this.$container.on('click', selectors.hideRecoverForm, (e) => {
-      e.preventDefault()
-      this.hideRecoverForm()
-    })
-
-    this.$container.on('click', selectors.showRecoverForm, (e) => {
-      e.preventDefault()
-      this.showRecoverForm()
-    })
+    this.loginForm = this.container.querySelector(selectors.loginForm)
+    this.recoverForm = this.container.querySelector(selectors.recoverForm)
+    
+    this.container.addEventListener('click', this.onClick.bind(this))
 
     if (window.location.hash == '#recover') {
       this.showRecoverForm()
     }  
+  }
 
-    if (this.resetSuccess) {
-      document.getElementById('reset-success').style.display = 'block'
+  onClick(e) {
+    if (e.target.closest(selectors.toggleRecover)) {
+      e.target.dataset.toggleRecover === 'true' ? this.showRecoverForm() : this.hideRecoverForm()
     }
   }
 
   showRecoverForm() {
-    this.$loginForm.hide()
-    this.$recoverForm.show()
+    this.loginForm.style.display = 'none'
+    this.recoverForm.style.display = ''
   }
 
   hideRecoverForm() {
-    this.$loginForm.show()
-    this.$recoverForm.hide()
+    this.loginForm.style.display = ''
+    this.recoverForm.style.display = 'none'
   }
 }

@@ -1,10 +1,6 @@
-{% comment %} // reset_success is only true when the reset form is {% endcomment %}
 <section
   data-section-id="{{ section.id }}"
   data-section-type="login"
-  {% if reset_success %}
-    data-reset-success="true"
-  {% endif %}
 >
   <div class="container">
     <div class="page-header">
@@ -52,7 +48,7 @@
               <div class="form-group" style="display: flex; justify-content: space-between; align-items: center">
                 <button type="submit" class="btn">Login</button>
                 <div style="padding: 0 11px;">
-                  <a href="#" data-show-recover>
+                  <a href="#" data-toggle-recover="true">
                     Forgot your password?
                   </a>
                 </div>
@@ -88,14 +84,7 @@
 
             {{ form.errors | default_errors }}
 
-            {% comment %}
-              form.posted_successfully? is true only inside this form, but we want
-              to show a success message outside of it. To do so, set the variable
-              reset_success to true, then use JS to show our success message above.
-            {% endcomment %}
-            {% if form.posted_successfully? %}
-              {% assign reset_success = true %}
-            {% endif %}
+            {% assign recover_success = form.posted_successfully? %}
 
             <fieldset class="form-group">
               <label for="recover-email" class="label-hidden">Email</label>
@@ -105,7 +94,7 @@
             <div class="form-group" style="display: flex; justify-content: space-between; align-items: center">
               <button type="submit" class="btn">Submit</button>
               <div style="padding: 0 11px;">
-                <a href="#" data-hide-recover>Cancel</a>
+                <a href="#" data-toggle-recover="false">Cancel</a>
               </div>
             </div>          
           {% endform %}
@@ -114,8 +103,6 @@
     </div>
   </div>
 </section>
-
-<div class="spacer"></div>
 
 {% schema %}
 {

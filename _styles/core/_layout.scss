@@ -10,7 +10,7 @@
   
 .view-container {
   min-height: 100vh;
-  min-height: var(--viewport-height);
+  min-height: 100dvh;
 }
 
 // Use this as the only direct child of main#MainContent on pages where you don't want the content flush to the header and footer
@@ -19,24 +19,3 @@
 .shopify-challenge__container {
   padding: var(---layout-vertical-padding) 0;
 }
-
-// .spacer {
-//   --height-xs: var(--spacing-20);
-//   --height-lg: var(--spacing-40);
-//   --height-xl: var(--spacing-60);
-//   --height-xxxl: var(--spacing-100);
-
-//   height: var(--height-xs, 0);
-
-//   @include bp-up(lg) {
-//     height: var(--height-lg);
-//   }
-
-//   @include bp-up(xl) {
-//     height: var(--height-xl);
-//   }
-
-//   @include bp-up(xxxl) {
-//     height: var(--height-xxxl);
-//   }  
-// }

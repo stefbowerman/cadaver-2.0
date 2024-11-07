@@ -3,15 +3,15 @@
 {
   "parser": "@babel/eslint-parser",
   "env": {
-    "browser": true
+    "browser": true,
+    "commonjs": true,
+    "es6": true,
+    "jest": true,
+    "node": true
   },
   "globals": {
     "app": "readonly",
-    "$": "readonly",
-    "jQuery": "readonly",
-    "Shopify": "readonly",
-    "$window": "readonly",
-    "$body": "readonly"
+    "Shopify": "readonly"
   },
   "rules": {
     "no-unused-vars": ["warn", {

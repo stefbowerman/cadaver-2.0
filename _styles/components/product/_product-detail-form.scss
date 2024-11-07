@@ -33,29 +33,10 @@
   }
 }
 
-.pdf-expander-group {
-  @include bp-up(lg) {
-    display: none;
-  }
-}
-
 .pdf-detail-group {
   display: none;
 
   @include bp-up(lg) {
     display: block;
-  }
-}
-
-.option-value {
-  margin-right: 10px;
-
-  &.is-active {
-    border-bottom: 1px solid black;
-  }
-
-  &.is-disabled {
-    text-decoration: line-through;
-    cursor: not-allowed;
   }
 }
