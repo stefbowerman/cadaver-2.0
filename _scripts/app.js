@@ -31,10 +31,6 @@ window.app.taxi = null;
 window.lazySizes && window.lazySizes.init();
 
 function init() {
-  if (typeof $ === undefined) {
-    console.warn('jQuery must be loaded before app.js')
-  }
-
   const viewContainer = document.querySelector('main#view-container')
   const TEMPLATE_REGEX = /\btemplate-\w*/
 

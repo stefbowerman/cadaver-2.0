@@ -11,8 +11,6 @@
   },
   "globals": {
     "app": "readonly",
-    "$": "readonly",
-    "jQuery": "readonly",
     "Shopify": "readonly"
   },
   "rules": {
