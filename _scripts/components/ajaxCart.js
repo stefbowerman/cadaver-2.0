@@ -43,23 +43,36 @@ export default class AJAXCart {
       itemDecrementClick: this.onItemDecrementClick.bind(this)
     }      
 
-    this.$el = $(el)
-    this.$body = $(selectors.body, this.$el)
-    this.$totalPrice = $(selectors.totalPrice, this.$el)
+    this.el = el
+    this.body = this.el.querySelector(selectors.body)
+    this.totalPrice = this.el.querySelector(selectors.totalPrice)
 
-    this.$backdrop = $(document.createElement('div')).addClass(classes.backdrop)
-    this.$backdrop.attr('title', 'Close Cart')
-    this.$backdrop.appendTo(document.body)
+    this.backdrop = document.createElement('div')
+    this.backdrop.classList.add(classes.backdrop)
+    this.backdrop.setAttribute('title', 'Close Cart')
+    document.body.appendChild(this.backdrop)
 
-    this.$el.on(events.CLICK, selectors.itemRemove, this.callbacks.itemRemoveClick)
-    this.$el.on(events.CLICK, selectors.itemIncrement, this.onItemIncrementClick.bind(this))
-    this.$el.on(events.CLICK, selectors.itemDecrement, this.onItemDecrementClick.bind(this))    
-    this.$backdrop.on(events.CLICK, this.close.bind(this))
+    this.el.addEventListener('click', (e) => {
+      const removeButton = e.target.closest(selectors.itemRemove)
+      const incrementButton = e.target.closest(selectors.itemIncrement)
+      const decrementButton = e.target.closest(selectors.itemDecrement)
+
+      if (removeButton) {
+        this.callbacks.itemRemoveClick(e)
+      } else if (incrementButton) {
+        this.onItemIncrementClick(e)
+      } else if (decrementButton) {
+        this.onItemDecrementClick(e)
+      }
+    })    
+
+    this.backdrop.addEventListener('click', this.close.bind(this))
     document.body.addEventListener('click', this.callbacks.bodyClick)
   }
 
   destroy() {
-    this.$backdrop.remove()
+    this.backdrop.remove()
+    document.body.classList.remove(classes.bodyCartOpen)    
     document.body.removeEventListener('click', this.callbacks.bodyClick)
   }
 
@@ -143,7 +156,7 @@ export default class AJAXCart {
     let html = ''
 
     if (cart.items) {
-      html += $.map(cart.items, this.itemTemplate.bind(this)).join('')
+      html += cart.items.map(item => this.itemTemplate(item)).join('')
     }
 
     return html
@@ -166,14 +179,15 @@ export default class AJAXCart {
    * @return {obj}
    */
   getItemAttributes(target) {
-    const $target = $(target);
-    const $el = $target.is(selectors.item) ? $target : $target.parents(selectors.item);
-
+    // Find the closest item element
+    const el = target.closest(selectors.item)
+    const qty = parseInt(el.dataset.qty)
+    
     return {
-      $el: $el,
-      key: $el.data('key'),
-      qty: this.validateQty($el.data('qty'))
-    };
+      el,
+      key: el.dataset.key,
+      qty: this.validateQty(qty)
+    }
   }  
 
   /**
@@ -188,44 +202,43 @@ export default class AJAXCart {
 
     // If there's nothing in the cart, just add the empty class and cover up the contents
     if (cart.item_count === 0) {
-      this.$el.addClass(classes.empty)
+      this.el.classList.add(classes.empty)
     }
     else {
-      this.$el.removeClass(classes.empty)
+      this.el.classList.remove(classes.empty)
 
       if (slot === 'body') {
-        this.$body.html(this.bodyTemplate(cart))
+        this.body.innerHTML = this.bodyTemplate(cart)
       }
       else if (slot === 'price') {
-        this.$totalPrice.html(cart.total_price_formatted)
+        this.totalPrice.innerHTML = cart.total_price_formatted
       }
       else {
-        this.$body.html(this.bodyTemplate(cart))
-        this.$totalPrice.html(cart.total_price_formatted)
+        this.body.innerHTML = this.bodyTemplate(cart)
+        this.totalPrice.innerHTML = cart.total_price_formatted
       }
     }    
 
     const event = new CustomEvent(events.RENDER, { detail: { cart } })
     window.dispatchEvent(event)
 
-    this.hasBeenRendered = true;
+    this.hasBeenRendered = true
 
-    return this;
+    return this
   }
 
   /**
    * Update the quantity for a single item in the cart
    *
-   * @param {jQuery} $item - cart line item element
-   * @param {integer} line - cart line item data object
+   * @param {HTMLElement} el - cart line item element
+   * @param {object} line - cart line item data object
    * @return this
    */
-  renderItemInfo($el, line) {
+  renderItemInfo(el, line) {
     if (!line) return 
 
-    $el.data('qty', line.quantity) // 
-    $el.attr('data-qty', line.quantity)
-    $el.find('.ajax-cart__item-info').html(this.itemInfoTemplate(line))
+    el.dataset.qty = line.quantity
+    el.querySelector('.ajax-cart__item-info').innerHTML = this.itemInfoTemplate(line)
   }  
 
   toggle() {
@@ -235,7 +248,7 @@ export default class AJAXCart {
   open() {
     if (this.isOpen) return
 
-    this.$el.addClass(classes.open)
+    this.el.classList.add(classes.open)
     document.body.classList.add(classes.bodyCartOpen)
     this.isOpen = true
   }
@@ -243,7 +256,7 @@ export default class AJAXCart {
   close() {
     if (!this.isOpen) return
 
-    this.$el.removeClass(classes.open)
+    this.el.classList.remove(classes.open)
     document.body.classList.remove(classes.bodyCartOpen)
     this.isOpen = false
   }  
@@ -259,25 +272,25 @@ export default class AJAXCart {
   onItemIncrementClick(e) {
     e.preventDefault();
 
-    if ($(e.currentTarget).hasClass(classes.adjusterButtonDisabled)) {
+    if (e.currentTarget.classList.contains(classes.adjusterButtonDisabled)) {
       return
     }
 
-    const { key, qty, $el } = this.getItemAttributes(e.target)
+    const { key, qty, el } = this.getItemAttributes(e.target)
     
-    this.adjustQuantity(key, qty+1, $el)    
+    this.adjustQuantity(key, qty+1, el)     
   }
 
   onItemDecrementClick(e) {
     e.preventDefault();
 
-    if ($(e.currentTarget).hasClass(classes.adjusterButtonDisabled)) {
+    if (e.currentTarget.classList.contains(classes.adjusterButtonDisabled)) {
       return
     }
 
-    const { key, qty, $el } = this.getItemAttributes(e.target)
+    const { key, qty, el } = this.getItemAttributes(e.target)
     
-    this.adjustQuantity(key, qty-1, $el)
+    this.adjustQuantity(key, qty-1, el)
   }  
 
   /**
@@ -288,12 +301,12 @@ export default class AJAXCart {
   onItemRemoveClick(e) {
     e.preventDefault();
 
-    const { key, $el } = this.getItemAttributes(e.target)
+    const { key, el } = this.getItemAttributes(e.target)
 
-    this.adjustQuantity(key, 0, $el)
+    this.adjustQuantity(key, 0, el)
   }
 
-  adjustQuantity(key, newQty, $item) {
+  adjustQuantity(key, newQty, itemEl) {
     if (this.requestInProgress) {
       return
     }
@@ -302,7 +315,7 @@ export default class AJAXCart {
 
     const itemClass = classes[newQty === 0 ? 'itemIsBeingRemoved' : 'itemRequestInProgress']
 
-    $item.addClass(itemClass)
+    itemEl.classList.add(itemClass)
 
     if (newQty < 0) {
       newQty = 0
@@ -313,24 +326,16 @@ export default class AJAXCart {
         this.requestInProgress = false
 
         if (cart.item_count > 0 && newQty === 0) {
-          $item.slideUp({
-            duration: 300,
-            
-            // We only need to re-render the price and then remove the item
-            start: () => {
-              this.render(cart, 'price')
-            },
-            done: () => {
-              $item.remove()
-            }
-          })
+          // We only need to re-render the price and then remove the item
+          this.render(cart, 'price')          
+          itemEl.remove()
         }
         else {
           // Don't render the whole cart
           // Just render the price and the item details
           this.render(cart, 'price');
-          this.renderItemInfo($item, cart.items.find(item => item.key === key))
-          $item.removeClass(itemClass)
+          this.renderItemInfo(itemEl, cart.items.find(item => item.key === key))
+          itemEl.classList.remove(itemClass)
         }
       })
       .catch(() => {
