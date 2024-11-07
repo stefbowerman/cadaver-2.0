@@ -23,7 +23,11 @@
       cart_url: {{ routes.cart_url | json }},
       account_addresses_url: {{ routes.account_addresses_url | json }},
       account_url: {{ routes.account_url | json }}
-    }    
+    },
+    klaviyo: {
+      companyId: {{ settings.klaviyo_public_api_key | json }},
+      listId: {{ settings.klaviyo_newsletter_list_id | json }}
+    },     
   };
 
   window.lazySizesConfig = window.lazySizesConfig || {};

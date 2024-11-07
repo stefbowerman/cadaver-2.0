@@ -45,12 +45,12 @@
       },      
       {
         "type": "text",
-        "id": "klaviyo_list_id",
+        "id": "klaviyo_newsletter_list_id",
         "label": "Newsletter List ID",
-        "info": "ID of the list for newsletter signups.  e.g. 'WszisB'"
+        "info": "ID of the list for newsletter signups.  e.g. 'abc123'"
       }
     ]
-  },  
+  },
   {
     "name": "Developer Settings",
     "settings": [
