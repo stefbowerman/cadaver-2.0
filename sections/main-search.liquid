@@ -9,7 +9,7 @@
         {% endif %}
       </div>
       <div class="page-header__subtitle">
-        <form action="{{ routes.search_url }}" method="get" role="search" style="max-width: 625px; margin: 0 auto var(--spacing-40)">
+        <form action="{{ routes.search_url }}" method="get" role="search" style="max-width: 625px; margin: 0 auto 40px">
           <div class="minimal-input">
             <label class="label-hidden">Search our site</label>
             <input type="search" name="q" class="form-control" placeholder="Search store..." value="{{ search.terms | escape }}" />
@@ -64,7 +64,6 @@
               {{ product_card_set_html }}
             </div>
           </div>
-          <div class="spacer"></div>
         {% endif %}
 
         {% if article_grid_html != blank %}

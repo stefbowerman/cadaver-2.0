@@ -13,8 +13,6 @@ export default class BaseSection {
       console.warn('Section ID not found', this)
     }    
 
-    this.$container = $(container); // @TODO - this needs to get removed
-
     this.onNavigateOut = this.onNavigateOut.bind(this)
     this.onNavigateIn  = this.onNavigateIn.bind(this)
     this.onNavigateEnd = this.onNavigateEnd.bind(this)

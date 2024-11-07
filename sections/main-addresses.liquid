@@ -19,7 +19,7 @@
         {% endcomment %}
         <h4 class="text-center">Addresses</h4>
 
-        <div style="display: flex; flex-direction: column; gap: var(--spacing-50);">
+        <div style="display: flex; flex-direction: column; gap: 50px">
           {% for address in customer.addresses %}
             <div>
               <div class="text-center">
@@ -53,11 +53,10 @@
                 id="edit-address-{{ address.id }}"
                 class="account-form-wrapper"
                 style="
-                  padding-top: var(--spacing-60);
                   {% unless form.errors %} display: none;{% endunless %}
                 "
               >
-                {% form 'customer_address', address, class: 'form-horizontal', data-address-form: true, data-id: form.id %}
+                {% form 'customer_address', address, class: 'form-horizontal', data-address-form: true, data-id: address.id %}
 
                   <h4>Edit Address</h4>
                   
@@ -125,7 +124,7 @@
                   <div class="form-group">
                     <p>
                       <button type="submit" class="btn btn--primary">Save</button>
-                    <p>
+                    </p>
                     <a href="#" data-toggle-form data-id="{{ address.id }}">Cancel</a>
                   </div>
                 {% endform %}
@@ -149,7 +148,6 @@
         class="account-form-wrapper"
         data-new
         style="
-          padding-top: var(--spacing-60);
           {% unless form.errors %} display: none;{% endunless %}
         ">
         {% form 'customer_address', customer.new_address %}
@@ -219,12 +217,11 @@
           <div class="form-group">
             <p>
               <button type="submit" class="btn btn--primary">Add Address</button>
-            <p>
+            </p>
             <a href="#" data-toggle-new>Cancel</a>
           </div>
         {% endform %}
       </div>
     {% endpaginate %}
   </div>
-  <div class="spacer"></div>
 </section>
