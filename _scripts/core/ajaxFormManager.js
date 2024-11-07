@@ -1,4 +1,4 @@
-import { addItemFromForm } from './cartAPI'
+import CartAPI from './cartAPI'
 
 const selectors = {
   form: 'form[action*="/cart/add"]',
@@ -47,22 +47,26 @@ export default class AJAXFormManager {
 
     this.requestInProgress = true
 
-    addItemFromForm(form)
-      // Always needs to go before then / fail because the window event callbacks can cause a change to the disabled state of the button
-      .always(() => {
-        submit.removeAttribute('disabled')
-        this.requestInProgress = false
+    const onDone = () => {
+      submit.removeAttribute('disabled')
+      this.requestInProgress = false
 
-        const event = new CustomEvent(events.ADD_DONE, { detail: { relatedTarget: form }})
+      const event = new CustomEvent(events.ADD_DONE, { detail: { relatedTarget: form }})
         
-        window.dispatchEvent(event)
-      })      
+      window.dispatchEvent(event)      
+    }
+    
+    CartAPI.addItemFromForm(form)
       .then((data) => {
+        onDone()
+
         const event = new CustomEvent(events.ADD_SUCCESS, { detail: { cart: data, relatedTarget: form } })
 
         window.dispatchEvent(event)
       })
-      .fail((data) => {
+      .catch((data) => {
+        onDone()
+
         const event = new CustomEvent(events.ADD_FAIL, { detail: {
           message: data.message,
           description: data.description,

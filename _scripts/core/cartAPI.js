@@ -64,94 +64,104 @@ export const formatCart = (cart) => {
   return cart
 }
 
-/**
- * Retrieve a JSON respresentation of the users cart
- *
- * @return {Promise} - JSON cart
- */
-export const getCart = () => {
-  const promise = $.Deferred();
+const CartAPI = {
+  // events: {
 
-  $.ajax({
-    type: 'get',
-    url: `${window.app.routes.cart_url}?view=json`,
-    success: (data) => {
+  // },
+
+  routes: window.app.routes,
+
+  /**
+   * Retrieve a JSON respresentation of the users cart
+   *
+   * @return {Promise} - JSON cart
+   */
+  async getCart() {
+    try {
+      const response = await fetch(`${this.routes.cart_url}?view=json`, {
+        method: 'GET',
+      })
+
+      let data = await response.text()
+
       // Theme editor adds HTML comments to JSON response, strip these
-      data = data.replace(/<\/?[^>]+>/gi, '');
-      
+      data = data.replace(/<\/?[^>]+>/gi, '')
+
       const cart = JSON.parse(data)
 
-      promise.resolve(formatCart(cart))
-    },
-    error: () => {
-      promise.reject({
-        message: 'Could not retrieve cart items'
-      });
+      return formatCart(cart)
     }
-  });
-
-  return promise;
-}
-
-/**
- * AJAX submit an 'add to cart' form
- *
- * @param {HTMLFormElement} form - The form to submit
- * @return {Promise} - Resolve returns JSON cart | Reject returns an error message
- */
-export const addItemFromForm = (form) => {
-  const promise = $.Deferred()
-
-  const $form = $(form)
-
-  $.ajax({
-    type: 'post',
-    dataType: 'json',
-    url: window.app.routes.cart_add_url,
-    data: $form.serialize(),
-    success: () => {
-      getCart().then((cart) => {
-        promise.resolve(cart)
-      });
-    },
-    error: () => {
-      promise.reject({
-        message: 'The quantity you entered is not available.'
-      })
+    catch (e) {
+      throw new Error('Could not retrieve cart items');
     }
-  })
+  },
 
-  return promise;
-}
-
-/**
- * Change the quantity of an item in the users cart
- * Item is specified by line_item key
- * https://shopify.dev/api/ajax/reference/cart#post-locale-cart-change-js
- *
- * @param {String} id - Cart line item key
- * @param {Integer} qty - New quantity of the variant
- * @return {Promise} - JSON cart
- */
-export const changeLineItemQuantity = (id, qty) => {
-  const promise = $.Deferred();
-
-  $.ajax({
-    type: 'post',
-    dataType: 'json',
-    url: window.app.routes.cart_change_url,
-    data: `quantity=${qty}&id=${id}`,
-    success: () => {
-      getCart().then((cart) => {
-        promise.resolve(cart)
+  /**
+   * AJAX submit an 'add to cart' form
+   *
+   * @param {HTMLFormElement} form - The form element
+   * @return {Promise} - Resolve returns JSON cart | Reject returns an error message
+   */
+  async addItemFromForm(form) {
+    try {
+      const formData = new FormData(form)
+      const body = new URLSearchParams([...formData].filter(([_, value]) => value !== '' && value != null)) // Remove empty values
+  
+      const response = await fetch(`${this.routes.cart_add_url}.js`, {
+        method: 'POST',
+        body,
+        headers: {
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
       })
-    },
-    error: () => {
-      const message = 'Something went wrong.'
+  
+      if (!response.ok) {
+        throw new Error('The quantity you entered is not available.')
+      }
+
+      const addedItem = await response.text() // @TODO - Merge this with the cart response somehow..
+      const cart = await this.getCart() // Retrieve the updated cart
+
+      // this.dispatch(CartAPI.events.UPDATE, cart)
+      // this.dispatch(CartAPI.events.ADD, cart)
       
-      promise.reject({ message })
+      return cart
+    } catch (error) {
+      throw new Error(error.message || 'An error occurred while adding the item to the cart.');
     }
-  });
+  },
 
-  return promise;
+  /**
+   * Change the quantity of an item in the users cart
+   * Item is specified by line_item key
+   * https://shopify.dev/api/ajax/reference/cart#post-locale-cart-change-js
+   *
+   * @param {String} id - Cart line item id // https://shopify.dev/docs/api/liquid/objects/line_item#line_item-id
+   * @param {Integer} qty - New quantity of the variant
+   * @return {Promise} - JSON cart
+   */
+  async changeLineItemQuantity(id, qty) {
+    try {
+      const response = await fetch(`${this.routes.cart_change_url}.js`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `quantity=${qty}&id=${id}`,
+      })
+
+      if (!response.ok) {
+        throw new Error('Something went wrong.')
+      }
+
+      const cart = await this.getCart() // Retrieve the updated cart
+
+      return cart
+    } catch (error) {
+      return Promise.reject({ message: error.message })
+    }
+  }
 }
+
+export default CartAPI

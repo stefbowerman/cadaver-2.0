@@ -1,4 +1,4 @@
-import { changeLineItemQuantity } from '../core/cartAPI'
+import CartAPI from '../core/cartAPI'
 
 const selectors = {
   body: '[data-body]',
@@ -308,8 +308,10 @@ export default class AJAXCart {
       newQty = 0
     }
 
-    changeLineItemQuantity(key, newQty)
+    CartAPI.changeLineItemQuantity(key, newQty)
       .then((cart) => {
+        this.requestInProgress = false
+
         if (cart.item_count > 0 && newQty === 0) {
           $item.slideUp({
             duration: 300,
@@ -331,12 +333,10 @@ export default class AJAXCart {
           $item.removeClass(itemClass)
         }
       })
-      .fail(() => {
-        console.warn('something went wrong...');
-      })
-      .always(() => {
+      .catch(() => {
         this.requestInProgress = false
-      })   
+        console.warn('something went wrong...');
+      })  
   }
 
   onBodyClick(e) {
