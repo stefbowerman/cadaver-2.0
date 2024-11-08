@@ -1,5 +1,7 @@
 import { doComponentCleanup } from '../components/base'
-import GraphicCover from '../components/graphicCover'
+
+// Standard components
+import GraphicCoverVideo from '../components/graphicCoverVideo'
 
 export default class BaseSection {
   constructor(container) {
@@ -22,9 +24,9 @@ export default class BaseSection {
     window.addEventListener('taxi.navigateEnd', this.onNavigateEnd)
 
     // Below are standard components that can be initialized at the base section level (until there's a reason for them to get pushed down somewhere more specific)
-    this.graphicCovers = [...container.querySelectorAll(GraphicCover.SELECTOR)].map(el => {
-      return new GraphicCover(el)
-    })    
+    this.graphicCoverVideos = [...container.querySelectorAll(GraphicCoverVideo.SELECTOR)].map(el => {
+      return new GraphicCoverVideo(el)
+    })
   }
 
   onUnload(e) {
