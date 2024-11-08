@@ -15,10 +15,10 @@ export default class ProductRelatedSection extends BaseSection {
 
     this.productCards = []
 
-    this.contentTarget = this.container.querySelector(selectors.contentTarget)
-    this.content = this.container.querySelector(selectors.content)
+    this.contentTarget = this.qs(selectors.contentTarget)
+    this.content = this.qs(selectors.content)
 
-    this.recommendationsUrl = this.container.dataset.url
+    this.recommendationsUrl = this.dataset.url
 
     // If more than one section needs intersection observer, move this to BaseSection class
     // See: https://shopify.dev/docs/storefronts/themes/product-merchandising/recommendations/related-products#implementing-product-recommendations
@@ -30,9 +30,6 @@ export default class ProductRelatedSection extends BaseSection {
   }
 
   onUnload() {
-    // @TODO - Remove this when we move component cleanup to base section
-    this.productCards.forEach(card => card.destroy())
-
     this.observer.disconnect()
 
     super.onUnload()
@@ -53,7 +50,7 @@ export default class ProductRelatedSection extends BaseSection {
 
       this.contentTarget.replaceChildren(content)
 
-      this.productCards = [...this.contentTarget.querySelectorAll(ProductCard.SELECTOR)].map(el => new ProductCard(el))
+      this.productCards = this.qsa(ProductCard.SELECTOR, this.contentTarget).map(el => new ProductCard(el))
     }
     catch (e) {
       console.warn(e)

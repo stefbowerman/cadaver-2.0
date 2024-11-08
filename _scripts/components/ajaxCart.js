@@ -1,4 +1,5 @@
 import CartAPI from '../core/cartAPI'
+import BaseComponent from './base'
 
 const selectors = {
   body: '[data-body]',
@@ -21,17 +22,17 @@ const classes = {
   backdrop: 'ajax-cart-backdrop'
 }
 
-const namespace = '.ajaxCart'
-
 export const events = {
-  CLICK: `click${namespace}`,
-  RENDER: `render${namespace}`
+  CLICK: `click.ajaxCart`,
+  RENDER: `render.ajaxCart`
 }
 
-export default class AJAXCart {
-  static selector = '[data-ajax-cart]'
+export default class AJAXCart extends BaseComponent {
+  static TYPE = 'ajax-cart'
 
   constructor(el) {
+    super(el)
+
     this.isOpen = false
     this.hasBeenRendered = false
     this.requestInProgress = false
@@ -43,9 +44,8 @@ export default class AJAXCart {
       itemDecrementClick: this.onItemDecrementClick.bind(this)
     }      
 
-    this.el = el
-    this.body = this.el.querySelector(selectors.body)
-    this.totalPrice = this.el.querySelector(selectors.totalPrice)
+    this.body = this.qs(selectors.body)
+    this.totalPrice = this.qs(selectors.totalPrice)
 
     this.backdrop = document.createElement('div')
     this.backdrop.classList.add(classes.backdrop)
@@ -59,9 +59,11 @@ export default class AJAXCart {
 
       if (removeButton) {
         this.callbacks.itemRemoveClick(e)
-      } else if (incrementButton) {
+      }
+      else if (incrementButton) {
         this.onItemIncrementClick(e)
-      } else if (decrementButton) {
+      }
+      else if (decrementButton) {
         this.onItemDecrementClick(e)
       }
     })    
@@ -74,6 +76,8 @@ export default class AJAXCart {
     this.backdrop.remove()
     document.body.classList.remove(classes.bodyCartOpen)    
     document.body.removeEventListener('click', this.callbacks.bodyClick)
+
+    super.destroy()
   }
 
   itemInfoTemplate(item) {

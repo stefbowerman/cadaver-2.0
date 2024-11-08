@@ -5,6 +5,5 @@ export default class ProductCard extends BaseComponent {
 
   constructor(el) {
     super(el)
-
   }
 }

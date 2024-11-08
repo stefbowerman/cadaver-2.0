@@ -120,6 +120,7 @@ const CartAPI = {
         throw new Error('The quantity you entered is not available.')
       }
 
+      // eslint-disable-next-line no-unused-vars
       const addedItem = await response.text() // @TODO - Merge this with the cart response somehow..
       const cart = await this.getCart() // Retrieve the updated cart
 
@@ -127,7 +128,8 @@ const CartAPI = {
       // this.dispatch(CartAPI.events.ADD, cart)
       
       return cart
-    } catch (error) {
+    }
+    catch (error) {
       throw new Error(error.message || 'An error occurred while adding the item to the cart.');
     }
   },
@@ -158,7 +160,8 @@ const CartAPI = {
       const cart = await this.getCart() // Retrieve the updated cart
 
       return cart
-    } catch (error) {
+    }
+    catch (error) {
       return Promise.reject({ message: error.message })
     }
   }

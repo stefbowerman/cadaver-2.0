@@ -13,7 +13,6 @@ const selectors = {
 
 export default class ProductDetailForm extends BaseComponent {
   static TYPE = 'product-detail-form'
-  static selector = '[data-product-detail-form]'
 
   /**
    * ProductDetailForm constructor
@@ -36,10 +35,10 @@ export default class ProductDetailForm extends BaseComponent {
     this.masterSelect = this.qs(selectors.masterSelect)
 
     this.product = JSON.parse(this.qs(selectors.productJSON).textContent)
-    this.price = new ProductPrice(this.el.querySelector(ProductPrice.SELECTOR))
-    this.atcButton = new ATCButton(this.el.querySelector(ATCButton.SELECTOR))
+    this.price = new ProductPrice(this.qs(ProductPrice.SELECTOR))
+    this.atcButton = new ATCButton(this.qs(ATCButton.SELECTOR))
 
-    this.variantPicker = new VariantPicker(this.el.querySelector(VariantPicker.SELECTOR), {
+    this.variantPicker = new VariantPicker(this.qs(VariantPicker.SELECTOR), {
       product: this.product,
       onVariantChange: this.onVariantChange.bind(this)
     })    
@@ -52,7 +51,6 @@ export default class ProductDetailForm extends BaseComponent {
   }
 
   destroy() {
-    this.variantPicker.destroy()
     window.removeEventListener(AJAXFormManagerEvents.ADD_START, this.onAddStart)
     window.removeEventListener(AJAXFormManagerEvents.ADD_SUCCESS, this.onAddSuccess)
 

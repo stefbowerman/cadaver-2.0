@@ -1,10 +1,12 @@
 import { doComponentCleanup } from '../components/base'
-import GraphicCover from '../components/graphicCover'
+
+// Standard components
+import GraphicCoverVideo from '../components/graphicCoverVideo'
 
 export default class BaseSection {
   constructor(container) {
     this.container = container
-    this.id = this.container.dataset.sectionId
+    this.id = this.dataset.sectionId
     this.type = this.constructor.TYPE
     this.parent = this.container.parentElement // Automatically generated wrapper element
     this.parentId = this.parent.id
@@ -22,9 +24,40 @@ export default class BaseSection {
     window.addEventListener('taxi.navigateEnd', this.onNavigateEnd)
 
     // Below are standard components that can be initialized at the base section level (until there's a reason for them to get pushed down somewhere more specific)
-    this.graphicCovers = [...container.querySelectorAll(GraphicCover.SELECTOR)].map(el => {
-      return new GraphicCover(el)
-    })    
+    this.graphicCoverVideos = this.qsa(GraphicCoverVideo.SELECTOR).map(el => {
+      return new GraphicCoverVideo(el)
+    })
+  }
+
+  get dataset() {
+    return this.container.dataset
+  }
+
+  /**
+   * Query selector helper that returns the first matching element within the section container
+   * @param {string} selector - CSS selector string
+   * @param {HTMLElement} [dom=this.container] - Parent element to query within (defaults to section container)
+   * @returns {HTMLElement|undefined} First matching element or undefined if none found
+   */
+  qs(selector, dom = this.container) {
+    return this.qsa(selector, dom)[0]
+  }
+
+  /**
+   * Query selector all helper that returns an array of matching elements within the section container,
+   * filtering out nested components that match the selector.
+   * 
+   * @param {string} selector - CSS selector string to match elements
+   * @param {HTMLElement} [dom=this.container] - Parent element to query within (defaults to section container)
+   * @returns {HTMLElement[]} Array of matching elements, excluding nested component matches
+   *
+   */
+  qsa(selector, dom = this.container) {
+    return [...dom.querySelectorAll(selector)].filter(el => {
+      const closest = el.closest('[data-component]')
+
+      return !closest || closest.isSameNode(el)
+    })
   }
 
   onUnload(e) {

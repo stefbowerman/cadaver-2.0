@@ -18,7 +18,7 @@ export default class MobileMenuSection extends BaseSection {
   constructor(container) {
     super(container)
 
-    this.searchForm = this.container.querySelector(selectors.searchForm)
+    this.searchForm = this.qs(selectors.searchForm)
 
     this.isOpen = false
 
