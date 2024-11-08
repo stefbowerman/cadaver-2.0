@@ -59,9 +59,11 @@ export default class AJAXCart {
 
       if (removeButton) {
         this.callbacks.itemRemoveClick(e)
-      } else if (incrementButton) {
+      }
+      else if (incrementButton) {
         this.onItemIncrementClick(e)
-      } else if (decrementButton) {
+      }
+      else if (decrementButton) {
         this.onItemDecrementClick(e)
       }
     })    

@@ -25,7 +25,8 @@ const KlaviyoAPI = {
       const success = response.ok || response.status === 202 // The new Klaviyo API endpoints don't return any data in the response
 
       return success
-    } catch (error) {
+    }
+    catch (error) {
       return {
         message: 'Something went wrong',
         errors: [error.message]
