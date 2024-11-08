@@ -23,7 +23,7 @@ export default class VariantPicker extends BaseComponent {
     this.availableVariants = this.product.variants.filter(v => v.available)
     this.onVariantPickerOptionChange = this.onVariantPickerOptionChange.bind(this)
 
-    this.pickerOptions = [...this.el.querySelectorAll(VariantPickerOption.SELECTOR)].map(el => {
+    this.pickerOptions = this.qsa(VariantPickerOption.SELECTOR).map(el => {
       return new VariantPickerOption(el, {
         onChange: this.onVariantPickerOptionChange
       })

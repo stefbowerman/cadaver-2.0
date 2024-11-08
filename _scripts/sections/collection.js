@@ -1,5 +1,5 @@
 import BaseSection from './base'
-import ProductCardSet from '../components/product/productCardSet'
+import ProductCard from '../components/product/productCard'
 
 export default class CollectionSection extends BaseSection {
   static TYPE = 'collection'
@@ -7,6 +7,6 @@ export default class CollectionSection extends BaseSection {
   constructor(container) {
     super(container)
 
-    this.productCardSet = new ProductCardSet(this.container.querySelector(ProductCardSet.SELECTOR))
+    this.productCards = this.qsa(ProductCard.SELECTOR).map(el => new ProductCard(el))
   }
 }

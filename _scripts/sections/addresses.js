@@ -24,7 +24,7 @@ export default class AddressesSection extends BaseSection {
   constructor(container) {
     super(container)
 
-    this.newForm = this.container.querySelector(selectors.newForm)
+    this.newForm = this.qs(selectors.newForm)
 
     this.container.addEventListener('click', (e) => {
       if (e.target.matches(selectors.toggleNew)) {
@@ -35,7 +35,7 @@ export default class AddressesSection extends BaseSection {
 
       if (e.target.matches(selectors.toggleForm)) {
         e.preventDefault()
-        toggle(this.container.querySelector(`#edit-address-${e.target.dataset.id}`))
+        toggle(this.qs(`#edit-address-${e.target.dataset.id}`))
         return
       }
 
@@ -57,7 +57,7 @@ export default class AddressesSection extends BaseSection {
       hideElement: 'address-province-container-new'
     })
 
-    this.container.querySelectorAll('[data-address-form]').forEach(el => {
+    this.qsa('[data-address-form]').forEach(el => {
       const id = el.dataset.id
 
       new Shopify.CountryProvinceSelector(`address-country-${id}`, `address-province-${id}`, {

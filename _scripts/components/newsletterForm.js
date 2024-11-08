@@ -1,3 +1,5 @@
+import BaseComponent from './base'
+
 const selectors = {
   form: 'form',
   formContents: '[data-form-contents]',
@@ -9,8 +11,8 @@ const classes = {
   showMessage: 'show-message'
 };
 
-export default class NewsletterForm {
-  static selector = '[data-newsletter-form]'
+export default class NewsletterForm extends BaseComponent {
+  static TYPE = 'newsletter-form'
 
   /**
    * NewsletterForm constructor
@@ -18,16 +20,15 @@ export default class NewsletterForm {
    * @param {HTMLElement} el - Element used for scoping any element selection.  Can either be a containing element or the form element itself
    */  
   constructor(el) {
-    this.name = 'newsletterForm'
+    super(el)
 
     this.timeout = null
 
-    this.el = el
-    this.form = this.el.tagName === 'FORM' ? this.el : this.el.querySelector(selectors.form)
+    this.form = this.el.tagName === 'FORM' ? this.el : this.qs(selectors.form)
     
     if (!this.form) {
-      console.warn(`[${this.name}] - Form element required to initialize`)
-      return;
+      console.warn(`[${this.type}] - Form element required to initialize`)
+      return
     }
 
     this.formInput = this.form.querySelector('input[type="email"]')
@@ -37,6 +38,8 @@ export default class NewsletterForm {
 
   destroy() {
     window.clearTimeout(this.timeout)
+
+    super.destroy()
   }
 
   /**

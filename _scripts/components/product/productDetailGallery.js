@@ -1,4 +1,5 @@
 import { Swiper } from 'swiper'
+import BaseComponent from '../base'
 
 const selectors = {
   slideshow: '[data-slideshow]',
@@ -10,17 +11,18 @@ const classes = {
   slideshowDisabled: 'is-disabled'
 }
 
-export default class ProductDetailGallery {
-  static selector = '[data-product-detail-gallery]'
+export default class ProductDetailGallery extends BaseComponent {
+  static TYPE = 'product-detail-gallery'
 
   constructor(el) {
-    this.el = el
-    this.images = this.el.querySelectorAll('img')
+    super(el)
 
-    this.slideshow = this.el.querySelector(selectors.slideshow)
+    this.images = this.qsa('img')
 
-    this.slideCount = this.el.querySelectorAll(selectors.slide).length // Swiper can't give you the total count without duplicates.. Also don't set this to a variable since it changes as soon as swiper is initialized
-    this.color = this.el.dataset.color
+    this.slideshow = this.qs(selectors.slideshow)
+
+    this.slideCount = this.qsa(selectors.slide).length // Swiper can't give you the total count without duplicates.. Also don't set this to a variable since it changes as soon as swiper is initialized
+    this.color = this.dataset.color
     this.isActive = this.el.classList.contains(classes.isActive)
 
     this.swiper = new Swiper(this.slideshow, {     
@@ -41,10 +43,6 @@ export default class ProductDetailGallery {
     if (this.slideCount === 1) {
       this.slideshow.classList.add(classes.slideshowDisabled)
     }    
-  }
-
-  destroy() {
-
   }
 
   activate() {

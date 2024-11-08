@@ -12,7 +12,7 @@ export default class ATCButton extends BaseComponent {
 
     this.tempText = null
 
-    this.label = this.el.querySelector(selectors.label)
+    this.label = this.qs(selectors.label)
   }
 
   /**

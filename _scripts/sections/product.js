@@ -8,11 +8,11 @@ export default class ProductSection extends BaseSection {
   constructor(container) {
     super(container)
 
-    this.productDetailForm = new ProductDetailForm(this.container.querySelector(ProductDetailForm.selector), {
+    this.productDetailForm = new ProductDetailForm(this.qs(ProductDetailForm.SELECTOR), {
       onVariantChange: this.onVariantChange.bind(this)
     })
 
-    this.galleries = [...this.container.querySelectorAll(ProductDetailGallery.selector)].map(el => {
+    this.galleries = this.qsa(ProductDetailGallery.SELECTOR).map(el => {
       return new ProductDetailGallery(el)
     })
   }

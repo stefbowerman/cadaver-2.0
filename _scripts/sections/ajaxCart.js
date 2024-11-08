@@ -11,7 +11,7 @@ export default class AJAXCartSection extends BaseSection {
   constructor(container) {
     super(container)
 
-    this.ajaxCart = new AJAXCart(this.container.querySelector(AJAXCart.selector))
+    this.ajaxCart = new AJAXCart(this.qs(AJAXCart.SELECTOR))
     this.ajaxFormManager = new AJAXFormManager()
 
     // Store callbacks so we can remove them later
@@ -33,8 +33,7 @@ export default class AJAXCartSection extends BaseSection {
     })
   }
 
-  onUnload() {    
-    this.ajaxCart.destroy()
+  onUnload() {
     this.ajaxFormManager.destroy()
 
     window.removeEventListener(events.ADD_SUCCESS, this.callbacks.changeSuccess)
