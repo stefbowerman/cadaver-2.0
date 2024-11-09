@@ -1404,6 +1404,16 @@ header.header {
   background-color: rgba(219, 219, 219, 0.5);
   backdrop-filter: blur(15px);
 }
+header.header nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 0.5em;
+}
+header.header nav a[aria-current=page] {
+  text-decoration: underline;
+}
 
 .header-logo {
   position: absolute;
@@ -1448,6 +1458,16 @@ header.header {
   .footer {
     --grid-column-gap: 185px;
   }
+}
+.footer nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 0.5em;
+}
+.footer nav a[aria-current=page] {
+  text-decoration: underline;
 }
 
 .footer-title {

@@ -18,6 +18,22 @@ $footer-grid-bp: 'lg';
   @include bp-up(xxxl) {
     --grid-column-gap: 185px; // Footer hits max width above this breakpoint so no need for this var to be responsive
   }
+
+  nav {
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 0.5em;
+    }
+
+    a {
+      &[aria-current="page"] {
+        text-decoration: underline;
+      }
+    }
+  }  
 }
 
 .footer-title {

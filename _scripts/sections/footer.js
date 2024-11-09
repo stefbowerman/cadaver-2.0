@@ -1,13 +1,21 @@
+import { setAriaCurrent } from '../core/utils/a11y'
+import AJAXKlaviyoForm from '../core/ajaxKlaviyoForm'
+
 import BaseSection from './base'
 
 import NewsletterForm from '../components/newsletterForm'
-import AJAXKlaviyoForm from '../core/ajaxKlaviyoForm'
+
+const selectors = {
+  navLink: '[data-nav] a'
+}
 
 export default class FooterSection extends BaseSection {
   static TYPE = 'footer'
 
   constructor(container) {
     super(container)
+
+    this.navLinks = this.qsa(selectors.navLink)
 
     this.newsletterFormEl = this.qs(NewsletterForm.SELECTOR)
     this.newsletterForm = null
@@ -29,4 +37,10 @@ export default class FooterSection extends BaseSection {
   onUnload() {
     this.newsletterForm?.destroy()
   }
+
+  onNavigateIn(e) {
+    const currentPath = new URL(e.detail.to.finalUrl).pathname
+
+    this.navLinks.forEach(link => setAriaCurrent(link, currentPath))
+  }  
 }

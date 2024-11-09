@@ -63,23 +63,30 @@
         {%- endif -%}
       </div>
     
-      {% comment %} Menus {% endcomment %}
+      {% comment %} Menus {% endcomment %}       
       <div class="footer-area__menus">
         <div class="footer-menus" style="--menu-count: {{ section.blocks.size }};">
           {% for block in section.blocks %}
             <div class="footer-menu" {{ block.shopify_attributes }}>
-              <div class="footer-menu__title">{{ block.settings.title }}</div>
+              <div id="menu-title-{{ block.id }}" class="footer-menu__title">{{ block.settings.title }}</div>
 
               {%- if block.settings.menu != blank -%}
-                <ul>
-                  {%- for link in block.settings.menu.links -%}
-                    <li>
-                      <a href="{{ link.url }}">
-                        {{ link.title }}
-                      </a>
-                    </li>
-                  {%- endfor -%}              
-                </ul>
+                <nav aria-labelledby="menu-title-{{ block.id }}" data-nav>
+                  <ul>
+                    {%- for link in block.settings.menu.links -%}
+                      <li>
+                        <a
+                          href="{{ link.url }}"
+                          {% if link.current %}
+                            aria-current="page"
+                          {% endif %}
+                        >
+                          {{ link.title }}
+                        </a>
+                      </li>
+                    {%- endfor -%}              
+                  </ul>
+                </nav>
               {%- endif -%}
             </div>
           {% endfor %}
