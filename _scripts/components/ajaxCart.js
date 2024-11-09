@@ -22,11 +22,6 @@ const classes = {
   backdrop: 'ajax-cart-backdrop'
 }
 
-export const events = {
-  CLICK: `click.ajaxCart`,
-  RENDER: `render.ajaxCart`
-}
-
 export default class AJAXCart extends BaseComponent {
   static TYPE = 'ajax-cart'
 
@@ -221,10 +216,7 @@ export default class AJAXCart extends BaseComponent {
         this.body.innerHTML = this.bodyTemplate(cart)
         this.totalPrice.innerHTML = cart.total_price_formatted
       }
-    }    
-
-    const event = new CustomEvent(events.RENDER, { detail: { cart } })
-    window.dispatchEvent(event)
+    }
 
     this.hasBeenRendered = true
 

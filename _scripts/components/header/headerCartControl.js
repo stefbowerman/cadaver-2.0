@@ -1,4 +1,4 @@
-import { events as AJAXCartEvents } from '../ajaxCart'
+import CartAPI from '../../core/cartAPI'
 import BaseComponent from '../base'
 
 const selectors = {
@@ -17,19 +17,18 @@ export default class HeaderCartControl extends BaseComponent {
 
     this.count = this.qs(selectors.count)
 
-    // @TODO - Should be coming from a cart update event, not AJAXCartEvents.RENDER
-    this.onAJAXCartRender = this.onAJAXCartRender.bind(this)
+    this.onCartUpdate = this.onCartUpdate.bind(this)
 
-    window.addEventListener(AJAXCartEvents.RENDER, this.onAJAXCartRender)
+    window.addEventListener(CartAPI.events.UPDATE, this.onCartUpdate)
   }
 
   destroy() {
-    window.removeEventListener(AJAXCartEvents.RENDER, this.onAJAXCartRender)
+    window.removeEventListener(CartAPI.events.UPDATE, this.onCartUpdate)
 
     super.destroy()
   }
 
-  onAJAXCartRender({ detail: { cart } }) {
+  onCartUpdate({ detail: { cart } }) {
     this.count.innerText = cart.item_count
     this.el.classList.toggle(classes.hasItems, cart.item_count > 0)
   }

@@ -1,4 +1,4 @@
-import { events as AJAXFormManagerEvents } from '../../core/ajaxFormManager'
+import CartAPI from '../../core/cartAPI'
 
 import BaseComponent from '../base'
 import ProductPrice from './productPrice'
@@ -6,7 +6,8 @@ import ATCButton from './atcButton'
 import VariantPicker from './variantPicker'
 
 const selectors = {
-  form: 'form[data-add-to-cart-form]',
+  form: 'form[action*="/cart/add"]',
+  submit: '[type="submit"]',
   productJSON: '[data-product-json]',
   masterSelect: 'select[name="id"]'
 }
@@ -29,7 +30,9 @@ export default class ProductDetailForm extends BaseComponent {
       onVariantChange: () => {},
       enableHistoryState: true,
       ...options
-    }    
+    }
+
+    this.submitInProgress = false
 
     this.form = this.qs(selectors.form)
     this.masterSelect = this.qs(selectors.masterSelect)
@@ -41,20 +44,9 @@ export default class ProductDetailForm extends BaseComponent {
     this.variantPicker = new VariantPicker(this.qs(VariantPicker.SELECTOR), {
       product: this.product,
       onVariantChange: this.onVariantChange.bind(this)
-    })    
+    })
 
-    this.onAddStart = this.onAddStart.bind(this)
-    this.onAddSuccess = this.onAddSuccess.bind(this)    
-
-    window.addEventListener(AJAXFormManagerEvents.ADD_START, this.onAddStart)
-    window.addEventListener(AJAXFormManagerEvents.ADD_SUCCESS, this.onAddSuccess)
-  }
-
-  destroy() {
-    window.removeEventListener(AJAXFormManagerEvents.ADD_START, this.onAddStart)
-    window.removeEventListener(AJAXFormManagerEvents.ADD_SUCCESS, this.onAddSuccess)
-
-    super.destroy()
+    this.form.addEventListener('submit', this.onFormSubmit.bind(this))
   }
 
   updateHistoryState(variant) {
@@ -84,15 +76,40 @@ export default class ProductDetailForm extends BaseComponent {
     this.settings.onVariantChange(e)
   }
 
-  onAddStart({ detail: { relatedTarget } }) {
-    if (this.form !== relatedTarget) return
-      
+
+  onFormSubmit(e) {
+    e.preventDefault()
+
+    if (this.submitInProgress) return
+
+    const submit = this.form.querySelector(selectors.submit)
+
+    // Disable the button so the user knows the form is being submitted
+    submit.disabled = true
+    this.submitInProgress = true
+
+    this.onAddStart()
+
+    CartAPI.addItemFromForm(this.form)
+      .then(() => {
+        this.onAddSuccess()
+      })
+      .catch((e) => {
+        this.onAddFail(e)
+      })
+      .finally(() => {
+        submit.disabled = false
+        this.submitInProgress = false
+      })
+
+    // @TODO - Add role="status" for a11y
+  }   
+
+  onAddStart() {
     this.atcButton.onAddStart()
   }
 
-  onAddSuccess({ detail: { relatedTarget } }) {
-    if (this.form !== relatedTarget) return
-
+  onAddSuccess() {
     this.atcButton.onAddSuccess()
   }
 }

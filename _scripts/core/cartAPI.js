@@ -65,9 +65,10 @@ export const formatCart = (cart) => {
 }
 
 const CartAPI = {
-  // events: {
-
-  // },
+  events: {
+    UPDATE: 'cartAPI.update'
+    // @TODO - Add fail event
+  },
 
   routes: window.app.routes,
 
@@ -124,13 +125,29 @@ const CartAPI = {
       const addedItem = await response.text() // @TODO - Merge this with the cart response somehow..
       const cart = await this.getCart() // Retrieve the updated cart
 
-      // this.dispatch(CartAPI.events.UPDATE, cart)
-      // this.dispatch(CartAPI.events.ADD, cart)
+      const event = new CustomEvent(this.events.UPDATE, {
+        bubbles: true,
+        detail: { cart }
+      })
+    
+      window.dispatchEvent(event)
       
       return cart
     }
     catch (error) {
       throw new Error(error.message || 'An error occurred while adding the item to the cart.');
+
+      /*
+        @TODO - Add fail event - something like this:
+        
+        const event = new CustomEvent(events.ADD_FAIL, { detail: {
+          message: data.message,
+          description: data.description,
+          relatedTarget: form
+        }})
+
+        window.dispatchEvent(event)
+      */
     }
   },
 
@@ -158,6 +175,13 @@ const CartAPI = {
       }
 
       const cart = await this.getCart() // Retrieve the updated cart
+
+      const event = new CustomEvent(this.events.UPDATE, {
+        bubbles: true,
+        detail: { cart }
+      })
+    
+      window.dispatchEvent(event)      
 
       return cart
     }
