@@ -9,6 +9,22 @@ header.header {
   height: var(--header-height);
   background-color: rgba(219, 219, 219, 0.5);
   backdrop-filter: blur(15px);
+
+  nav {
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 0.5em;
+    }
+
+    a {
+      &[aria-current="page"] {
+        text-decoration: underline;
+      }
+    }
+  }
 }
 
 .header-logo {

@@ -18,7 +18,7 @@
 
   video {
     opacity: 0;
-    transition: var(--transition-image-in); 
+    transition: var(--lazy-image-transition);
   
     &.is-ready {
       opacity: 1;

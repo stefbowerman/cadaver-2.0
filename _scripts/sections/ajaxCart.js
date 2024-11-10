@@ -1,5 +1,4 @@
 import BaseSection from './base'
-import AJAXFormManager, { events } from '../core/ajaxFormManager'
 import CartAPI from '../core/cartAPI'
 import { getQueryParams } from '../core/utils'
 
@@ -12,16 +11,10 @@ export default class AJAXCartSection extends BaseSection {
     super(container)
 
     this.ajaxCart = new AJAXCart(this.qs(AJAXCart.SELECTOR))
-    this.ajaxFormManager = new AJAXFormManager()
 
-    // Store callbacks so we can remove them later
-    this.callbacks = {
-      changeSuccess: e => this.ajaxCart.onChangeSuccess(e.detail.cart),
-      changeFail: e => this.ajaxCart.onChangeFail(e.detail.description)
-    }
+    this.onCartUpdate = e => this.ajaxCart.onChangeSuccess(e.detail.cart)
 
-    window.addEventListener(events.ADD_SUCCESS, this.callbacks.changeSuccess)
-    window.addEventListener(events.ADD_FAIL, this.callbacks.changeFail)
+    window.addEventListener(CartAPI.events.UPDATE, this.onCartUpdate)
 
     CartAPI.getCart().then(cart => {
       this.ajaxCart.render(cart)
@@ -34,10 +27,7 @@ export default class AJAXCartSection extends BaseSection {
   }
 
   onUnload() {
-    this.ajaxFormManager.destroy()
-
-    window.removeEventListener(events.ADD_SUCCESS, this.callbacks.changeSuccess)
-    window.removeEventListener(events.ADD_FAIL, this.callbacks.changeFail)
+    window.removeEventListener(CartAPI.events.UPDATE, this.onCartUpdate)
 
     super.onUnload()
   }  

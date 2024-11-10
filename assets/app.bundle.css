@@ -284,7 +284,6 @@
   --transition-drawer-out: transform 450ms cubic-bezier(0.51, 0.22, 0.12, 1);
   --transition-backdrop-in: opacity 450ms cubic-bezier(0.48, 0.19, 0.15, 0.8);
   --transition-backdrop-out: opacity 400ms cubic-bezier(0.42, 0, 0.51, 0.79);
-  --transition-image-in: opacity cubic-bezier(0.42, 0.33, 0.21, 0.82) 0.32s;
   --btn-radius: 8px;
   --btn-bg-color: transparent;
   --btn-border-color: var(--color-black);
@@ -310,6 +309,9 @@
   --header-color: var(--color-black);
   --header-bg-color: var(--color-gray);
   --footer-bg: #DDD;
+  --lazy-image-transition-timing-function: cubic-bezier(0.42, 0.33, 0.21, 0.82);
+  --lazy-image-transition-duration: 0.32s;
+  --lazy-image-transition: opacity var(--lazy-image-transition-timing-function, ease-in) var(--lazy-image-transition-duration, 0.25s);
 }
 @media (min-width: 768px) {
   :root {
@@ -1367,15 +1369,20 @@ table tfoot tr:first-child td {
   }
 }
 
-.lazy-image {
-  transition: var(--transition-image-in);
+img.lazy-image {
+  transition: var(--lazy-image-transition);
   opacity: 0;
 }
-.lazy-image.lazyload {
-  opacity: 0;
+img.lazy-image.no-fade {
+  --lazy-image-transition-duration: 0s;
 }
-.lazy-image.lazyloaded {
+img.lazy-image.is-loaded {
   opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  img.lazy-image {
+    transition: none !important;
+  }
 }
 
 .header-nav__list {
@@ -1403,6 +1410,16 @@ header.header {
   height: var(--header-height);
   background-color: rgba(219, 219, 219, 0.5);
   backdrop-filter: blur(15px);
+}
+header.header nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 0.5em;
+}
+header.header nav a[aria-current=page] {
+  text-decoration: underline;
 }
 
 .header-logo {
@@ -1448,6 +1465,16 @@ header.header {
   .footer {
     --grid-column-gap: 185px;
   }
+}
+.footer nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 0.5em;
+}
+.footer nav a[aria-current=page] {
+  text-decoration: underline;
 }
 
 .footer-title {
@@ -1947,6 +1974,9 @@ body.ajax-cart-open {
   object-fit: contain;
   mix-blend-mode: multiply;
 }
+.ajax-cart__item-image img.is-cached {
+  transition: none;
+}
 
 .ajax-cart__item-info {
   flex: 1;
@@ -2058,6 +2088,7 @@ body.ajax-cart-open {
   bottom: 0;
   height: 100%;
   width: 100%;
+  object-fit: cover;
 }
 
 .article-card__meta {
@@ -2307,7 +2338,7 @@ body.ajax-cart-open {
 .graphic-cover video {
   z-index: 2;
   opacity: 0;
-  transition: var(--transition-image-in);
+  transition: var(--lazy-image-transition);
 }
 .graphic-cover video.is-ready {
   opacity: 1;

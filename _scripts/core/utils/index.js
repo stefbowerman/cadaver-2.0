@@ -46,68 +46,6 @@ export function isThemeEditor() {
 }
 
 /**
- * Adds user agent classes to the document to target specific browsers
- *
- */
-export function userAgentBodyClass() {
-  const ua = navigator.userAgent;
-  const d = document.documentElement;
-  let classes = d.className;
-  let matches;
-
-  // Detect iOS (needed to disable zoom on form elements)
-  // http://stackoverflow.com/questions/9038625/detect-if-device-is-ios/9039885#9039885
-  if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
-    classes += ' ua-ios';
-
-    // Add class for version of iOS
-    matches = ua.match(/((\d+_?){2,3})\slike\sMac\sOS\sX/);
-    if (matches) {
-      classes += ' ua-ios-' + matches[1];// e.g. ua-ios-7_0_2
-    }
-
-    // Add class for Twitter app
-    if (/Twitter/.test(ua)) {
-      classes += ' ua-ios-twitter';
-    }
-
-    // Add class for Chrome browser
-    if (/CriOS/.test(ua)) {
-      classes += ' ua-ios-chrome';
-    }
-  }
-
-  // Detect Android (needed to disable print links on old devices)
-  // http://www.ainixon.me/how-to-detect-android-version-using-js/
-  if (/Android/.test(ua)) {
-    matches = ua.match(/Android\s([0-9]*)/);
-    classes += matches ? ' ua-aos ua-aos-' + matches[1].replace(/\./g, '_') : ' ua-aos';
-  }
-
-  // Detect webOS (needed to disable optimizeLegibility)
-  if (/webOS|hpwOS/.test(ua)) {
-    classes += ' ua-webos';
-  }
-
-  // Detect Samsung Internet browser
-  if (/SamsungBrowser/.test(ua)) {
-    classes += ' ua-samsung';
-  }
-
-  if (ua.toLowerCase().indexOf('safari') != -1) { 
-    if (ua.toLowerCase().indexOf('chrome') > -1) {
-      // Chrome
-    }
-    else {
-      classes += ' ua-safari';
-    }
-  }
-
-
-  d.className = classes;
-}
-
-/**
  * Generates a 32 bit integer from a string
  * Useful for hashing content into a some-what unique identifier to use for cookies.
  * Reference - https://stackoverflow.com/a/7616484

@@ -12,27 +12,37 @@
   <div class="container">
     <div class="header-main">
       <div class="header-nav">
-        <nav class="header-nav__list">
-          {% comment %} @TODO - Add <ul> list here {% endcomment %}
-          <a
-            href="#"
-            class="header-nav__item"
-            data-taxi-ignore
-            data-mobile-menu-toggle
-          >
-            Menu
-          </a>
+        <nav class="header-nav__list" aria-label="Main" data-primary-nav>
+          <ul>
+            <li>
+              <button
+                class="header-nav__item"
+                aria-label="Open Menu"
+                data-mobile-menu-toggle
+              >
+                Menu
+              </button>
+            </li>
 
-          {% for link in linklists[section.settings.primary_menu].links %}
-            <a href="{{ link.url }}" class="header-nav__item">
-              {{ link.title }}
-            </a>
-          {% endfor %}
+            {% for link in linklists[section.settings.primary_menu].links %}
+              <li>
+                <a
+                  href="{{ link.url }}"
+                  class="header-nav__item"
+                  {% if link.current %}
+                    aria-current="page"
+                  {% endif %}                  
+                >
+                  {{ link.title }}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
         </nav>  
       </div>
     
       <div class="header-nav header-nav--right">
-        <nav class="header-nav__list">
+        <div class="header-nav__list">
           <a
             href="{{ routes.cart_url }}"
             class="header-nav__item {% if cart.item_count > 0 %} has-items{% endif %}"
@@ -50,7 +60,7 @@
             {% render 'svg-icon-search' %}
             <span class="visually-hidden">Search icon</span>
           </a>
-        </nav>  
+        </div>  
       </div>
     </div>
   </div>

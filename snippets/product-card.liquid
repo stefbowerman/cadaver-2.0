@@ -1,5 +1,3 @@
-{% # theme-check-disable DeprecateLazysizes %}
-
 {%- comment %}
 
   Product Card
@@ -9,11 +7,37 @@
 
   {% render 'product-card',
              product: { product } - required
+             loading: { string } - optional - defaults to "lazy"
+             sizes: { string } - optional - defaults to sizes for results grid
+             image_min_width: { number } - optional - defaults to 500
+             image_max_width: { number } - optional - defaults to 900             
   %}
 
 {% endcomment -%}
 
 {% if product %}
+  {%- liquid
+    if image_min_width == blank
+      assign image_min_width = 500
+    endif
+
+    if image_max_width == blank
+      assign image_max_width = 900
+    endif
+
+    capture image_widths
+      render 'image-widths', min_width: image_min_width, max_width: image_max_width
+    endcapture
+
+    if loading == blank
+      assign loading = 'lazy'
+    endif
+
+    if sizes == blank
+      assign sizes = '(max-width: 600px) 50vw, (max-width: 1200px) 33vw, 420px'
+    endif
+  -%}
+
   {%- capture alt_text %}
     {% if product.featured_image.alt %}
       {{ product.featured_image.alt }}
@@ -21,6 +45,7 @@
       "{{ product.title }}" Featured Image
     {% endif %}
   {%- endcapture %}
+  {% assign alt_text = alt_text | strip_newlines | strip %}
 
 
   <div
@@ -31,17 +56,16 @@
       <div class="product-card__gallery">
         <a href="{{ product.url }}" title="{{ product.title }}">
           <div class="product-card__gallery-item">
-            <img
-              data-src="{{ product.featured_image | image_url: width: '600' }}"
-              data-srcset="{{ product.featured_image | image_url: width: '540' }} 540w,
-                            {{ product.featured_image | image_url: width: '720' }} 720w,
-                            {{ product.featured_image | image_url: width: '900' }} 900w"
-              data-sizes="auto"                             
-              alt="{{ alt_text | escape }}"
-              height="{{ product.featured_image.height }}"
-              width="{{ product.featured_image.width }}"
-              class="lazyload lazy-image"
-            >                
+
+            {{ product.featured_image
+              | image_url: width: image_max_width
+              | image_tag:
+                loading: loading,
+                widths: image_widths,
+                alt: alt_text,
+                class: 'lazy-image',
+                sizes: sizes
+            }}             
           </div>
         </a>
       </div> 

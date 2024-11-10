@@ -22,11 +22,6 @@ const classes = {
   backdrop: 'ajax-cart-backdrop'
 }
 
-export const events = {
-  CLICK: `click.ajaxCart`,
-  RENDER: `render.ajaxCart`
-}
-
 export default class AJAXCart extends BaseComponent {
   static TYPE = 'ajax-cart'
 
@@ -145,7 +140,7 @@ export default class AJAXCart extends BaseComponent {
         <div class="ajax-cart__item-inner">
           <div class="ajax-cart__item-image-frame">
             <div class="ajax-cart__item-image">
-              <img src="${imageV2.url}" alt="${imageV2.alt}" height="${imageV2.height}" width="${imageV2.width}" />
+              <img src="${imageV2.url}" alt="${imageV2.alt}" height="${imageV2.height}" width="${imageV2.width}" class="lazy-image" />
             </div>
           </div>
           <div class="ajax-cart__item-info">
@@ -221,10 +216,7 @@ export default class AJAXCart extends BaseComponent {
         this.body.innerHTML = this.bodyTemplate(cart)
         this.totalPrice.innerHTML = cart.total_price_formatted
       }
-    }    
-
-    const event = new CustomEvent(events.RENDER, { detail: { cart } })
-    window.dispatchEvent(event)
+    }
 
     this.hasBeenRendered = true
 

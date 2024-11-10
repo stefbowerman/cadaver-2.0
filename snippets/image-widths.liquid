@@ -1,0 +1,38 @@
+{%- comment %}
+
+  Image Widths Snippet
+  ------------------------------------------------------------------------------
+
+  - Capture comma separated list of widths for usage with image_tag filter
+
+  Usage:
+
+  {% render 'image-widths',
+             min_width: { number } - optional
+             max_width: { number } - optional
+  %}
+
+{% endcomment -%}
+
+{%- liquid
+  assign output = ''
+  assign widths = '180, 300, 500, 700, 900, 1100, 1400, 1600, 1800' | split: ', '
+
+  if min_width == blank
+    assign min_width = widths | first | plus: 0
+  endif
+
+  if max_width == blank
+    assign max_width = widths | last | plus: 0
+  endif
+
+  for width in widths
+    assign w = width | plus: 0
+
+    if w >= min_width and w <= max_width
+      assign output = output | append: ', ' | append: w
+    endif
+  endfor
+
+  echo output | strip | remove_first: ', '
+-%}

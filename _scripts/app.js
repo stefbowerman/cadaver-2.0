@@ -1,11 +1,10 @@
 import { Core as TaxiCore } from '@unseenco/taxi'
-import 'lazysizes'
 import 'swiper/css'
 import 'swiper/css/effect-fade'
 
 import BreakpointsController from './core/breakpointsController'
+
 import {
-  userAgentBodyClass,
   isThemeEditor,
   targetBlankExternalLinks
 } from './core/utils'
@@ -48,6 +47,8 @@ function init() {
     // Prevent taxi js from running
     Array.from(document.getElementsByTagName('a')).forEach(a => a.setAttribute('data-taxi-ignore', true))
   }
+
+  // @TODO - Replace all renderers with default base renderer
 
   const taxi = new TaxiCore({
     renderers: {
@@ -132,7 +133,6 @@ function init() {
   window.app.taxi = taxi
   // END Taxi
 
-  userAgentBodyClass(); 
   targetBlankExternalLinks(); // All external links open in a new tab  
 
   if (window.history && window.history.scrollRestoration) {

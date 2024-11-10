@@ -1,5 +1,3 @@
-{% # theme-check-disable DeprecateLazysizes %}
-
 {%- comment %}
 
   Product Detail Gallery Item
@@ -15,26 +13,23 @@
 
 {% if image != blank %}
   {%- liquid
-    assign srcset = ''
-    assign widths = '720, 930, 1080, 1200, 1400, 1600, 1800' | split: ', '  
-  -%}
-  
-  {% for width in widths %}
-    {% assign image_size = width | append: 'x' %}
-    {% capture srcset_size %}{{ image.src | image_url: width: image_size }} {{ width | append: 'w' }}{% unless forloop.last %},{% endunless %}{% endcapture %}
-    {% assign srcset = srcset | append: srcset_size %}
-  {% endfor %}
+    assign loading = 'lazy'
 
+    capture main_image_widths
+      render 'image-widths', max_width: 900
+    endcapture
+  -%}
 
   <div class="product-detail-gallery__item">
-    <img
-      data-src="{{ image | image_url: width: 1600 }}"
-      data-srcset="{{ srcset }}"
-      alt="{{ image.alt | escape }}"
-      class="lazyload lazy-image"
-      height="{{ image.height }}"
-      width="{{ image.width }}"
-      data-image-id="{{ image.id }}"
-    >
+    {{
+      image
+      | image_url: width: 1200
+      | image_tag:
+        loading: loading,
+        widths: main_image_widths,
+        sizes: '(max-width: 1024px) 100vw, (max-width: 1920px) 50vw, 900px',
+        alt: image.alt,
+        class: 'lazy-image'
+    }}
   </div>     
 {% endif %}
