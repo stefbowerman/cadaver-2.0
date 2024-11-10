@@ -98,6 +98,10 @@ body.ajax-cart-open {
     height: 100%;
     object-fit: contain;
     mix-blend-mode: multiply;
+
+    &.is-cached {
+      transition: none;
+    }
   }
 }
 

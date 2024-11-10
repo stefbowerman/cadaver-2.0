@@ -1,7 +1,5 @@
 {% comment %}
   @TODO - Translate strings.
-  @TODO - Remove moneyFormat
-  @TODO - Remove lazySizesConfig
 {% endcomment %}
 
 <script>
@@ -13,7 +11,6 @@
       soldOut: 'Sold Out',
       unavailable: 'Unavailable'
     },
-    moneyFormat: {{ shop.money_format | json }},
     routes: {
       predictive_search_url: {{ routes.predictive_search_url | json }},
       cart_add_url: {{ routes.cart_add_url | json }},
@@ -29,11 +26,6 @@
       listId: {{ settings.klaviyo_newsletter_list_id | json }}
     },     
   };
-
-  window.lazySizesConfig = window.lazySizesConfig || {};
-  window.lazySizesConfig.init = false;
-  window.lazySizesConfig.expand = 1000;
-  window.lazySizesConfig.expFactor = 3;
 </script>
 
 <script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer="defer"></script> {% comment %} Needed for accounts {% endcomment %}

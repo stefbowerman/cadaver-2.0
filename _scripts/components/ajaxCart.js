@@ -140,7 +140,7 @@ export default class AJAXCart extends BaseComponent {
         <div class="ajax-cart__item-inner">
           <div class="ajax-cart__item-image-frame">
             <div class="ajax-cart__item-image">
-              <img src="${imageV2.url}" alt="${imageV2.alt}" height="${imageV2.height}" width="${imageV2.width}" />
+              <img src="${imageV2.url}" alt="${imageV2.alt}" height="${imageV2.height}" width="${imageV2.width}" class="lazy-image" />
             </div>
           </div>
           <div class="ajax-cart__item-info">

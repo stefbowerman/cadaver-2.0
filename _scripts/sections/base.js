@@ -1,3 +1,4 @@
+import LazyImageController from '../core/lazyImageController'
 import { doComponentCleanup } from '../components/base'
 
 // Standard components
@@ -23,10 +24,19 @@ export default class BaseSection {
     window.addEventListener('taxi.navigateIn', this.onNavigateIn)
     window.addEventListener('taxi.navigateEnd', this.onNavigateEnd)
 
+    this.lazyImageController = new LazyImageController(this.container)
+
     // Below are standard components that can be initialized at the base section level (until there's a reason for them to get pushed down somewhere more specific)
     this.graphicCoverVideos = this.qsa(GraphicCoverVideo.SELECTOR).map(el => {
       return new GraphicCoverVideo(el)
     })
+
+    // Good for testing...
+    // Array.from(container.querySelectorAll('img')).forEach(el => {
+    //   if (!el.getAttribute('alt')) {
+    //     console.log('No alt text found for => ', el)
+    //   }
+    // })    
   }
 
   get dataset() {
@@ -64,6 +74,8 @@ export default class BaseSection {
     window.removeEventListener('taxi.navigateOut', this.onNavigateOut)
     window.removeEventListener('taxi.navigateIn', this.onNavigateIn)
     window.removeEventListener('taxi.navigateEnd', this.onNavigateEnd)
+
+    this.lazyImageController.destroy()
 
     doComponentCleanup(this) // This automatically calls this.destroy() up all components (+ subcomponents)
   }

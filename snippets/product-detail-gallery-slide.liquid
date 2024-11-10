@@ -15,26 +15,23 @@
 
 {% if image != blank %}
   {%- liquid
-    assign srcset = ''
-    assign widths = '240, 480, 720, 930, 1080' | split: ', '  
+    assign loading = 'lazy'
+    
+    capture main_image_widths
+      render 'image-widths', max_width: 1100
+    endcapture
   -%}
   
-  {% for width in widths %}
-    {% assign image_size = width | append: 'x' %}
-    {% capture srcset_size %}{{ image.src | image_url: width: image_size }} {{ width | append: 'w' }}{% unless forloop.last %},{% endunless %}{% endcapture %}
-    {% assign srcset = srcset | append: srcset_size %}
-  {% endfor %}
-
-
   <div class="product-detail-gallery__slide swiper-slide">
-    <img
-      data-src="{{ image | image_url: width: 720 }}"
-      data-srcset="{{ srcset }}"
-      alt="{{ image.alt | escape }}"
-      class="lazyload lazy-image"
-      height="{{ image.height }}"
-      width="{{ image.width }}"
-      data-image-id="{{ image.id }}"
-    >
+    {{
+      image
+      | image_url: width: 720
+      | image_tag:
+        loading: loading,
+        widths: main_image_widths,
+        sizes: '100vw',
+        alt: image.alt,
+        class: 'lazy-image'
+    }}
   </div>     
 {% endif %}

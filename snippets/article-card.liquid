@@ -14,17 +14,24 @@
 {% if article %}
   <a href="{{ article.url }}" class="article-card">
     <div class="article-card__frame">
-      <img
-        src="{{ article.image | image_url: width: '600' }}"
-        srcset="{{ article.image | image_url: width: '180' }} 180w,
-                {{ article.image | image_url: width: '360' }} 360w,
-                {{ article.image | image_url: width: '540' }} 540w,
-                {{ article.image | image_url: width: '720' }} 720w"      
-        class="lazyload lazy-image"
-        width="{{ article.image.width }}"
-        height="{{ article.image.height }}"
-        alt="{{ article.image.alt | default: article.title | escape }}"
-      >
+      <div class="article-card__frame">
+        {%- liquid
+          assign alt_text =  article.image.alt | default: article.title | escape
+
+          capture image_widths
+            render 'image-widths', max_width: 900
+          endcapture
+        -%}
+
+        {{
+          article.image
+          | image_url: width: 900
+          | image_tag:
+            widths: image_widths,
+            alt: alt_text,
+            class: 'lazy-image'
+        }}
+      </div>
     </div>
     
     <div class="article-card__meta">{{- article.published_at | time_tag: format: 'date' -}}</div>

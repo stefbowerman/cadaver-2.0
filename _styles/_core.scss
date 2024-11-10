@@ -20,15 +20,23 @@
   }
 }
 
-.lazy-image {
-  transition: var(--transition-image-in);
+// Lazy images
+img.lazy-image {
+  transition: var(--lazy-image-transition);
+
   opacity: 0;
 
-  &.lazyload {
-    opacity: 0;
+  &.no-fade {
+    --lazy-image-transition-duration: 0s;
   }
 
-  &.lazyloaded {
+  &.is-loaded {
     opacity: 1;
-  } 
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    & {
+      transition: none !important;
+    }
+  }
 }

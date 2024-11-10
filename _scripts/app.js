@@ -1,9 +1,9 @@
 import { Core as TaxiCore } from '@unseenco/taxi'
-import 'lazysizes'
 import 'swiper/css'
 import 'swiper/css/effect-fade'
 
 import BreakpointsController from './core/breakpointsController'
+
 import {
   isThemeEditor,
   targetBlankExternalLinks
