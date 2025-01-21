@@ -29,6 +29,7 @@
 // Helper Classes
 // -------------------------
 
+// @TODO - sr-only is a class in Tailwind, once Tailwind is implemented then we can remove this CSS rule including the .visually-hidden class
 .sr-only,
 .visually-hidden {
   @include visually-hidden();
