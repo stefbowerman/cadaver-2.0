@@ -57,7 +57,7 @@
             href="{{ routes.search_url }}"
             class="header-nav__item"
           >
-            {% render 'svg-icon-search' %}
+            {{- 'icon-search.svg' | inline_asset_content -}}
             <span class="sr-only">Search icon</span>
           </a>
         </div>  
