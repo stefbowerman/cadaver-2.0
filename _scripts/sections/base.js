@@ -77,7 +77,7 @@ export default class BaseSection {
 
     this.lazyImageController.destroy()
 
-    doComponentCleanup(this) // This automatically calls this.destroy() up all components (+ subcomponents)
+    doComponentCleanup(this) // This automatically calls this.destroy() up all components recursively
   }
 
   onSectionSelect(e) {

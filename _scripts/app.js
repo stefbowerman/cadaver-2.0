@@ -26,8 +26,6 @@ import AJAXCartSection from './sections/ajaxCart'
 window.app = window.app || {};
 window.app.taxi = null;
 
-window.lazySizes && window.lazySizes.init();
-
 function init() {
   const viewContainer = document.querySelector('main#view-container')
   const TEMPLATE_REGEX = /\btemplate-\w*/
