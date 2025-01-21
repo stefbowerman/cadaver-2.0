@@ -17,8 +17,15 @@ export default class BaseRenderer extends Renderer {
     super(properties)
   }
 
+  // NOTE: If initialLoad is defined, "onEnter" will not be called for sections that exist on page load
+  // initialLoad() {
+
+  // }
+
   onEnter() {
     // run after the new content has been added to the Taxi container
+    
+    this.redirectIfNecessary()
 
     // Taxi re-uses renderer instances when navigating between cache'd pages
     // Create the section renderer onEnter rather than in the constructor to make sure we have a fresh one each time
@@ -38,6 +45,7 @@ export default class BaseRenderer extends Renderer {
 
   onEnterCompleted() {
      // run after the transition.onEnter has fully completed
+     this.redirectIfNecessary()
   }
 
   onLeave() {
@@ -51,4 +59,14 @@ export default class BaseRenderer extends Renderer {
   onLeaveCompleted() {
     // run after the transition.onleave has fully completed
   }
+
+  redirectIfNecessary() {
+    if (window.location.pathname === '/cart') {
+      const url = '/?cart'
+
+      setTimeout(() => {
+        window.app?.taxi ? app.taxi.navigateTo(url) : (window.location = url)
+      }, 50)
+    }
+  }  
 }

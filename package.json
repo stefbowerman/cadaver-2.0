@@ -31,7 +31,7 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "@unseenco/taxi": "^1.7.0",
+    "@unseenco/taxi": "^1.8.0",
     "animated-scroll-to": "^2.3.0",
     "lodash-es": "^4.17.21",
     "npm": "^9.6.2",

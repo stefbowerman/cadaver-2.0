@@ -4,9 +4,9 @@
   data-section-type="header"
   role="banner"
 >
-  <a href="/" itemprop="url" title="{{ shop.name }}" class="header-logo">
+  <a href="{{ routes.root_url }}" title="{{ shop.name }}" class="header-logo">
     Logo Goes Here
-    <span class="visually-hidden">{{ shop.name }} logo</span>
+    <span class="sr-only">{{ shop.name }} logo</span>
   </a> 
 
   <div class="container">
@@ -57,14 +57,37 @@
             href="{{ routes.search_url }}"
             class="header-nav__item"
           >
-            {% render 'svg-icon-search' %}
-            <span class="visually-hidden">Search icon</span>
+            {{- 'icon-search.svg' | inline_asset_content -}}
+            <span class="sr-only">Search icon</span>
           </a>
         </div>  
       </div>
     </div>
   </div>
 </header>
+
+{% comment %}
+  Borrowed from Dawn
+  Not sure why they put it in the header but I'm copying them...
+{% endcomment %}
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "name": {{ shop.name | json }},
+    {% if shop.brand.logo %}
+      "logo": {{ shop.brand.logo | image_url: width: 500 | prepend: "https:" | json }},
+    {% endif %}
+    "sameAs": [
+      {{ settings.social_link_twitter   | json }},
+      {{ settings.social_link_facebook  | json }},
+      {{ settings.social_link_youtube   | json }},
+      {{ settings.social_link_tiktok    | json }},
+      {{ settings.social_link_instagram | json }}
+    ],
+    "url": {{ request.origin | append: page.url | json }}
+  }
+</script>
 
 {% schema %}
 {

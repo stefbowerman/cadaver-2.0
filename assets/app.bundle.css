@@ -985,24 +985,6 @@ h1, h2, h3, h4, h5, h6 {
   display: none;
 }
 
-/*============================================================================
-  Skip to content button
-    - Overrides .visually-hidden when focused
-==============================================================================*/
-.skip-link:focus {
-  position: absolute !important;
-  overflow: auto;
-  clip: auto;
-  width: auto;
-  height: auto;
-  margin: 0;
-  color: var(--color-text);
-  background-color: var(--color-body);
-  padding: 15px;
-  z-index: var(--z-skip-to);
-  transition: none;
-}
-
 label,
 .label {
   font-weight: var(--font-medium);
@@ -2362,15 +2344,21 @@ body.ajax-cart-open {
   margin: 0 auto;
 }
 
+html:not(.is-theme-editor) {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html.js body.is-loading {
+    opacity: 0;
+    transition: opacity 1s cubic-bezier(0.33, 0.01, 0.49, 1.02) 0.25s;
+  }
+  html.js body.is-loaded {
+    opacity: 1;
+  }
+}
+
 .container {
   padding-left: var(--gutter);
   padding-right: var(--gutter);
-}
-
-html.js body.is-loading {
-  opacity: 0;
-  transition: opacity 1s cubic-bezier(0.33, 0.01, 0.49, 1.02) 0.25s;
-}
-html.js body.is-loaded {
-  opacity: 1;
 }

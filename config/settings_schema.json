@@ -35,6 +35,36 @@
     ]
   },
   {
+    "name": "Social Accounts",
+    "settings": [
+      {
+        "type": "url",
+        "id": "social_link_twitter",
+        "label": "X / Twitter"
+      },
+      {
+        "type": "url",
+        "id": "social_link_facebook",
+        "label": "Facebook"
+      },
+      {
+        "type": "url",
+        "id": "social_link_youtube",
+        "label": "YouTube"
+      },
+      {
+        "type": "url",
+        "id": "social_link_tiktok",
+        "label": "TikTok"
+      },
+      {
+        "type": "url",
+        "id": "social_link_instagram",
+        "label": "Instagram"
+      }
+    ]
+  },  
+  {
     "name": "Klaviyo",
     "settings": [
       {
