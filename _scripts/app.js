@@ -11,7 +11,6 @@ import {
 
 // Renderers
 import BaseRenderer from './renderers/base'
-import CartRenderer from './renderers/cart'
 
 // Transitions
 import DefaultTransition from './transitions/default'
@@ -33,6 +32,7 @@ function init() {
   const viewContainer = document.querySelector('main#view-container')
   const TEMPLATE_REGEX = /\btemplate-\w*/
 
+  // Initialize all global controllers before starting Taxi and registering sections
   window.app.breakpointsController = new BreakpointsController()
 
   const sectionManager = new SectionManager()
@@ -48,29 +48,9 @@ function init() {
     Array.from(document.getElementsByTagName('a')).forEach(a => a.setAttribute('data-taxi-ignore', true))
   }
 
-  // @TODO - Replace all renderers with default base renderer
-
   const taxi = new TaxiCore({
     renderers: {
-      default: BaseRenderer,
-      index: BaseRenderer,
-      collection: BaseRenderer,
-      product: BaseRenderer,
-      page: BaseRenderer,
-      blog: BaseRenderer,
-      article: BaseRenderer,
-      search: BaseRenderer,
-      addresses: BaseRenderer,
-      login: BaseRenderer,
-      password: BaseRenderer,
-      'list-collections': BaseRenderer,
-      account: BaseRenderer,
-      register: BaseRenderer,
-      order: BaseRenderer,
-      'reset-password': BaseRenderer,
-      error: BaseRenderer,
-
-      cart: CartRenderer
+      default: BaseRenderer
     },
     transitions: {
       default: DefaultTransition
@@ -119,6 +99,7 @@ function init() {
   taxi.on('NAVIGATE_END', e => {
     // const { to, from, trigger } = e
 
+    taxi.clearCache('/cart')
     taxi.cache.forEach((_, key) => {
       if (key.includes('products') || key.includes('account') || key.includes('cart')) {
         taxi.cache.delete(key)

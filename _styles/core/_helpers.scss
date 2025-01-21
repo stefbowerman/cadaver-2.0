@@ -66,17 +66,3 @@
     display: none;
   }
 }
-
-
-/*============================================================================
-  Skip to content button
-    - Overrides .visually-hidden when focused
-==============================================================================*/
-.skip-link:focus {
-  @include visually-shown(absolute);
-  color: var(--color-text);
-  background-color: var(--color-body);
-  padding: 15px;
-  z-index: var(--z-skip-to);
-  transition: none;
-}

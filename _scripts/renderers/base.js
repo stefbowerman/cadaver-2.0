@@ -17,6 +17,10 @@ export default class BaseRenderer extends Renderer {
     super(properties)
   }
 
+  initialLoad() {
+    this.redirectIfNecessary()
+  }
+
   onEnter() {
     // run after the new content has been added to the Taxi container
 
@@ -38,6 +42,7 @@ export default class BaseRenderer extends Renderer {
 
   onEnterCompleted() {
      // run after the transition.onEnter has fully completed
+     this.redirectIfNecessary()
   }
 
   onLeave() {
@@ -51,4 +56,14 @@ export default class BaseRenderer extends Renderer {
   onLeaveCompleted() {
     // run after the transition.onleave has fully completed
   }
+
+  redirectIfNecessary() {
+    if (window.location.pathname === '/cart') {
+      const url = '/?cart'
+
+      setTimeout(() => {
+        window.app?.taxi ? app.taxi.navigateTo(url) : (window.location = url)
+      }, 50)
+    }
+  }  
 }

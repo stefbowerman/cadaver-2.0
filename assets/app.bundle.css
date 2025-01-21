@@ -985,24 +985,6 @@ h1, h2, h3, h4, h5, h6 {
   display: none;
 }
 
-/*============================================================================
-  Skip to content button
-    - Overrides .visually-hidden when focused
-==============================================================================*/
-.skip-link:focus {
-  position: absolute !important;
-  overflow: auto;
-  clip: auto;
-  width: auto;
-  height: auto;
-  margin: 0;
-  color: var(--color-text);
-  background-color: var(--color-body);
-  padding: 15px;
-  z-index: var(--z-skip-to);
-  transition: none;
-}
-
 label,
 .label {
   font-weight: var(--font-medium);
