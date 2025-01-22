@@ -36,6 +36,11 @@
     if sizes == blank
       assign sizes = '(max-width: 600px) 50vw, (max-width: 1200px) 33vw, 420px'
     endif
+
+    assign product_url = product.url
+    if collection and collection.handle != 'all'
+      assign product_url = product.url | within: collection
+    endif    
   -%}
 
   {%- capture alt_text %}
@@ -49,31 +54,30 @@
 
 
   <div
-    class="product-card{% if product.available == false %} product-card--sold-out{% endif %}"
+    class="h-full"
     data-component="product-card"
   >
-    <div class="product-card__contents">
-      <div class="product-card__gallery">
-        <a href="{{ product.url }}" title="{{ product.title }}">
-          <div class="product-card__gallery-item">
-
+    <div class="flex flex-col gap-4">
+      <div class="relative w-full aspect-square">
+        <a href="{{ product_url }}" title="{{ product.title }}">
+          <div class="h-full w-full">
             {{ product.featured_image
               | image_url: width: image_max_width
               | image_tag:
                 loading: loading,
                 widths: image_widths,
                 alt: alt_text,
-                class: 'lazy-image',
+                class: 'h-full w-full object-contain lazy-image',
                 sizes: sizes
             }}             
           </div>
         </a>
       </div> 
 
-      <a href="{{ product.url }}" title="{{ product.title }}">
-        <div class="product-card__info">
-          <div class="product-card__info-title">{{ product.title }}</div>
-          <div class="product-card__info-price">
+      <a href="{{ product_url }}" title="{{ product.title }}">
+        <div class="text-center px-4">
+          <div class="font-bold">{{ product.title }}</div>
+          <div>
             {% if product.available %}
               {{ product.selected_or_first_available_variant.price | money_without_trailing_zeros }}
             {% else %}

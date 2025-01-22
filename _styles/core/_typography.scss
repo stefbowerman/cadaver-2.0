@@ -1,38 +1,4 @@
-// Helpers
-.font-base {
-  font-family: var(--font-family-base);
-}
-
-.font-headings {
-  font-family: var(--font-family-headings);
-}
-
 // Core Typography
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-family-headings);
-  font-weight: var(--font-bold);
-}
-
-// h1 {
-
-// }
-
-// h2 {
-
-// }
-
-// h3 {
-
-// }
-
-// h4 {
-
-// }
-
-// h5 {
-  
-// }
-
-// h6 {
-
+// h1, h2, h3, h4, h5, h6 {
+//   @apply font-bold;
 // }

@@ -1,22 +1,21 @@
 <div
-  class="page-hero"
   data-section-id="{{ section.id }}"
   data-section-type="page-hero"
 >
-  <div class="page-hero__graphic">
+  <div class="relative h-screen min-h-[500px] flex flex-col items-center justify-end pt-12 text-white">
     {% render 'graphic-cover'
-               image: section.settings.image,
-               image_mobile: section.settings.image_mobile,
-               video: section.settings.video
+                image: section.settings.image,
+                image_mobile: section.settings.image_mobile,
+                video: section.settings.video
     %}
-  </div>
 
-  <div class="page-hero__content">
-    {% if section.settings.title != blank %}
-      <h1 class="page-hero__title">
-        {{ section.settings.title }}
-      </h1>
-    {% endif %}
+    <div class="relative z-2 py-12">
+      {% if section.settings.title != blank %}
+        <h3 class="max-w-[7em] lg:max-w-[11em] mx-auto text-center">
+          {{ section.settings.title }}
+        </h3>
+      {% endif %}
+    </div>
   </div>
 </div>
 

@@ -1,23 +1,28 @@
+{%- capture title -%}
+  {% if search.performed %}
+    Your Results for "{{ search.terms }}"
+  {% else %}
+    Search Our Site
+  {% endif %}
+{%- endcapture -%}
+
+{%- capture actions -%}
+  <form action="{{ routes.search_url }}" method="get" role="search" style="max-width: 625px; margin: 0 auto 40px">
+    <div class="minimal-input">
+      <label class="sr-only">Search our site</label>
+      <input type="search" name="q" class="form-control" placeholder="Search store..." value="{{ search.terms | escape }}" />
+      {% comment %} <button class="minimal-input__btn">Search</button> {% endcomment %}
+    </div>
+  </form>      
+{%- endcapture -%}
+
 <div data-section-id="{{ section.id }}" data-section-type="search">
   <div class="container">
-    <div class="page-header">
-      <div class="page-header__title">
-        {% if search.performed %}
-          Your Results for
-        {% else %}
-          Search Our Site
-        {% endif %}
-      </div>
-      <div class="page-header__subtitle">
-        <form action="{{ routes.search_url }}" method="get" role="search" style="max-width: 625px; margin: 0 auto 40px">
-          <div class="minimal-input">
-            <label class="label-hidden">Search our site</label>
-            <input type="search" name="q" class="form-control" placeholder="Search store..." value="{{ search.terms | escape }}" />
-            {% comment %} <button class="minimal-input__btn">Search</button> {% endcomment %}
-          </div>
-        </form>
-      </div>
-    </div>
+    {% render 'section-header',
+              title: title,
+              actions: actions,
+              title_tag: 'h1'
+    %}
   </div>
   
   {% if search.performed %}
@@ -25,7 +30,7 @@
     
       {% if search.results_count == 0 %}
         <div class="container">
-          <p class="text-center text-muted">
+          <p class="text-center">
             Your search for "{{ search.terms }}" did not yield any results.
           </p>
         </div>
@@ -37,7 +42,7 @@
           for item in search.results
             if item.object_type == 'product'
               capture card_html
-                echo '<div class="product-card-set__grid-item">'
+                echo '<div class="product-grid__item">'
                   render 'product-card', product: item
                 echo '</div>'
               endcapture
@@ -56,22 +61,18 @@
         %}
 
         {% if product_card_set_html != blank %}
-          <div class="product-card-set">
-            <div class="product-card-set__grid">              
-              {{ product_card_set_html }}
-            </div>
+          <div class="product-grid">              
+            {{ product_card_set_html }}
           </div>
         {% endif %}
 
         {% if article_grid_html != blank %}
           <div class="container">
-            <div class="section-header">
-              <h3 class="section-header__title">
-                Articles
-              </h3>
-            </div>
+            {% render 'section-header',
+                       title: 'Articles',
+            %}
 
-            <div class="article-grid">
+            <div class="grid gap-y-8 gap-x-8 grid-cols-1 lg:grid-cols-2">
               {{ article_grid_html }}
             </div>
           </div>

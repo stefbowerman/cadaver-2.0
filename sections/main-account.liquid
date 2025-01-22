@@ -1,19 +1,20 @@
 <section>
   <div class="container">
-    <div class="page-header">
-      <h1 class="page-header__title">
-        My Account
-      </h1>
-      <div class="page-header__subtitle">
-        <a href="/account/logout">Log Out</a>
-      </div>
-    </div>
+    {%- capture actions -%}
+      <a href="/account/logout" class="btn">Log Out</a>
+    {%- endcapture -%}
+
+    {% render 'section-header',
+              title: 'My Account',
+              actions: actions,
+              title_tag: 'h1'
+    %}
 
     <div class="account-main">
-      <div style="flex:1">
+      <div class="flex-1">
         <h3>Order History</h3>
         {% paginate customer.orders by 20 %}
-          <table class="table table--account">
+          <table class="table">
             <thead>
               <tr>
                 <th>Order</th>
@@ -47,7 +48,7 @@
           {% endif %}
       
           {% if customer.orders.size == 0 %}
-            <p class="text-center text-muted">No Orders Found</p>
+            <p class="text-center">No Orders Found</p>
           {% endif %}
         {% endpaginate %}
       </div>
@@ -61,7 +62,7 @@
           {% if customer.default_address != nil %}
             <br />
             <p class="type-fine">Shipping Address</p>
-            <address class="text-muted">
+            <address>
               {% comment %} Line 1 {% endcomment %}
               {{ customer.default_address.address1 }}
         
@@ -100,14 +101,14 @@
             </address>
             <br />
             <p>
-              <a href="/account/addresses" class="btn btn--primary">View Addresses ({{ customer.addresses_count }})</a>
+              <a href="/account/addresses" class="btn">View Addresses ({{ customer.addresses_count }})</a>
             </p>
         
           {% else %}
         
             <p>You haven't entered an address yet</p>
             <p>
-              <a href="/account/addresses" class="btn btn--primary">Add Address</a>
+              <a href="/account/addresses" class="btn">Add Address</a>
             </p>        
         
           {% endif %}

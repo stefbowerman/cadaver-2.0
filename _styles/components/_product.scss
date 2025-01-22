@@ -1,41 +1,18 @@
-@import 'product/product-card';
-@import 'product/product-detail-form';
-@import 'product/product-detail-gallery';
-@import 'product/swatches';
-
-.product-detail {
-
-}
-
-// .product-detail__main
-//   .product-gallery-wrapper
-//   .product-form-wrapper
-
-.product-detail__main {
-  @include bp-up(lg) {
-    display: flex;
-
-    .pdf-gallery-wrapper {
-      flex: 1.2;
-      min-width: 487px;
-    }
-  
-    .pdf-form-wrapper {
-      flex: 1;
-      max-width: 650px;
-    }    
-  }
-}
-
-.pdf-gallery-wrapper {
-  position: relative; // Needed for the progress bar
-}
-
 .product-detail-gallery {
-  margin-bottom: 20px;
+  @apply mb-5 lg:mb-0;
 
-  @include bp-up(lg) {
-    margin-bottom: 0;
+  display: none;
+
+  &.is-active {
+    display: block;
+  }
+
+  .swiper-container {
+    @apply relative w-full overflow-hidden lg:hidden;
+  }  
+
+  &__list {
+    @apply hidden flex-col gap-y-3 lg:flex;
   }
 }
 
@@ -43,14 +20,4 @@
   --pdf-padding-h: clamp(30px, 10px + 3.9vw, 80px);
 
   padding: 0 var(--pdf-padding-h);
-}
-
-// Eventually move this somewhere better
-.pdf-content {
-  @include type-fine;
-
-  ul {
-    list-style: none;
-    padding: 0;
-  }
 }

@@ -1,6 +1,6 @@
 <div data-section-id="{{ section.id }}" data-section-type="ajax-cart">
   <div
-    class="ajax-cart"
+    class="ajax-cart overflow-scroll hide-scrollbar"
     data-component="ajax-cart"
   >
     <form action="{{ routes.cart_url }}" method="post" novalidate>
@@ -17,7 +17,7 @@
           <span style="padding-right: 20px;">Sub-Total</span> <span class="ajax-cart__total-price" data-total-price></span>
         </div>
         <div class="ajax-cart__footer-row">
-          <button type="submit" name="checkout" class="btn btn--primary btn--block">
+          <button type="submit" name="checkout" class="btn btn--block">
             {{ section.settings.checkout_button_text | default: 'Proceed To Checkout' }}
           </button>
         </div>

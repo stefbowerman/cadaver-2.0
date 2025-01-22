@@ -1,55 +1,6 @@
-@mixin visually-hidden() {
-  // sass-lint:disable no-important
-  position: absolute !important;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  height: 1px;
-  width: 1px;
-  margin: -1px;
-  padding: 0;
-  border: 0;
-}
-
-@mixin visually-shown($position: inherit) {
-  // sass-lint:disable no-important
-  position: $position !important;
-  overflow: auto;
-  clip: auto;
-  width: auto;
-  height: auto;
-  margin: 0;
-}
-
-@mixin fill($position: absolute) {
-  position: $position;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 100%;
-}
-
 @mixin has-hover {
   @media (hover: hover) {
     @content;
-  }
-}
-
-@mixin overflow-scroll {
-  overflow: scroll;
-  -webkit-overflow-scrolling: touch;
-}
-
-@mixin hide-scrollbar {
-  -ms-overflow-style: none;  /* Internet Explorer 10+ */
-  scrollbar-width: none;  /* Firefox */
-
-  &::-webkit-scrollbar {
-    display: none;  /* Safari and Chrome */
-    -webkit-appearance: none;
-    width: 0;
-    height: 0;
   }
 }
 
@@ -59,39 +10,4 @@
   &::-moz-placeholder { @content; }
   &:-ms-input-placeholder { @content; }
   &::-webkit-input-placeholder { @content; }
-}
-
-@mixin input-reset {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;  
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-@mixin button-reset {
-  display: inline-block;
-  position: relative;
-  z-index: 1;
-  background: none;
-  width: auto;
-  border: none;
-  overflow: hidden;
-  cursor: pointer;
-  font-weight: normal;
-  line-height: 1;  
-  text-decoration: none !important; // In case it's an <a> inside .rte
-  vertical-align: middle;
-  padding: 0;
-}
-
-@mixin fill($position: absolute) {
-  position: $position;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 100%;
-  width: 100%;
 }

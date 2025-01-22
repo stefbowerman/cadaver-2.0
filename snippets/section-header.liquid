@@ -1,0 +1,42 @@
+{%- comment %}
+
+  Section Header
+  ------------------------------------------------------------------------------
+
+  Usage:
+
+  {% render 'section-header',
+             title: { text } - optional
+             subtitle: { text } - optional
+             actions: { html } - optional
+
+             title_tag: { text } - optional - defaults to h3
+  %}
+
+{% endcomment -%}
+
+{%- liquid
+  if title_tag == blank
+    assign title_tag = 'h3'
+  endif
+-%}
+
+<div class="section-header">
+  {% if title != blank %}
+    <{{ title_tag }} class="section-header__title">
+      {{ title }}
+    </{{ title_tag }}>
+  {% endif %}
+
+  {% if subtitle != blank %}
+    <div class="section-header__subtitle">
+      {{ subtitle }}
+    </div>
+  {% endif %}
+
+  {% if actions != blank %}
+    <div class="section-header__actions">
+      {{ actions }}
+    </div>
+  {% endif %}  
+</div>

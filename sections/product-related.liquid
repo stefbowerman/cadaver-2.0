@@ -1,16 +1,18 @@
 {% assign limit = 6 %}
 
 {%- if recommendations.performed? -%}
-  <div data-content>
-    {%- liquid
-      if recommendations.products_count > 0
-        for product in recommendations.products limit: limit
-          echo '<div class="product-card-set__grid-item">'
-            render 'product-card', product: product
-          echo '</div>'
-        endfor
-      endif
-    %}
+  <div class="container" data-content>
+    <div class="product-grid">
+      {%- liquid
+        if recommendations.products_count > 0
+          for product in recommendations.products limit: limit
+            echo '<div class="product-grid__item">'
+              render 'product-card', product: product
+            echo '</div>'
+          endfor
+        endif
+      %}
+    </div>
   </div>
 {%- else -%}   
   <section
@@ -26,10 +28,8 @@
       </div>
     {% endif %}
 
-    <div class="product-card-set">
-      <div class="product-card-set__grid" data-content-target>
-        <!-- Cards go here... -->
-      </div>     
+    <div data-content-target>
+      <!-- Cards go here... -->
     </div>
   </section>
 {%- endif -%}

@@ -1,53 +1,37 @@
 @import 'header/nav';
 
 header.header {
-  position: fixed;
-  z-index: var(--z-header);
-  top: 0;
-  left: 0;
-  right: 0;
+  @apply fixed z-header top-0 left-0 right-0 bg-white/50;
   height: var(--header-height);
-  background-color: rgba(219, 219, 219, 0.5);
-  backdrop-filter: blur(15px);
 
   nav {
     ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      gap: 0.5em;
+      @apply flex gap-x-2;
     }
 
     a {
       &[aria-current="page"] {
-        text-decoration: underline;
+        @apply underline
       }
     }
   }
 }
 
 .header-logo {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);  
+  @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
   width: var(--header-logo-width);
 }
 
 .header-main {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  @apply flex justify-between items-center;
 }
 
 .header-cart-count {
-  position: absolute;
+  @apply absolute opacity-0;
   top: 15px;
   right: -10px;
-  opacity: 0;
 
   .has-items & {
-    opacity: 1;
+    @apply opacity-100;
   }
 }

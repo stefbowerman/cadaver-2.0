@@ -6,7 +6,7 @@ $t-d-start: 400ms;
 $t-d-end: 500ms;
 
 .newsletter-form-contents {
-  position: relative;
+  @apply relative;
 }
 
 .newsletter-form-inputs {
@@ -15,21 +15,16 @@ $t-d-end: 500ms;
 }
 
 .newsletter-form-message {
-  @include fill();
-  z-index: 1;
-  display: flex;
-  align-items: center;
+  @apply absolute inset-0 z-1 flex items-center opacity-0 pointer-events-none;
 
-  opacity: 0;
-  pointer-events: none;
   transition: opacity $t-d-start ease-out;
   transition-delay: 0ms;
 }
 
 .newsletter-form-contents.show-message {
   .newsletter-form-inputs {
-    opacity: 0;
-    pointer-events: none;
+    @apply opacity-0 pointer-events-none;
+
     transition: {
       duration: $t-d-start;
       delay: 0ms;
@@ -38,8 +33,8 @@ $t-d-end: 500ms;
   }
 
   .newsletter-form-message {
-    opacity: 1;
-    pointer-events: auto;
+    @apply opacity-100 pointer-events-auto;
+
     transition: {
       duration: $t-d-end;
       delay: $t-d-start;

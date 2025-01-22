@@ -4,16 +4,20 @@
   ------------------------------------------------------------------------------
 
   {% include 'product-detail-gallery',
-              product: { product } - required
+              product: { product } - required,
+              current_variant: { variant } - optional
   %}
 
 {% endcomment -%}
 
 {%- liquid
+  if current_variant == blank
+    assign current_variant = product.selected_or_first_available_variant
+  endif
+
   comment
     This block of logic loops through all product images and checks if we have at least 1 with valid alt text for *each* color option.
   endcomment
-  assign current_variant = product.selected_or_first_available_variant
   assign color_galleries_possible = false
 
   for option in product.options_with_values
@@ -78,13 +82,14 @@
           endfor
         -%}
         
+        {% comment %} @TODO - Convert 'is-active' to aria-selected ? {% endcomment %}
         <div
           class="product-detail-gallery{% if is_active %} is-active{% endif %}"
           data-component="product-detail-gallery"
           data-color="{{ color }}"
         >
-          <div class="product-detail-gallery__slideshow-wrapper swiper-container" data-slideshow>
-            <div class="product-detail-gallery__slideshow swiper-wrapper">
+          <div class="swiper-container" data-slideshow>
+            <div class="swiper-wrapper">
               {{ slides }}
             </div>
           </div>
@@ -123,10 +128,10 @@
 
   <div
     class="product-detail-gallery is-active"
-    data-product-detail-gallery
+    data-component="product-detail-gallery"
   >
-    <div class="product-detail-gallery__slideshow-wrapper swiper-container" data-slideshow>
-      <div class="product-detail-gallery__slideshow swiper-wrapper">
+    <div class="swiper-container" data-slideshow>
+      <div class="swiper-wrapper">
         {{ slides }}
       </div>
     </div>

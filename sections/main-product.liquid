@@ -10,18 +10,19 @@
   <meta itemprop="image" content="{{ featured_image | image_url: width: 600, height: 600 }}">
   <meta itemprop="description" content="{{ product.description | strip_html | escape }}">
 
-  <div class="product-detail">
-    <div class="product-detail__main">
-      <div class="pdf-gallery-wrapper">
-        {% render 'product-detail-gallery', product: product %}
-      </div>
+  <div class="lg:flex">
+    <div class="lg:flex-1">
+      {% render 'product-detail-gallery',
+                 product: product,
+                 current_variant: current_variant
+      %}
+    </div>
 
-      <div class="pdf-form-wrapper">
-        {% render 'product-detail-form',
-                   product: product,
-                   current_variant: current_variant
-        %}
-      </div>
+    <div class="lg:flex-1">
+      {% render 'product-detail-form',
+                 product: product,
+                 current_variant: current_variant
+      %}
     </div>
   </div>
 

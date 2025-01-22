@@ -1,27 +1,8 @@
 .pill-group {
-  display: flex;
-  column-gap: 20px;
-  row-gap: 32px;
-  flex-wrap: wrap;
+  @apply flex flex-wrap gap-x-5 gap-y-8;
 }
 
 .pill {
-  display: inline-block;
-  height: var(--pill-height);
+  @apply inline-block whitespace-nowrap rounded-full bg-slate-100 text-black border border-slate-300;
   padding: 7px 18px 6px;
-  white-space: nowrap; // prevent text line wrapping
-  
-  color: var(--pill-color);
-  border: 1px solid var(--pill-border-color);
-  background-color: var(--pill-bg-color);
-  border-radius: 50px;
-
-
-  cursor: pointer;
-
-  // @include has-hover {
-  //   &:hover {
-
-  //   }
-  // }
 }

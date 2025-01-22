@@ -20,7 +20,7 @@
     endcapture
   -%}
   
-  <div class="product-detail-gallery__slide swiper-slide">
+  <div class="relative aspect-square swiper-slide">
     {{
       image
       | image_url: width: 720
@@ -29,7 +29,7 @@
         widths: main_image_widths,
         sizes: '100vw',
         alt: image.alt,
-        class: 'lazy-image'
+        class: 'h-full w-full object-contain lazy-image'
     }}
   </div>     
 {% endif %}
