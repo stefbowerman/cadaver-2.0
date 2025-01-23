@@ -60,6 +60,14 @@ $bp-xxxl: $bp-3xl;
     }
   }
 
+  body {
+    @apply font-normal bg-white text-black text-base;
+
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+  }  
+
   html.js {
     @media (prefers-reduced-motion: no-preference) {
       body {
