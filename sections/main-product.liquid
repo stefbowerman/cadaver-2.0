@@ -1,15 +1,8 @@
 {%- liquid
   assign current_variant = product.selected_or_first_available_variant
-  assign featured_image = current_variant.featured_image | default: product.featured_image
 %}
 
-<div data-section-id="{{ section.id }}" data-section-type="product" itemscope itemtype="http://schema.org/Product">
-  <meta itemprop="name" content="{{ product.title | escape }}">
-  <meta itemprop="url" content="{{ shop.url }}{{ current_variant.url }}">
-  <meta itemprop="brand" content="{{ product.vendor }}">
-  <meta itemprop="image" content="{{ featured_image | image_url: width: 600, height: 600 }}">
-  <meta itemprop="description" content="{{ product.description | strip_html | escape }}">
-
+<div data-section-id="{{ section.id }}" data-section-type="product">
   <div class="lg:flex">
     <div class="lg:flex-1">
       {% render 'product-detail-gallery',
@@ -26,7 +19,9 @@
     </div>
   </div>
 
-  {% render 'product-json-ld' %}
+  <script type="application/ld+json">
+    {{ product | structured_data }}
+  </script>
 </div>
 
 {% schema %}
