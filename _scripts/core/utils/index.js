@@ -1,23 +1,12 @@
-/**
- * _.compact from lodash
- * Remove empty/false items from array
- * Source: https://github.com/lodash/lodash/blob/master/compact.js
- *
- * @param {array} array
- */
-export function compact(array) {
-  let index = -1;
-  let resIndex = 0;
-  const length = array == null ? 0 : array.length;
-  const result = [];
+import { upperFirst, camelCase } from 'lodash-es'
 
-  while (++index < length) {
-    const value = array[index];
-    if (value) {
-      result[resIndex++] = value;
-    }
-  }
-  return result;
+/**
+ * Check if we're running the theme inside the theme editor
+ *
+ * @return {bool}
+ */
+export function isThemeEditor() {
+  return window.Shopify && window.Shopify.designMode
 }
 
 /**
@@ -34,15 +23,6 @@ export function getQueryParams() {
   }
 
   return queryParams
-}
-
-/**
- * Check if we're running the theme inside the theme editor
- *
- * @return {bool}
- */
-export function isThemeEditor() {
-  return window.Shopify && window.Shopify.designMode;
 }
 
 /**
@@ -170,14 +150,6 @@ export function isExternal(url) {
   /* eslint-enable */
 }
 
-export function isTouch() {
-  if ('ontouchstart' in window) {
-    return true
-  }
-  
-  return false
-}
-
 export function random(min = 0, max = 1) {
   return Math.floor(Math.random() * (max - min + 1) + min);     
 }
@@ -200,9 +172,6 @@ export function clamp(num, a, b) {
   return Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
 }
 
-export function getScrollY() {
-  return window.scrollY || window.pageYOffset;
-}
 
 export function credits() {
   if (window && window.location && window.location.hostname !== 'localhost') {
@@ -266,4 +235,65 @@ export const randomFromSeed = (seed = 0.1) => {
  */
 export function getUUID(length = 9) {
   return randomFromSeed(Date.now()).toString(36).slice(2, length + 2)
+}
+
+/**
+ * Converts a string to a handle, e.g. "Product Name" becomes "product-name"
+ *
+ * @param {string} str - The string to be converted to a handle.
+ * @returns {string} A valid Shopify handle.
+ */
+export function toHandle(str) {
+  return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-$/, '').replace(/^-/, '');
+}
+
+/**
+ * Converts a string to a PascalCase string, e.g. "Product Name" becomes "ProductName"
+ *
+ * @param {string} str - The string to be converted to PascalCase.
+ * @returns {string} A PascalCase string.
+ */
+export function toPascalCase(str) {
+  return upperFirst(camelCase(str))
+}
+
+/**
+ * Checks if the given value is a valid number.
+ *
+ * @param {*} value - The value to be checked.
+ * @returns {boolean} True if the value is a number and not NaN, false otherwise.
+ */
+export function isNumber(value) {
+  return typeof value === 'number' && !isNaN(value);
+}
+
+/**
+ * Detects if the current device supports touch events.
+ * 
+ * @function
+ * @returns {boolean} Returns true if the device supports touch events, false otherwise.
+ */
+export const isTouch = () => {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  return 'ontouchstart' in window ||
+         navigator.maxTouchPoints > 0 ||
+         navigator.msMaxTouchPoints > 0
+}
+
+/**
+ * Detects if the current device supports WebGL.
+ * 
+ * @function
+ * @returns {boolean} Returns true if the device supports WebGL, false otherwise.
+ */
+export const hasWebGLSupport = () => {
+  if (typeof window === 'undefined') return false
+
+  const canvas = document.createElement('canvas')
+  const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
+
+  return gl && gl instanceof WebGLRenderingContext
 }
