@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 
 import { Transition } from '@unseenco/taxi'
+import gsap from '../core/gsap'
 import { prefersReducedMotion } from '../core/utils/a11y'
 
-// const DURATION_LEAVE = 0.3
-// const DURATION_ENTER = 0.5
-// const DELAY_ENTER = 0.2
-// const Y_OFFSET = '1rem'
+const DURATION_LEAVE = 0.2
+const DURATION_ENTER = 0.5
+const DELAY_ENTER = 0.15
 
 export default class DefaultTransition extends Transition {
 	constructor(args) {
@@ -108,16 +108,13 @@ export default class DefaultTransition extends Transition {
       return onComplete()
     }
 
-    // gsap.killTweensOf(from)
-    // gsap.to(from, {
-    //   duration: DURATION_LEAVE,
-    //   ease: 'power1.in',
-    //   opacity: 0,
-    //   y: Y_OFFSET,
-    //   onComplete
-    // })
-
-    onComplete()
+    gsap.killTweensOf(from)
+    gsap.to(from, {
+      duration: DURATION_LEAVE,
+      ease: 'power1.out',
+      opacity: 0,
+      onComplete
+    })
   }
 
   /**
@@ -134,9 +131,9 @@ export default class DefaultTransition extends Transition {
     const onComplete = () => {
       this.autoScrollCleanup?.()
 
-      // gsap.set(to, {
-      //   clearProps: true
-      // })
+      gsap.set(to, {
+        clearProps: true
+      })
 
       this.wrapper.style.height = ''
 
@@ -147,17 +144,15 @@ export default class DefaultTransition extends Transition {
       return onComplete()
     }
 
-    // gsap.killTweensOf(to)
+    gsap.killTweensOf(to)
 
-    // gsap.fromTo(to, { y: Y_OFFSET, opacity: 0 }, {
-    //   duration: DURATION_ENTER,
-    //   delay: DELAY_ENTER,
-    //   ease: 'power3.out',
-    //   y: 0,
-    //   opacity: 1,
-    //   onComplete: onComplete
-    // })
-
-    onComplete()
+    gsap.fromTo(to, { opacity: 0 }, {
+      duration: DURATION_ENTER,
+      delay: DELAY_ENTER,
+      ease: 'power3.out',
+      y: 0,
+      opacity: 1,
+      onComplete: onComplete
+    })
   }
 }
