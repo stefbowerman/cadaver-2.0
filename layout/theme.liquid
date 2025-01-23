@@ -27,6 +27,7 @@
     {% if template.suffix != blank %} template-{{ template.name | append: '-' | append: template.suffix | handle }} {% endif %}
   {% endcapture %}
 
+  {% comment %} @TODO - Remove all this "view" stuff {% endcomment %}
   {%- liquid
     assign view = template.name | handle
 

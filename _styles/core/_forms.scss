@@ -52,16 +52,11 @@ input[type="number"] {
 
 .form-control {  
   border: 1px solid transparent;
-  background-color: var(--color-lighter-gray);
+  background-color: gray;
   padding: 15px 15px 12px;
   border-radius: 10px;
   font-size: 14px;
-  font-family: var(--font-family-base);
-  color: var(--color-text);
-
-  @media screen and (-webkit-min-device-pixel-ratio:0) and (max-device-width: 768px) {
-    font-size: 16px;
-  }
+  color: black;
 
   &:focus {
     outline: none
@@ -69,8 +64,8 @@ input[type="number"] {
 }
 
 select.form-control {
-  border: 1px solid var(--btn-border-color);
-  border-radius: var(--btn-radius);
+  border: 1px solid gray;
+  border-radius: 4px;
   background-color: transparent;
   padding: 9px 23px 7px 35px;
   line-height: 1;
@@ -121,7 +116,7 @@ select.form-control {
 
   &[type="radio"] {
     border-radius: 50%;
-    border: 1px solid var(--color-text);
+    border: 1px solid black;
   }
 
   &:checked {
@@ -145,13 +140,12 @@ select.form-control {
   align-items: center;
   gap: 3px;
   font-size: 14px;
-  font-family: var(--font-family-base);
 
   &__button {
     position: relative;
     height: 22px;
     width: 22px;
-    background-color: var(--color-gray);
+    background-color: gray;
     transition: background-color 100ms ease;
 
     &.is-disabled {
@@ -176,8 +170,8 @@ select.form-control {
     min-width: 41px;
     text-align: center;
     padding: 0 10px;
-    background: var(--color-white);
-    border: 1px solid var(--color-gray);
+    background: white;
+    border: 1px solid gray;
     line-height: 20px; // @TODO - Probably a better way to vertically center the number :/
   }
 
@@ -194,7 +188,7 @@ select.form-control {
     &:after {
       content: '';
       position: absolute;
-      background-color: var(--color-black);
+      background-color: black;
       transition: background-color 100ms ease;
     }
 
@@ -252,7 +246,7 @@ select.form-control {
     flex: 1;
     padding: 0 0 7px;
     border: none;
-    border-bottom: 1px solid var(--color-text);
+    border-bottom: 1px solid black;
     border-radius: 0;
     background-color: transparent;
 

@@ -1,5 +1,3 @@
-@import 'header/nav';
-
 header.header {
   @apply fixed z-header top-0 left-0 right-0 bg-white/50;
   height: var(--header-height);
@@ -34,4 +32,18 @@ header.header {
   .has-items & {
     @apply opacity-100;
   }
+}
+
+.header-nav {
+
+}
+
+.header-nav__list {
+  // z to push above the drawer
+  @apply relative z-1 flex items-center gap-x-4;
+  height: var(--header-height);
+}
+
+.header-nav__item {
+  @apply relative h-full flex items-center;
 }

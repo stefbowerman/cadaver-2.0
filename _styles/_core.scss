@@ -1,14 +1,10 @@
-// @import 'core/mixins';
-// @import 'core/css-variables'; // Must come after mixins
-
 @import 'core/typography';
 @import 'core/pills';
 @import 'core/layout';
 @import 'core/rte';
 @import 'core/tables';
 @import 'core/buttons';
-
-@import 'core/forms'; // <- Left TODO, save for fresh eyes so we can test all states
+@import 'core/forms'; 
 
 .container {
   @apply w-full px-container mx-auto;
