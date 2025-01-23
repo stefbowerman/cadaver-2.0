@@ -1,5 +1,6 @@
+{% comment %} @TODO - this needs to be shoved in a drawer component with aria-hidden="true" so that we don't tab into it {% endcomment %}
 <div
-  class="mobile-menu"
+  class="mobile-menu overflow-scroll hide-scrollbar"
   data-section-id="{{ section.id }}"
   data-section-type="mobile-menu"
 >
@@ -32,10 +33,10 @@
     {%- endif -%}
 
 
-    <div style="width: 100%; max-width: 260px; margin: 50px 0;">
+    <div class="w-full max-w-[260px] my-16">
       <form action="{{ routes.search_url }}" method="get" role="search" data-search-form>
         <div class="minimal-input has-icon-btn">
-          <label for="mobile-menu-search" class="label-hidden">Enter search query</label>
+          <label for="mobile-menu-search" class="sr-only">Enter search query</label>
           <input
             id="mobile-menu-search"
             type="search"

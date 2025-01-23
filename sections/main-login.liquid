@@ -3,11 +3,10 @@
   data-section-type="login"
 >
   <div class="container">
-    <div class="page-header">
-      <h1 class="page-header__title">
-        Log In / Create Account
-      </h1>
-    </div>
+    {% render 'section-header',
+              title: 'Log In / Create Account',
+              title_tag: 'h1'
+    %}      
 
     <div class="mx-auto" style="max-width: 560px;">
       <div style="display: flex; flex-direction: column; gap: 60px">
@@ -34,13 +33,13 @@
               {{ form.errors | default_errors }}
               
               <fieldset class="form-group{% if form.errors contains "email" %} has-error{% endif %}">
-                <label for="customer-email" class="label-hidden">Email</label>
+                <label for="customer-email" class="sr-only">Email</label>
                 <input type="email" name="customer[email]" id="customer-email" class="form-control" placeholder="Email" autocorrect="off" autocapitalize="off" autofocus>
               </fieldset>
       
               {% if form.password_needed %}
                 <fieldset class="form-group{% if form.errors contains "password" %} has-error{% endif %}">
-                  <label for="customer-password" class="label-hidden">Password</label>
+                  <label for="customer-password" class="sr-only">Password</label>
                   <input type="password" value="" name="customer[password]" id="customer-password" class="form-control" placeholder="Password">
                 </fieldset>
               {% endif %}
@@ -87,7 +86,7 @@
             {% assign recover_success = form.posted_successfully? %}
 
             <fieldset class="form-group">
-              <label for="recover-email" class="label-hidden">Email</label>
+              <label for="recover-email" class="sr-only">Email</label>
               <input type="email" value="" name="email" id="recover-email" class="form-control" placeholder="Email" autocorrect="off" autocapitalize="off">
             </fieldset>
 

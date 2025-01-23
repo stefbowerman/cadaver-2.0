@@ -1,21 +1,19 @@
-@import 'core/mixins';
-@import 'core/css-variables'; // Must come after mixins
-@import 'core/normalize';
-@import 'core/reboot';
 @import 'core/typography';
-@import 'core/helpers';
-@import 'core/forms';
-@import 'core/buttons';
 @import 'core/pills';
 @import 'core/layout';
-@import 'core/grid';
-@import 'core/tables';
 @import 'core/rte';
+@import 'core/tables';
+@import 'core/buttons';
+@import 'core/forms'; 
+
+.container {
+  @apply w-full px-container mx-auto;
+}
 
 .image-responsive {
   object-position: var(--object-position-mobile, 50% 50%);
 
-  @include bp-up(lg) {
+  @media (min-width: $bp-lg) {
     object-position: var(--object-position-desktop, 50% 50%);
   }
 }
@@ -39,4 +37,18 @@ img.lazy-image {
       transition: none !important;
     }
   }
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.overflow-scroll {
+  -webkit-overflow-scrolling: touch;
 }

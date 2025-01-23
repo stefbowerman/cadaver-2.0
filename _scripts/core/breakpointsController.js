@@ -1,19 +1,11 @@
 export const BREAKPOINTS = {
   xs: 0,
-  sm: 576,
+  sm: 640,
   md: 768,
-  lg: 900,
+  lg: 1024,
   xl: 1280,
-  xxl: 1480,
-  xxxl: 1800,  
-  
-  // See: ./tailwind.config.js
-  // xs: 0,
-  // sm: 430,
-  // md: 600,
-  // lg: 1024,
-  // xl: 1280,
-  // xxl: 1512
+  xxl: 1536,
+  xxxl: 1800
 }
 
 // Use Map so order is preserved while iterating

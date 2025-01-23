@@ -1,6 +1,9 @@
 // const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
+  corePlugins: {
+    container: false // Define our own in app.scss
+  },
   content: [
     './_scripts/**/*.js',
     './_styles/**/*.scss',
@@ -14,6 +17,9 @@ module.exports = {
   },  
   theme: {
     extend: {
+      spacing: {
+        container: '1rem',
+      },      
       fontFamily: {
         // sans: [
         //   'Helvetica Neue',
@@ -21,15 +27,17 @@ module.exports = {
         // ],
         // mono: [
         //   'courier'
-        // ]        
+        // ]
+      },
+      zIndex: {
+        '1': 1,
+        '2': 2,
+        'header': 100,
+        'backdrop': 199,
+        'mobile-menu': 200,
+        'ajax-cart': 200,
+        // skipTo: 10000
       }
-    },
-  },
-  variants: {
-    extend: {
-      // zIndex: {
-      //   'header': 101
-      // }      
     },
   },
   plugins: [],

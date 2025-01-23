@@ -3,12 +3,12 @@
   data-section-type="article"
 >
   <div class="container">
-    <div class="article-header">
-      <h1 class="article-header__title">
+    <div class="flex flex-col gap-y-8 my-8 text-center">
+      <h1 class="text-2xl font-medium">
         {{ article.title }}
       </h1>
 
-      <div class="article-header__subtitle">
+      <div class="text-lg">
         {{- article.published_at | time_tag: format: 'date' -}}
         
         {% if section.settings.show_author %}
@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <div class="article-container" style="margin-top: 45px;">
+    <div class="mx-auto mt-8 max-w-[600px]">
       <div class="article-content rte">
         {{ article.content }}
       </div>

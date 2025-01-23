@@ -12,9 +12,9 @@
 {% endcomment -%}
 
 {% if article %}
-  <a href="{{ article.url }}" class="article-card">
-    <div class="article-card__frame">
-      <div class="article-card__frame">
+  <div class="flex flex-col gap-y-2">
+    <a href="{{ article.url }}" title="{{ article.title | escape }}">
+      <div class="relative aspect-[1.47]">
         {%- liquid
           assign alt_text =  article.image.alt | default: article.title | escape
 
@@ -29,12 +29,13 @@
           | image_tag:
             widths: image_widths,
             alt: alt_text,
-            class: 'lazy-image'
+            class: 'h-full w-full object-cover lazy-image'
         }}
       </div>
-    </div>
-    
-    <div class="article-card__meta">{{- article.published_at | time_tag: format: 'date' -}}</div>
-    <div class="article-card__title">{{ article.title }}</div>
-  </a>
+      <div class="flex flex-col gap-y-2">
+        <div class="text-sm uppercase">{{- article.published_at | time_tag: format: 'date' -}}</div>
+        <div class="text-lg font-medium">{{ article.title }}</div>
+      </div>
+    </a>
+  </div>
 {% endif %}

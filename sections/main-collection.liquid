@@ -11,25 +11,23 @@
   data-section-id="{{ section.id }}"
   data-section-type="collection"
 >
-  <div class="collection-header">
+  <div class="mb-8 lg:mb-10">
     <div class="container">
-      <h1 class="collection-title">
+      <h1 class="text-xl text-center">
         {{ collection.title }}
       </h1>
     </div>    
   </div>
 
   {% if collection.products.size > 0 %}   
-    <div class="product-card-set">
-      <div class="product-card-set__grid">   
-        {% for product in collection.products %}
-          <div class="product-card-set__grid-item">
-            {% render 'product-card',
-                       product: product
-            %}
-          </div>
-        {% endfor %}
-      </div>
+    <div class="product-grid">   
+      {% for product in collection.products %}
+        <div class="product-grid__item">
+          {% render 'product-card',
+                      product: product
+          %}
+        </div>
+      {% endfor %}
     </div>
   {% else %}
     <div class="container">

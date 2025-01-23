@@ -1,7 +1,3 @@
-body.ajax-cart-open {
-  overflow: hidden;
-}
-
 .ajax-cart {
   --ajax-cart-padding-h: 33px;
   --ajax-cart-inner-padding-h: 14px;
@@ -11,22 +7,12 @@ body.ajax-cart-open {
   --z-empty: 4;
   --z-header: 5;
 
-  position: fixed;
-  z-index: var(--z-ajax-cart);
-  top: 0;
-  right: 0;
-  height: 100vh;
-  width: 500px;
-  max-width: 100%;
-  @include overflow-scroll;
-  @include hide-scrollbar;
-  background-color: var(--drawer-bg-color);
+  @apply fixed z-ajax-cart top-0 right-0 h-screen w-full max-w-[500px] bg-white translate-x-full;
 
-  transform: translateX(100%);
   transition: var(--transition-drawer-out);
 
   &.is-open {
-    transform: translateX(0);
+    @apply translate-x-0;
     transition: var(--transition-drawer-in);
   }
 
@@ -36,19 +22,17 @@ body.ajax-cart-open {
 }
 
 .ajax-cart__header {
-  position: relative;
+  @apply relative flex items-center justify-end;
+
   z-index: var(--z-header);  
   height: var(--header-height);
-  
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
 
   padding: 0 calc(var(--ajax-cart-padding-h) + var(--ajax-cart-inner-padding-h));
 }
 
 .ajax-cart__body {
-  position: relative;
+  @apply relative;
+
   z-index: var(--z-body);  
   padding: 0 var(--ajax-cart-padding-h) var(--ajax-cart-padding-v);
 }
@@ -62,8 +46,7 @@ body.ajax-cart-open {
 }
 
 .ajax-cart__item-inner {
-  display: flex;
-  gap: 15px;
+  @apply flex gap-x-4;
 
   transition: filter 250ms ease-out,
               opacity 250ms ease-in-out;  
@@ -84,20 +67,14 @@ body.ajax-cart-open {
 }
 
 .ajax-cart__item-image-frame {
-  width: 100px;
+
 }
 
 .ajax-cart__item-image {
-  position: relative;
-  height: 0;
-  padding-bottom: 125%;
-  background-color: var(--product-image-bg-color);
+  @apply relative w-[100px] aspect-square;
 
   img {
-    @include fill;
-    height: 100%;
-    object-fit: contain;
-    mix-blend-mode: multiply;
+    @apply h-full w-full object-contain;
 
     &.is-cached {
       transition: none;
@@ -106,30 +83,20 @@ body.ajax-cart-open {
 }
 
 .ajax-cart__item-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  row-gap: 15px;
-  padding-top: 2px;
+  @apply flex-1 flex flex-col justify-between gap-y-4 pt-0.5;
 }
 
 .ajax-cart__item-header {
-  display: flex;
-  justify-content: space-between;
+  @apply flex justify-between;
 }
 
 .ajax-cart__item-remove {
-  text-transform: uppercase;
-  text-decoration: underline;
+  @apply uppercase underline;
 }
 
 .ajax-cart__footer {
-  position: relative;
+  @apply relative flex flex-col gap-y-5;
   z-index: var(--z-footer);  
-  display: flex;
-  flex-direction: column;
-  gap: 21px;
   padding: 0 var(--ajax-cart-padding-h) var(--ajax-cart-padding-v);
 }
 
@@ -142,22 +109,16 @@ body.ajax-cart-open {
 }
 
 .ajax-cart__empty {
-  @include fill;
+  @apply absolute top-0 left-0 h-full w-full flex flex-col justify-center bg-white;
   z-index: var(--z-empty);  
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  background: var(--drawer-bg-color);
+
   padding: 0 calc(var(--ajax-cart-padding-h) + var(--ajax-cart-inner-padding-h)); // @TODO...something about this?
 
-  opacity: 0;
-  pointer-events: none;
+  @apply opacity-0 pointer-events-none;
   transition: opacity 100ms ease-out;
 
   .is-empty & {
-    opacity: 1;
-    pointer-events: auto;
+    @apply opacity-100 pointer-events-auto;
     transition-duration: 0.4s;
   }
 }
@@ -179,18 +140,17 @@ body.ajax-cart-open {
 }
 
 .ajax-cart-backdrop {
-  @include fill(fixed);
-  z-index: calc(var(--z-ajax-cart) - 1);
+  @apply fixed z-backdrop top-0 left-0 h-full w-full;
   background-color: var(--backdrop-color);
-  opacity: 0;
-  pointer-events: none;
-  cursor: pointer;
+
+  @apply opacity-0 pointer-events-none cursor-pointer;
 
   transition: var(--transition-backdrop-out);
 
   .ajax-cart-open & {
+    @apply pointer-events-auto;
+
     opacity: var(--backdrop-opacity);
-    pointer-events: auto;
     transition: var(--transition-backdrop-in);
   }
 }

@@ -1,13 +1,14 @@
 <section data-section-id="{{ section.id }}" data-section-type="addresses">
   <div class="container">
-    <div class="page-header">
-      <h1 class="page-header__title">
-        Your Address
-      </h1>
-      <div class="page-header__subtitle">
-        <a href="/account">Return to Account Details</a>
-      </div>
-    </div>
+    {%- capture actions -%}
+      <a href="/account">Return to Account Details</a>
+    {%- endcapture -%}
+
+    {% render 'section-header',
+              title: 'Your Addresses',
+              actions: actions,
+              title_tag: 'h1'
+    %}
 
     {% paginate customer.addresses by 5 %}
       {% if customer.addresses_count == 0 %}
@@ -40,7 +41,7 @@
                 </address>
 
                 {% if address == customer.default_address %}
-                  <p class="text-sm text-muted">This is your default address</p>
+                  <p class="text-sm">This is your default address</p>
                 {% endif %}
 
                 <div class="btn-group" style="gap: 10px; justify-content: center">
@@ -123,7 +124,7 @@
 
                   <div class="form-group">
                     <p>
-                      <button type="submit" class="btn btn--primary">Save</button>
+                      <button type="submit" class="btn">Save</button>
                     </p>
                     <a href="#" data-toggle-form data-id="{{ address.id }}">Cancel</a>
                   </div>
@@ -134,8 +135,8 @@
         </div>
       {% endif %}
 
-      <div class="section-footer">
-        <a href="#" class="btn btn--primary" data-toggle-new>
+      <div class="text-center">
+        <a href="#" class="btn" data-toggle-new>
           Add New Address
         </a>
       </div>
@@ -216,7 +217,7 @@
 
           <div class="form-group">
             <p>
-              <button type="submit" class="btn btn--primary">Add Address</button>
+              <button type="submit" class="btn">Add Address</button>
             </p>
             <a href="#" data-toggle-new>Cancel</a>
           </div>

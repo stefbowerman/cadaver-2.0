@@ -26,118 +26,118 @@
   {% comment %} End Assign Defaults {% endcomment %}
 
   <div
-    style="height: 100%"
+    class="h-full"
     data-component="product-detail-form"
   >
     {% form 'product', product, style: 'height: 100%' %} 
-      <div class="product-detail-form">
-        <div class="product-detail-form__inner">
-          <h1 class="pdf-title">{{ product.title }}</h1>
+      <div class="lg:sticky lg:top-0">
+        <div class="container">
+          <div class="lg:pt-28">
+            <h1 class="mb-2 text-center lg:text-left text-2xl uppercase font-bold">
+              {{ product.title }}
+            </h1>
 
-          <div class="pdf-price">
-            {% render 'product-detail-price',
-                      product: product,
-                      current_variant: current_variant
-            %}
-          </div>
-
-          <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-            <meta itemprop="priceCurrency" content="{{ shop.currency }}">
-            <meta itemprop="price" content="{{ current_variant.price | divided_by: 100.00 }}">
-            <link itemprop="availability" href="http://schema.org/{% if current_variant.available %}InStock{% else %}OutOfStock{% endif %}">
-
-            <div
-              data-component="variant-picker"
-              {% if product.has_only_default_variant %}
-                style="display: none;"
-                aria-hidden="true"
-              {% endif %}
-            >
-              {% for option in product.options_with_values %}
-                {%- liquid
-                  assign option_name_handle = option.name | handle
-                  assign hide_option = false
-                  assign selection_type = 'select'
-
-                  if option_name_handle == 'color'
-                    assign selection_type = 'radio'
-                  endif
-
-                  comment
-                    Add any logic needed to hide specific options
-                  endcomment
-                -%}
-                
-                <div
-                  {% if hide_option %}
-                    style="display: none;"
-                    aria-hidden="true"
-                  {% endif %}
-                >
-
-                  {% render 'variant-picker-option',
-                            option: option,
-                            selection_type: selection_type
-                  %}                
-                </div>
-              {% endfor %}
+            <div class="text-center lg:text-left text-xl">
+              {% render 'product-detail-price',
+                        product: product,
+                        current_variant: current_variant
+              %}
             </div>
 
-              <label class="sr-only" for="no-js-variant-select">Select Variant</label>
-              <select name="id" class="no-js" id="no-js-variant-select">
-                {% for variant in product.variants %}
-                  <option
-                    {% if variant == current_variant %}selected="selected"{% endif %}
-                    {% unless variant.available %}disabled="disabled"{% endunless %}
-                    value="{{ variant.id }}"
-                  >
-                      {{ variant.title }}
-                  </option>
-                {% endfor %}
-              </select>
+            <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+              <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+              <meta itemprop="price" content="{{ current_variant.price | divided_by: 100.00 }}">
+              <link itemprop="availability" href="http://schema.org/{% if current_variant.available %}InStock{% else %}OutOfStock{% endif %}">
 
-              <input type="hidden" value="1" name="quantity" />
-
-              <button
-                type="submit"
-                name="add"
-                class="btn btn--primary"
-                {% if current_variant.available == false %}
-                  disabled="disabled"
+              <div
+                data-component="variant-picker"
+                {% if product.has_only_default_variant %}
+                  style="display: none;"
+                  aria-hidden="true"
                 {% endif %}
-                data-component="atc-button"
               >
-                <span data-label>
-                  {% if current_variant.available %}
-                    Add To Cart
-                  {% else %}
-                    Sold Out
-                  {% endif %}
-                </span>
-              </button>  
+                {% for option in product.options_with_values %}
+                  {%- liquid
+                    assign option_name_handle = option.name | handle
+                    assign hide_option = false
+                    assign selection_type = 'select'
 
-              <div>
-                <div class="pdf-content">
-                  {{ form | payment_terms }}
-                </div>
+                    if option_name_handle == 'color'
+                      assign selection_type = 'radio'
+                    endif
+
+                    comment
+                      Add any logic needed to hide specific options
+                    endcomment
+                  -%}
+                  
+                  <div
+                    {% if hide_option %}
+                      style="display: none;"
+                      aria-hidden="true"
+                    {% endif %}
+                  >
+
+                    {% render 'variant-picker-option',
+                              option: option,
+                              selection_type: selection_type
+                    %}                
+                  </div>
+                {% endfor %}
               </div>
 
-            {% if product.description != blank %}
-              <div class="pdf-detail-group">
-                <div class="label">Description</div>
+                <label class="sr-only" for="no-js-variant-select">Select Variant</label>
+                <select name="id" class="no-js" id="no-js-variant-select">
+                  {% for variant in product.variants %}
+                    <option
+                      {% if variant == current_variant %}selected="selected"{% endif %}
+                      {% unless variant.available %}disabled="disabled"{% endunless %}
+                      value="{{ variant.id }}"
+                    >
+                        {{ variant.title }}
+                    </option>
+                  {% endfor %}
+                </select>
 
-                <div class="pdf-content">
+                <input type="hidden" value="1" name="quantity" />
+
+                <button
+                  type="submit"
+                  name="add"
+                  class="btn"
+                  {% if current_variant.available == false %}
+                    disabled="disabled"
+                  {% endif %}
+                  data-component="atc-button"
+                >
+                  <span data-label>
+                    {% if current_variant.available %}
+                      Add To Cart
+                    {% else %}
+                      Sold Out
+                    {% endif %}
+                  </span>
+                </button>  
+
+                <div>
+                  <div>
+                    {{ form | payment_terms }}
+                  </div>
+                </div>
+
+              {% if product.description != blank %}
+                <div>
                   {{ product.description }}
                 </div>
-              </div>
-            {% endif %}
+              {% endif %}
+            </div>
           </div>
         </div>
-
-        <script type="application/json" data-product-json>
-          {% render 'product-json-lite', product: product %}
-        </script>
       </div>
+
+      <script type="application/json" data-product-json>
+        {% render 'product-json-lite', product: product %}
+      </script>      
     {% endform %}
   </div>
 

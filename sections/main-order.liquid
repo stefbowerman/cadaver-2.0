@@ -1,18 +1,23 @@
 <section>
   <div class="container">
-    <div class="page-header">
-      <h1 class="page-header__title">
-        Order {{ order.name }}
-      </h1>
-      <div class="page-header__subtitle">
-        <a href="/account">Return to Account Details</a>
-      </div>
-    </div>
+    {%- capture title -%}
+      Order {{ order.name }}
+    {%- endcapture -%}
+
+    {%- capture actions -%}
+      <a href="/account">Return to Account Details</a>
+    {%- endcapture -%}
+
+    {% render 'section-header',
+              title: title,
+              actions: actions,
+              title_tag: 'h1'
+    %}    
 
     <div class="account-main">
-      <div style="flex:1">
+      <div class="flex-1">
         <h3>Order Items</h3>
-        <table class="table table--account" style="text-align: left;">
+        <table class="table">
           <thead>
             <tr>
               <th>Product</th>
@@ -28,7 +33,7 @@
                   <div>{{ line_item.product.title | link_to: line_item.product.url }}</div>
                   {% comment %} Only show this line if there is non-default content {% endcomment %}
                   {% if line_item.variant.title != "Default Title" %}
-                    <div class="text-muted">{{ line_item.variant.title }}</div>
+                    <div>{{ line_item.variant.title }}</div>
                   {% endif %}                
                 </td>
                 <td>{{ line_item.price | money }}</td>
@@ -88,9 +93,9 @@
         <h3>Details</h3>
 
         <p>
-          <span class="text-muted">{{ 'customer.order.payment_status' | t }}: </span> {{- order.financial_status_label -}}
+          <span>{{ 'customer.order.payment_status' | t }}: </span> {{- order.financial_status_label -}}
           <br />
-          <span class="text-muted">{{ 'customer.order.fulfillment_status' | t }}: </span> {{- order.fulfillment_status_label -}}
+          <span>{{ 'customer.order.fulfillment_status' | t }}: </span> {{- order.fulfillment_status_label -}}
         </p>
         
         <br />
@@ -103,7 +108,7 @@
 
         <br />
         <p>
-          <a href="/account" class="btn btn--primary">View Account</a>
+          <a href="/account" class="btn">View Account</a>
         </p>        
       </div>
     </div>

@@ -1,25 +1,15 @@
 .section-header {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  align-items: center;
-  margin: 0 0 20px;
-  text-align: center;
-
-  @include bp-up(lg) {
-    margin-bottom: 50px;
-    gap: 30px;
-  }
+  @apply flex flex-col gap-y-4 lg:gap-y-6 items-center my-8 lg:my-12 text-center;
 
   &__title {
-    margin: 0;
+    @apply text-2xl lg:text-3xl font-bold;
   }
 
   &__subtitle {
-    font-weight: var(--font-medium);
+    @apply font-medium;
   }
-}
 
-.section-footer {
-  text-align: center;
+  &__actions {
+
+  }
 }

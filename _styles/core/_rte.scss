@@ -1,3 +1,33 @@
 .rte {
+  & > *:first-child {
+    @apply mt-0;
+  }
 
+  & > *:last-child {
+    @apply mb-0;
+  }
+
+  p, ul, ol, table {
+    @apply mb-4;
+  }
+
+  a {
+    @apply underline;
+  }
+
+  ul, ol {
+    @apply pl-[2em];
+  }
+
+  ul {
+    @apply list-disc;
+  }
+
+  ol {
+    @apply list-decimal;
+  }
+
+  // hr
+
+  // table
 }

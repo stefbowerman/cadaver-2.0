@@ -1,9 +1,5 @@
 table {
-  width: 100%;
-  max-width: 100%;
-  // margin-bottom: 1rem;
-  background-color: transparent;
-  border-spacing: 0;
+  @apply w-full max-w-full bg-transparent border-spacing-0;
 
   // Override any styles that get set from Shopify WYSIWYG
   tr, td {
@@ -12,32 +8,22 @@ table {
   }
 
   td, th {
-    padding: 12px 5px;
-    border-bottom: 1px solid var(--color-text);
+    @apply border-b py-3 px-1;
   }
 
   tr:last-child td {
-    border-bottom: none;
+    @apply border-b-0;
   }
 
   th {
-    vertical-align: bottom;
+    @apply align-bottom;
   }
 
   td {
-    vertical-align: top;
+    @apply align-top;
   }
 
   tfoot tr:first-child td {
-    padding-top: 36px; // Triple it to provide some spacing
-    border-top: 1px solid var(--color-text);
+    @apply border-t pt-12;
   }
-}
-
-.table--account {
-  text-align: right;
-
-  // tbody, tfoot {
-  //   @include text-sm;
-  // }
 }

@@ -1,5 +1,0 @@
-.grid-10 {
-  display: grid;
-  grid-template-columns: repeat(10, minmax(0, 1fr));
-  column-gap: var(--grid-column-gap);
-}

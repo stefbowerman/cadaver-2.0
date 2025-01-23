@@ -1,27 +1,32 @@
 .graphic-cover {
   &, img, video {
-    @include fill;
-    pointer-events: none;
+    @apply absolute top-0 left-0 h-full w-full pointer-events-none;
   }
 
   img, video {
-    object-fit: cover;
+    @apply object-cover;
   }
   
   img {
-    z-index: 1;
+    @apply z-1; // img opacity is automatically animated via lazy-image
   }
 
   video {
-    z-index: 2;
+    @apply z-2;
   }
 
   video {
-    opacity: 0;
+    @apply opacity-0;
     transition: var(--lazy-image-transition);
+
+    @media (prefers-reduced-motion: reduce) {
+      & {
+        transition: none !important;
+      }
+    }    
   
     &.is-ready {
-      opacity: 1;
+      @apply opacity-100;
     }
   }  
 }
