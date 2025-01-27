@@ -17,6 +17,13 @@ module.exports = {
   },  
   theme: {
     extend: {
+      colors: {
+        transparent: 'transparent',
+        current: 'currentColor',
+        red: '#F00',
+        blue: '#00F',
+        grey: '#999'
+      },      
       spacing: {
         container: '1rem',
       },      

@@ -51,7 +51,7 @@ $bp-xxxl: $bp-3xl;
 @layer base {
   :focus,
   :focus-visible {
-    outline-offset: 2px;
+    @apply outline-none; // Applies outline-width and offset
   }
     
   html {

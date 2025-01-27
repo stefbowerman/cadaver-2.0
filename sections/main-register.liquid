@@ -10,25 +10,94 @@
 
         {{ form.errors | default_errors }}
         
-        <fieldset class="form-group">
-          <label for="first-name">First Name</label>
-          <input type="text" name="customer[first_name]" id="first-name" class="form-control" {% if form.first_name %}value="{{ form.first_name }}"{% endif %} autocapitalize="words" autofocus>
-        </fieldset>
+        <div class="form-group">
+          <label for="RegisterForm-FirstName">First Name</label>
+
+          <div class="form-control">
+            <input
+              type="text"
+              name="customer[first_name]"
+              id="RegisterForm-FirstName"
+              {% if form.first_name %}
+                value="{{ form.first_name }}"
+              {% endif %}
+              autocomplete="given-name"
+              placeholder="John"
+              autofocus
+            >
+          </div>
+        </div>
       
-        <fieldset class="form-group">
-          <label for="last-name">Last Name</label>
-          <input type="text" name="customer[last_name]" id="last-name" class="form-control" {% if form.last_name %}value="{{ form.last_name }}"{% endif %} autocapitalize="words">
-        </fieldset>
+        <div class="form-group">
+          <label for="RegisterForm-LastName">Last Name</label>
+          <div class="form-control">              
+            <input
+              type="text"
+              name="customer[last_name]"
+              id="RegisterForm-LastName"
+              {% if form.last_name %}
+                value="{{ form.last_name }}"
+              {% endif %}
+              autocomplete="family-name"
+              placeholder="Doe"
+            >
+          </div>
+        </div>
       
-        <fieldset class="form-group{% if form.errors contains "email" %} has-error{% endif %}">
-          <label for="email">Email</label>
-          <input type="email" name="customer[email]" id="email" class="form-control"{% if form.email != blank %} value="{{ form.email }}"{% endif %} autocorrect="off" autocapitalize="off">
-        </fieldset>
+        <div class="form-group">
+          <label for="RegisterForm-email">Email</label>
+
+          <div class="form-control">
+            <input
+              type="email"
+              name="customer[email]"
+              id="RegisterForm-email"
+              {% if form.email %}
+                value="{{ form.email }}"
+              {% endif %}
+              spellcheck="false"
+              autocapitalize="off"
+              autocomplete="email"
+              required="true"
+              {% if form.errors contains 'email' %}
+                aria-invalid="true"
+                aria-describedby="RegisterForm-email-error"
+              {% endif %}
+              placeholder="shop@github.com"
+            >
+          </div>
+
+          {% if form.errors contains 'email' %}
+            <div id="RegisterForm-email-error" class="form-group__error">
+              {{ form.errors.translated_fields.email | capitalize }}
+              {{ form.errors.messages.email }}.
+            </div>
+          {%- endif -%}          
+        </div>
         
-        <fieldset class="form-group{% if form.errors contains "password" %} has-error{% endif %}">
-          <label for="create-password">Password</label>
-          <input type="password" name="customer[password]" id="create-password" class="form-control">
-        </fieldset>
+        <div class="form-group">
+          <label for="RegisterForm-password">Password</label>
+          <div class="form-control">
+            <input
+              data-password-input
+              type="password"
+              name="customer[password]"
+              id="RegisterForm-password"
+              required="true"
+              {% if form.errors contains 'password' %}
+                aria-invalid="true"
+                aria-describedby="RegisterForm-password-error"
+              {% endif %}
+            >
+          </div>
+
+          {% if form.errors contains 'password' %}
+            <div id="RegisterForm-password-error" class="form-group__error">
+              {{ form.errors.translated_fields.password | capitalize }}
+              {{ form.errors.messages.password }}
+            </div>
+          {%- endif -%}          
+        </div>
       
         <div class="form-group text-center">
           <button type="submit" class="btn btn-block">Create</button>

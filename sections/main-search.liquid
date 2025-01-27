@@ -8,10 +8,24 @@
 
 {%- capture actions -%}
   <form action="{{ routes.search_url }}" method="get" role="search" style="max-width: 625px; margin: 0 auto 40px">
-    <div class="minimal-input">
-      <label class="sr-only">Search our site</label>
-      <input type="search" name="q" class="form-control" placeholder="Search store..." value="{{ search.terms | escape }}" />
-      {% comment %} <button class="minimal-input__btn">Search</button> {% endcomment %}
+    <div class="flex items-center gap-x-2">
+      <div class="form-group flex-1">
+        <label for="main-search-input" class="sr-only">Search our site</label>
+
+        <div class="form-control">
+          <input
+            id="main-search-input"
+            type="search"
+            name="q"
+            placeholder="Search store.."
+            value="{{ search.terms | escape }}"
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="underline">
+        Search
+      </button>
     </div>
   </form>      
 {%- endcapture -%}

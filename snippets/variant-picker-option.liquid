@@ -51,25 +51,26 @@
       {%- endfor -%}
     </div>
   {% else %}
-    <select
-      id="{{ option_select_id }}"
-      name="{{ option.name | escape }}"
-      class="form-control"
-    >
-      {%- for value in option.values -%}
-        <option
-          value="{{ value | escape }}"
-          {% if value.selected %}
-            selected="selected"
-          {% endif %}
-          {% if value.available != true %}
-            disabled
-          {% endif %}                  
-        >
-          {{ value }}
-        </option>
-      {%- endfor -%}
-    </select>
+    <div class="form-control">
+      <select
+        id="{{ option_select_id }}"
+        name="{{ option.name | escape }}"
+      >
+        {%- for value in option.values -%}
+          <option
+            value="{{ value | escape }}"
+            {% if value.selected %}
+              selected="selected"
+            {% endif %}
+            {% if value.available != true %}
+              disabled
+            {% endif %}                  
+          >
+            {{ value }}
+          </option>
+        {%- endfor -%}
+      </select>
+    </div>
   {% endif %}
 {% endcapture %}
 

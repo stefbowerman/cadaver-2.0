@@ -12,7 +12,11 @@ button[disabled] {
   @apply bg-[#444] text-white border-[#222]; // Colors
   @apply uppercase text-sm leading-none font-bold; // Text
 
-  transition: all 200ms ease;
+  transition: {
+    property: background-color, border-color, color;
+    duration: 250ms;
+    timing-function: ease;
+  }
 
   &[disabled] {
     @apply bg-[#222] border-[#111] text-[#DDD];
@@ -24,7 +28,7 @@ button[disabled] {
   }
 
   &:focus-visible {
-    @apply outline outline-2;
+    @apply outline outline-blue;
   }
 
   // Alternative styles go here...
@@ -33,6 +37,6 @@ button[disabled] {
   // }
 }
 
-.btn--block {
+.btn-block {
   @apply w-full flex-1;
 }

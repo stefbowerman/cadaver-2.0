@@ -33,49 +33,128 @@ input[type="number"] {
   & + & {
     @apply mt-4;
   }
-}
 
+  label {
+    @apply font-medium text-black mb-1 text-sm;
+  }
 
+  &__helper,
+  &__error {
+    @apply block mt-1 text-sm;
+  }
 
+  &__helper {
+    @apply text-grey;
+  }
 
-
-
-
-// Need to work on here down...
-
-
-
-
-
-
-
-
-.form-control {  
-  border: 1px solid transparent;
-  background-color: gray;
-  padding: 15px 15px 12px;
-  border-radius: 10px;
-  font-size: 14px;
-  color: black;
-
-  &:focus {
-    outline: none
+  &__error {
+    @apply text-red;
   }  
 }
 
-select.form-control {
-  border: 1px solid gray;
-  border-radius: 4px;
-  background-color: transparent;
-  padding: 9px 23px 7px 35px;
-  line-height: 1;
-  text-indent: 0.01px;
-  text-overflow: '';
-  cursor: pointer;
-  background-image: url('data:image/svg+xml,<svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.24 0.919998H0.76L6 7.09L11.24 0.919998Z" fill="black"/></svg>');
-  background-repeat: no-repeat;
-  background-position: center left 13px;
+// This wraps the input, icon, etc.
+// Markup / styling is heavily inspired by -> https://primer.style/components/text-input/react/alpha
+.form-control {
+  @apply relative w-full flex items-stretch gap-x-2 appearance-none overflow-hidden;
+  @apply border border-black rounded;
+  @apply text-black;
+
+  transition: {
+    property: background-color, border-color, color;
+    duration: 250ms;
+    timing-function: ease;
+  }
+  // Add hover states
+  @apply hover:border-black active:border-black focus:border-black;
+
+  // When disabled...
+  &:has([aria-disabled="true"]),
+  &:has([disabled]) {
+    @apply cursor-not-allowed;
+    @apply bg-[#DDD];
+
+    // Kill hover states - override with the default styles
+    // @apply hover:border-accent-border active:bg-bground-secondary focus:bg-bground-secondary;
+  }
+
+  &:focus-within {
+    @apply border-black;
+  }
+
+  &:has(input:focus-visible),
+  &:has(select:focus-visible),
+  &:has(textarea:focus-visible) {
+    @apply outline-none; // Applies outline-width and offset
+    @apply outline-blue;
+
+    input {
+      @apply outline-none;
+    }    
+  }  
+
+  &:has([aria-invalid="true"]) {
+    @apply border-red;
+  }
+
+  &:has(select) {
+    select {
+      @apply pr-8;
+      appearance: none; // Hide the default browser icon
+
+      &:not([disabled]) {
+        @apply cursor-pointer;
+      }
+    }
+
+    // Uncomment to add an icon to the right of the select
+    .form-control__affix:last-child {
+      @apply absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none;
+    }
+  }
+
+  &:has(textarea) {
+    .form-control__affix {
+      display: none !important;
+    }
+  }
+
+  input,
+  select,
+  textarea {
+    @apply w-full px-3 placeholder-grey;
+
+    &[aria-disabled="true"],
+    &[disabled] {
+      @apply cursor-not-allowed;
+    }
+  }
+
+  input,
+  select {
+    @apply h-8;
+  }
+
+  textarea {
+    @apply py-3;
+  }  
 }
+
+.form-control__affix {
+  @apply inline-flex items-center;
+
+  button {
+    @apply h-full;
+  }
+
+  &:first-child {
+    @apply pl-3 pr-0;
+  }
+
+  &:last-child {
+    @apply pr-3 pl-0;
+  }
+}
+
 
 
 // Checkbox + Radio
@@ -230,50 +309,4 @@ select.form-control {
   //     left: 30%
   //   }  
   // }
-}
-
-// Minimal Input
-.minimal-input {
-  --icon-btn-width: 30px;
-
-  position: relative;
-  display: flex;
-  column-gap: 5px;
-
-  .form-control {
-    width: auto;
-    max-width: 100%;
-    flex: 1;
-    padding: 0 0 7px;
-    border: none;
-    border-bottom: 1px solid black;
-    border-radius: 0;
-    background-color: transparent;
-
-    // @include placeholder() {
-    //   color: var(--color-gray);
-    // }
-  }
-
-  &.has-icon-btn .form-control {
-    padding-right: var(--icon-btn-width);
-  }
-
-  .minimal-input__icon-btn {
-    position: absolute;
-    top: 0;
-    bottom: 4px;
-    right: 0;
-    width: var(--icon-btn-width);
-
-    svg {
-      width: 14px;
-      height: auto;
-    }
-  }
-
-  .minimal-input__btn {
-    border-bottom: 1px solid;
-    padding: 0 29px;
-  }
 }

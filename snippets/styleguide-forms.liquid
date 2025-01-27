@@ -1,0 +1,106 @@
+<div>
+  <div class="sg-title">Forms</div>
+
+  {% capture form_controls %}
+    <div class="form-group">
+      <label>Text input</label>
+      <div class="form-control">
+        <input
+          type="text"
+          placeholder="First name.."
+          aria-describedby="demo-input-helper"
+        />
+      </div>
+
+      <div id="demo-input-helper" class="form-group__helper">
+        This is helper text to explain how to use the input
+      </div>      
+    </div>
+
+    <div class="form-group">
+      <label>Disabled text input</label>
+      <div class="form-control">
+        <input
+          type="text"
+          placeholder="First name.."
+          aria-disabled="true"
+          disabled
+        />
+      </div>
+    </div>    
+
+    <div class="form-group">
+      <label>Text input with error</label>
+      <div class="form-control">
+        <input
+          type="text"
+          placeholder="First name.."
+          aria-invalid="true"
+          aria-describedby="demo-input-error"
+        />
+      </div>
+      <div id="demo-input-error" class="form-group__error">
+        This is an error message
+      </div>
+    </div>     
+
+    <div class="form-group">
+      <label>With leading icon</label>
+
+      <div class="form-control">
+        <span class="form-control__affix">
+          {{- 'icon-search.svg' | inline_asset_content -}}
+          <span class="sr-only">Search icon</span>
+        </span>
+
+        <input
+          type="search"
+          placeholder="Search our store..."
+        />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="flex justify-between">
+        <label>Password with label link</label>
+        <span class="underline">Forgot password?</span>
+      </div>
+      <div class="form-control">
+        <input
+          type="password"
+          placeholder="Enter password"
+          value=""
+        />
+      </div>
+    </div>     
+
+    <div class="form-group">
+      <label>Select</label>
+      <div class="form-control">
+        <select>
+          <option>Apple</option>
+          <option>Orange</option>
+          <option>Banana</option>
+        </select>
+
+        <span class="form-control__affix">
+          {{- 'icon-caret-down.svg' | inline_asset_content -}}
+        </span>          
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label>Textarea</label>
+      <div class="form-control">
+        <textarea rows="6">If you would like to contact the The GitHub Shop with questions, comments, or suggestions, simply complete and submit the form. If you need help with a specific order, please include the order number in your message.
+        </textarea>        
+      </div>
+    </div>    
+  {% endcapture %}
+
+  <div class="sg-island">
+    <div class="max-w-[400px]">
+      {{ form_controls }}
+    </div>
+  </div>  
+</div>

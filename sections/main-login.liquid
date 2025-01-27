@@ -1,3 +1,64 @@
+{%- liquid
+  assign recover_success = false
+-%}
+
+{% capture recover_content %}
+  <div id="recover-password-form" style="display: none;">
+    <h4 class="mb-2">
+      Reset Your Password
+    </h4>
+
+    <p>We'll send you an email to reset your password</p>
+
+    {% form 'recover_customer_password' %}
+
+      {{ form.errors | default_errors }}
+
+      {% assign recover_success = form.posted_successfully? %}
+
+      <div class="form-group">
+        <label for="RecoverEmail">
+          Email
+        </label>
+
+        <div class="form-control">              
+          <input
+            type="email"
+            value=""
+            name="email"
+            id="RecoverEmail"
+            autocorrect="off"
+            autocapitalize="off"
+            autocomplete="email"
+            required="true"
+            {% if form.errors %}
+              aria-invalid="true"
+              aria-describedby="RecoverEmail-email-error"
+              autofocus
+            {% endif %}
+            placeholder="Email"
+          >
+        </div>
+
+        {%- if form.errors -%}
+          <div id="RecoverEmail-email-error" class="form-group__error">
+            {{ form.errors.messages.form }}
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="form-group">
+        <div class="flex justify-between items-center">
+          <button type="submit" class="btn">Submit</button>
+          <div style="padding: 0 11px;">
+            <a href="#" data-toggle-recover="false">Cancel</a>
+          </div>
+        </div>
+      </div>          
+    {% endform %}
+  </div>
+{% endcapture %}
+
 <section
   data-section-id="{{ section.id }}"
   data-section-type="login"
@@ -6,13 +67,19 @@
     {% render 'section-header',
               title: 'Log In / Create Account',
               title_tag: 'h1'
-    %}      
+    %}
 
     <div class="mx-auto" style="max-width: 560px;">
+      {% if recover_success %}
+        <div class="mb-4 italic text-center">
+          Check your email for a link to reset your password.       
+        </div>
+      {% endif %}
+
       <div style="display: flex; flex-direction: column; gap: 60px">
         {% if section.settings.new_message != blank %}
           <div>
-            <h4 class="headline-4" style="margin-bottom: 0.5rem;">New Customers</h4>
+            <h4 class="mb-2">New Customers</h4>
             <p>
               {{ section.settings.new_message }}
             </p>
@@ -23,7 +90,7 @@
         {% endif %}
 
         <div id="customer-login-form">
-          <h4 class="headline-4" style="margin-bottom: 0.5rem;">Registered Customers</h4>
+          <h4 class="mb-2">Registered Customers</h4>
           <div>
             {% if section.settings.registered_message != blank %}
               <p>{{ section.settings.registered_message }}</p>
@@ -31,25 +98,55 @@
 
             {% form 'customer_login' %}
               {{ form.errors | default_errors }}
-              
-              <fieldset class="form-group{% if form.errors contains "email" %} has-error{% endif %}">
-                <label for="customer-email" class="sr-only">Email</label>
-                <input type="email" name="customer[email]" id="customer-email" class="form-control" placeholder="Email" autocorrect="off" autocapitalize="off" autofocus>
-              </fieldset>
-      
+
+              <div class="form-group">
+                <label for="CustomerEmail">Email</label>
+
+                <div class="form-control">              
+                  <input
+                    type="email"
+                    name="customer[email]"
+                    id="CustomerEmail"
+                    autocomplete="email"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    {% if form.errors contains 'form' %}
+                      aria-invalid="true"
+                    {% endif %}
+                    placeholder="Email"
+                    autofocus           
+                  >
+                </div>
+              </div>
+
               {% if form.password_needed %}
-                <fieldset class="form-group{% if form.errors contains "password" %} has-error{% endif %}">
-                  <label for="customer-password" class="sr-only">Password</label>
-                  <input type="password" value="" name="customer[password]" id="customer-password" class="form-control" placeholder="Password">
-                </fieldset>
+                <div class="form-group">
+                  <label for="CustomerPassword">{{ 'customer.login.password' | t }}</label>
+
+                  <div class="form-control">                
+                    <input
+                      type="password"
+                      value=""
+                      name="customer[password]"
+                      id="CustomerPassword"
+                      autocomplete="current-password"
+                      {% if form.errors contains 'form' %}
+                        aria-invalid="true"
+                      {% endif %}
+                      placeholder="{{ 'customer.login.password' | t }}"
+                    >
+                  </div>
+                </div>
               {% endif %}
       
-              <div class="form-group" style="display: flex; justify-content: space-between; align-items: center">
-                <button type="submit" class="btn">Login</button>
-                <div style="padding: 0 11px;">
-                  <a href="#" data-toggle-recover="true">
-                    Forgot your password?
-                  </a>
+              <div class="form-group">
+                <div class="flex justify-between items-center">
+                  <button type="submit" class="btn">Login</button>
+                  <div style="padding: 0 11px;">
+                    <a href="#" data-toggle-recover="true">
+                      Forgot your password?
+                    </a>
+                  </div>
                 </div>
               </div>
             {% endform %}          
@@ -64,7 +161,7 @@
           <div>
             {% form 'guest_login' %}
               <div>
-                <button type="submit" class="btn btn--block" value="Continue">
+                <button type="submit" class="btn btn-block" value="Continue">
                   Continue Checkout As Guest
                 </button>
               </div>
@@ -72,32 +169,7 @@
           </div>
         {% endif %}      
 
-        <div id="recover-password-form" style="display: none;">
-          <h4 class="headline-4" style="margin-bottom: 0.5rem;">
-            Reset Your Password
-          </h4>
-
-          <p>We'll send you an email to reset your password</p>
-
-          {% form 'recover_customer_password' %}
-
-            {{ form.errors | default_errors }}
-
-            {% assign recover_success = form.posted_successfully? %}
-
-            <fieldset class="form-group">
-              <label for="recover-email" class="sr-only">Email</label>
-              <input type="email" value="" name="email" id="recover-email" class="form-control" placeholder="Email" autocorrect="off" autocapitalize="off">
-            </fieldset>
-
-            <div class="form-group" style="display: flex; justify-content: space-between; align-items: center">
-              <button type="submit" class="btn">Submit</button>
-              <div style="padding: 0 11px;">
-                <a href="#" data-toggle-recover="false">Cancel</a>
-              </div>
-            </div>          
-          {% endform %}
-        </div>
+        {{ recover_content }}
       </div>
     </div>
   </div>

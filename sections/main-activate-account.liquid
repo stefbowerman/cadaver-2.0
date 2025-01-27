@@ -1,30 +1,52 @@
-{% render 'section-header',
-           title: 'Activate Account',
-           title_tag: 'h1'
-%}
+<section
+  data-section-id="{{ section.id }}"
+  data-section-type="reset-password"
+>
+  <div class="container">
+    {% render 'section-header',
+              title: 'Activate Account',
+              title_tag: 'h1'
+    %}
 
-<p>Create your password to activate your account.</p>
+    <div class="mx-auto" style="max-width: 560px;">
+      <p class="text-center">Create your password to activate your account.</p>
 
-{% comment %}
-  This form must use 'activate_customer_password'
-{% endcomment %}
-{% form 'activate_customer_password' %}
+      {% form 'activate_customer_password' %}
 
-  <p>{{ form.errors | default_errors }}</p>
-  
-  <fieldset class="form-group">
-    <label for="customer-password">Password</label>
-    <input type="password" value="" name="customer[password]" id="customer-password" class="form-control">
-  </fieldset>
+        <p>{{ form.errors | default_errors }}</p>
+        
+        <div class="form-group">
+          <label for="customer-password">Password</label>
+          <div class="form-control">
+            <input
+              type="password"
+              value=""
+              name="customer[password]"
+              id="customer-password"
+            >
+          </div>
+        </div>
 
-  <label for="customer-password-confirmation">Password Confirm</label>
-  <input type="password" value="" name="customer[password_confirmation]" id="customer-password-confirmation" class="form-control">
+        <div class="form-group">
+          <label for="customer-password-confirmation">Password Confirm</label>
+          <div class="form-control">
+            <input
+              type="password"
+              value=""
+              name="customer[password_confirmation]"
+              id="customer-password-confirmation"
+            >
+          </div>
+        </div>
 
-  <p>
-    <input type="submit" class="btn btn-primary" value="{{ 'customer.activate_account.submit' | t }}">
-  </p>
-  <p>
-    <input type="submit" class="btn btn-secondary" name="decline" value="{{ 'customer.activate_account.cancel' | t }}">  
-  </p>
+        <div class="form-group">
+          <input type="submit" class="btn" value="{{ 'customer.activate_account.submit' | t }}">
+        </div>
 
-{% endform %}
+        <div class="form-group">
+          <input type="submit" class="btn" name="decline" value="{{ 'customer.activate_account.cancel' | t }}">  
+        </div>
+      {% endform %}
+    </div>
+  </div>
+</section>

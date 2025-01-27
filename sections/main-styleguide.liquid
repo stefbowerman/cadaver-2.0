@@ -1,0 +1,73 @@
+<style>
+  .sg-title {
+    margin-bottom: 16px;
+    font-size: 1.125rem;
+    font-weight: bold;
+  }
+  
+  .sg-island {
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #DDD;
+    max-width: 650px;
+  }
+  
+  .sg-island + .sg-island {
+    margin-top: 36px;
+  }
+  
+  .sg-island-title {
+    margin: 25px 0 10px;
+    opacity: 0.5;
+    font-size: 0.815rem;
+  }
+  
+  .sg-island-title:first-child {
+    margin-top: 0;
+  }
+  
+  .sg-swatch {
+    border: 1px solid #DDD;
+  
+    width: 40px;
+    aspect-ratio: 1;
+    border-radius: 4px;
+  }
+  
+  .sg-social-icon {
+    display: inline-block;
+    width: 16px;
+  }
+  
+  .sg-social-icon svg {
+    width: 100%;
+    height: auto;
+  }
+</style>
+
+<div class="mb-s128">
+  <div class="container">
+
+    <div class="py-s128">
+      {%- render 'section-header', title: 'Styleguide' %}
+    </div>
+
+    <div class="flex flex-col gap-y-s96">
+      {%- render 'styleguide-forms' %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Styleguide",
+  "settings": [
+
+  ],
+  "presets": [
+    {
+      "name": "Styleguide"
+    }
+  ]
+}
+{% endschema %}
