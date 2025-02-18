@@ -1,7 +1,10 @@
 <div data-section-id="{{ section.id }}" data-section-type="ajax-cart">
   <div
+    id="ajax-cart"
     class="ajax-cart overflow-scroll hide-scrollbar"
     data-component="ajax-cart"
+    aria-hidden="true"
+    role="dialog"    
   >
     <form action="{{ routes.cart_url }}" method="post" novalidate>
       <div class="ajax-cart__header">

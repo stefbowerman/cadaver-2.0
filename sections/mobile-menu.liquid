@@ -1,74 +1,84 @@
-{% comment %} @TODO - this needs to be shoved in a drawer component with aria-hidden="true" so that we don't tab into it {% endcomment %}
 <div
-  class="mobile-menu overflow-scroll hide-scrollbar"
   data-section-id="{{ section.id }}"
   data-section-type="mobile-menu"
 >
-  <div class="mobile-menu__body">
-    <a href="#" data-mobile-menu-toggle data-taxi-ignore>Close</a>
+  <div
+    id="mobile-menu"
+    class="mobile-menu overflow-scroll hide-scrollbar"
+    data-component="mobile-menu"
+    aria-hidden="true"
+    role="dialog"
+  >
+    <div class="mobile-menu__body">
+      <button
+        data-mobile-menu-toggle
+        aria-label="Close Menu"
+        aria-controls="mobile-menu"
+        aria-expanded="false"      
+      >Close</button>
 
-    {%- if section.settings.primary_menu != blank -%}
-      {%- for link in section.settings.primary_menu.links -%}
-        {%- assign link_id = section.id | append: '-link-' | append: forloop.index %}
-
-        {% if link.links.size > 0 %}
-          <div>
-            <div>{{ link.title }}</div>
-            <div class="mm-sublist">
-              {% for sublink in link.links %}
-                <div class="mm-sublist__item">
-                  <a href="{{ sublink.url }}" class="mm-sublist__item-inner">
-                    {{ sublink.title }}
-                  </a>
-                </div>
-              {% endfor %}
+      {%- if section.settings.primary_menu != blank -%}
+        {%- for link in section.settings.primary_menu.links -%}
+          {% if link.links.size > 0 %}
+            <div>
+              <div>{{ link.title }}</div>
+              
+              <div class="mm-sublist">
+                {% for sublink in link.links %}
+                  <div class="mm-sublist__item">
+                    <a href="{{ sublink.url }}" class="mm-sublist__item-inner">
+                      {{ sublink.title }}
+                    </a>
+                  </div>
+                {% endfor %}
+              </div>
             </div>
-          </div>
-        {% else %}
-          <a href="{{ link.url }}">
-            {{ link.title }}
-          </a>       
-        {% endif %}
-      {%- endfor -%}  
-    {%- endif -%}
-
-
-    <div class="w-full max-w-[260px] my-16">
-      <form action="{{ routes.search_url }}" method="get" role="search" data-search-form>
-        <div class="form-group">
-          <label for="mobile-menu-search" class="sr-only">Enter search query</label>
-
-          <div class="form-control">
-            <input
-              id="mobile-menu-search"
-              type="search"
-              name="q"
-              placeholder="Search"
-            />
-
-            <span class="form-control__affix">
-              <button type="submit"aria-label="search">
-                {{- 'icon-search.svg' | inline_asset_content -}}
-              </button>
-            </span>
-          </div>
-        </div>
-      </form>
-    </div>
-
-
-    {%- if section.settings.secondary_menu != blank -%}
-      <ul class="mobile-menu__secondary-menu">
-        {%- for link in section.settings.secondary_menu.links -%}
-          <li>
+          {% else %}
             <a href="{{ link.url }}">
               {{ link.title }}
-            </a>
-          </li>
-        {%- endfor -%}              
-      </ul>
-    {%- endif -%}
-  </div>
+            </a>       
+          {% endif %}
+        {%- endfor -%}  
+      {%- endif -%}
+
+
+      <div class="w-full max-w-[260px] my-16">
+        <form action="{{ routes.search_url }}" method="get" role="search" data-search-form>
+          <div class="form-group">
+            <label for="mobile-menu-search" class="sr-only">Enter search query</label>
+
+            <div class="form-control">
+              <input
+                id="mobile-menu-search"
+                type="search"
+                name="q"
+                placeholder="Search"
+              />
+
+              <span class="form-control__affix">
+                <button type="submit"aria-label="search">
+                  {{- 'icon-search.svg' | inline_asset_content -}}
+                </button>
+              </span>
+            </div>
+          </div>
+        </form>
+      </div>
+
+
+      {%- if section.settings.secondary_menu != blank -%}
+        <ul class="mobile-menu__secondary-menu">
+          {%- for link in section.settings.secondary_menu.links -%}
+            <li>
+              <a href="{{ link.url }}">
+                {{ link.title }}
+              </a>
+            </li>
+          {%- endfor -%}              
+        </ul>
+      {%- endif -%}
+    </div>
+  </div>    
 </div>
   
 {% schema %}

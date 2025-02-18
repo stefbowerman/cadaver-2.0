@@ -17,8 +17,10 @@
             <li>
               <button
                 class="header-nav__item"
-                aria-label="Open Menu"
                 data-mobile-menu-toggle
+                aria-label="Toggle Menu"
+                aria-controls="mobile-menu"
+                aria-expanded="false"                
               >
                 Menu
               </button>
@@ -43,15 +45,20 @@
     
       <div class="header-nav header-nav--right">
         <div class="header-nav__list">
-          <a
-            href="{{ routes.cart_url }}"
-            class="header-nav__item {% if cart.item_count > 0 %} has-items{% endif %}"
-            data-taxi-ignore
+          <button
+            class="header-nav__item"
             data-ajax-cart-toggle
-            data-component="header-cart-control"
+            aria-label="Toggle Cart"
+            aria-controls="ajax-cart"
+            aria-expanded="false"
           >
-            Cart <span class="header-cart-count" data-count>{{ cart.item_count }}</span>
-          </a>
+            <span
+              class="{% if cart.item_count > 0 %}has-items{% endif %}"
+              data-component="header-cart-control"
+            >
+              Cart <span class="header-cart-count" data-count>{{ cart.item_count }}</span>
+            </span>
+          </button>
         
           <a
             href="{{ routes.search_url }}"

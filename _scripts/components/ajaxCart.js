@@ -245,7 +245,11 @@ export default class AJAXCart extends BaseComponent {
     if (this.isOpen) return
 
     this.el.classList.add(classes.open)
+    this.el.setAttribute('aria-hidden', 'false')
+
     document.body.classList.add(classes.bodyCartOpen)
+    this.ariaControlElements.forEach(el => el.setAttribute('aria-expanded', 'true'))
+
     this.isOpen = true
   }
 
@@ -253,7 +257,11 @@ export default class AJAXCart extends BaseComponent {
     if (!this.isOpen) return
 
     this.el.classList.remove(classes.open)
+    this.el.setAttribute('aria-hidden', 'true')
+    
     document.body.classList.remove(classes.bodyCartOpen)
+    this.ariaControlElements.forEach(el => el.setAttribute('aria-expanded', 'false'))
+
     this.isOpen = false
   }  
 
