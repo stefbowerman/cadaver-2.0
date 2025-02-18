@@ -13,7 +13,7 @@ import {
 import BaseRenderer from './renderers/base'
 
 // Transitions
-import DefaultTransition from './transitions/default'
+import PageTransition from './transitions/page'
 
 // Sections
 import SectionManager from './core/sectionManager'
@@ -51,7 +51,7 @@ function init() {
       default: BaseRenderer
     },
     transitions: {
-      default: DefaultTransition
+      default: PageTransition
     },
     reloadJsFilter: (element) => {
       // Whitelist any scripts here that need to be reloaded on page change
