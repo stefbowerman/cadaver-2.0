@@ -93,7 +93,7 @@ const CartAPI = {
       return formatCart(cart)
     }
     catch (e) {
-      throw new Error('Could not retrieve cart items');
+      throw new Error('Could not retrieve cart items', e);
     }
   },
 

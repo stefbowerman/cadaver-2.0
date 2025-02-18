@@ -77,7 +77,12 @@ module.exports = {
           },
 
           // Compile to CSS
-          'sass-loader'
+          {
+            loader: 'sass-loader',
+            options: {
+              api: 'modern'
+            }
+          }
         ]
       }
     ]

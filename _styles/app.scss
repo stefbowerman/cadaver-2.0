@@ -1,18 +1,8 @@
-// START SCSS vars - so we can use them inside of media queries
-// These vars map to breakpoints defined by tailwind -> https://tailwindcss.com/docs/responsive-design
-// The I've added a 3xl breakpoint for cinema displays.
-// NOTE: If these values need to change, update the breakpoints in tailwind.config.js and breakpointsController.js
-$bp-sm:   640px;
-$bp-md:   768px;
-$bp-lg:   1024px;
-$bp-xl:   1280px;
-$bp-2xl:  1536px;
-$bp-3xl:  1800px;
-
-$bp-xxl:  $bp-2xl;
-$bp-xxxl: $bp-3xl;
-// END SCSS vars
-
+// Note: @use rules must be written before any other rules (@tailwind, @layer, etc.)
+@use 'variables' as *;
+@use 'core';
+@use 'components';
+@use 'templates';
 
 @tailwind base;
 @tailwind components;
@@ -26,25 +16,27 @@ $bp-xxxl: $bp-3xl;
       --layout-vertical-padding: 100px;
     }
     
-    --transition-drawer-in: transform 600ms cubic-bezier(0.34, 0.38, 0, 1);
-    --transition-drawer-out: transform 450ms cubic-bezier(0.51, 0.22, 0.12, 1);
-    --transition-backdrop-in: opacity 450ms cubic-bezier(0.48, 0.19, 0.15, 0.8);
-    --transition-backdrop-out: opacity 400ms cubic-bezier(0.42, 0, 0.51, 0.79);
+    & {
+      --transition-drawer-in: transform 600ms cubic-bezier(0.34, 0.38, 0, 1);
+      --transition-drawer-out: transform 450ms cubic-bezier(0.51, 0.22, 0.12, 1);
+      --transition-backdrop-in: opacity 450ms cubic-bezier(0.48, 0.19, 0.15, 0.8);
+      --transition-backdrop-out: opacity 400ms cubic-bezier(0.42, 0, 0.51, 0.79);
+  
+      // Set these as CSS variables so they can be adjusted via inline styling or modifier classes if necessary
+      --lazy-image-transition-timing-function: cubic-bezier(0.42, 0.33, 0.21, 0.82);
+      --lazy-image-transition-duration: 0.32s;
+      --lazy-image-transition: opacity var(--lazy-image-transition-timing-function, ease-in) var(--lazy-image-transition-duration, 0.25s);    
 
-    // Set these as CSS variables so they can be adjusted via inline styling or modifier classes if necessary
-    --lazy-image-transition-timing-function: cubic-bezier(0.42, 0.33, 0.21, 0.82);
-    --lazy-image-transition-duration: 0.32s;
-    --lazy-image-transition: opacity var(--lazy-image-transition-timing-function, ease-in) var(--lazy-image-transition-duration, 0.25s);    
-
-    --header-height: 65px;
-    --header-logo-width: 110px;
-
-    @media (min-width: $bp-xl) {
-      --header-logo-width: 140px;
+      --backdrop-color: #000;
+      --backdrop-opacity: 0.6;      
+  
+      --header-height: 65px;
+      --header-logo-width: 110px;
+  
+      @media (min-width: $bp-xl) {
+        --header-logo-width: 140px;
+      }
     }
-
-    --backdrop-color: #000;
-    --backdrop-opacity: 0.6;    
   }
 }
 
@@ -102,8 +94,3 @@ body.mobile-menu-open,
 body.ajax-cart-open {
   @apply overflow-hidden;
 }
-
-@import 'core';
-@import 'components';
-@import 'templates';
-

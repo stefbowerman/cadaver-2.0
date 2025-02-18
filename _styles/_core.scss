@@ -1,10 +1,12 @@
-@import 'core/typography';
-@import 'core/pills';
-@import 'core/layout';
-@import 'core/rte';
-@import 'core/tables';
-@import 'core/buttons';
-@import 'core/forms'; 
+@use 'variables' as *;
+
+@use 'core/typography';
+@use 'core/pills';
+@use 'core/layout';
+@use 'core/rte';
+@use 'core/tables';
+@use 'core/buttons';
+@use 'core/forms'; 
 
 .container {
   @apply w-full px-container mx-auto;

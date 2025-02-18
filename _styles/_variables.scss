@@ -1,0 +1,14 @@
+// START SCSS vars - so we can use them inside of media queries
+// These vars map to breakpoints defined by tailwind -> https://tailwindcss.com/docs/responsive-design
+// The I've added a 3xl breakpoint for cinema displays.
+// NOTE: If these values need to change, update the breakpoints in tailwind.config.js and breakpointsController.js
+$bp-sm:   640px;
+$bp-md:   768px;
+$bp-lg:   1024px;
+$bp-xl:   1280px;
+$bp-2xl:  1536px;
+$bp-3xl:  1800px;
+
+$bp-xxl:  $bp-2xl;
+$bp-xxxl: $bp-3xl;
+// END SCSS vars

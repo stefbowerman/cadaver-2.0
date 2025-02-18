@@ -1,3 +1,5 @@
+@use '../variables' as *;
+
 // Use a class instead of the bare element to avoid clashing with 3rd party libs
 .footer {
   --grid-column-gap: 4vw;

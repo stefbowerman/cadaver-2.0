@@ -5,7 +5,7 @@
     "email": "stefbowerman@gmail.com"
   },
   "engines": {
-    "node": "20.x"
+    "node": "22.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -36,7 +36,6 @@
     "gsap": "^3.12.7",
     "lodash-es": "^4.17.21",
     "npm": "^9.6.2",
-    "swiper": "^9.4.1",
-    "throttle-debounce": "^5.0.0"
+    "swiper": "^9.4.1"
   }
 }
