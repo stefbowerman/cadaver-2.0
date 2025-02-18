@@ -6,8 +6,8 @@ Cadaver is a starter Shopify Online 2.0 Theme.
 `v20.8.0`
 
 __Features:__
-- Minimal JS framework for working with Shopify sections.
-- [Taxi.js](https://taxi.js.org/) + [instantpage.js](https://instant.page/) built-in for fast, SPA like browsing experience
+- Minimal JS framework for working with Shopify sections and [dom components](_scripts/components/base.js).
+- [Taxi.js](https://taxi.js.org/) with link pre-fetching built-in for fast, SPA like browsing experience
 - Webpack configuration for bundling SCSS and JS files
 - 95+ scoring on all lighthouse speed tests.
 
