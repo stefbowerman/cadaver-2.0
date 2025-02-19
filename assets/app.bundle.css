@@ -961,6 +961,8 @@ header.header nav a[aria-current=page] {
 }
 
 .mobile-menu__body {
+  padding-left: 1rem;
+  padding-right: 1rem;
   padding-top: 5rem;
   padding-bottom: 2rem;
 }
@@ -2298,6 +2300,9 @@ body {
 .py-3 {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
+}
+.pb-8 {
+  padding-bottom: 2rem;
 }
 .pl-3 {
   padding-left: 0.75rem;

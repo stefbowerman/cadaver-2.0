@@ -1,10 +1,10 @@
 import BaseComponent from './base'
+import SearchInline from './search/searchInline'
 
 import BreakpointsController, { BREAKPOINTS } from '../core/breakpointsController'
 
 const selectors = {
-  toggle: '[data-mobile-menu-toggle]',
-  searchForm: '[data-search-form]'
+  toggle: '[data-mobile-menu-toggle][aria-controls]'
 }
 
 const classes = {
@@ -18,14 +18,12 @@ export default class MobileMenu extends BaseComponent {
   constructor(el) {
     super(el)
 
-    this.searchForm = this.qs(selectors.searchForm)
-
     this.isOpen = false
 
     this.onBreakpointChange = this.onBreakpointChange.bind(this)
     this.onBodyClick = this.onBodyClick.bind(this)
 
-    this.searchForm.addEventListener('submit', this.onSearchFormSubmit.bind(this))
+    this.searchInline = new SearchInline(this.qs(SearchInline.SELECTOR))    
 
     document.body.addEventListener('click', this.onBodyClick)
     window.addEventListener(BreakpointsController.events.CHANGE, this.onBreakpointChange)     
@@ -60,27 +58,6 @@ export default class MobileMenu extends BaseComponent {
 
   toggle() {
     this.isOpen ? this.close() : this.open()
-  }
-
-  onSearchFormSubmit(e) {
-    if (!window.app.taxi) {
-      return
-    }
-
-    e.preventDefault()
-
-    const data = new FormData(this.searchForm)
-
-    const q = data.get('q')
-    const type = data.get('type') || 'product'
-
-    if (!q) {
-      return // @TODO - Show error ?
-    }
-
-    window.app.taxi.navigateTo(`${this.searchForm.action}?type=${type}&q=${q}`)
-
-    return false
   }
 
   onBreakpointChange({ detail: { breakpoint } }) {

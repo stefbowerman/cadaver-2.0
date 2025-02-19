@@ -48,7 +48,8 @@
       "title": "Search for products on our site",
       "placeholder": "Search",
       "mobile_placeholder": "Tap to search",
-      "submit": "Search"
+      "submit": "Search",
+      "search": "Search"
     }
   },
   "accessibility": {

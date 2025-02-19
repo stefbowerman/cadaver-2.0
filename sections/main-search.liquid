@@ -7,27 +7,9 @@
 {%- endcapture -%}
 
 {%- capture actions -%}
-  <form action="{{ routes.search_url }}" method="get" role="search" style="max-width: 625px; margin: 0 auto 40px">
-    <div class="flex items-center gap-x-2">
-      <div class="form-group flex-1">
-        <label for="main-search-input" class="sr-only">Search our site</label>
-
-        <div class="form-control">
-          <input
-            id="main-search-input"
-            type="search"
-            name="q"
-            placeholder="Search store.."
-            value="{{ search.terms | escape }}"
-          />
-        </div>
-      </div>
-
-      <button type="submit" class="underline">
-        Search
-      </button>
-    </div>
-  </form>      
+  <div style="max-width: 625px; margin: 0 auto 40px">
+    {% render 'search-inline', id: 'main-search-inline', include_terms: true %}
+  </div>   
 {%- endcapture -%}
 
 <div data-section-id="{{ section.id }}" data-section-type="search">
@@ -41,63 +23,62 @@
   
   {% if search.performed %}
     {% paginate search.results by 500 %}
-    
-      {% if search.results_count == 0 %}
-        <div class="container">
-          <p class="text-center">
-            Your search for "{{ search.terms }}" did not yield any results.
-          </p>
-        </div>
-      {% else %}
-        {%- liquid
-          assign product_card_set_html = ''
-          assign article_grid_html = ''
+      <div class="container">
+        {% if search.results_count == 0 %}
+            <p class="text-center">
+              Your search for "{{ search.terms }}" did not yield any results.
+            </p>
+        {% else %}
+          {%- liquid
+            assign product_card_set_html = ''
+            assign article_grid_html = ''
 
-          for item in search.results
-            if item.object_type == 'product'
-              capture card_html
-                echo '<div class="product-grid__item">'
-                  render 'product-card', product: item
-                echo '</div>'
-              endcapture
+            for item in search.results
+              if item.object_type == 'product'
+                capture card_html
+                  echo '<div class="product-grid__item">'
+                    render 'product-card', product: item
+                  echo '</div>'
+                endcapture
 
-              assign product_card_set_html = product_card_set_html | append: card_html
-            elsif item.object_type == 'article'
-              capture card_html
-                echo '<div>'
-                  render 'article-card', article: item
-                echo '</div>'
-              endcapture
+                assign product_card_set_html = product_card_set_html | append: card_html
+              elsif item.object_type == 'article'
+                capture card_html
+                  echo '<div>'
+                    render 'article-card', article: item
+                  echo '</div>'
+                endcapture
 
-              assign article_grid_html = article_grid_html | append: card_html
-            endif
-          endfor
-        %}
+                assign article_grid_html = article_grid_html | append: card_html
+              endif
+            endfor
+          %}
 
-        {% if product_card_set_html != blank %}
-          <div class="product-grid">              
-            {{ product_card_set_html }}
-          </div>
+          {% if product_card_set_html != blank %}
+            <div class="product-grid">              
+              {{ product_card_set_html }}
+            </div>
+          {% endif %}
+
+          {% if article_grid_html != blank %}
+            <div class="container">
+              {% render 'section-header',
+                        title: 'Articles',
+              %}
+
+              <div class="grid gap-y-8 gap-x-8 grid-cols-1 lg:grid-cols-2">
+                {{ article_grid_html }}
+              </div>
+            </div>
+          {% endif %}        
         {% endif %}
 
-        {% if article_grid_html != blank %}
-          <div class="container">
-            {% render 'section-header',
-                       title: 'Articles',
-            %}
-
-            <div class="grid gap-y-8 gap-x-8 grid-cols-1 lg:grid-cols-2">
-              {{ article_grid_html }}
-            </div>
+        {% if paginate.pages > 1 %}
+          <div>
+            {{ paginate | default_pagination }}
           </div>
-        {% endif %}        
-      {% endif %}
-
-      {% if paginate.pages > 1 %}
-        <div>
-          {{ paginate | default_pagination }}
-        </div>
-      {% endif %}
+        {% endif %}
+      </div>
     {% endpaginate %}    
   {% endif %}  
 </div>

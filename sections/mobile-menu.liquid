@@ -43,26 +43,11 @@
 
 
       <div class="w-full max-w-[260px] my-16">
-        <form action="{{ routes.search_url }}" method="get" role="search" data-search-form>
-          <div class="form-group">
-            <label for="mobile-menu-search" class="sr-only">Enter search query</label>
+        {%- liquid
+          assign id = section.id | append: '-search'
 
-            <div class="form-control">
-              <input
-                id="mobile-menu-search"
-                type="search"
-                name="q"
-                placeholder="Search"
-              />
-
-              <span class="form-control__affix">
-                <button type="submit"aria-label="search">
-                  {{- 'icon-search.svg' | inline_asset_content -}}
-                </button>
-              </span>
-            </div>
-          </div>
-        </form>
+          render 'search-inline', id: id
+        -%}
       </div>
 
 

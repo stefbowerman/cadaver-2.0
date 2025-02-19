@@ -9,7 +9,7 @@ const selectors = {
   itemRemove: '[data-item-remove]',
   itemIncrement: '[data-item-increment]',
   itemDecrement: '[data-item-decrement]',  
-  toggle: '[data-ajax-cart-toggle]'
+  toggle: '[data-ajax-cart-toggle][aria-controls]'
 }
 
 const classes = {

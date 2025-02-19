@@ -1,0 +1,51 @@
+{%- comment %}
+  
+  Search Inline
+  ------------------------------------------------------------------------------
+
+  Usage:
+
+  {% render 'search-inline',
+            id: { text } - required
+            include_terms: { boolean } - optional
+  %}
+
+{% endcomment -%}
+
+
+<form
+  data-component="search-inline"
+  action="{{ routes.search_url }}"
+  method="get"
+  role="search"
+>
+  <div class="form-group">
+    <label for="{{ id }}-search" class="sr-only">{{ 'general.search.search' | t }}</label>
+    
+    <div class="form-control form-control--reverse">
+      <input
+        id="{{ id }}-search"
+        type="search"
+        name="q"
+        value="{% if include_terms %}{{ search.terms | escape }}{% endif %}"
+        placeholder="{{ 'general.search.search' | t }}"
+        autocorrect="off"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+      />
+
+      <span class="form-control__affix">
+        <button
+          type="submit"
+          aria-label="{{ 'general.search.search' | t }}"
+          data-icon
+        >
+          {{- 'icon-search.svg' | inline_asset_content -}}
+        </button>     
+      </span>        
+    </div>
+  </div>
+
+  <input type="hidden" name="type" value="product" />
+</form>
