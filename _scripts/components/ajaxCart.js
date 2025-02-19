@@ -42,7 +42,7 @@ export default class AJAXCart extends BaseComponent {
     window.addEventListener(CartAPI.events.UPDATE, this.callbacks.onCartUpdate)
 
     // Set empty state based on initial cart data
-    this.el.classList.toggle(classes.empty, cartData.item_count === 0)    
+    this.setEmpty(cartData.item_count === 0)
   }
 
   destroy() {
@@ -53,6 +53,10 @@ export default class AJAXCart extends BaseComponent {
 
     super.destroy()
   }
+
+  setEmpty(isEmpty) {
+    this.el.classList.toggle(classes.empty, isEmpty)
+  }  
 
   toggle() {
     return this.isOpen ? this.close() : this.open()
@@ -85,8 +89,8 @@ export default class AJAXCart extends BaseComponent {
   onCartUpdate(e) {
     const { cart } = e.detail
 
-    this.el.classList.toggle(classes.empty, cart.item_count === 0)
-
+    this.setEmpty(cart.item_count === 0)
+    
     this.open()
   }
 
@@ -94,7 +98,7 @@ export default class AJAXCart extends BaseComponent {
     if (e.target.closest(selectors.close)) {
       return this.onCloseClick(e)
     }
-    else if (e.target.closest(selectors.toggle)) {
+    else if (e.target.closest(selectors.toggle)?.getAttribute('aria-controls') === this.el.id) {
       return this.onToggleClick(e)
     }
   }

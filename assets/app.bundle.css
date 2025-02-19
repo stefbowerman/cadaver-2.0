@@ -1218,14 +1218,9 @@ header.header nav a[aria-current=page] {
   padding: 20px var(--ajax-cart-inner-padding-h);
   transition: opacity 250ms ease-in-out;
 }
-.is-removing .ajax-cart__item-inner {
-  cursor: not-allowed;
-  opacity: 0.3;
-}
-.is-updating .ajax-cart__item-inner {
-  cursor: not-allowed;
-}
-.is-updating .ajax-cart__item-inner .quantity-adjuster button {
+.is-removing .ajax-cart__item-inner, .is-updating .ajax-cart__item-inner {
+  opacity: 0.5;
+  pointer-events: none;
   cursor: not-allowed;
 }
 

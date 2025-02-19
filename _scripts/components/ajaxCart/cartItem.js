@@ -30,13 +30,15 @@ export default class CartItem extends BaseComponent {
   constructor(el, itemData) {
     super(el)
 
+    this._state = undefined
+
     this.id = parseInt(this.el.dataset.id, 10)
     this.itemData = itemData
 
     this.remove = this.qs(selectors.remove)
     this.price = this.qs(selectors.price)
 
-    this.debouncedOnQuantityAdjusterChange = debounce(this.onQuantityAdjusterChange.bind(this), (isTouch() ? 400 : 150)) // <- Longer debounce for touch devices since fast touches are taken as a double click which causes page zoom
+    this.debouncedOnQuantityAdjusterChange = debounce(this.onQuantityAdjusterChange.bind(this), (isTouch() ? 500 : 250)) // <- Longer debounce for touch devices since fast touches are taken as a double click which causes page zoom
 
     this.quantityAdjuster = new QuantityAdjuster(this.el.querySelector(QuantityAdjuster.SELECTOR), {
       onChange: qty => {
@@ -73,6 +75,12 @@ export default class CartItem extends BaseComponent {
         this.el.classList.remove(classes.removing, classes.updating)
         break
     }
+
+    this._state = state
+  }
+
+  get state() {
+    return this._state
   }
 
   /**
@@ -97,9 +105,11 @@ export default class CartItem extends BaseComponent {
   }
 
   async onQuantityAdjusterChange(q) {
-    this.state = q === 0 ? CartItem.states.REMOVING : CartItem.states.UPDATING
+    if (this.state !== undefined) return
 
     try {
+      this.state = q === 0 ? CartItem.states.REMOVING : CartItem.states.UPDATING
+
       await CartAPI.changeLineItemQuantity(this.id, q)
     }
     catch (error) {
@@ -118,9 +128,9 @@ export default class CartItem extends BaseComponent {
   async onRemoveClick(e) {
     e.preventDefault()
 
-    this.state = CartItem.states.REMOVING
-
     try {
+      this.state = CartItem.states.REMOVING
+
       await CartAPI.changeLineItemQuantity(this.id, 0)
     }
     catch (error) {

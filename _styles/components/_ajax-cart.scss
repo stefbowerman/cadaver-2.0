@@ -49,20 +49,14 @@
   @apply flex gap-x-4;
   padding: 20px var(--ajax-cart-inner-padding-h);
 
-  transition: opacity 250ms ease-in-out;  
+  transition: opacity 250ms ease-in-out;
 
-  .is-removing & {
-    cursor: not-allowed;
-    opacity: 0.3;
-  }
-
+  .is-removing &,
   .is-updating & {
+    opacity: 0.5;
+    pointer-events: none;
     cursor: not-allowed;
-
-    .quantity-adjuster button {
-      cursor: not-allowed;
-    }
-  }  
+  }
 }
 
 .ajax-cart__item-image-frame {
