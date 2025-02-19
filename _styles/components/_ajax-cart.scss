@@ -9,11 +9,13 @@
 
   @apply fixed z-ajax-cart top-0 right-0 h-screen w-full max-w-[500px] bg-white translate-x-full;
 
+  pointer-events: none;
   transition: var(--transition-drawer-out);
 
   &.is-open {
     @apply translate-x-0;
     transition: var(--transition-drawer-in);
+    pointer-events: auto;
   }
 
   form {
@@ -38,8 +40,6 @@
 }
 
 .ajax-cart__item {
-  padding: 20px var(--ajax-cart-inner-padding-h);
-
   &.is-being-removed {
     cursor: not-allowed;
   }  
@@ -47,23 +47,16 @@
 
 .ajax-cart__item-inner {
   @apply flex gap-x-4;
+  padding: 20px var(--ajax-cart-inner-padding-h);
 
-  transition: filter 250ms ease-out,
-              opacity 250ms ease-in-out;  
+  transition: opacity 250ms ease-in-out;
 
-  .is-being-removed & {
+  .is-removing &,
+  .is-updating & {
+    opacity: 0.5;
+    pointer-events: none;
     cursor: not-allowed;
-    filter: grayscale(1);
-    opacity: 0.3;
   }
-
-  .is-in-progress & {
-    cursor: not-allowed;
-
-    .quantity-adjuster__button {
-      cursor: not-allowed;
-    }
-  }  
 }
 
 .ajax-cart__item-image-frame {
@@ -95,7 +88,7 @@
 }
 
 .ajax-cart__footer {
-  @apply relative flex flex-col gap-y-5;
+  @apply sticky bottom-0 flex flex-col gap-y-5;
   z-index: var(--z-footer);  
   padding: 0 var(--ajax-cart-padding-h) var(--ajax-cart-padding-v);
 }

@@ -1,0 +1,78 @@
+{%- comment %}
+
+  Cart Item
+  ------------------------------------------------------------------------------
+
+  Usage:
+
+  {% render 'cart-item',
+             item: { cart.items[] } - required
+  %}
+
+{% endcomment -%}
+
+{% if item != blank %}
+  <div
+    class="ajax-cart__item"
+    data-component="cart-item"
+    data-id="{{ item.id }}"
+  >
+    <div class="ajax-cart__item-inner">
+      <div class="ajax-cart__item-image">
+        <div class="ajax-cart__item-image">
+          {%- if item.image -%}
+            <img
+              src="{{ item.image | image_url: width: 150 }}"
+              alt="{{ item.image.alt | escape }}"
+              loading="lazy"
+              width="150"
+              height="{{ 150 | divided_by: item.image.aspect_ratio | ceil }}"
+              class="lazy-image"
+            >
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="ajax-cart__item-info">
+        <div>
+          <div class="ajax-cart__item-header">
+            <div class="ajax-cart__item-title">
+              <a href="{{ item.product.url }}">{{- item.product.title | escape -}}</a>
+            </div>
+            <button class="ajax-cart__item-remove" data-remove>Remove</button>
+          </div>
+
+          {%- unless item.product.has_only_default_variant %}
+            <div>
+              {% for option in item.options_with_values -%}
+                <div class="ajax-cart__item-detail">{{ option.name }}: {{ option.value }}</div>
+              {%- endfor %}
+            </div>
+          {% endunless %}          
+        </div>
+
+        <div style="display: flex; justify-content: space-between">
+          <div>
+            {%- liquid
+              assign max = item.variant.quantity_rule.max
+  
+              if max == blank and item.variant.inventory_management != nil and item.variant.inventory_policy == 'deny'
+                assign max = item.variant.inventory_quantity
+              endif
+            -%}
+
+            {%- render 'quantity-adjuster',
+                        value: item.quantity,
+                        min: 0,
+                        max: max,
+                        step: item.variant.quantity_rule.increment,
+                        input_name: 'updates[]',
+                        product_title: item.product.title
+            -%}
+          </div>
+          <div>{% render 'cart-item-price', item: item %}</div>
+        </div>
+      </div>
+    </div>       
+  </div>
+{% endif %}

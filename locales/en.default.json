@@ -283,10 +283,20 @@
       "on_sale": "On Sale",
       "on_sale_from_html": "On Sale from {{ price }}",
       "from_text_html": "From {{ price }}",
-      "quantity": "Quantity",
       "add_to_cart": "Add to Cart",
       "adding": "Adding...",
-      "size_guide": "size guide"
+      "size_guide": "size guide",
+      "quantity": {
+        "label": "Quantity",
+        "input_label": "Quantity for {{ product }}",
+        "increase": "Increase quantity for {{ product }}",
+        "decrease": "Decrease quantity for {{ product }}",
+      },
+      "price": {
+        "price": "Price",
+        "regular_price": "Regular price",
+        "sale_price": "Sale price"
+      }       
     }
   },
   "ajax_cart": {

@@ -1,0 +1,31 @@
+{%- comment %}
+
+  Cart Body
+  ------------------------------------------------------------------------------
+
+  Usage:
+
+  {% render 'cart-body'
+  %}
+
+{% endcomment -%}
+
+<div
+  class="ajax-cart__body"
+  data-component="cart-body"
+> 
+  <div data-list>
+    {%- liquid
+      for item in cart.items
+        render 'cart-item', item: item
+      endfor
+    -%}
+  </div>
+
+  {% comment %} <span 
+    class="sr-only" 
+    role="status"
+    data-status
+    aria-live="polite"
+  ></span> {% endcomment %}
+</div>

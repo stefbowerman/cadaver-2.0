@@ -1,0 +1,58 @@
+{%- comment %}
+  Quantity Adjuster
+  ------------------------------------------------------------------------------
+
+  Usage:
+
+  {% render 'quantity-adjuster',
+             value: { number}
+             min: { number }
+             max: { number }
+             step: { number }
+             increment_disabled: { boolean }
+             decrement_disabled: { boolean }
+             input_name: { string }
+             product_title: { string }
+  %}
+{% endcomment -%}
+
+<div
+  class="quantity-adjuster"
+  data-component="quantity-adjuster"
+>
+  <button
+    type="button"
+    aria-label="{{- 'products.product.quantity.decrease' | t: product: product_title | escape -}}"
+    data-decrement
+    {% if decrement_disabled == true %}
+      disabled
+    {% endif %}
+  >
+    {{- 'icon-minus.svg' | inline_asset_content -}}
+  </button>
+
+  <input
+    type="number"
+    name="{{ input_name | default: 'quantity' }}"
+    value="{{ value }}"
+    {% if min %}
+      min="{{ min }}"
+    {% endif %}
+    {% if max %}
+      max="{{ max }}"
+    {% endif %}
+    step="{{ step | default: 1 }}"
+    aria-label="{{ 'products.product.quantity.input_label' | t: product: product_title | escape }}"
+  >
+
+  <button
+    type="button"
+    aria-label="{{- 'products.product.quantity.increase' | t: product: product_title | escape -}}"
+    data-increment
+    {% if increment_disabled == true %}
+      disabled
+    {% endif %}
+  >
+    {{- 'icon-plus.svg' | inline_asset_content -}}
+  </button>                            
+</div>
