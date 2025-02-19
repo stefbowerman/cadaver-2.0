@@ -112,4 +112,9 @@ export default class ProductDetailForm extends BaseComponent {
   onAddSuccess() {
     this.atcButton.onAddSuccess()
   }
+
+  onAddFail(e) {
+    console.log('@TODO - onAddFail', e)
+    // this.status.textContent = e.message || 'Error adding to cart'
+  }  
 }
