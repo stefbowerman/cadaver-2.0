@@ -1,0 +1,37 @@
+{%- comment %}
+
+  Cart Footer
+  ------------------------------------------------------------------------------
+
+  Usage:
+
+  {% render 'cart-footer',
+             checkout_button_text: { text } - optional
+             checkout_message: { text } - optional
+  %}
+
+{% endcomment -%}
+
+<div
+  class="ajax-cart__footer"
+  data-component="cart-footer"
+>
+  <div class="ajax-cart__footer-row text-right">
+    <span style="padding-right: 20px;">Sub-Total</span>
+    <span class="ajax-cart__total-price" data-subtotal-price>{{ cart.items_subtotal_price | money }}</span>
+  </div>
+  <div class="ajax-cart__footer-row">
+    <button type="submit" name="checkout" class="btn btn-block">
+      {{ checkout_button_text | default: 'Proceed To Checkout' }}
+    </button>
+  </div>
+  {% if checkout_message != blank %}
+    <div class="ajax-cart__footer-row" style="display: flex; justify-content: space-between;">
+      <div>
+      </div>
+      <div class="text-right">
+        {{ checkout_message }}
+      </div>
+    </div>
+  {% endif %}
+</div>

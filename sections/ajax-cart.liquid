@@ -8,32 +8,15 @@
   >
     <form action="{{ routes.cart_url }}" method="post" novalidate>
       <div class="ajax-cart__header">
-        <a href="#" data-taxi-ignore data-ajax-cart-close>Close</a>
+        <button data-ajax-cart-close>Close</button>
       </div>
 
-      <div class="ajax-cart__body" data-body>
-        {% comment %} Filled in via JS {% endcomment %}
-      </div>
+      {% render 'cart-body' %}
       
-      <div class="ajax-cart__footer">
-        <div class="ajax-cart__footer-row text-right">
-          <span style="padding-right: 20px;">Sub-Total</span> <span class="ajax-cart__total-price" data-total-price></span>
-        </div>
-        <div class="ajax-cart__footer-row">
-          <button type="submit" name="checkout" class="btn btn-block">
-            {{ section.settings.checkout_button_text | default: 'Proceed To Checkout' }}
-          </button>
-        </div>
-        {% if section.settings.checkout_message != blank %}
-          <div class="ajax-cart__footer-row" style="display: flex; justify-content: space-between;">
-            <div>
-            </div>
-            <div class="text-right">
-              {{ section.settings.checkout_message }}
-            </div>
-          </div>
-        {% endif %}
-      </div>
+      {% render 'cart-footer',
+                 checkout_button_text: section.settings.checkout_button_text,
+                 checkout_message: section.settings.checkout_message
+      %}
       
       <div class="ajax-cart__empty">
         <div class="ajax-cart__empty-text">
@@ -46,6 +29,10 @@
       </div>         
     </form> 
   </div>
+
+  <script type="application/json" data-cart-json>
+    {% render 'cart-json' %}
+  </script>  
 </div>
 
 {% schema %}

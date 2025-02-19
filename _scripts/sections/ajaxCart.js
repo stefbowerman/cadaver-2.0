@@ -1,8 +1,12 @@
 import BaseSection from './base'
-import CartAPI from '../core/cartAPI'
+// import CartAPI from '../core/cartAPI'
 import { getQueryParams } from '../core/utils'
 
 import AJAXCart from '../components/ajaxCart'
+
+const selectors = {
+  cartJson: '[data-cart-json]'
+}
 
 export default class AJAXCartSection extends BaseSection {
   static TYPE = 'ajax-cart'
@@ -10,27 +14,15 @@ export default class AJAXCartSection extends BaseSection {
   constructor(container) {
     super(container)
 
-    this.ajaxCart = new AJAXCart(this.qs(AJAXCart.SELECTOR))
+    const cartData = JSON.parse(this.qs(selectors.cartJson).textContent)
 
-    this.onCartUpdate = e => this.ajaxCart.onChangeSuccess(e.detail.cart)
+    this.ajaxCart = new AJAXCart(this.qs(AJAXCart.SELECTOR), cartData)
 
-    window.addEventListener(CartAPI.events.UPDATE, this.onCartUpdate)
-
-    CartAPI.getCart().then(cart => {
-      this.ajaxCart.render(cart)
-
-      // If redirected from the cart, show the ajax cart after a short delay
-      if (getQueryParams().cart) {
-        this.open({ delay: true })
-      }        
-    })
-  }
-
-  onUnload() {
-    window.removeEventListener(CartAPI.events.UPDATE, this.onCartUpdate)
-
-    super.onUnload()
-  }  
+    // If redirected from the cart, show the ajax cart after a short delay
+    if (getQueryParams().cart) {
+      this.open({ delay: true })
+    }     
+  } 
 
   open({ delay = false } = {}) {
     setTimeout(() => {

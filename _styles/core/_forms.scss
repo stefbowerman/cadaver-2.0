@@ -215,98 +215,43 @@ input[type="number"] {
 
 // Quantity Adjuster
 .quantity-adjuster {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 14px;
+  @apply h-full inline-flex items-stretch justify-between rounded border;
 
-  &__button {
-    position: relative;
-    height: 22px;
-    width: 22px;
-    background-color: gray;
-    transition: background-color 100ms ease;
-
-    &.is-disabled {
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
+  button,
+  input[type="number"] {
+    @apply bg-transparent outline-none;
   }
 
-  // @include has-hover {
-  //   &__button:not(.is-disabled):hover {
-  //     background-color: var(--color-orange);
+  button {
+    @apply inline-flex items-center justify-center px-[11px];
 
-  //     .quantity-adjuster__icon:before,
-  //     .quantity-adjuster__icon:after {
-  //       background-color: var(--color-white);
-  //     }
-  //   }
-  // }
-
-  &__value {
-    display: inline-block;
-    min-width: 41px;
-    text-align: center;
-    padding: 0 10px;
-    background: white;
-    border: 1px solid gray;
-    line-height: 20px; // @TODO - Probably a better way to vertically center the number :/
-  }
-
-  &__icon {
-    display: inline-block;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    height: 5px;
-    width: 5px;
-
-    &:before,
-    &:after {
-      content: '';
-      position: absolute;
-      background-color: black;
-      transition: background-color 100ms ease;
+    &:first-child {
+      @apply pr-[4px];
     }
 
-    // Horizontal bar
-    &:before {
-      top: 50%;
-      left: 0;
-      right: 0;
-      height: 1px;
-      transform: translateY(-50%);
+    &:last-child {
+      @apply pl-[4px];
+    }
+
+    &:focus-visible {
+      // @apply outline-accent-focus;
     }    
 
-    &.plus {
-      height: 7px;
-      width: 7px;
-
-      &:after {
-        left: 50%;
-        top: 0;
-        bottom: 0;
-        transform: translateX(-50%);
-        width: 1px;
-      }
+    &[disabled] {
+      @apply opacity-50;
     }
 
-    // &.minus {
+    &:not([disabled]) {
+      // @apply hover:text-fground-tertiary;
+    }
 
-    // }
+    svg {
+      width: 8px;
+      height: auto;
+    }
   }
 
-  // &__button:first-child {
-  //   .quantity-adjuster__icon {
-  //     left: 75%;
-  //   }
-  // }
-
-  // &__button:last-child {
-  //   .quantity-adjuster__icon {
-  //     left: 30%
-  //   }  
-  // }
+  input[type="number"] {
+    @apply flex-1 min-w-4 text-center appearance-none font-sans text-base;
+  }
 }

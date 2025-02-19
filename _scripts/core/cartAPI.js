@@ -1,76 +1,23 @@
-import { getSizedImageUrl } from './utils/image'
-
-/**
- * Formats the cart object to be consumed by the handlebars template
- *
- * @param {object} cart - JSON representation of the cart.  See https://help.shopify.com/themes/development/getting-started/using-ajax-api#get-cart
- * @return {object} 
- */
-export const formatCart = (cart) => {
-  if (cart && cart.is_formatted) {
-    return cart;
-  }
-
-  // Make adjustments to the cart object contents before we pass it off to the handlebars template
-  cart.items.map((item) => {
-    item.image = getSizedImageUrl(item.image, '500x');
-    item.imageV2.url = getSizedImageUrl(item.imageV2.url, '500x');    
-    item.multiple_quantities = item.quantity > 1;
-
-    // Adjust the item's variant options to add "name" and "value" properties
-    if (item.hasOwnProperty('product')) {
-      const product = item.product;
-
-      for (let i = item.variant_options.length - 1; i >= 0; i--) {
-        const name  = product.options[i];
-        const value = item.variant_options[i];
-
-        item.variant_options[i] = { name, value };
-
-        // Don't show this info if it's the default variant that Shopify creates
-        if (value === 'Default Title') {
-          delete item.variant_options[i];
-        }
-      }
-    }
-    else {
-      delete item.variant_options; // skip it and use the variant title instead
-    }
-
-    // Adjust the properties to be an array of name + value pairs for easier templating
-    const propertiesArray = []
-
-    for (const key in item.properties) {
-      // Hide underscore-prefixed properties
-      if (key[0] !== '_') {
-        propertiesArray.push({
-          name: key,
-          value: item.properties[key]
-        })
-      }
-    }
-
-    item.properties = propertiesArray
-
-    if (item.variant_title === 'Default Title') {
-      item.variant_title = null
-    }
-
-    return item
-  })
-
-  cart.is_formatted = true
-
-  return cart
-}
+/* eslint-disable no-unused-vars */
 
 const CartAPI = {
   events: {
-    UPDATE: 'cartAPI.update'
-    // @TODO - Add fail event
+    UPDATE: 'cartAPI.update',
+    ADD: 'cartAPI.add',
+    CHANGE: 'cartAPI.change', // WHen a single item quantity is changed (not removed)
+    REMOVE: 'cartAPI.remove'
   },
 
   routes: window.app.routes,
+
+  dispatch(eventName, cart) {
+    const event = new CustomEvent(eventName, {
+      bubbles: true,
+      detail: { cart }
+    })
+
+    window.dispatchEvent(event)
+  },  
 
   /**
    * Retrieve a JSON respresentation of the users cart
@@ -90,7 +37,7 @@ const CartAPI = {
 
       const cart = JSON.parse(data)
 
-      return formatCart(cart)
+      return cart
     }
     catch (e) {
       throw new Error('Could not retrieve cart items', e);
@@ -125,12 +72,8 @@ const CartAPI = {
       const addedItem = await response.text() // @TODO - Merge this with the cart response somehow..
       const cart = await this.getCart() // Retrieve the updated cart
 
-      const event = new CustomEvent(this.events.UPDATE, {
-        bubbles: true,
-        detail: { cart }
-      })
-    
-      window.dispatchEvent(event)
+      this.dispatch(CartAPI.events.UPDATE, cart)
+      this.dispatch(CartAPI.events.ADD, cart)
       
       return cart
     }
@@ -176,12 +119,10 @@ const CartAPI = {
 
       const cart = await this.getCart() // Retrieve the updated cart
 
-      const event = new CustomEvent(this.events.UPDATE, {
-        bubbles: true,
-        detail: { cart }
-      })
-    
-      window.dispatchEvent(event)      
+      const EVENT = qty === 0 ? CartAPI.events.REMOVE : CartAPI.events.CHANGE
+      
+      this.dispatch(EVENT, cart)
+      this.dispatch(CartAPI.events.UPDATE, cart)  
 
       return cart
     }
