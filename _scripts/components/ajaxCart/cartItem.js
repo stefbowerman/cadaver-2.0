@@ -27,11 +27,11 @@ export default class CartItem extends BaseComponent {
     UPDATING: 'updating'
   }
 
-  // @TODO - pass in itemData, keep track of it so that we can reset quantity adjuster if change fails
-  constructor(el) {
+  constructor(el, itemData) {
     super(el)
 
     this.id = parseInt(this.el.dataset.id, 10)
+    this.itemData = itemData
 
     this.remove = this.qs(selectors.remove)
     this.price = this.qs(selectors.price)
@@ -81,17 +81,19 @@ export default class CartItem extends BaseComponent {
    * @param {number} item.quantity - The new quantity of the item
    * @param {string} item.item_price_html - The HTML string representing the updated price
    */
-  update(item) {
-    if (!item || typeof item !== 'object') {
+  update(itemData) {
+    if (!itemData || typeof itemData !== 'object') {
       console.error('Invalid item data provided to update method')
       return
     }
 
-    if (item.quantity !== undefined) {
-      this.quantityAdjuster.value = item.quantity // Make sure the quantity adjuster has the correct value
+    if (itemData.quantity !== undefined) {
+      this.quantityAdjuster.value = itemData.quantity // Make sure the quantity adjuster has the correct value
     }
 
-    this.price.innerHTML = item.item_price_html
+    this.price.innerHTML = itemData.item_price_html
+
+    this.itemData = itemData
   }
 
   async onQuantityAdjusterChange(q) {
@@ -102,6 +104,8 @@ export default class CartItem extends BaseComponent {
     }
     catch (error) {
       this.state = undefined
+      this.quantityAdjuster.value = this.itemData.quantity // Reset the quantity adjuster to the original quantity
+
       console.error('Error updating item quantity', error)
     }
     finally {

@@ -69,7 +69,7 @@ const CartAPI = {
       }
 
       // eslint-disable-next-line no-unused-vars
-      const addedItem = await response.text() // @TODO - Merge this with the cart response somehow..
+      // const addedItem = await response.text() // @TODO - Merge this with the cart response somehow... ? is it needed?
       const cart = await this.getCart() // Retrieve the updated cart
 
       this.dispatch(CartAPI.events.UPDATE, cart)

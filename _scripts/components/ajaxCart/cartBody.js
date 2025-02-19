@@ -19,9 +19,7 @@ export default class CartBody extends BaseComponent {
 
     this.list = this.el.querySelector(selectors.list)
 
-    // @TODO - This should be a map over the cartData.items array
-    // this.cartData.items.map(item => ... )
-    this.cartItemInstances = this.qsa(CartItem.SELECTOR).map(el => new CartItem(el))
+    this.itemInstances = this.qsa(CartItem.SELECTOR).map((el, i) => new CartItem(el, this.cartData.items[i]))
 
     this.syncCart = this.syncCart.bind(this)
 
@@ -54,7 +52,7 @@ export default class CartBody extends BaseComponent {
     newCartData.items.forEach((newItemData, newIndex) => {
       let found = false
 
-      this.cartItemInstances.forEach(itemInstance => {
+      this.itemInstances.forEach(itemInstance => {
         if (newItemData.id === itemInstance.id) {
           found = true
           
@@ -68,20 +66,20 @@ export default class CartBody extends BaseComponent {
         const newItemInstance = new CartItem(newItemEl)
         
         // Insert to list DOM
-        this.list.insertBefore(newItemInstance.el, this.cartItemInstances[newIndex]?.el || null)
+        this.list.insertBefore(newItemInstance.el, this.itemInstances[newIndex]?.el || null)
         
         // Insert to array of cart item instances
-        this.cartItemInstances.splice(newIndex, 0, newItemInstance)
+        this.itemInstances.splice(newIndex, 0, newItemInstance)
       }
     })
 
     // Then handle removals - find items that exist in current cart but not in new cart
-    this.cartItemInstances.forEach(itemInstance => {
+    this.itemInstances.forEach(itemInstance => {
       const stillExists = newCartData.items.some(newItemData => newItemData.id === itemInstance.id)
       
       if (!stillExists) {
-        // Remove from the cartItemInstances array
-        this.cartItemInstances = this.cartItemInstances.filter(({ id }) => id !== itemInstance.id)
+        // Remove from the itemInstances array
+        this.itemInstances = this.itemInstances.filter(({ id }) => id !== itemInstance.id)
         
         // Animate the removal and then clean up the instance
         slideUp(itemInstance.el, {
