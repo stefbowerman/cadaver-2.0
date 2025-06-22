@@ -10,17 +10,14 @@
              image_mobile: { image } - optional
              video: { video } - optional
              loading: { string } - optional
+             fetch_priority: { boolean } - optional
+             image_sizes: { string } - optional             
   %}
-
-  @TODO: Add params...
-    - fetch_priority: { boolean } - optional
-    - image_sizes: { string } - optional
-
 {% endcomment -%}
 
 <div class="graphic-cover">
   {% if video != nil %}
-    <div data-component="graphic-cover-video">
+    <div class="h-full w-full" data-component="graphic-cover-video">
       {% if image != blank %}
         {% assign poster = image | image_url: width: 1600 %}
         {{ video | video_tag: muted: true, playsinline: true, autoplay: true, loop: true, image_size: '1600x', poster: poster }}
@@ -34,7 +31,9 @@
     {% render 'image-responsive'
               image: image,
               image_mobile: image_mobile,
-              loading: loading
+              loading: loading,
+              fetch_priority: fetch_priority,
+              sizes: image_sizes
     %}
   {% endif %}
 </div>
