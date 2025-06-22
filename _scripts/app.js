@@ -8,6 +8,7 @@ import {
   isThemeEditor,
   targetBlankExternalLinks
 } from './core/utils'
+import { dispatch } from './core/utils/event'
 
 // Renderers
 import BaseRenderer from './renderers/base'
@@ -67,7 +68,7 @@ function init() {
   taxi.on('NAVIGATE_OUT', e => {
     // const { from, trigger } = e
 
-    window.dispatchEvent(new CustomEvent('taxi.navigateOut', { detail: e }))
+    dispatch('taxi.navigateOut', e)
   })
   
   // This event is sent everytime a `data-taxi-view` is added to the DOM
@@ -90,7 +91,7 @@ function init() {
       }
     })
 
-    window.dispatchEvent(new CustomEvent('taxi.navigateIn', { detail: e }))
+    dispatch('taxi.navigateIn', e)
   })
 
   // This event is sent everytime the `done()` method is called in the `onEnter()` method of a transition
@@ -106,7 +107,7 @@ function init() {
 
     targetBlankExternalLinks()
 
-    window.dispatchEvent(new CustomEvent('taxi.navigateEnd', { detail: e }))
+    dispatch('taxi.navigateEnd', e)
   })
 
   window.app.taxi = taxi

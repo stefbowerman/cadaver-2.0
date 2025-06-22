@@ -1,4 +1,3 @@
-import CartAPI from '../../core/cartAPI'
 import { slideUp } from '../../core/gsap'
 import { getDomFromString } from '../../core/utils/dom'
 
@@ -13,23 +12,15 @@ export default class CartBody extends BaseComponent {
   static TYPE = 'cart-body'
 
   constructor(el, cartData) {
-    super(el)
+    super(el, {
+      watchCartUpdate: true,
+    })
 
     this.cartData = cartData
 
-    this.list = this.el.querySelector(selectors.list)
+    this.list = this.qs(selectors.list)
 
     this.itemInstances = this.qsa(CartItem.SELECTOR).map((el, i) => new CartItem(el, this.cartData.items[i]))
-
-    this.syncCart = this.syncCart.bind(this)
-
-    window.addEventListener(CartAPI.events.UPDATE, this.syncCart)
-  }
-
-  destroy() {
-    window.removeEventListener(CartAPI.events.UPDATE, this.syncCart)
-
-    super.destroy()
   }
 
   cleanupItemInstance(item) {
@@ -96,5 +87,9 @@ export default class CartBody extends BaseComponent {
 
     // Update the stored cart data
     this.cartData = newCartData
+  }
+
+  onCartUpdate(e) {
+    this.syncCart(e)
   }
 }

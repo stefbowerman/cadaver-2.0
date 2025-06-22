@@ -1,7 +1,9 @@
 /* eslint-disable no-unused-vars */
 
+import { dispatch } from './utils/event'
+
 const CartAPI = {
-  events: {
+  EVENTS: {
     UPDATE: 'cartAPI.update',
     ADD: 'cartAPI.add',
     CHANGE: 'cartAPI.change', // WHen a single item quantity is changed (not removed)
@@ -11,12 +13,8 @@ const CartAPI = {
   routes: window.app.routes,
 
   dispatch(eventName, cart) {
-    const event = new CustomEvent(eventName, {
-      bubbles: true,
-      detail: { cart }
-    })
-
-    window.dispatchEvent(event)
+    // Leaving this CartAPI.dispatch() here for backwards compatibility
+    dispatch(eventName, { cart })
   },  
 
   /**
@@ -72,8 +70,8 @@ const CartAPI = {
       // const addedItem = await response.text() // @TODO - Merge this with the cart response somehow... ? is it needed?
       const cart = await this.getCart() // Retrieve the updated cart
 
-      this.dispatch(CartAPI.events.UPDATE, cart)
-      this.dispatch(CartAPI.events.ADD, cart)
+      this.dispatch(CartAPI.EVENTS.UPDATE, cart)
+      this.dispatch(CartAPI.EVENTS.ADD, cart)
       
       return cart
     }
@@ -119,10 +117,10 @@ const CartAPI = {
 
       const cart = await this.getCart() // Retrieve the updated cart
 
-      const EVENT = qty === 0 ? CartAPI.events.REMOVE : CartAPI.events.CHANGE
+      const EVENT = qty === 0 ? CartAPI.EVENTS.REMOVE : CartAPI.EVENTS.CHANGE
       
       this.dispatch(EVENT, cart)
-      this.dispatch(CartAPI.events.UPDATE, cart)  
+      this.dispatch(CartAPI.EVENTS.UPDATE, cart)  
 
       return cart
     }

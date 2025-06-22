@@ -1,24 +1,90 @@
 import { isObject } from 'lodash-es'
+import BreakpointsController from '../core/breakpointsController'
+import CartAPI from '../core/cartAPI'
 
 export default class BaseComponent {
+  #settings;
+
   static TYPE = 'base'
 
   static get SELECTOR() {
     return `[data-component="${this.TYPE}"]`
   }
 
-  constructor(el) {
+  constructor(el, options = {}) {
+    this.#settings = {
+      watchResize: false,
+      watchBreakpoint: false,
+      watchScroll: false,
+      watchCartUpdate: false,
+      ...options
+    }
+    
     this.el = el
     this.type = this.constructor.TYPE
+
+    this.validateDom(this.el)
 
     if (this.type === 'base') {
       console.warn('BaseComponent should not be used directly')
     }
+
+    this.resizeObserver = null
+    this.onResize = this.onResize.bind(this)
+    this.onBreakpointChange = this.onBreakpointChange.bind(this)
+    this.onScroll = this.onScroll.bind(this)
+    this.onCartUpdate = this.onCartUpdate.bind(this)
+
+    if (this.#settings.watchResize) {
+      this.resizeObserver = new ResizeObserver((entries) => this.onResize(entries))
+      this.resizeObserver.observe(this.el)
+    }
+
+    if (this.#settings.watchBreakpoint) {
+      window.addEventListener(BreakpointsController.EVENTS.CHANGE, this.onBreakpointChange)
+    }
+
+    if (this.#settings.watchScroll) {
+      window.addEventListener('scroll', this.onScroll)
+    }
+
+    if (this.#settings.watchCartUpdate) {
+      window.addEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate)
+    }
+  }
+
+  destroy() {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect()
+      this.resizeObserver = null
+    }
+
+    if (this.#settings.watchBreakpoint) {
+      window.removeEventListener(BreakpointsController.EVENTS.CHANGE, this.onBreakpointChange)
+    }
+
+    if (this.#settings.watchScroll) {
+      window.removeEventListener('scroll', this.onScroll)
+    }
+
+    if (this.#settings.watchCartUpdate) {
+      window.removeEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate)
+    }
+
+    doComponentCleanup(this)
   }
 
   get dataset() {
     return this.el.dataset
   }
+
+  get isAriaHidden() {
+    return this.el.getAttribute('aria-hidden') === 'true'
+  }
+
+  get ariaControlElements() {
+    return document.querySelectorAll(`[aria-controls="${this.el.id}"]`)
+  }  
 
   /**
    * Queries for the first element matching the given selector within the component's element,
@@ -51,20 +117,12 @@ export default class BaseComponent {
 
       return closest.isSameNode(dom) || closest.matches(selector)
     })
-  }  
-
-  _log(...args) {
-    console.log(`[${this.type}]`, ...args) // eslint-disable-line no-console
   }
 
-  destroy() {
-    doComponentCleanup(this)
-  }
-
-  // Make sure we're working with 
+  // Make sure we're working with a DOM element that matches the component selector
   validateDom(dom) {
     if (!(dom instanceof Element || dom.matches(this.constructor.SELECTOR))) {
-      this._log('Invalid DOM: Must be an Element matching the component selector')
+      console.warn(`[${this.type}] Invalid DOM: Must be an Element matching the component selector`)
       
       return false
     }
@@ -72,12 +130,22 @@ export default class BaseComponent {
     return true
   }
 
-  get isAriaHidden() {
-    return this.el.getAttribute('aria-hidden') === 'true'
+  // eslint-disable-next-line no-unused-vars
+  onResize(entries) {
+    // override in subclass
   }
 
-  get ariaControlElements() {
-    return document.querySelectorAll(`[aria-controls="${this.el.id}"]`)
+  // eslint-disable-next-line no-unused-vars
+  onBreakpointChange({ detail: { breakpoint, fromBreakpoint, direction } }) {
+    // override in subclass
+  }
+
+  onScroll() {
+    // override in subclass
+  }
+
+  onCartUpdate({ detail: { cart } }) {
+    // override in subclass
   }
 }
 

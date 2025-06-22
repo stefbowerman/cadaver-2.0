@@ -1,4 +1,3 @@
-import CartAPI from '../../core/cartAPI'
 import BaseComponent from '../base'
 
 const selectors = {
@@ -13,19 +12,11 @@ export default class HeaderCartControl extends BaseComponent {
   static TYPE = 'header-cart-control'
 
   constructor(el) {
-    super(el)
+    super(el, {
+      watchCartUpdate: true,
+    })
 
     this.count = this.qs(selectors.count)
-
-    this.onCartUpdate = this.onCartUpdate.bind(this)
-
-    window.addEventListener(CartAPI.events.UPDATE, this.onCartUpdate)
-  }
-
-  destroy() {
-    window.removeEventListener(CartAPI.events.UPDATE, this.onCartUpdate)
-
-    super.destroy()
   }
 
   onCartUpdate({ detail: { cart } }) {

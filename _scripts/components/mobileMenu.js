@@ -1,7 +1,8 @@
 import BaseComponent from './base'
 import SearchInline from './search/searchInline'
 
-import BreakpointsController, { BREAKPOINTS } from '../core/breakpointsController'
+import { BREAKPOINTS } from '../core/breakpointsController'
+import { toAriaBoolean } from '../core/utils/a11y'
 
 const selectors = {
   toggle: '[data-mobile-menu-toggle][aria-controls]'
@@ -16,22 +17,21 @@ export default class MobileMenu extends BaseComponent {
   static TYPE = 'mobile-menu'
 
   constructor(el) {
-    super(el)
+    super(el, {
+      watchBreakpoint: true,
+    })
 
     this.isOpen = false
 
-    this.onBreakpointChange = this.onBreakpointChange.bind(this)
     this.onBodyClick = this.onBodyClick.bind(this)
 
     this.searchInline = new SearchInline(this.qs(SearchInline.SELECTOR))    
 
     document.body.addEventListener('click', this.onBodyClick)
-    window.addEventListener(BreakpointsController.events.CHANGE, this.onBreakpointChange)     
   }
 
   destroy() {
     document.body.removeEventListener('click', this.onBodyClick)
-    window.removeEventListener(BreakpointsController.events.CHANGE, this.onBreakpointChange)
 
     super.destroy()
   }
@@ -41,7 +41,7 @@ export default class MobileMenu extends BaseComponent {
     this.el.setAttribute('aria-hidden', 'false')
 
     document.body.classList.add(classes.bodyIsOpen)
-    this.ariaControlElements.forEach(el => el.setAttribute('aria-expanded', 'true'))
+    this.ariaControlElements.forEach(el => el.setAttribute('aria-expanded', toAriaBoolean(true)))
     
     this.isOpen = true
   }
@@ -51,7 +51,7 @@ export default class MobileMenu extends BaseComponent {
     this.el.setAttribute('aria-hidden', 'true')
     
     document.body.classList.remove(classes.bodyIsOpen)
-    this.ariaControlElements.forEach(el => el.setAttribute('aria-expanded', 'false')) 
+    this.ariaControlElements.forEach(el => el.setAttribute('aria-expanded', toAriaBoolean(false))) 
 
     this.isOpen = false
   }

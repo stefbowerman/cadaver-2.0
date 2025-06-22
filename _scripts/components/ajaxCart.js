@@ -1,4 +1,3 @@
-import CartAPI from '../core/cartAPI'
 import BaseComponent from './base'
 import CartBody from './ajaxCart/cartBody'
 import CartFooter from './ajaxCart/cartFooter'
@@ -19,7 +18,9 @@ export default class AJAXCart extends BaseComponent {
   static TYPE = 'ajax-cart'
 
   constructor(el, cartData) {
-    super(el)
+    super(el, {
+      watchCartUpdate: true,
+    })
 
     this.isOpen = false
     this.requestInProgress = false
@@ -27,10 +28,7 @@ export default class AJAXCart extends BaseComponent {
     this.cartBody = new CartBody(this.qs(CartBody.SELECTOR), cartData)
     this.cartFooter = new CartFooter(this.qs(CartFooter.SELECTOR))    
 
-    this.callbacks = {
-      bodyClick: this.onBodyClick.bind(this),
-      onCartUpdate: this.onCartUpdate.bind(this)
-    }
+    this.onBodyClick = this.onBodyClick.bind(this)
 
     this.backdrop = document.createElement('div')
     this.backdrop.classList.add(classes.backdrop)
@@ -38,8 +36,7 @@ export default class AJAXCart extends BaseComponent {
     document.body.appendChild(this.backdrop)  
 
     this.backdrop.addEventListener('click', this.close.bind(this))
-    document.body.addEventListener('click', this.callbacks.bodyClick)
-    window.addEventListener(CartAPI.events.UPDATE, this.callbacks.onCartUpdate)
+    document.body.addEventListener('click', this.onBodyClick)
 
     // Set empty state based on initial cart data
     this.setEmpty(cartData.item_count === 0)
@@ -48,8 +45,7 @@ export default class AJAXCart extends BaseComponent {
   destroy() {
     this.backdrop.remove()
     document.body.classList.remove(classes.bodyCartOpen)    
-    document.body.removeEventListener('click', this.callbacks.bodyClick)
-    window.removeEventListener(CartAPI.events.UPDATE, this.callbacksonCartUpdate)
+    document.body.removeEventListener('click', this.onBodyClick)
 
     super.destroy()
   }

@@ -62,7 +62,7 @@ export default class ProductDetailForm extends BaseComponent {
     }
 
     window.history.replaceState({ path: newurl.href }, '', newurl.href)
-  }  
+  }
 
   onVariantChange(e) {
     const { variant } = e
@@ -114,6 +114,7 @@ export default class ProductDetailForm extends BaseComponent {
   }
 
   onAddFail(e) {
+    // eslint-disable-next-line no-console
     console.log('@TODO - onAddFail', e)
     // this.status.textContent = e.message || 'Error adding to cart'
   }  

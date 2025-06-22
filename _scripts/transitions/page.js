@@ -3,10 +3,11 @@
 import { Transition } from '@unseenco/taxi'
 import gsap from '../core/gsap'
 import { prefersReducedMotion } from '../core/utils/a11y'
+import { dispatch } from '../core/utils/event'
 
-const DURATION_LEAVE = 0.2
-const DURATION_ENTER = 0.5
-const DELAY_ENTER = 0.15
+export const DURATION_LEAVE = 0.2
+export const DURATION_ENTER = 0.5
+export const DELAY_ENTER = 0.15
 
 /**
  * PageTransition handles smooth transitions between pages using GSAP animations.
@@ -20,7 +21,7 @@ const DELAY_ENTER = 0.15
  * @fires PageTransition#afterLeave.transition - Fired when leave animation completes
  */
 export default class PageTransition extends Transition {
-  static events = {
+  static EVENTS = {
     ENTER: 'enter.transition',
     AFTER_ENTER: 'afterEnter.transition',
     LEAVE: 'leave.transition',
@@ -115,7 +116,7 @@ export default class PageTransition extends Transition {
     })
 
     const onStart = () => {
-      window.dispatchEvent(new CustomEvent(this.constructor.events.LEAVE))
+      dispatch(this.constructor.EVENTS.LEAVE)
     }
 
     const onComplete = () => {
@@ -123,7 +124,7 @@ export default class PageTransition extends Transition {
       // This is how we avoid the footer jump
       this.setWrapperHeightIfNeeded(this.fromHeight)
 
-      window.dispatchEvent(new CustomEvent(this.constructor.events.AFTER_LEAVE)) 
+      dispatch(this.constructor.EVENTS.AFTER_LEAVE) 
 
       done()
     }     
@@ -155,8 +156,8 @@ export default class PageTransition extends Transition {
     }
 
     const onStart = () => {
-      window.dispatchEvent(new CustomEvent(this.constructor.events.ENTER))
-    }    
+      dispatch(this.constructor.EVENTS.ENTER)
+    }
 
     const onComplete = () => {
       this.autoScrollCleanup?.()

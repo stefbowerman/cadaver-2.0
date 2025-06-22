@@ -1,3 +1,5 @@
+import { dispatch } from './utils/event'
+
 export const BREAKPOINTS = {
   xs: 0,
   sm: 640,
@@ -13,7 +15,7 @@ export const BREAKPOINTS = {
 const BREAKPOINTS_MAP = new Map(Object.entries(BREAKPOINTS).sort((a, b) => a[1] - b[1]));
 
 export default class BreakpointsController {
-  static events = {
+  static EVENTS = {
     CHANGE: 'change.breakpointsController'
   }
 
@@ -67,16 +69,15 @@ export default class BreakpointsController {
 
     if (oldKey !== newKey) {
       const breakpoint = this.mediaQueries.get(newKey).minWidth
+      const fromBreakpoint = this.mediaQueries.get(oldKey).minWidth
       const direction = window.innerWidth > this.mediaQueries.get(oldKey).minWidth ? 1 : -1
 
-      const changeEvent = new CustomEvent(BreakpointsController.events.CHANGE, {
-        detail: {
-          breakpoint,
-          direction
-        }
+      dispatch(BreakpointsController.EVENTS.CHANGE, {
+        breakpoint,
+        fromBreakpoint,
+        direction
       })
-
-      window.dispatchEvent(changeEvent)
+      
       this.currentKey = newKey
     }
   }

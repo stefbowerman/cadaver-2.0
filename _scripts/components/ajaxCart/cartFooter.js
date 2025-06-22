@@ -1,4 +1,3 @@
-import CartAPI from '../../core/cartAPI'
 import BaseComponent from '../base'
 
 const selectors = {
@@ -11,20 +10,12 @@ export default class CartFooter extends BaseComponent {
   static TYPE = 'cart-footer'
 
   constructor(el) {
-    super(el)
+    super(el, {
+      watchCartUpdate: true,
+    })
 
     this.submit = this.qs(selectors.submit)
     this.subtotalPrice = this.qs(selectors.subtotalPrice)
-
-    this.onCartUpdate = this.onCartUpdate.bind(this)
-
-    window.addEventListener(CartAPI.events.UPDATE, this.onCartUpdate)
-  }
-
-  destroy() {
-    window.removeEventListener(CartAPI.events.UPDATE, this.onCartUpdate) 
-
-    super.destroy()
   }
 
   onCartUpdate(e) {
