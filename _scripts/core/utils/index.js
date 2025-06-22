@@ -183,8 +183,9 @@ export function credits() {
 export function targetBlankExternalLinks() {
   for(var c = document.getElementsByTagName('a'), a = 0;a < c.length;a++) {
     var b = c[a];
+    var href = b.getAttribute('href')
 
-    if (b.getAttribute('href') && b.hostname !== location.hostname) {
+    if (href && b.hostname !== location.hostname && !href.includes('mailto:')) {
       b.target = '_blank'
       b.setAttribute('aria-describedby', 'a11y-new-window-message')
     }
