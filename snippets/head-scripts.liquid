@@ -9,9 +9,13 @@
     strings: {
       addToCart: 'Add To Cart',
       soldOut: 'Sold Out',
-      unavailable: 'Unavailable'
+      unavailable: 'Unavailable',
+      adding: 'Adding...',
+      added: 'Added!',
+      error: 'Whoops!'
     },
     routes: {
+      root_url: {{ routes.root_url | json }},
       predictive_search_url: {{ routes.predictive_search_url | json }},
       cart_add_url: {{ routes.cart_add_url | json }},
       cart_change_url: {{ routes.cart_change_url | json }},

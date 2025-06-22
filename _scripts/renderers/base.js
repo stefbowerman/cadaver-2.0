@@ -12,6 +12,12 @@ import Login from '../sections/login'
 import Search from '../sections/search'
 import PageHero from '../sections/pageHero'
 
+const redirect = url => {
+  setTimeout(() => {
+    window.app?.taxi ? window.app.taxi.navigateTo(url) : (window.location = url)
+  }, 50)
+}
+
 export default class BaseRenderer extends Renderer {
   constructor(properties) {
     super(properties)
@@ -22,25 +28,27 @@ export default class BaseRenderer extends Renderer {
 
   // }
 
-  onEnter() {
-    // run after the new content has been added to the Taxi container
-    
-    this.redirectIfNecessary()
+  onEnter() {   
+    // this.redirectIfNecessary() // <- Can't run this here or taxi will throw an error
 
     // Taxi re-uses renderer instances when navigating between cache'd pages
     // Create the section renderer onEnter rather than in the constructor to make sure we have a fresh one each time
-    this.sectionManager = new SectionManager()
+    this.sectionManager = new SectionManager();
 
-    this.sectionManager.register(FeaturedProducts)
-    this.sectionManager.register(Addresses)
-    this.sectionManager.register(Article)
-    this.sectionManager.register(Blog)
-    this.sectionManager.register(Collection)
-    this.sectionManager.register(Product)
-    this.sectionManager.register(ProductRelated)
-    this.sectionManager.register(Login)
-    this.sectionManager.register(Search)
-    this.sectionManager.register(PageHero)
+    [
+      FeaturedProducts,
+      Addresses,
+      Article,
+      Blog,
+      Collection,
+      Product,
+      ProductRelated,
+      Login,
+      Search,
+      PageHero
+    ].forEach(section => {
+      this.sectionManager.register(section)
+    })    
   }
 
   onEnterCompleted() {
@@ -62,11 +70,7 @@ export default class BaseRenderer extends Renderer {
 
   redirectIfNecessary() {
     if (window.location.pathname === '/cart') {
-      const url = '/?cart'
-
-      setTimeout(() => {
-        window.app?.taxi ? app.taxi.navigateTo(url) : (window.location = url)
-      }, 50)
+      redirect('/?cart')
     }
   }  
 }
