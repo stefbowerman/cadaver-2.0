@@ -1,22 +1,28 @@
 # Cadaver 2.0
 
-Cadaver is a starter Shopify Online 2.0 Theme.
+Cadaver is a custom architected, Shopify Online 2.0 theme boilerplate.
+
+__In Action__ - Used as the starter theme for the official [GitHub Shop](https://thegithubshop.com/).
 
 __Features:__
-- Minimal JS framework for working with Shopify sections and [dom components](_scripts/components/base.js).
+- Minimal JS framework for working with Shopify sections and DOM components.
 - [Taxi.js](https://taxi.js.org/) with link pre-fetching built-in for fast, SPA like browsing experience
-- [Tailwind CSS v3](https://v3.tailwindcss.com/) for styling
+- [Tailwind](https://v3.tailwindcss.com/) for styling
 - Webpack configuration for bundling SCSS and JS files
 - 95+ scoring on all lighthouse speed tests.
+- Lazy image loading
+- GSAP powered animations and page transitions
+- A11y best practices
 
-__Note:__
+__JavaScript Architecture:__
+The frontend application was architecture with three big things in mind:
+1. SPA-like browsing experience via Taxi.js.
+2. First-class section elements via [BaseSection](_scripts/sections/base.js) class combined with a [SectionManager](_scripts/core/sectionManager.js) class to handle all Shopify [theme editor events](https://shopify.dev/docs/storefronts/themes/best-practices/editor/integrate-sections-and-blocks) along with initialization and clean up during the Taxi.js [renderer lifecycle](https://taxi.js.org/renderers/).
+3. Nestable components with auto-cleanup via [BaseComponent]((_scripts/components/base.js)) class.
 
-This is a working theme that I use as a boilerplate for all production Shopify projects.  I continutally update it so that I can leverage all of the core e-commerce solutions that I have developed on previous projects.  It is not built as a production-ready theme, but rather a battle-tested foundation for quickly creating new themes.  It contains minimal styling on purpose.
+> Note: This is a working theme that I use as a boilerplate for all production Shopify projects.  I continutally update it so that I can leverage all of the core e-commerce solutions that I have developed on previous projects.  It is not built as a production-ready theme, but rather a battle-tested foundation for quickly creating new themes.  It contains minimal styling on purpose.
 
-I do not "version" this theme as it is a constant work in progress.  Please note it is liable to change at any time.
-
-##### Node
-`v22.7.0`
+> I do not "version" this theme as it is a constant work in progress.  Please note it is liable to change at any time.
 
 ## Project Structure
 
@@ -58,21 +64,17 @@ I do not "version" this theme as it is a constant work in progress.  Please note
 - Start webpack watcher -> `npm run dev`
 - Compile for production -> `npm run build`
 
-## Getting Started
-If setting this up for the first time via the CLI, be sure to remove all the contents of the `.shopifyignore` file.  This will ensure that all required files are copied to the uploadedtheme.
-
-
 ## Development
+
+- Node version - `v22.XX`
 
 ```
 # Start the webpack watcher
 $ npm run dev
 
 # Start the theme watcher in another terminal
-$ shopify theme dev --store={store_id} --theme={theme_id}
+$ shopify theme dev --store={store_id}
 ```
-
-> Note: I prefer to develop against normal, [non-development themes](https://shopify.dev/docs/storefronts/themes/tools/cli#development-themes), this is why I specify the theme ID when running the watcher.  With this, the default contents of `.shopifyignore` contains all JSON templates and JSON settings data.  
 
 ## Manual Deployment
 > __Note__: this process is only necessary for themes that do _not_ use the GitHub integration.  This is an entirely manual process that I use to push a single codebase to multiple stores.
