@@ -1,4 +1,4 @@
-// const defaultTheme = require('tailwindcss/defaultTheme')
+const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
   corePlugins: {
@@ -28,10 +28,10 @@ module.exports = {
         container: '1rem',
       },      
       fontFamily: {
-        // sans: [
-        //   'Helvetica Neue',
-        //   ...defaultTheme.fontFamily.sans
-        // ],
+        sans: [
+          'Helvetica Neue LT',
+          ...defaultTheme.fontFamily.sans
+        ],
         // mono: [
         //   'courier'
         // ]
