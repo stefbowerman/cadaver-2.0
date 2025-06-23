@@ -8,7 +8,11 @@
     data-component="mobile-menu"
     aria-hidden="true"
     role="dialog"
+    aria-labelledby="{{ section.id }}-title"
+    inert
   >
+    <h3 id="{{ section.id }}-title" class="sr-only">Mobile Menu</h3>
+
     <div class="mobile-menu__body">
       <button
         data-mobile-menu-toggle

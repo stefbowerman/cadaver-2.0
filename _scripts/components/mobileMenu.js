@@ -3,6 +3,7 @@ import SearchInline from './search/searchInline'
 
 import { BREAKPOINTS } from '../core/breakpointsController'
 import { toAriaBoolean } from '../core/utils/a11y'
+import FocusTrap from '../core/focusTrap'
 
 const selectors = {
   toggle: '[data-mobile-menu-toggle][aria-controls]'
@@ -22,36 +23,58 @@ export default class MobileMenu extends BaseComponent {
     })
 
     this.isOpen = false
+    this.role = this.el.getAttribute('role')
 
     this.onBodyClick = this.onBodyClick.bind(this)
 
     this.searchInline = new SearchInline(this.qs(SearchInline.SELECTOR))    
 
+    this.focusTrap = new FocusTrap(this.el, {
+      autofocus: false,
+      returnFocus: false,
+      preventScroll: true
+    })    
+
     document.body.addEventListener('click', this.onBodyClick)
+
+    if (this.role) {
+      this.ariaControlElements.forEach(el => el.setAttribute('aria-haspopup', this.role))
+    }    
   }
 
   destroy() {
+    this.focusTrap.destroy()
     document.body.removeEventListener('click', this.onBodyClick)
+
+    this.ariaControlElements.forEach(el => el.removeAttribute('aria-haspopup'))
 
     super.destroy()
   }
   
   open() {
     this.el.classList.add(classes.isOpen)
-    this.el.setAttribute('aria-hidden', 'false')
+    this.el.setAttribute('aria-hidden', toAriaBoolean(false))
 
     document.body.classList.add(classes.bodyIsOpen)
     this.ariaControlElements.forEach(el => el.setAttribute('aria-expanded', toAriaBoolean(true)))
-    
+
+    this.el.removeAttribute('inert')
+
+    this.focusTrap.activate()
+
     this.isOpen = true
   }
 
   close() {
     this.el.classList.remove(classes.isOpen)
-    this.el.setAttribute('aria-hidden', 'true')
+    this.el.setAttribute('aria-hidden', toAriaBoolean(true))
     
     document.body.classList.remove(classes.bodyIsOpen)
     this.ariaControlElements.forEach(el => el.setAttribute('aria-expanded', toAriaBoolean(false))) 
+
+    this.el.setAttribute('inert', toAriaBoolean(true))
+
+    this.focusTrap.deactivate()
 
     this.isOpen = false
   }

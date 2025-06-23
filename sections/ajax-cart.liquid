@@ -4,8 +4,12 @@
     class="ajax-cart overflow-scroll hide-scrollbar"
     data-component="ajax-cart"
     aria-hidden="true"
-    role="dialog"    
+    role="dialog"
+    aria-labelledby="{{ section.id }}-title"
+    inert   
   >
+    <h3 id="{{ section.id }}-title" class="sr-only">Cart</h3>
+
     <form action="{{ routes.cart_url }}" method="post" novalidate>
       <div class="ajax-cart__header">
         <button data-ajax-cart-close>Close</button>

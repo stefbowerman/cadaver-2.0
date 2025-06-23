@@ -1922,6 +1922,11 @@ body {
 .no-js .js {
     display: none;
   }
+
+a:focus-visible:not(:has([disabled])), button:focus-visible:not(:has([disabled])) {
+  outline-style: solid;
+  outline-color: #00F;
+}
 .sr-only {
   position: absolute;
   width: 1px;

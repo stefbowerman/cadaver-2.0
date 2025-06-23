@@ -87,6 +87,12 @@
     .no-js & {
       display: none;
     }
+  }
+  
+  a, button {
+    &:focus-visible:not(:has([disabled])) {
+      @apply outline outline-blue;
+    }
   }  
 }
 
