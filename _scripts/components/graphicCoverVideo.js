@@ -14,22 +14,20 @@ export default class GraphicCoverVideo extends BaseComponent {
     this.autoPlayEnabled = prefersReducedMotion() ? false : true
 
     this.video = this.qs('video')
+    this.inView = false
 
     if (!this.video) {
       console.warn('No video found')
       return
     }
 
+    this.video.addEventListener('canplay', this.onCanPlay.bind(this))
     this.video.addEventListener('play', this.onPlay.bind(this))
     this.video.addEventListener('playing', this.onPlay.bind(this))
     this.video.addEventListener('pause', this.onPause.bind(this))
-
-    if (!this.autoPlayEnabled) {
-      this.video.classList.add(classes.isReady) // <- Not sure what the best thing to do here is?  This displays the video but only shows the low-q poster image
-    }
+    this.video.addEventListener('error', this.onError.bind(this))
 
     this.observer = new IntersectionObserver(this.onIntersection.bind(this))
-
     this.observer.observe(this.el)
   }
 
@@ -67,6 +65,12 @@ export default class GraphicCoverVideo extends BaseComponent {
     }
   }
 
+  onCanPlay() {
+    if (this.inView && !this.isPlaying && this.autoPlayEnabled) {
+      this.attemptPlay()
+    }
+  }
+
   onPlay() {
     this.video.classList.add(classes.isReady)
   }
@@ -75,14 +79,24 @@ export default class GraphicCoverVideo extends BaseComponent {
 
   }
 
+  onError(e) {
+    console.warn('Video error', e)
+    this.video.style.display = 'none'
+  }
+
   async onVisibilityChange(visible = false) {
-    if (visible) {
+    this.inView = visible
+
+    if (this.inView) {
+      this.video.preload = 'auto'
+      
       if (!this.autoPlayEnabled) return
 
       await this.attemptPlay()
     }
     else {
       this.video.pause()
+      this.video.preload = 'metadata'
     }
   }
 
