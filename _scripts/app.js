@@ -1,6 +1,7 @@
 import { Core as TaxiCore } from '@unseenco/taxi'
 import 'swiper/css'
 import 'swiper/css/effect-fade'
+import '../_styles/app.scss'
 
 import BreakpointsController from './core/breakpointsController'
 
@@ -62,7 +63,6 @@ function init() {
     allowInterruption: true,
     enablePrefetch: true
   })
-
 
   // This event is sent before the `onLeave()` method of a transition is run to hide a `data-router-view`
   taxi.on('NAVIGATE_OUT', e => {

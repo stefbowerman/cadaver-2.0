@@ -72,3 +72,6 @@ TODO.md
 
 # Bundle generated files
 *.LICENSE.txt
+
+# Source maps
+*.map

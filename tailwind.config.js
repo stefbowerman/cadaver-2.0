@@ -1,6 +1,6 @@
-const defaultTheme = require('tailwindcss/defaultTheme')
+import defaultTheme from 'tailwindcss/defaultTheme'
 
-module.exports = {
+export default {
   corePlugins: {
     container: false // Define our own in app.scss
   },

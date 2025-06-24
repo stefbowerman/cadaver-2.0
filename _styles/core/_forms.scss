@@ -18,6 +18,7 @@ input[type="number"]::-webkit-inner-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 // Fix font size on form elements in iOS
@@ -187,7 +188,7 @@ input[type="number"] {
   -moz-appearance: none;
   appearance: none;
   -webkit-print-color-adjust: exact;
-  color-adjust: exact;
+  print-color-adjust: exact;
 
   &[type="checkbox"] {
     border-radius: 5px;
@@ -233,17 +234,17 @@ input[type="number"] {
       @apply pl-[4px];
     }
 
-    &:focus-visible {
-      // @apply outline-accent-focus;
-    }    
+    // &:focus-visible {
+    //   // @apply outline-accent-focus;
+    // }    
 
     &[disabled] {
       @apply opacity-50;
     }
 
-    &:not([disabled]) {
-      // @apply hover:text-fground-tertiary;
-    }
+    // &:not([disabled]) {
+    //   // @apply hover:text-fground-tertiary;
+    // }
 
     svg {
       width: 8px;
