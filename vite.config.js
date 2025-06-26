@@ -10,7 +10,7 @@ export default defineConfig(({ command, mode }) => {
     root: __dirname,
     plugins: [
       eslint({
-        include: ['_scripts/**/*.js'],
+        include: ['_scripts/**/*.{js,ts}'],
         exclude: ['node_modules/**', 'assets/**']
       }),
       // Uncomment to view bundle visualizer

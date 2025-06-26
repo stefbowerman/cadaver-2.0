@@ -1,4 +1,4 @@
- import BaseSection from './base'
+import BaseSection from './base'
 
 const selectors = {
   loginForm: '#customer-login-form',

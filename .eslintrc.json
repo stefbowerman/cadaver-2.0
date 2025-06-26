@@ -5,9 +5,10 @@
     "node": true
   },
   "extends": [
-    "eslint:recommended"
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
   ],
-  "parser": "@babel/eslint-parser",
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module",
@@ -16,8 +17,12 @@
       "presets": ["@babel/preset-env"]
     }
   },
+  "plugins": ["@typescript-eslint"],
   "rules": {
     "no-unused-vars": ["warn", {
+      "args": "none"
+    }],
+    "@typescript-eslint/no-unused-vars": ["warn", {
       "args": "none"
     }],
     "no-useless-escape": "off",
@@ -31,7 +36,11 @@
     "no-unused-expressions": ["error", {
       "allowShortCircuit": true,
       "allowTernary": true
-    }]
+    }],
+    "@typescript-eslint/no-unused-expressions": ["error", {
+      "allowShortCircuit": true,
+      "allowTernary": true
+    }]    
   },
   "globals": {
     "window": "readonly",
