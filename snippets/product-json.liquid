@@ -10,6 +10,9 @@
     - variant.metafields
     - variant.price_formatted
 
+  NOTE: Some properties are either been omitted intentionally or have not been included as the product object changes regularly.
+  SEE: https://shopify.dev/docs/api/liquid/objects/product
+
 {% endcomment %}
 
 {% if product %}
@@ -30,14 +33,15 @@
           {% unless forloop.last %},{% endunless %}
         {% endfor %}
       ],
-      "price": {{ product.price }},
+      "price": {{ product.price | json }},
       "price_formatted": {{ product.price | money_without_trailing_zeros | json }},
-      "price_max": {{ product.price_max }},
-      "price_min": {{ product.price_min }},
+      "price_max": {{ product.price_max | json }},
+      "price_min": {{ product.price_min | json }},
       "available": {{ product.available }},
       "price_varies": {{ product.price_varies }},
-      "compare_at_price_max": {{ product.compare_at_price_max }},
-      "compare_at_price_min": {{ product.compare_at_price_min }},
+      "compare_at_price": {{ product.compare_at_price | json }},
+      "compare_at_price_max": {{ product.compare_at_price_max | json }},
+      "compare_at_price_min": {{ product.compare_at_price_min | json }},
       "compare_at_price_varies": {{ product.compare_at_price_varies }},
       "has_only_default_variant": {{ product.has_only_default_variant }},
       "variants": [
@@ -60,10 +64,15 @@
             "id": {{ variant.id }},
             "inventory_management": {{ variant.inventory_management | json }},
             "name": {{ product.title | append: ' - ' | append: variant.title | json }},
+            "options": [
+              {% for option in variant.options %}
+                {{ option.name | json }}{% unless forloop.last %},{% endunless %}
+              {% endfor %}
+            ],            
             "option1": {{ variant.option1 | json }},
             "option2": {{ variant.option2 | json }},
             "option3": {{ variant.option3 | json }},
-            "price": {{ variant.price }},
+            "price": {{ variant.price | json }},
             "price_formatted": {{ variant.price | money_without_trailing_zeros | json }},
             "requires_shipping": {{ variant.requires_shipping }},
             "sku": {{ variant.sku | json }},
@@ -79,7 +88,7 @@
       ],
       "images": [
         {% for image in product.images %}
-          {{ image | img_url | json }}
+          {{ image.src | json }}
           {% unless forloop.last %},{% endunless %}
         {% endfor %}
       ],
@@ -94,6 +103,7 @@
           {
             "name": {{ option.name | json }},
             "position": {{ forloop.index }},
+            "selected_value": {{ option.selected_value | json }},
             "values": [
               {% for v in option.values %}
                 {{ v | json }}

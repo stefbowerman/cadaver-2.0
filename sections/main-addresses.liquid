@@ -2,7 +2,7 @@
 <section data-section-id="{{ section.id }}" data-section-type="addresses">
   <div class="container">
     {%- capture actions -%}
-      <a href="/account">Return to Account Details</a>
+      <a href="{{ routes.account_url }}">Return to Account Details</a>
     {%- endcapture -%}
 
     {% render 'section-header',

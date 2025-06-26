@@ -1,7 +1,7 @@
 <section>
   <div class="container">
     {%- capture actions -%}
-      <a href="/account/logout" class="btn">Log Out</a>
+      <a href="{{ routes.account_logout_url }}" class="btn">Log Out</a>
     {%- endcapture -%}
 
     {% render 'section-header',
@@ -101,14 +101,14 @@
             </address>
             <br />
             <p>
-              <a href="/account/addresses" class="btn">View Addresses ({{ customer.addresses_count }})</a>
+              <a href="{{ routes.account_addresses_url }}" class="btn">View Addresses ({{ customer.addresses_count }})</a>
             </p>
         
           {% else %}
         
             <p>You haven't entered an address yet</p>
             <p>
-              <a href="/account/addresses" class="btn">Add Address</a>
+              <a href="{{ routes.account_addresses_url }}" class="btn">Add Address</a>
             </p>        
         
           {% endif %}

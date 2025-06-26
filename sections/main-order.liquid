@@ -5,7 +5,7 @@
     {%- endcapture -%}
 
     {%- capture actions -%}
-      <a href="/account">Return to Account Details</a>
+      <a href="{{ routes.account_url }}">Return to Account Details</a>
     {%- endcapture -%}
 
     {% render 'section-header',
@@ -108,7 +108,7 @@
 
         <br />
         <p>
-          <a href="/account" class="btn">View Account</a>
+          <a href="{{ routes.account_url }}" class="btn">View Account</a>
         </p>        
       </div>
     </div>
