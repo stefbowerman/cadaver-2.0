@@ -4,6 +4,8 @@ import BaseComponent from '../base'
 import ProductPrice from './productPrice'
 import ATCButton from './atcButton'
 import VariantPicker from './variantPicker'
+import A11yStatus from '../a11y/a11yStatus'
+import { toAriaBoolean } from '../../core/utils/a11y'
 
 const selectors = {
   form: 'form[action*="/cart/add"]',
@@ -46,6 +48,8 @@ export default class ProductDetailForm extends BaseComponent {
       onVariantChange: this.onVariantChange.bind(this)
     })
 
+    this.a11yStatus = A11yStatus.generate(this.form)
+
     this.form.addEventListener('submit', this.onFormSubmit.bind(this))
   }
 
@@ -72,6 +76,10 @@ export default class ProductDetailForm extends BaseComponent {
     this.updateHistoryState(variant)
     this.atcButton.update(variant)
     this.price.update(variant)
+
+    if (variant) {
+      this.a11yStatus.text = `Variant changed to ${variant.title}`
+    }    
 
     this.settings.onVariantChange(e)
   }
@@ -101,21 +109,25 @@ export default class ProductDetailForm extends BaseComponent {
         submit.disabled = false
         this.submitInProgress = false
       })
-
-    // @TODO - Add role="status" for a11y
   }   
 
   onAddStart() {
+    this.a11yStatus.text = 'Adding item to cart'
+    this.form.setAttribute('aria-busy', toAriaBoolean(true))    
     this.atcButton.onAddStart()
   }
 
   onAddSuccess() {
+    this.a11yStatus.text = 'Item added to cart'
+    this.form.removeAttribute('aria-busy')    
     this.atcButton.onAddSuccess()
   }
 
   onAddFail(e) {
+    this.a11yStatus.text = e.message || 'Error adding to cart'
+    this.form.removeAttribute('aria-busy')
+
     // eslint-disable-next-line no-console
     console.log('@TODO - onAddFail', e)
-    // this.status.textContent = e.message || 'Error adding to cart'
   }  
 }
