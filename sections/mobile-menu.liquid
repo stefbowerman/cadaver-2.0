@@ -13,7 +13,7 @@
   >
     <h3 id="{{ section.id }}-title" class="sr-only">Mobile Menu</h3>
 
-    <div class="mobile-menu__body">
+    <div class="pt-20 pb-8 px-container">
       <button
         data-mobile-menu-toggle
         aria-label="Close Menu"
@@ -21,28 +21,43 @@
         aria-expanded="false"      
       >Close</button>
 
-      {%- if section.settings.primary_menu != blank -%}
-        {%- for link in section.settings.primary_menu.links -%}
-          {% if link.links.size > 0 %}
-            <div>
-              <div>{{ link.title }}</div>
-              
-              <div class="mm-sublist">
-                {% for sublink in link.links %}
-                  <div class="mm-sublist__item">
-                    <a href="{{ sublink.url }}" class="mm-sublist__item-inner">
-                      {{ sublink.title }}
-                    </a>
-                  </div>
-                {% endfor %}
+      {%- if section.settings.primary_menu != blank and section.settings.primary_menu.links.size > 0 -%}
+        <nav aria-label="Mobile main navigation">
+          {%- for link in section.settings.primary_menu.links -%}
+            {% if link.links.size > 0 %}
+              <div>
+                {% assign id = section.id | append: '-primary-' | append: forloop.index %}
+                <div id="{{ id }}">
+                  {{ link.title }}
+                </div>
+                
+                <div class="flex flex-col gap-5 py-3" role="group" aria-labelledby="{{ id }}">
+                  {% for sublink in link.links %}
+                    <div class="px-6">
+                      <a
+                        href="{{ sublink.url }}"
+                        {% if sublink.current %}
+                          aria-current="page"
+                        {% endif %}
+                      >
+                        {{ sublink.title }}
+                      </a>
+                    </div>
+                  {% endfor %}
+                </div>
               </div>
-            </div>
-          {% else %}
-            <a href="{{ link.url }}">
-              {{ link.title }}
-            </a>       
-          {% endif %}
-        {%- endfor -%}  
+            {% else %}
+              <a
+                href="{{ link.url }}"
+                {% if link.current %}
+                  aria-current="page"
+                {% endif %}
+              >
+                {{ link.title }}
+              </a>       
+            {% endif %}
+          {%- endfor -%}
+        </nav>
       {%- endif -%}
 
 
@@ -55,16 +70,23 @@
       </div>
 
 
-      {%- if section.settings.secondary_menu != blank -%}
-        <ul class="mobile-menu__secondary-menu">
-          {%- for link in section.settings.secondary_menu.links -%}
-            <li>
-              <a href="{{ link.url }}">
-                {{ link.title }}
-              </a>
-            </li>
-          {%- endfor -%}              
-        </ul>
+      {%- if section.settings.secondary_menu != blank and section.settings.secondary_menu.links.size > 0 -%}
+        <nav aria-label="Mobile secondary navigation">
+          <ul class="grid grid-cols-2 gap-4">
+            {%- for link in section.settings.secondary_menu.links -%}
+              <li>
+                <a
+                  href="{{ link.url }}"
+                  {% if link.current %}
+                    aria-current="page"
+                  {% endif %}
+                >
+                  {{ link.title }}
+                </a>
+              </li>
+            {%- endfor -%}              
+          </ul>
+        </nav>
       {%- endif -%}
     </div>
   </div>    

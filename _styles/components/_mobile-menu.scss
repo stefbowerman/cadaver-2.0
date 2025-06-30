@@ -9,30 +9,3 @@
     transition: var(--transition-drawer-in);
   }
 }
-
-.mobile-menu__body {
-  @apply pt-20 pb-8 px-container;
-}
-
-.mobile-menu__secondary-menu {
-  @apply grid grid-cols-2 gap-4 uppercase;
-}
-
-.mm-sublist {
-  --sublist-item-spacing: 20px;
-
-  @apply flex flex-col gap-5 py-3;
-
-  svg {
-    @apply h-4 w-auto;
-  }
-}
-
-.mm-sublist__item {
-  padding: 0 var(--sublist-item-spacing);
-}
-
-.mm-sublist__item-inner {
-  @apply flex items-center;
-  column-gap: var(--sublist-item-spacing);
-}
