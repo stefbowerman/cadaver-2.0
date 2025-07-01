@@ -80,16 +80,5 @@
         "info": "ID of the list for newsletter signups.  e.g. 'abc123'"
       }
     ]
-  },
-  {
-    "name": "Developer Settings",
-    "settings": [
-       {
-        "type": "checkbox",
-        "id": "developer_hide_preview_bar",
-        "label": "Hide Preview Bar",
-        "default": false
-      }
-    ]
-  }  
+  } 
 ]

@@ -27,29 +27,6 @@
     {% if template.suffix != blank %} template-{{ template.name | append: '-' | append: template.suffix | handle }} {% endif %}
   {% endcapture %}
 
-  {% comment %} @TODO - Remove all this "view" stuff {% endcomment %}
-  {%- liquid
-    assign view = template.name | handle
-
-    comment
-      Whitelist the views for templates with suffixes here
-    endcomment
-    if template.suffix != blank
-      if template.name == 'blog'
-        assign view = view | append: '-' | append: template.suffix
-      endif
-    endif
-
-    comment
-      Make sure views are labeled using strings, not numbers
-    endcomment
-    if view == '404'
-      assign view = 'error'
-    endif
-
-    assign view = view | handle
-  %}
-
   <body id="{{ page_title | handle }}" class="{{ body_class | strip | strip_newlines }}">
     <a class="sr-only focus:not-sr-only" href="#view-container">
       {{ 'accessibility.skip_to_content' | t }}
@@ -58,8 +35,8 @@
     {% section 'header' %}
     {% section 'mobile-menu' %}
 
-    <div class="layout">
-      <main id="view-container" class="view-container" role="main" data-taxi>
+    <div class="flex flex-col">
+      <main id="view-container" class="min-h-[100lvh]" role="main" data-taxi>
         <div data-taxi-view>
           {{ content_for_layout }}
         </div>
@@ -72,20 +49,6 @@
 
     <ul hidden>
       <li id="a11y-new-window-message">{{ 'accessibility.link_messages.new_window' | t }}</li>
-    </ul>      
-
-    {% if settings.developer_hide_preview_bar == true %}
-      <style>
-        html {
-          padding-bottom: 0 !important; /* Shopify admin bar messes this up */
-        }
-
-        #preview-bar-iframe,
-        #admin-bar-iframe,
-        .shopify-preview-bar {
-          display: none;
-        }
-      </style>
-    {% endif %}    
+    </ul>
   </body>
 </html>
