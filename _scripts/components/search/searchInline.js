@@ -12,7 +12,7 @@ export default class SearchInline extends BaseComponent {
     super(el)
 
     this.settings = {
-      onSubmit: e => {},
+      onSubmit: (e, url) => {},
       onKeyup: e => {},
       ...options
     }
@@ -38,20 +38,33 @@ export default class SearchInline extends BaseComponent {
   }
 
   onSubmit(e) {
+    const data = new FormData(this.el)
+
+    const q = data.get('q')?.trim()
+    const type = data.get('type') || 'product'
+
+    if (!q) {
+      return
+    }
+
+    const params = new URLSearchParams({
+      type: type,
+      q: encodeURIComponent(q)
+    })
+
+    const url = `${this.action}?${params.toString()}`
+
+    if (this.settings.onSubmit(e, url) === false) {
+      return
+    }
+
     if (!window.app.taxi) {
       return
     }
 
     e.preventDefault()
 
-    const data = new FormData(this.el)
-
-    const q = data.get('q')
-    const type = data.get('type') || 'product'
-
-    window.app.taxi.navigateTo(`${this.action}?type=${type}&q=${q}`)
-
-    this.settings.onSubmit(e)
+    window.app.taxi.navigateTo(url)
 
     return false
   }

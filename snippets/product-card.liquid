@@ -1,19 +1,19 @@
-{%- comment %}
+{% doc %}
+  @param {product} product - The product to display - required
+  @param {string} [loading] - Optional loading attribute for the image - defaults to "lazy"
+  @param {string} [sizes] - Optional sizes attribute for the image - defaults to sizes for results grid
+  @param {number} [image_min_width] - Optional minimum width for the image - defaults to 500
+  @param {number} [image_max_width] - Optional maximum width for the image - defaults to 900  
 
-  Product Card
-  ------------------------------------------------------------------------------
-
-  Usage:
-
+  @example
   {% render 'product-card',
-             product: { product } - required
-             loading: { string } - optional - defaults to "lazy"
-             sizes: { string } - optional - defaults to sizes for results grid
-             image_min_width: { number } - optional - defaults to 500
-             image_max_width: { number } - optional - defaults to 900             
+             product: product,
+             loading: 'eager',
+             sizes: '(max-width: 767.98px) 100vw, 25vw',
+             image_min_width: 500,
+             image_max_width: 900,
   %}
-
-{% endcomment -%}
+{% enddoc %}
 
 {% if product %}
   {%- liquid
@@ -34,7 +34,7 @@
     endif
 
     if sizes == blank
-      assign sizes = '(max-width: 600px) 50vw, (max-width: 1200px) 33vw, 420px'
+      assign sizes = '(max-width: 767.98px) 50vw, (max-width: 1023.98px) 33vw, 25vw'
     endif
 
     assign product_url = product.url

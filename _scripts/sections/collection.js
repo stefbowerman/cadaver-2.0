@@ -1,12 +1,9 @@
-import BaseSection from './base'
-import ProductCard from '../components/product/productCard'
+import ResultsSection from './results'
 
-export default class CollectionSection extends BaseSection {
+export default class CollectionSection extends ResultsSection {
   static TYPE = 'collection'
 
   constructor(container) {
     super(container)
-
-    this.productCards = this.qsa(ProductCard.SELECTOR).map(el => new ProductCard(el))
   }
 }
