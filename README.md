@@ -92,7 +92,9 @@ sections/
 snippets/
 assets/
 layout/
+blocks/
 templates/cart.json.liquid
+locales/en.default.json
 config/settings_schema.json
 ```
 
