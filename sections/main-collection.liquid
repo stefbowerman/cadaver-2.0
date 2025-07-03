@@ -5,7 +5,7 @@
 
 {% endcomment -%}
 
-{% paginate collection.products by 500 %}
+{% paginate collection.products by 12 %}
 
 <div
   data-section-id="{{ section.id }}"
@@ -19,21 +19,49 @@
     </div>    
   </div>
 
-  {% if collection.products.size > 0 %}   
-    <div class="product-grid">   
-      {% for product in collection.products %}
-        <div class="product-grid__item">
-          {% render 'product-card',
-                      product: product
-          %}
-        </div>
-      {% endfor %}
+  <div class="container">
+    <div
+      class="results-display"
+      data-component="results-display"
+    >
+      <ul>
+        {% if collection.products.size > 0 %}   
+          {% for product in collection.products %}
+            {%- liquid
+              assign loading = blank
+
+              if forloop.index <= 8
+                assign loading = 'eager'
+              endif
+            %}
+                        
+            <li>
+              {% render 'product-card',
+                         product: product,
+                         loading: loading
+              %}
+            </li>
+          {% endfor %}
+        {% else %}
+          <li class="col-span-full text-center">
+            <p>Nothing Found..</p>
+          </li>
+        {% endif %}
+      </ul>
+
+
+      {% if paginate.next %}
+        <a
+          href="{{- paginate.next.url -}}"
+          class="h-0 w-0 overflow-hidden opacity-0"
+          aria-hidden="true"
+          data-more
+        >
+          Load more
+        </a>
+      {% endif %}      
     </div>
-  {% else %}
-    <div class="container">
-      <p>Nothing Found..</p>
-    </div>
-  {% endif %}
+  </div>
 </div>
 
 {% endpaginate %}
