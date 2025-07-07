@@ -2,6 +2,7 @@ import { toAriaBoolean } from '../core/utils/a11y'
 import FocusTrap from '../core/focusTrap'
 
 import BaseComponent from './base'
+import Backdrop from './backdrop'
 import CartBody from './ajaxCart/cartBody'
 import CartFooter from './ajaxCart/cartFooter'
 
@@ -13,8 +14,7 @@ const selectors = {
 const classes = {
   open: 'is-open',
   empty: 'is-empty',
-  bodyCartOpen: 'ajax-cart-open',
-  backdrop: 'ajax-cart-backdrop'
+  bodyCartOpen: 'ajax-cart-open'
 }
 
 export default class AJAXCart extends BaseComponent {
@@ -36,21 +36,13 @@ export default class AJAXCart extends BaseComponent {
       autofocus: false,
       returnFocus: false,
       preventScroll: true
-    })    
+    })
 
-    this.backdrop = document.createElement('button')
-    this.backdrop.classList.add(classes.backdrop)
-    this.backdrop.setAttribute('type', 'button')
-    this.backdrop.setAttribute('title', 'Close')
-    this.backdrop.setAttribute('aria-label', 'Close')
-    this.backdrop.setAttribute('aria-controls', this.el.id)
-    this.backdrop.setAttribute('aria-expanded', toAriaBoolean(false))
-
-    document.body.appendChild(this.backdrop)
+    this.backdrop = Backdrop.generate(document.body)
+    this.backdrop.el.addEventListener('click', this.close.bind(this))  // Do this until ajax cart uses aria-controls elements
 
     this.onBodyClick = this.onBodyClick.bind(this)
 
-    this.backdrop.addEventListener('click', this.close.bind(this))
     document.body.addEventListener('click', this.onBodyClick)
 
     // Set empty state based on initial cart data
@@ -62,7 +54,6 @@ export default class AJAXCart extends BaseComponent {
   }
 
   destroy() {
-    this.backdrop.remove()
     this.focusTrap.destroy()
 
     document.body.classList.remove(classes.bodyCartOpen)    
@@ -86,13 +77,13 @@ export default class AJAXCart extends BaseComponent {
     this.el.setAttribute('aria-hidden', toAriaBoolean(false))
     this.el.removeAttribute('inert')
 
-    this.backdrop.setAttribute('aria-hidden', toAriaBoolean(false)) 
+    this.backdrop.show()
 
     this.ariaControlElements.forEach(el => el.setAttribute('aria-expanded', toAriaBoolean(true)))
 
     document.body.classList.add(classes.bodyCartOpen)
 
-    this.focusTrap.activate()  // @NOTE - If using JS for animation, deactivation should happen on openComplete
+    this.focusTrap.activate()  // @NOTE - If using JS for animation, activation should happen on openComplete
     
     this.isOpen = true
   }
@@ -104,7 +95,7 @@ export default class AJAXCart extends BaseComponent {
     this.el.setAttribute('aria-hidden', toAriaBoolean(true))
     this.el.setAttribute('inert', toAriaBoolean(true))
 
-    this.backdrop.setAttribute('aria-hidden', toAriaBoolean(true))    
+    this.backdrop.hide()
 
     this.ariaControlElements.forEach(el => el.setAttribute('aria-expanded', toAriaBoolean(false)))  
     

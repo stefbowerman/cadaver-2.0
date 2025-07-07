@@ -41,8 +41,8 @@ export default {
         '2': 2,
         'header': 100,
         'backdrop': 199,
-        'mobile-menu': 200,
         'ajax-cart': 200,
+        'drawer': 200,
         // skipTo: 10000
       }
     },

@@ -129,7 +129,7 @@
   }  
 }
 
-body.mobile-menu-open,
-body.ajax-cart-open {
+body.ajax-cart-open,
+body.drawer-open {
   @apply overflow-hidden;
 }

@@ -1,10 +1,90 @@
+{% capture content %}
+  {%- if section.settings.primary_menu != blank and section.settings.primary_menu.links.size > 0 -%}
+    <nav aria-label="Mobile main navigation">
+      {%- for link in section.settings.primary_menu.links -%}
+        {% if link.links.size > 0 %}
+          <div>
+            {% assign id = section.id | append: '-primary-' | append: forloop.index %}
+            <div id="{{ id }}">
+              {{ link.title }}
+            </div>
+            
+            <div class="flex flex-col gap-5 py-3" role="group" aria-labelledby="{{ id }}">
+              {% for sublink in link.links %}
+                <div class="px-6">
+                  <a
+                    href="{{ sublink.url }}"
+                    {% if sublink.current %}
+                      aria-current="page"
+                    {% endif %}
+                  >
+                    {{ sublink.title }}
+                  </a>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% else %}
+          <a
+            href="{{ link.url }}"
+            {% if link.current %}
+              aria-current="page"
+            {% endif %}
+          >
+            {{ link.title }}
+          </a>       
+        {% endif %}
+      {%- endfor -%}
+    </nav>
+  {%- endif -%}
+
+
+  <div class="w-full max-w-[260px] my-16">
+    {%- liquid
+      assign id = section.id | append: '-search'
+
+      render 'search-inline', id: id
+    -%}
+  </div>
+
+
+  {%- if section.settings.secondary_menu != blank and section.settings.secondary_menu.links.size > 0 -%}
+    <nav aria-label="Mobile secondary navigation">
+      <ul class="grid grid-cols-2 gap-4">
+        {%- for link in section.settings.secondary_menu.links -%}
+          <li>
+            <a
+              href="{{ link.url }}"
+              {% if link.current %}
+                aria-current="page"
+              {% endif %}
+            >
+              {{ link.title }}
+            </a>
+          </li>
+        {%- endfor -%}              
+      </ul>
+    </nav>
+  {%- endif -%}
+{% endcapture %}
+
+
+
+
 <div
   data-section-id="{{ section.id }}"
   data-section-type="mobile-menu"
 >
-  <div
+  {% render 'drawer',
+             id: section.id,
+             title: 'Mobile Menu',
+             content: content,
+             component: 'mobile-menu-drawer'
+  %}
+
+  {% comment %} <div
     id="mobile-menu"
-    class="mobile-menu overflow-scroll hide-scrollbar"
+    class="mobile-menu overflow-scroll no-scrollbar"
     data-component="mobile-menu"
     aria-hidden="true"
     role="dialog"
@@ -21,75 +101,9 @@
         aria-expanded="false"      
       >Close</button>
 
-      {%- if section.settings.primary_menu != blank and section.settings.primary_menu.links.size > 0 -%}
-        <nav aria-label="Mobile main navigation">
-          {%- for link in section.settings.primary_menu.links -%}
-            {% if link.links.size > 0 %}
-              <div>
-                {% assign id = section.id | append: '-primary-' | append: forloop.index %}
-                <div id="{{ id }}">
-                  {{ link.title }}
-                </div>
-                
-                <div class="flex flex-col gap-5 py-3" role="group" aria-labelledby="{{ id }}">
-                  {% for sublink in link.links %}
-                    <div class="px-6">
-                      <a
-                        href="{{ sublink.url }}"
-                        {% if sublink.current %}
-                          aria-current="page"
-                        {% endif %}
-                      >
-                        {{ sublink.title }}
-                      </a>
-                    </div>
-                  {% endfor %}
-                </div>
-              </div>
-            {% else %}
-              <a
-                href="{{ link.url }}"
-                {% if link.current %}
-                  aria-current="page"
-                {% endif %}
-              >
-                {{ link.title }}
-              </a>       
-            {% endif %}
-          {%- endfor -%}
-        </nav>
-      {%- endif -%}
 
-
-      <div class="w-full max-w-[260px] my-16">
-        {%- liquid
-          assign id = section.id | append: '-search'
-
-          render 'search-inline', id: id
-        -%}
-      </div>
-
-
-      {%- if section.settings.secondary_menu != blank and section.settings.secondary_menu.links.size > 0 -%}
-        <nav aria-label="Mobile secondary navigation">
-          <ul class="grid grid-cols-2 gap-4">
-            {%- for link in section.settings.secondary_menu.links -%}
-              <li>
-                <a
-                  href="{{ link.url }}"
-                  {% if link.current %}
-                    aria-current="page"
-                  {% endif %}
-                >
-                  {{ link.title }}
-                </a>
-              </li>
-            {%- endfor -%}              
-          </ul>
-        </nav>
-      {%- endif -%}
     </div>
-  </div>    
+  </div>     {% endcomment %}
 </div>
   
 {% schema %}
