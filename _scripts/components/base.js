@@ -83,7 +83,7 @@ export default class BaseComponent {
   }
 
   get ariaControlElements() {
-    return document.querySelectorAll(`[aria-controls="${this.el.id}"]`)
+    return [...document.querySelectorAll(`[aria-controls="${this.el.id}"]`)]
   }  
 
   /**

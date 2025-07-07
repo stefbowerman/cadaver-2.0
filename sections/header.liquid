@@ -14,7 +14,7 @@
       <div class="header-nav">
         <nav class="header-nav__list" aria-label="Main" data-primary-nav>
           <ul>
-            <li>
+            <li class="lg:hidden">
               <button
                 class="header-nav__item"
                 data-mobile-menu-toggle
@@ -27,7 +27,7 @@
             </li>
 
             {% for link in linklists[section.settings.primary_menu].links %}
-              <li>
+              <li class="hidden lg:inline-block">
                 <a
                   href="{{ link.url }}"
                   class="header-nav__item"

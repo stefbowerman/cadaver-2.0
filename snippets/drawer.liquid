@@ -1,0 +1,40 @@
+{% doc %}
+  @param id [String]
+  @param title [String]
+  @param content [String]
+  @param component [String]
+{% enddoc %}
+
+<div
+  {% if id %}
+    id="{{ id }}"
+  {% endif %}
+  class="drawer"
+  data-component="{{ component | default: 'drawer' }}"
+  aria-hidden="true"
+  role="dialog"
+  aria-label="{{ title | default: 'Drawer' | escape }}"
+  inert
+>
+  <div
+    class="h-full flex flex-col overflow-y-scroll overflow-scroll no-scrollbar"
+    data-scroller
+  >
+    <div class="sticky top-0 bg-white container flex justify-between items-center py-5">
+      <div>
+        {% if title %}
+          <div>{{ title }}</div>
+        {% endif %}
+      </div>
+
+      <button
+        data-close
+        aria-label="Close Menu"  
+      >Close</button>
+    </div>
+
+    <div class="container">
+      {{ content }}
+    </div>
+  </div>
+</div>

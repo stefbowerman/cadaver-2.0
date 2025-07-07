@@ -1,0 +1,26 @@
+.drawer {
+  @apply fixed z-drawer top-0 left-0 h-[100dvh] w-full max-w-[min(90vw,500px)] -translate-x-full;
+  @apply bg-white;
+
+  transition: var(--transition-drawer-out);
+
+  &.is-open {
+    @apply translate-x-0;
+    transition: var(--transition-drawer-in);
+  }
+}
+
+.backdrop {
+  @apply fixed z-backdrop top-0 left-0 h-full w-full pointer-events-none cursor-pointer;
+
+  background-color: var(--backdrop-color);
+  opacity: 0;
+  transition: var(--transition-backdrop-out);
+
+  &.is-open {
+    @apply pointer-events-auto;
+
+    opacity: var(--backdrop-opacity);
+    transition: var(--transition-backdrop-in);
+  }
+}
