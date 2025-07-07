@@ -59,7 +59,6 @@ export default class Drawer extends BaseComponent {
   }
 
   destroy() {
-    this.backdrop?.destroy()
     this.focusTrap.destroy()
     document.body.removeEventListener('click', this.onBodyClick)
 
@@ -86,7 +85,7 @@ export default class Drawer extends BaseComponent {
 
     this.el.removeAttribute('inert')
 
-    this.focusTrap.activate()
+    this.focusTrap.activate()   // @NOTE - If using JS for animation, activation should happen on openComplete
 
     this.scroller.scrollTop = 0
   }
