@@ -1,7 +1,6 @@
 import { Core as TaxiCore } from '@unseenco/taxi'
 import 'swiper/css'
 import 'swiper/css/effect-fade'
-import '../_styles/app.scss'
 
 import BreakpointsController from './core/breakpointsController'
 

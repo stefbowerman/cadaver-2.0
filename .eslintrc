@@ -1,20 +1,20 @@
+// https://www.robinwieruch.de/webpack-eslint/
+
 {
+  "parser": "@babel/eslint-parser",
   "env": {
     "browser": true,
-    "es2021": true,
+    "commonjs": true,
+    "es6": true,
+    "jest": true,
     "node": true
   },
-  "extends": [
-    "eslint:recommended"
-  ],
-  "parser": "@babel/eslint-parser",
-  "parserOptions": {
-    "ecmaVersion": "latest",
-    "sourceType": "module",
-    "requireConfigFile": false,
-    "babelOptions": {
-      "presets": ["@babel/preset-env"]
-    }
+  "globals": {
+    "window": "readonly",
+    "document": "readonly",
+    "console": "readonly",
+    "app": "readonly",
+    "Shopify": "readonly"
   },
   "rules": {
     "no-unused-vars": ["warn", {
@@ -31,13 +31,9 @@
     "no-unused-expressions": ["error", {
       "allowShortCircuit": true,
       "allowTernary": true
-    }]
+    }]   
   },
-  "globals": {
-    "window": "readonly",
-    "document": "readonly",
-    "console": "readonly",
-    "app": "readonly",
-    "Shopify": "readonly"
+  "parserOptions": {
+    "requireConfigFile": false
   }
-} 
+}
