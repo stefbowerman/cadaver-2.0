@@ -80,6 +80,8 @@
   }
     
   html {
+    scroll-padding-top: calc(var(--header-height) + 20px);
+
     &:not(.is-theme-editor) {
       scroll-behavior: smooth;
     }

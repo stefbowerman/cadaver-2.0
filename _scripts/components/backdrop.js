@@ -23,8 +23,9 @@ export default class Backdrop extends BaseComponent {
     el.classList.add(classes.backdrop)
     el.setAttribute('type', 'button')
     el.setAttribute('title', settings.title)
-    el.setAttribute('aria-label', settings.ariaLabel)
+    el.setAttribute('aria-label', settings.ariaLabel || settings.title)
     el.setAttribute('aria-expanded', toAriaBoolean(!!settings.ariaExpanded))
+    el.setAttribute('aria-hidden', toAriaBoolean(!settings.ariaExpanded))
     
     if (settings.ariaControls) {
       el.setAttribute('aria-controls', settings.ariaControls)
