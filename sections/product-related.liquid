@@ -4,13 +4,9 @@
   <div class="container" data-content>
     <div class="product-grid">
       {%- liquid
-        if recommendations.products_count > 0
-          for product in recommendations.products limit: limit
-            echo '<div class="product-grid__item">'
-              render 'product-card', product: product
-            echo '</div>'
-          endfor
-        endif
+        for product in recommendations.products limit: limit
+          render 'product-card', product: product
+        endfor
       %}
     </div>
   </div>
@@ -28,8 +24,10 @@
       </div>
     {% endif %}
 
-    <div data-content-target>
-      <!-- Cards go here... -->
+    <div class="container">
+      <div data-content-target>
+        <!-- Cards go here... -->
+      </div>
     </div>
   </section>
 {%- endif -%}

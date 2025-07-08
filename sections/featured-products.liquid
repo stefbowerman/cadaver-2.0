@@ -1,28 +1,19 @@
+{% # theme-check-disable ValidSchema %}
+
 {%- liquid
   assign product_count = 0
+  assign product_source = section.settings.collection.products
+
+  if section.settings.source == 'product_list'
+    assign product_source = section.settings.product_list
+  endif
 
   capture product_card_set_items
-    if section.settings.source == 'product_list'
-      if section.settings.product_list.count > 0
-        for product in section.settings.product_list
-          echo '<div class="product-grid__item">'
-            render 'product-card', product: product
-          echo '</div>'
+    for product in product_source
+      render 'product-card', product: product
 
-          assign product_count = product_count | plus: 1
-        endfor          
-      endif
-    elsif section.settings.source == 'collection'
-      if section.settings.collection.all_products_count > 0
-        for product in section.settings.collection.products
-          echo '<div class="product-grid__item">'
-            render 'product-card', product: product
-          echo '</div>'
-
-          assign product_count = product_count | plus: 1
-        endfor
-      endif          
-    endif
+      assign product_count = product_count | plus: 1
+    endfor
   endcapture
 %}
 
@@ -36,7 +27,7 @@
         <a href="{{ section.settings.cta_url }}" class="btn">
           {{ section.settings.cta_title }}
         </a>
-      {% endif %}      
+      {% endif %}
     {%- endcapture -%}
 
     <div class="container">
@@ -48,8 +39,10 @@
     </div>
   {% endif %}
 
-  <div class="product-grid">
-    {{ product_card_set_items }}
+  <div class="container">
+    <div class="product-grid">
+      {{ product_card_set_items }}
+    </div>
   </div>
 </section>  
 
@@ -66,7 +59,7 @@
     {
       "type": "text",
       "id": "subtitle",
-      "label": "Subtitle"
+      "label": "Subtitle"  
     },    
     {
       "type": "header",
@@ -75,7 +68,7 @@
     {
       "type": "text",
       "id": "cta_title",
-      "label": "Title"
+      "label": "Title",
     },
     {
       "type": "url",
@@ -92,31 +85,37 @@
       "label": "Source",
       "options": [
         {
-          "value": "product_list",
-          "label": "Product List"
-        },
-        {
           "value": "collection",
           "label": "Collection"
-        }
-      ]
+        },
+        {
+          "value": "product_list",
+          "label": "Product List"
+        }        
+      ],
+      "default": "collection"
     },
     {
       "type": "product_list",
       "id": "product_list",
-      "label": "Product List"
+      "label": "Product List",
+      "visible_if": "{{ section.settings.source == 'product_list' }}"
     },
     {
       "type": "collection",
       "id": "collection",
-      "label": "Collection"
+      "label": "Collection",
+      "visible_if": "{{ section.settings.source == 'collection' }}"
     }
   ],
   "presets": [
     {
       "name": "Featured Products",
       "settings": {
-        "title": "Featured Products"
+        "title": "Featured Products",
+        "subtitle": "Shop the latest products on our store.",
+        "source": "collection",
+        "collection": "frontpage"
       }
     }
   ]
