@@ -15,10 +15,10 @@ __Features:__
 - A11y best practices
 
 __JavaScript Architecture:__
-The frontend application was architecture with three big things in mind:
+The frontend application is architected with three primary goals:
 1. SPA-like browsing experience via Taxi.js.
 2. First-class section elements via [BaseSection](_scripts/sections/base.js) class combined with a [SectionManager](_scripts/core/sectionManager.js) class to handle all Shopify [theme editor events](https://shopify.dev/docs/storefronts/themes/best-practices/editor/integrate-sections-and-blocks) along with initialization and clean up during the Taxi.js [renderer lifecycle](https://taxi.js.org/renderers/).
-3. Nestable components with auto-cleanup via [BaseComponent]((_scripts/components/base.js)) class.
+3. Nestable components with auto-cleanup via [BaseComponent](_scripts/components/base.js) class.
 
 > Note: This is a working theme that I use as a boilerplate for all production Shopify projects.  I continutally update it so that I can leverage all of the core e-commerce solutions that I have developed on previous projects.  It is not built as a production-ready theme, but rather a battle-tested foundation for quickly creating new themes.  It contains minimal styling on purpose.
 
