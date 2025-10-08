@@ -35,7 +35,6 @@
     "animated-scroll-to": "^2.3.0",
     "gsap": "^3.12.7",
     "lodash-es": "^4.17.21",
-    "npm": "^9.6.2",
     "swiper": "^9.4.1",
     "terser-webpack-plugin": "^5.3.14"
   }
