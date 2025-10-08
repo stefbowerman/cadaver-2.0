@@ -122,8 +122,6 @@ export default class SectionManager {
   onGenericEvent(e, func) {
     const instance = this.getInstanceById(e.detail.sectionId)
 
-    console.log('onGenericEvent', e.detail.sectionId)
-
     if (instance && typeof instance[func] === 'function') {
       instance[func].call(instance, e)
     }    
