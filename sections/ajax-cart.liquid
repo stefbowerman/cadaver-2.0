@@ -20,18 +20,14 @@
       {% render 'cart-footer',
                  checkout_button_text: section.settings.checkout_button_text,
                  checkout_message: section.settings.checkout_message
-      %}
-      
-      <div class="ajax-cart__empty">
-        <div class="ajax-cart__empty-text">
-          {% if section.settings.empty_text != blank %}
-            {{ section.settings.empty_text }}
-          {% else %}
-            Your cart is empty
-          {% endif %}
-        </div>
-      </div>         
+      %}        
     </form> 
+
+    <div class="ajax-cart__empty">
+      <div class="ajax-cart__empty-text">
+        {{ section.settings.empty_text | default: 'Your cart is empty' }}
+      </div>
+    </div>    
   </div>
 
   <script type="application/json" data-cart-json>
