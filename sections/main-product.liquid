@@ -2,7 +2,7 @@
   assign current_variant = product.selected_or_first_available_variant
 %}
 
-<div data-section-type="product">
+<div data-section-id="{{ section.id }}" data-section-type="product">
   <div class="lg:flex">
     <div class="lg:flex-1">
       {% render 'product-detail-gallery',

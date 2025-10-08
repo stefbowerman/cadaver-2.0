@@ -14,7 +14,7 @@ export default class BaseSection {
 
     if (!this.id) {
       console.warn('Section ID not found', this)
-    }    
+    }
 
     this.onNavigateOut = this.onNavigateOut.bind(this)
     this.onNavigateIn  = this.onNavigateIn.bind(this)

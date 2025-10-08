@@ -17,7 +17,10 @@
   endcapture
 %}
 
-<section data-section-type="featured-products">
+<section
+  data-section-id="{{ section.id }}"
+  data-section-type="featured-products"
+>
   {% if section.settings.title != blank %}
     {%- capture actions -%}
       {% if section.settings.cta_title and section.settings.cta_url %}

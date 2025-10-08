@@ -2,7 +2,11 @@
   assign current_year = 'now' | date: '%Y' 
 %}
 
-<footer class="footer" data-section-type="footer">
+<footer
+  class="footer"
+  data-section-id="{{ section.id }}"
+  data-section-type="footer"
+>
   <div class="container">
     <div class="footer-grid">
       <div class="footer-area__newsletter">
