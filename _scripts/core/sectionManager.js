@@ -4,7 +4,6 @@ import { isThemeEditor } from '../core/utils'
 import BaseSection from '../sections/base'
 
 const SECTION_TYPE_ATTR = 'data-section-type'
-const SECTION_ID_ATTR = 'data-section-id'
 
 const THEME_EDITOR_EVENTS = [
   'shopify:section:load',
@@ -123,13 +122,15 @@ export default class SectionManager {
   onGenericEvent(e, func) {
     const instance = this.getInstanceById(e.detail.sectionId)
 
+    console.log('onGenericEvent', e.detail.sectionId)
+
     if (instance && typeof instance[func] === 'function') {
       instance[func].call(instance, e)
     }    
   }
 
   onSectionLoad(e) {
-    const container = e.target.querySelector(`[${SECTION_ID_ATTR}]`)
+    const container = e.target.querySelector(`[${SECTION_TYPE_ATTR}]`)
 
     if (container) {
       this.load(container)
