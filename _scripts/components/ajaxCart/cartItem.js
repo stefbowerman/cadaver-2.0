@@ -9,10 +9,6 @@ import QuantityAdjuster from '../quantityAdjuster'
 const selectors = {
   remove: '[data-remove]',
   price: '[data-price]',
-
-  // Don't un-comment these
-  // priceOriginal: '[data-price-original]',
-  // priceFinal: '[data-price-final]'
 }
 
 const classes = {

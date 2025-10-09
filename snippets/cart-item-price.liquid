@@ -1,13 +1,19 @@
-{%- comment %}
+{% doc %}
+  
   Cart Item Price
   ------------------------------------------------------------------------------
 
-  Usage:
+  This displays the price of the cart item.
 
-  {% render 'cart-item-price',
-             item: { cart.items[] } - required
-  %}
-{%- endcomment %}
+  Note: This displays the price of the item, not the final price "of all of the items in the line item".
+
+  See: https://shopify.dev/docs/api/liquid/objects/line_item  
+
+  @param {object} item - The cart line_item object
+
+  @example
+    {% render 'cart-item-price', item: item %}
+{% enddoc %}
 
 {% if item != empty %}
   <div class="ajax-cart__item-price" data-price>
@@ -16,14 +22,14 @@
         <span class="sr-only">
           {{ 'products.product.price.regular_price' | t }}
         </span>
-        <s class="opacity-50" data-price-compare>{{ item.variant.compare_at_price | money }}</s>
+        <s class="opacity-50">{{ item.variant.compare_at_price | money }}</s>
       </span>
     {% elsif item.original_price != item.final_price %}
       <span>
         <span class="sr-only">
           {{ 'products.product.price.regular_price' | t }}
         </span>
-        <s data-price-original>{{ item.original_price | money }}</s>
+        <s>{{ item.original_price | money }}</s>
       </span>
     {% endif %}
 
@@ -31,7 +37,7 @@
       <span class="sr-only">
         {{ 'products.product.price.price' | t }}
       </span>
-      <span data-price-final>{{ item.final_price | money }}</span>
+      <span>{{ item.final_price | money }}</span>
     </span>
   </div>
 {% endif %}

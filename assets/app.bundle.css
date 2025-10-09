@@ -2381,6 +2381,9 @@ a:focus-visible:not(:has([disabled])), button:focus-visible:not(:has([disabled])
 .opacity-100 {
   opacity: 1;
 }
+.opacity-50 {
+  opacity: 0.5;
+}
 .outline {
   outline-style: solid;
 }
