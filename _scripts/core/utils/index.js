@@ -81,32 +81,6 @@ export function cookiesEnabled() {
 }
 
 /**
- * Pluralizes the unit for the nuber passed in.
- * Usage mirrors the Shopify 'pluralize' string filter
- *
- * @param {Number} num
- * @param {String} singular
- * @param {String} plural
- * @return {String}
- */
-export function pluralize(num, singular, plural)  {
-  let output = '';
-
-  const number = parseInt(num);
-
-  if (number === 1) {
-    output = singular;
-  }
-  else {
-    output = plural;
-    if (typeof plural === 'undefined') {
-      output = `${singular}s`; // last resort, turn singular into a plural
-    }
-  }
-  return output;
-}
-
-/**
  * Performs a post request by way of a form submit
  * Pulled from Shopify's shopify_common.js
  *
@@ -248,16 +222,6 @@ export const randomFromSeed = (seed = 0.1) => {
  */
 export function getUUID(length = 9) {
   return randomFromSeed(Date.now()).toString(36).slice(2, length + 2)
-}
-
-/**
- * Converts a string to a handle, e.g. "Product Name" becomes "product-name"
- *
- * @param {string} str - The string to be converted to a handle.
- * @returns {string} A valid Shopify handle.
- */
-export function toHandle(str) {
-  return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-$/, '').replace(/^-/, '');
 }
 
 /**
