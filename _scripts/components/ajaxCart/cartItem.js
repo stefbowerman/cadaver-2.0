@@ -1,4 +1,5 @@
-import { debounce } from 'lodash-es'
+import debounce from 'lodash.debounce'
+
 import CartAPI from '../../core/cartAPI'
 import { isTouch } from '../../core/utils'
 

@@ -1,4 +1,16 @@
-import { upperFirst, camelCase } from 'lodash-es'
+import { upperFirst, camelCase } from './string'
+
+/**
+ * Checks if `value` is the language type of `Object`. 
+ * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+ */
+export function isObject(value) {
+  const type = typeof value;
+  return value != null && (type === 'object' || type === 'function');
+}
 
 /**
  * Check if we're running the theme inside the theme editor
@@ -66,32 +78,6 @@ export function cookiesEnabled() {
   document.cookie = 'testcookie=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Secure'
 
   return cookieEnabled
-}
-
-/**
- * Pluralizes the unit for the nuber passed in.
- * Usage mirrors the Shopify 'pluralize' string filter
- *
- * @param {Number} num
- * @param {String} singular
- * @param {String} plural
- * @return {String}
- */
-export function pluralize(num, singular, plural)  {
-  let output = '';
-
-  const number = parseInt(num);
-
-  if (number === 1) {
-    output = singular;
-  }
-  else {
-    output = plural;
-    if (typeof plural === 'undefined') {
-      output = `${singular}s`; // last resort, turn singular into a plural
-    }
-  }
-  return output;
 }
 
 /**
@@ -236,16 +222,6 @@ export const randomFromSeed = (seed = 0.1) => {
  */
 export function getUUID(length = 9) {
   return randomFromSeed(Date.now()).toString(36).slice(2, length + 2)
-}
-
-/**
- * Converts a string to a handle, e.g. "Product Name" becomes "product-name"
- *
- * @param {string} str - The string to be converted to a handle.
- * @returns {string} A valid Shopify handle.
- */
-export function toHandle(str) {
-  return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-$/, '').replace(/^-/, '');
 }
 
 /**
