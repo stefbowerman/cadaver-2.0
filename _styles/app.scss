@@ -135,3 +135,12 @@ body.ajax-cart-open,
 body.drawer-open {
   @apply overflow-hidden;
 }
+
+html.is-changing .transition-fade {
+  transition: opacity 0.25s ease-in-out;
+  opacity: 1;
+}
+/* Define the styles for the unloaded pages */
+html.is-animating .transition-fade {
+  opacity: 0;
+}

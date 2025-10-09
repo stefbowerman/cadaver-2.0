@@ -1,4 +1,8 @@
 import { Core as TaxiCore } from '@unseenco/taxi'
+import Swup from 'swup'
+import SwupBodyClassPlugin from '@swup/body-class-plugin';
+import SwupPreloadPlugin from '@swup/preload-plugin';
+
 import 'swiper/css'
 import 'swiper/css/effect-fade'
 
@@ -40,6 +44,34 @@ function init() {
   sectionManager.register(FooterSection)
   sectionManager.register(MobileMenuSection)
   sectionManager.register(AJAXCartSection)
+
+  const swupInstance = new Swup({
+    animateHistoryBrowsing: true,
+    plugins: [
+      new SwupBodyClassPlugin({
+        prefix: 'template-'
+      }),
+      new SwupPreloadPlugin()
+    ],
+    hooks: {
+      'content:replace': (visit) => {
+        console.log('Content replaced:', visit.to.url);
+      },
+      'page:view': (visit) => {
+        console.log('New page loaded:', visit.to.url);
+      },
+      'animation:out:start': (visit) => {
+        console.log('Animation out start:', visit.to.url);
+      },
+      'animation:in:end': (visit) => {
+        console.log('Animation in end:', visit.to.url);
+      }
+    }
+  })
+
+  window.app.swup = swupInstance
+
+  /*
 
   // START Taxi
   if (isThemeEditor()) {
@@ -111,6 +143,7 @@ function init() {
 
   window.app.taxi = taxi
   // END Taxi
+  */
 
   targetBlankExternalLinks(); // All external links open in a new tab  
 

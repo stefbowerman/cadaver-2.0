@@ -36,10 +36,9 @@
     {% section 'mobile-menu' %}
 
     <div class="flex flex-col">
-      <main id="view-container" class="min-h-[100lvh]" role="main" data-taxi>
-        <div data-taxi-view>
-          {{ content_for_layout }}
-        </div>
+      {% comment %} <main id="view-container" class="min-h-[100lvh]" role="main" data-taxi> {% endcomment %}
+      <main id="swup" class="min-h-[100lvh] transition-fade" role="main">
+        {{ content_for_layout }}
       </main>
 
       {% section 'footer' %}

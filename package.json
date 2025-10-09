@@ -31,11 +31,14 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
+    "@swup/body-class-plugin": "^3.3.0",
+    "@swup/preload-plugin": "^3.2.11",
     "@unseenco/taxi": "^1.8.0",
     "animated-scroll-to": "^2.3.0",
     "gsap": "^3.12.7",
     "lodash.debounce": "^4.0.8",
     "swiper": "^9.4.1",
+    "swup": "^4.8.2",
     "terser-webpack-plugin": "^5.3.14"
   }
 }
