@@ -1,4 +1,16 @@
-import { upperFirst, camelCase } from 'lodash-es'
+import { upperFirst, camelCase } from './string'
+
+/**
+ * Checks if `value` is the language type of `Object`. 
+ * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+ */
+export function isObject(value) {
+  const type = typeof value;
+  return value != null && (type === 'object' || type === 'function');
+}
 
 /**
  * Check if we're running the theme inside the theme editor
