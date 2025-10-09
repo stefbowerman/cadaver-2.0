@@ -1,5 +1,4 @@
 {%- comment %}
-
   Cart Item Price
   ------------------------------------------------------------------------------
 
@@ -8,21 +7,26 @@
   {% render 'cart-item-price',
              item: { cart.items[] } - required
   %}
-
-{% endcomment -%}
+{%- endcomment %}
 
 {% if item != empty %}
-  {% comment %} @TODO - Update this to work with discounted prices {% endcomment %}
   <div class="ajax-cart__item-price" data-price>
-    {% comment %} {%- if item.original_line_price != item.final_line_price -%}
+    {% if item.variant.compare_at_price and item.variant.compare_at_price > item.final_price %}
       <span>
         <span class="sr-only">
           {{ 'products.product.price.regular_price' | t }}
         </span>
-        <s data-price-original>{{ item.original_line_price | money }}</s>
+        <s class="opacity-50" data-price-compare>{{ item.variant.compare_at_price | money }}</s>
       </span>
-    {%- endif -%} {% endcomment %}
-    
+    {% elsif item.original_price != item.final_price %}
+      <span>
+        <span class="sr-only">
+          {{ 'products.product.price.regular_price' | t }}
+        </span>
+        <s data-price-original>{{ item.original_price | money }}</s>
+      </span>
+    {% endif %}
+
     <span>
       <span class="sr-only">
         {{ 'products.product.price.price' | t }}
