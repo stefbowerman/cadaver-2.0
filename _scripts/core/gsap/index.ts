@@ -31,13 +31,20 @@ gsap.defaults({
 export default gsap
 
 // Returns a duration based on the distance of the animation
-export const getDuration = distance => {
+export const getDuration = (distance: number): number => {
   const duration = distance / 4000
 
   return gsap.utils.clamp(0.3, 0.9, duration)
 }
 
-export const slideDown = (el, options = {}) => {
+type SlideOptions = {
+  duration?: number
+  onStart?: () => void
+  onInterrupt?: () => void
+  onComplete?: () => void
+}
+
+export const slideDown = (el: HTMLElement, options: SlideOptions = {}): gsap.core.Timeline => {
   const duration = options.duration || 0.5
   const display = el.style.display
 
@@ -45,8 +52,8 @@ export const slideDown = (el, options = {}) => {
 
   const tl = gsap.timeline({
     onStart: () => {
-      el.style.opacity = 0
-      el.style.height = 0
+      el.style.opacity = '0'
+      el.style.height = '0'
       el.style.display = ''
 
       options.onStart?.()
@@ -98,7 +105,7 @@ export const slideDown = (el, options = {}) => {
 
 }
 
-export const slideUp = (el, options = {}) => {
+export const slideUp = (el: HTMLElement, options: SlideOptions = {}): gsap.core.Timeline => {
   const duration = options.duration || 0.5
   
   const tl = gsap.timeline({
@@ -141,7 +148,7 @@ export const slideUp = (el, options = {}) => {
   return tl
 }
 
-export const slideToggle = (el, options = {}, force = undefined) => {
+export const slideToggle = (el: HTMLElement, options: SlideOptions = {}, force: boolean | undefined = undefined): gsap.core.Timeline => {
   if (force !== undefined) {
     return force ? slideDown(el, options) : slideUp(el, options)
   }
@@ -150,7 +157,14 @@ export const slideToggle = (el, options = {}, force = undefined) => {
   }
 }
 
-export const fadeIn = (el, options = {}) => {
+type FadeOptions = {
+  duration?: number
+  onStart?: () => void
+  onInterrupt?: () => void
+  onComplete?: () => void
+}
+
+export const fadeIn = (el: HTMLElement, options: FadeOptions = {}): gsap.core.Timeline => {
   const duration = options.duration || 0.5
   const display = el.style.display
 
@@ -158,7 +172,7 @@ export const fadeIn = (el, options = {}) => {
 
   const tl = gsap.timeline({
     onStart: () => {
-      el.style.opacity = 0
+      el.style.opacity = '0'
       el.style.display = ''
       options.onStart?.()
     },
@@ -186,7 +200,7 @@ export const fadeIn = (el, options = {}) => {
   return tl
 }
 
-export const fadeOut = (el, options = {}) => {
+export const fadeOut = (el: HTMLElement, options: FadeOptions = {}): gsap.core.Timeline => {
   const duration = options.duration || 0.5
 
   gsap.killTweensOf(el)
@@ -218,7 +232,7 @@ export const fadeOut = (el, options = {}) => {
   return tl
 }
 
-export const fadeToggle = (el, options = {}, force = undefined) => {
+export const fadeToggle = (el: HTMLElement, options: FadeOptions = {}, force: boolean | undefined = undefined): gsap.core.Timeline => {
   if (force !== undefined) {
     return force ? fadeIn(el, options) : fadeOut(el, options)
   }
