@@ -1,4 +1,4 @@
-export const dispatch = (eventName, detail = {}) => {
+export const dispatch = (eventName: string, detail = {}): void => {
   const event = new CustomEvent(eventName, {
     bubbles: true,
     detail,

@@ -130,12 +130,10 @@ export default class BaseComponent {
     return true
   }
 
-  // eslint-disable-next-line no-unused-vars
   onResize(entries) {
     // override in subclass
   }
 
-  // eslint-disable-next-line no-unused-vars
   onBreakpointChange({ detail: { breakpoint, fromBreakpoint, direction } }) {
     // override in subclass
   }

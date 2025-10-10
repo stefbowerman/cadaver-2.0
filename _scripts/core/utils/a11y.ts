@@ -3,7 +3,7 @@
  *
  * @return {Boolean}
  */
-export function prefersReducedMotion() {
+export function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
@@ -14,7 +14,7 @@ export function prefersReducedMotion() {
  * @param {string} currentPath - The current path to compare against the link's pathname.
  * @return {void} 
  */
-export function setAriaCurrent(link, currentPath) {
+export function setAriaCurrent(link: HTMLAnchorElement, currentPath: string): void {
   if (!(link instanceof HTMLAnchorElement)) {
     console.warn('Invalid link element provided.')
     return
@@ -47,6 +47,6 @@ export function setAriaCurrent(link, currentPath) {
  * @example
  * element.setAttribute('aria-expanded', booleanAsString(isExpanded));
  */
-export function toAriaBoolean(value) {
+export function toAriaBoolean(value: boolean): string {
   return value ? 'true' : 'false'
 }

@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 import { dispatch } from '@/core/utils/event'
 
 const CartAPI = {
@@ -66,7 +64,6 @@ const CartAPI = {
         throw new Error('The quantity you entered is not available.')
       }
 
-      // eslint-disable-next-line no-unused-vars
       // const addedItem = await response.text() // @TODO - Merge this with the cart response somehow... ? is it needed?
       const cart = await this.getCart() // Retrieve the updated cart
 

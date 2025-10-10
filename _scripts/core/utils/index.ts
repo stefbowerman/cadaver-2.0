@@ -1,5 +1,13 @@
 import { upperFirst, camelCase } from '@/core/utils/string'
 
+declare global {
+  interface Window {
+    Shopify?: {
+      designMode?: boolean;
+    };
+  }
+}
+
 /**
  * Checks if `value` is the language type of `Object`. 
  * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
@@ -7,7 +15,7 @@ import { upperFirst, camelCase } from '@/core/utils/string'
  * @param {*} value The value to check.
  * @returns {boolean} Returns `true` if `value` is an object, else `false`.
  */
-export function isObject(value) {
+export function isObject(value: unknown): boolean {
   const type = typeof value;
   return value != null && (type === 'object' || type === 'function');
 }
@@ -30,7 +38,7 @@ export function getQueryParams() {
   const queryParams = {}
   const params = new URLSearchParams(window.location.search)
 
-  for (const [key, value] of params.entries()) {
+  for (const [key, value] of Array.from(params.entries())) {
     queryParams[key] = value || true
   }
 
@@ -45,7 +53,7 @@ export function getQueryParams() {
  * @param {string}
  * @return {int}
  */
-export function hashFromString(string) {
+export function hashFromString(string: string): number {
   let hash = 0;
   let i;
   let chr;
@@ -54,9 +62,9 @@ export function hashFromString(string) {
 
   for (i = 0; i < string.length; i++) {
     chr   = string.charCodeAt(i);
-    hash  = ((hash << 5) - hash) + chr;  // eslint-disable-line no-bitwise
+    hash  = ((hash << 5) - hash) + chr;
     // Convert to 32bit integer
-    hash |= 0; // eslint-disable-line no-bitwise
+    hash |= 0;
   }
 
   return hash;
@@ -87,12 +95,11 @@ export function cookiesEnabled() {
  * @param {String} t - url
  * @return {Object} e - parameters
  */
-export function postLink(t, e) {
+export function postLink(t: string, e: { method?: string, parameters?: Record<string, string> } = {}): void {
   const n = (e = e || {}).method || 'post';
   const i = e.parameters || {};
   const o = document.createElement('form');
 
-  /* eslint-disable */
   for (const r in o.setAttribute('method', n), o.setAttribute('action', t), i) {
     const l = document.createElement('input');
     l.setAttribute('type', 'hidden');
@@ -104,7 +111,6 @@ export function postLink(t, e) {
   document.body.appendChild(o);
   o.submit();
   document.body.removeChild(o);
-  /* eslint-enable */
 }
 
 
@@ -115,7 +121,7 @@ export function postLink(t, e) {
  * @param {String} encodedString
  * @return {String}
  */
-export function decodeEntities(encodedString) {
+export function decodeEntities(encodedString: string): string {
   const textArea = document.createElement('textarea');
   textArea.innerHTML = encodedString;
   return textArea.value;
@@ -127,76 +133,74 @@ export function decodeEntities(encodedString) {
  * @param {String} url
  * @return {Bool}
  */
-export function isExternal(url) {
-  /* eslint-disable */
+export function isExternal(url: string): boolean {
   const match = url.match(/^([^:\/?#]+:)?(?:\/\/([^\/?#]*))?([^?#]+)?(\?[^#]*)?(#.*)?/);
   if (typeof match[1] === 'string' && match[1].length > 0 && match[1].toLowerCase() !== location.protocol) return true;
   if (typeof match[2] === 'string' && match[2].length > 0 && match[2].replace(new RegExp(":("+{"http:":80,"https:":443}[location.protocol]+")?$"), "") !== location.host) return true;
   return false;
-  /* eslint-enable */
 }
 
-export function random(min = 0, max = 1) {
+export function random(min = 0, max = 1): number {
   return Math.floor(Math.random() * (max - min + 1) + min);     
 }
 
 /**
  * Pads a number with leading character (z) up to the specified width
  *
- * @param {Number} n
+ * @param {Number} num
  * @param {Number} width
  * @param {Number} z - pad value
  * @return {Number}
  */
-export function pad(n, width, z) {
+export function pad(num: number, width: number, z: string): string {
   z = z || '0';
-  n += '';
+  const n = num + '';
+
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
 
-export function clamp(num, a, b) {
+export function clamp(num: number, a: number, b: number): number {
   return Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
 }
 
-
-export function credits() {
+export function credits(): void {
   if (window && window.location && window.location.hostname !== 'localhost') {
-    // eslint-disable-next-line no-console, max-len
+    // eslint-disable-next-line no-console
     console.log('%cdesign + development courtesy of...', 'font-family: Helvetica; font-size: 11px;');
   }
 }
 
-export function targetBlankExternalLinks() {
-  for(var c = document.getElementsByTagName('a'), a = 0;a < c.length;a++) {
-    var b = c[a];
-    var href = b.getAttribute('href')
-
-    if (href && b.hostname !== location.hostname && !href.includes('mailto:')) {
-      b.target = '_blank'
-      b.setAttribute('aria-describedby', 'a11y-new-window-message')
+export function targetBlankExternalLinks(): void { 
+  document.querySelectorAll('a').forEach(link => {
+    const href = link.getAttribute('href')
+    
+    if (href && link.hostname !== location.hostname && !href.includes('mailto:')) {
+      link.target = '_blank'
+      link.setAttribute('aria-describedby', 'a11y-new-window-message')
     }
-  }
+  })
 }
 
 /**
- * Ensure we are working with a valid number
+ * Ensure we are working with a valid quantity
  *
- * @param {int|string} qty
- * @param {int} defaultQty
- * @return {int} - Integer quantity.
+ * @param {number|string} qty
+ * @param {number} defaultQty
+ * @return {number} - Integer quantity.
  */
-export function validateQty(qty, defaultQty = 1) {
-  return (parseFloat(qty) === parseInt(qty)) && !Number.isNaN(qty) ? parseInt(qty) : defaultQty;
+export function validateQty(qty: number | string, defaultQty = 1): number {
+  const num = Number(qty);
+  return Number.isInteger(num) && !Number.isNaN(num) ? num : defaultQty;
 }
 
 /**
  * Returns an index in the array by wrapping around if the specified index does not exist in arr.length - 1
  *
  * @param {Array} arr
- * @param {int} index
- * @return {int} - index
+ * @param {number} index
+ * @return {number} - index
  */
-export function getWrappedIndex(arr, index) {
+export function getWrappedIndex(arr: unknown[], index: number): number {
   const len = arr.length
 
   return ((index % len) + len) % len
@@ -208,7 +212,7 @@ export function getWrappedIndex(arr, index) {
  * @param {number} [seed=0.1] - The seed used to generate the pseudo-random number. Defaults to 0.1 if not provided.
  * @returns {number} A pseudo-random number between 0 and 1.
  */
-export const randomFromSeed = (seed = 0.1) => {
+export const randomFromSeed = (seed = 0.1): number => {
   const x = Math.sin(seed) * 1000
 
   return x - Math.floor(x)
@@ -220,7 +224,7 @@ export const randomFromSeed = (seed = 0.1) => {
  * @param {number} [length=9] - The length of the UUID to be generated. Defaults to 9 characters.
  * @returns {string} A unique identifier (UUID) of the specified length.
  */
-export function getUUID(length = 9) {
+export function getUUID(length = 9): string {
   return randomFromSeed(Date.now()).toString(36).slice(2, length + 2)
 }
 
@@ -230,7 +234,7 @@ export function getUUID(length = 9) {
  * @param {string} str - The string to be converted to PascalCase.
  * @returns {string} A PascalCase string.
  */
-export function toPascalCase(str) {
+export function toPascalCase(str: string): string {
   return upperFirst(camelCase(str))
 }
 
@@ -240,7 +244,7 @@ export function toPascalCase(str) {
  * @param {*} value - The value to be checked.
  * @returns {boolean} True if the value is a number and not NaN, false otherwise.
  */
-export function isNumber(value) {
+export function isNumber(value: unknown): boolean {
   return typeof value === 'number' && !isNaN(value);
 }
 
@@ -250,14 +254,13 @@ export function isNumber(value) {
  * @function
  * @returns {boolean} Returns true if the device supports touch events, false otherwise.
  */
-export const isTouch = () => {
+export const isTouch = (): boolean => {
   if (typeof window === 'undefined') {
     return false
   }
 
   return 'ontouchstart' in window ||
-         navigator.maxTouchPoints > 0 ||
-         navigator.msMaxTouchPoints > 0
+         navigator.maxTouchPoints > 0
 }
 
 /**
@@ -266,7 +269,7 @@ export const isTouch = () => {
  * @function
  * @returns {boolean} Returns true if the device supports WebGL, false otherwise.
  */
-export const hasWebGLSupport = () => {
+export const hasWebGLSupport = (): boolean => {
   if (typeof window === 'undefined') return false
 
   const canvas = document.createElement('canvas')

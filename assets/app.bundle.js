@@ -1197,12 +1197,12 @@
   function getQueryParams() {
     const queryParams = {};
     const params = new URLSearchParams(window.location.search);
-    for (const [key, value] of params.entries()) {
+    for (const [key, value] of Array.from(params.entries())) {
       queryParams[key] = value || true;
     }
     return queryParams;
   }
-  function postLink(t, e) {
+  function postLink(t, e = {}) {
     const n = (e = e || {}).method || "post";
     const i = e.parameters || {};
     const o = document.createElement("form");
@@ -1221,14 +1221,13 @@
     return Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
   }
   function targetBlankExternalLinks() {
-    for (var c = document.getElementsByTagName("a"), a = 0; a < c.length; a++) {
-      var b = c[a];
-      var href = b.getAttribute("href");
-      if (href && b.hostname !== location.hostname && !href.includes("mailto:")) {
-        b.target = "_blank";
-        b.setAttribute("aria-describedby", "a11y-new-window-message");
+    document.querySelectorAll("a").forEach((link) => {
+      const href = link.getAttribute("href");
+      if (href && link.hostname !== location.hostname && !href.includes("mailto:")) {
+        link.target = "_blank";
+        link.setAttribute("aria-describedby", "a11y-new-window-message");
       }
-    }
+    });
   }
   function isNumber(value) {
     return typeof value === "number" && !isNaN(value);
@@ -1237,7 +1236,7 @@
     if (typeof window === "undefined") {
       return false;
     }
-    return "ontouchstart" in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+    return "ontouchstart" in window || navigator.maxTouchPoints > 0;
   };
   const SELECTOR = "img.lazy-image";
   const LOADED_CLASS = "is-loaded";
@@ -1509,10 +1508,8 @@
       }
       return true;
     }
-    // eslint-disable-next-line no-unused-vars
     onResize(entries) {
     }
-    // eslint-disable-next-line no-unused-vars
     onBreakpointChange({ detail: { breakpoint, fromBreakpoint, direction } }) {
     }
     onScroll() {
@@ -1915,7 +1912,7 @@
     if (element.classList.contains("disabled")) {
       return true;
     }
-    if (typeof element.disabled !== "undefined") {
+    if ("disabled" in element) {
       return element.disabled;
     }
     return element.hasAttribute("disabled") && element.getAttribute("disabled") !== "false";
@@ -1966,6 +1963,7 @@
       return dom;
     } catch (e) {
       console.warn("something went wrong...", e);
+      return void 0;
     }
   };
   function _assertThisInitialized(self2) {
@@ -11194,9 +11192,13 @@
           email,
           source: this.settings.source
         });
-        success ? this.onSubmitSuccess() : this.onSubmitFail();
+        if (success) {
+          this.onSubmitSuccess();
+        } else {
+          this.onSubmitFail();
+        }
       } catch (e2) {
-        console.log("error", e2);
+        console.warn("error", e2);
       } finally {
         this.submit.removeAttribute("disabled");
         this.isSubmitting = false;
