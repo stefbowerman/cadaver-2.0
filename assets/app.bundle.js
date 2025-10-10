@@ -1675,11 +1675,12 @@
      *
      */
     qsa(selector2, dom = this.container) {
-      return [...dom.querySelectorAll(selector2)].filter((el) => {
+      return Array.from(dom.querySelectorAll(selector2)).filter((el) => {
         const closest = el.closest("[data-component]");
         return !closest || closest.isSameNode(el);
       });
     }
+    // @TODO - Add types for these events
     onUnload(e) {
       window.removeEventListener("taxi.navigateOut", this.onNavigateOut);
       window.removeEventListener("taxi.navigateIn", this.onNavigateIn);
