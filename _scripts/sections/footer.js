@@ -1,9 +1,9 @@
-import { setAriaCurrent } from '../core/utils/a11y'
-import AJAXKlaviyoForm from '../core/ajaxKlaviyoForm'
+import { setAriaCurrent } from '@/core/utils/a11y'
+import AJAXKlaviyoForm from '@/core/ajaxKlaviyoForm'
 
-import BaseSection from './base'
+import BaseSection from '@/sections/base'
 
-import NewsletterForm from '../components/newsletterForm'
+import NewsletterForm from '@/components/newsletterForm'
 
 const selectors = {
   navLink: '[data-nav] a'

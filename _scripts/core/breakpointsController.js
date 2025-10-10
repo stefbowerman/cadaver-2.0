@@ -1,4 +1,4 @@
-import { dispatch } from './utils/event'
+import { dispatch } from '@/core/utils/event'
 
 export const BREAKPOINTS = {
   xs: 0,

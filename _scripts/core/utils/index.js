@@ -1,4 +1,4 @@
-import { upperFirst, camelCase } from './string'
+import { upperFirst, camelCase } from '@/core/utils/string'
 
 /**
  * Checks if `value` is the language type of `Object`. 

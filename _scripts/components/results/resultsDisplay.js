@@ -1,9 +1,9 @@
-import { BREAKPOINTS } from '../../core/breakpointsController'
-import gsap from '../../core/gsap'
+import { BREAKPOINTS } from '@/core/breakpointsController'
+import gsap from '@/core/gsap'
 
-import BaseComponent from '../base'
-import ProductCard from '../product/productCard'
-import A11yStatus from '../a11y/a11yStatus'
+import BaseComponent from '@/components/base'
+import ProductCard from '@/components/product/productCard'
+import A11yStatus from '@/components/a11y/a11yStatus'
 
 const selectors = {
   list: 'ul',

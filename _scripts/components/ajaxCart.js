@@ -1,10 +1,10 @@
-import { toAriaBoolean } from '../core/utils/a11y'
-import FocusTrap from '../core/focusTrap'
+import { toAriaBoolean } from '@/core/utils/a11y'
+import FocusTrap from '@/core/focusTrap'
 
-import BaseComponent from './base'
-import Backdrop from './backdrop'
-import CartBody from './ajaxCart/cartBody'
-import CartFooter from './ajaxCart/cartFooter'
+import BaseComponent from '@/components/base'
+import Backdrop from '@/components/backdrop'
+import CartBody from '@/components/ajaxCart/cartBody'
+import CartFooter from '@/components/ajaxCart/cartFooter'
 
 const selectors = {
   close: '[data-ajax-cart-close]',

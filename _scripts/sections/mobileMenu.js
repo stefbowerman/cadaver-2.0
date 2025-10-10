@@ -1,7 +1,7 @@
-import { setAriaCurrent } from '../core/utils/a11y'
+import { setAriaCurrent } from '@/core/utils/a11y'
 
-import BaseSection from './base'
-import MobileMenuDrawer from '../components/drawer/mobileMenuDrawer'
+import BaseSection from '@/sections/base'
+import MobileMenuDrawer from '@/components/drawer/mobileMenuDrawer'
 
 export default class MobileMenuSection extends BaseSection {
   static TYPE = 'mobile-menu'

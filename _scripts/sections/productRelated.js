@@ -1,6 +1,6 @@
-import { fetchDom } from '../core/utils/dom'
-import BaseSection from './base'
-import ProductCard from '../components/product/productCard'
+import { fetchDom } from '@/core/utils/dom'
+import BaseSection from '@/sections/base'
+import ProductCard from '@/components/product/productCard'
 
 const selectors = {
   contentTarget: '[data-content-target]',

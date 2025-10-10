@@ -1,5 +1,5 @@
-import { isNumber, clamp } from '../core/utils'
-import BaseComponent from './base'
+import { isNumber, clamp } from '@/core/utils'
+import BaseComponent from '@/components/base'
 
 const selectors = {
   increment: 'button[data-increment]',

@@ -1,7 +1,7 @@
-import { setAriaCurrent } from '../core/utils/a11y'
+import { setAriaCurrent } from '@/core/utils/a11y'
 
-import BaseSection from './base'
-import HeaderCartControl from '../components/header/headerCartControl'
+import BaseSection from '@/sections/base'
+import HeaderCartControl from '@/components/header/headerCartControl'
 
 const selectors = {
   primaryNav: '[data-primary-nav]'

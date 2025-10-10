@@ -1,5 +1,5 @@
-import BaseComponent from '../base'
-import VariantPickerOption from './variantPickerOption'
+import BaseComponent from '@/components/base'
+import VariantPickerOption from '@/components/product/variantPickerOption'
 
 export default class VariantPicker extends BaseComponent {
   static TYPE = 'variant-picker'

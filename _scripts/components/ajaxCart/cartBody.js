@@ -1,8 +1,8 @@
-import { slideUp } from '../../core/gsap'
-import { getDomFromString } from '../../core/utils/dom'
+import { slideUp } from '@/core/gsap'
+import { getDomFromString } from '@/core/utils/dom'
 
-import BaseComponent from '../base'
-import CartItem from './cartItem'
+import BaseComponent from '@/components/base'
+import CartItem from '@/components/ajaxCart/cartItem'
 
 const selectors = {
   list: '[data-list]'

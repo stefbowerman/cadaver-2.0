@@ -1,7 +1,7 @@
 import gsap from 'gsap'
 import CustomEase from 'gsap/CustomEase'
 
-import { isVisible } from '../utils/dom'
+import { isVisible } from '@/core/utils/dom'
 
 export const easings = {
   slideEnter: 'slideEnter',

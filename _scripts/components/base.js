@@ -1,6 +1,6 @@
-import BreakpointsController from '../core/breakpointsController'
-import CartAPI from '../core/cartAPI'
-import { isObject } from '../core/utils'
+import BreakpointsController from '@/core/breakpointsController'
+import CartAPI from '@/core/cartAPI'
+import { isObject } from '@/core/utils'
 
 export default class BaseComponent {
   #settings;

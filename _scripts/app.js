@@ -1,27 +1,29 @@
-import { Core as TaxiCore } from '@unseenco/taxi'
 import 'swiper/css'
 import 'swiper/css/effect-fade'
+import '../_styles/app.scss'
 
-import BreakpointsController from './core/breakpointsController'
+import { Core as TaxiCore } from '@unseenco/taxi'
+
+import BreakpointsController from '@/core/breakpointsController'
 
 import {
   isThemeEditor,
   targetBlankExternalLinks
-} from './core/utils'
-import { dispatch } from './core/utils/event'
+} from '@/core/utils'
+import { dispatch } from '@/core/utils/event'
 
 // Renderers
-import BaseRenderer from './renderers/base'
+import BaseRenderer from '@/renderers/base'
 
 // Transitions
-import PageTransition from './transitions/page'
+import PageTransition from '@/transitions/page'
 
 // Sections
-import SectionManager from './core/sectionManager'
-import HeaderSection from './sections/header'
-import FooterSection from './sections/footer'
-import MobileMenuSection from './sections/mobileMenu'
-import AJAXCartSection from './sections/ajaxCart'
+import SectionManager from '@/core/sectionManager'
+import HeaderSection from '@/sections/header'
+import FooterSection from '@/sections/footer'
+import MobileMenuSection from '@/sections/mobileMenu'
+import AJAXCartSection from '@/sections/ajaxCart'
 
 // Use this to expose anything needed throughout the rest of the app
 window.app = window.app || {};

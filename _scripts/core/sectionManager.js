@@ -1,7 +1,7 @@
-import { isThemeEditor } from '../core/utils'
-import { startCase } from '../core/utils/string'
+import { isThemeEditor } from '@/core/utils'
+import { startCase } from '@/core/utils/string'
 
-import BaseSection from '../sections/base'
+import BaseSection from '@/sections/base'
 
 const SECTION_TYPE_ATTR = 'data-section-type'
 

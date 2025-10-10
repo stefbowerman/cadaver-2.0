@@ -1,5 +1,5 @@
 import { Swiper } from 'swiper'
-import BaseComponent from '../base'
+import BaseComponent from '@/components/base'
 
 const selectors = {
   slideshow: '[data-slideshow]',

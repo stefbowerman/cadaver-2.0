@@ -1,5 +1,5 @@
-import BaseSection from './base'
-import ProductCard from '../components/product/productCard'
+import BaseSection from '@/sections/base'
+import ProductCard from '@/components/product/productCard'
 
 export default class FeaturedProductsSection extends BaseSection {
   static TYPE = 'featured-products'

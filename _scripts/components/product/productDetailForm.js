@@ -1,11 +1,11 @@
-import CartAPI from '../../core/cartAPI'
+import CartAPI from '@/core/cartAPI'
 
-import BaseComponent from '../base'
-import ProductPrice from './productPrice'
-import ATCButton from './atcButton'
-import VariantPicker from './variantPicker'
-import A11yStatus from '../a11y/a11yStatus'
-import { toAriaBoolean } from '../../core/utils/a11y'
+import BaseComponent from '@/components/base'
+import ProductPrice from '@/components/product/productPrice'
+import ATCButton from '@/components/product/atcButton'
+import VariantPicker from '@/components/product/variantPicker'
+import A11yStatus from '@/components/a11y/a11yStatus'
+import { toAriaBoolean } from '@/core/utils/a11y'
 
 const selectors = {
   form: 'form[action*="/cart/add"]',

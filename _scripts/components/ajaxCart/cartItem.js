@@ -1,10 +1,10 @@
 import debounce from 'lodash.debounce'
 
-import CartAPI from '../../core/cartAPI'
-import { isTouch } from '../../core/utils'
+import CartAPI from '@/core/cartAPI'
+import { isTouch } from '@/core/utils'
 
-import BaseComponent from '../base'
-import QuantityAdjuster from '../quantityAdjuster'
+import BaseComponent from '@/components/base'
+import QuantityAdjuster from '@/components/quantityAdjuster'
 
 const selectors = {
   remove: '[data-remove]',

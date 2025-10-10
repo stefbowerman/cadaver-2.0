@@ -1,5 +1,5 @@
-import { prefersReducedMotion } from '../core/utils/a11y'
-import BaseComponent from './base'
+import { prefersReducedMotion } from '@/core/utils/a11y'
+import BaseComponent from '@/components/base'
 
 const classes = {
   isReady: 'is-ready'
