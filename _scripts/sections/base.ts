@@ -2,13 +2,23 @@ import LazyImageController from '@/core/lazyImageController'
 import { doComponentCleanup } from '@/components/base'
 
 // Standard components
-import GraphicCoverVideo from '../components/graphicCoverVideo'
+import GraphicCoverVideo from '@/components/graphicCoverVideo'
 
 export default class BaseSection {
-  constructor(container) {
+  static TYPE: string
+
+  container: HTMLElement
+  id: string
+  type: string
+  parent: HTMLElement | null
+  parentId: string
+  lazyImageController: LazyImageController
+  graphicCoverVideos: GraphicCoverVideo[]
+
+  constructor(container: HTMLElement) {
     this.container = container
     this.id = this.dataset.sectionId
-    this.type = this.constructor.TYPE
+    this.type = (this.constructor as typeof BaseSection).TYPE
     this.parent = this.container.parentElement // Automatically generated wrapper element
     this.parentId = this.parent.id
 
@@ -39,7 +49,7 @@ export default class BaseSection {
     // })    
   }
 
-  get dataset() {
+  get dataset(): DOMStringMap {
     return this.container.dataset
   }
 
@@ -49,7 +59,7 @@ export default class BaseSection {
    * @param {HTMLElement} [dom=this.container] - Parent element to query within (defaults to section container)
    * @returns {HTMLElement|undefined} First matching element or undefined if none found
    */
-  qs(selector, dom = this.container) {
+  qs(selector: string, dom: HTMLElement = this.container): HTMLElement | undefined {
     return this.qsa(selector, dom)[0]
   }
 
@@ -62,13 +72,15 @@ export default class BaseSection {
    * @returns {HTMLElement[]} Array of matching elements, excluding nested component matches
    *
    */
-  qsa(selector, dom = this.container) {
-    return [...dom.querySelectorAll(selector)].filter(el => {
+  qsa(selector: string, dom: HTMLElement = this.container): HTMLElement[] {
+    return Array.from(dom.querySelectorAll(selector)).filter(el => {
       const closest = el.closest('[data-component]')
 
       return !closest || closest.isSameNode(el)
-    })
+    }) as HTMLElement[]
   }
+
+  // @TODO - Add types for these events
 
   onUnload(e) {
     window.removeEventListener('taxi.navigateOut', this.onNavigateOut)
