@@ -1130,10 +1130,7 @@
     xxxl: 1800
   };
   const BREAKPOINTS_MAP = new Map(Object.entries(BREAKPOINTS).sort((a, b) => a[1] - b[1]));
-  class BreakpointsController {
-    static EVENTS = {
-      CHANGE: "change.breakpointsController"
-    };
+  const _BreakpointsController = class _BreakpointsController {
     constructor() {
       this.currentKey = this.getKeyForWidth(window.innerWidth);
       this.mediaQueries = /* @__PURE__ */ new Map();
@@ -1153,11 +1150,11 @@
      * Returns the key for one of the BREAKPOINTS_MAP, whichever has a value closest to but smaller to the passed in width
      * e.g. If we pass in a width between 'sm' and 'md', this will return 'sm'
      *
-     * @param {int} w - width to search for
+     * @param {number} w - width to search for
      * @return {undefined|string} foundKey
      */
     getKeyForWidth(w) {
-      let foundKey;
+      let foundKey = void 0;
       for (const [key, breakpoint] of BREAKPOINTS_MAP) {
         if (w >= breakpoint) {
           foundKey = key;
@@ -1174,7 +1171,7 @@
         const breakpoint = this.mediaQueries.get(newKey).minWidth;
         const fromBreakpoint = this.mediaQueries.get(oldKey).minWidth;
         const direction = window.innerWidth > this.mediaQueries.get(oldKey).minWidth ? 1 : -1;
-        dispatch(BreakpointsController.EVENTS.CHANGE, {
+        dispatch(_BreakpointsController.EVENTS.CHANGE, {
           breakpoint,
           fromBreakpoint,
           direction
@@ -1182,7 +1179,11 @@
         this.currentKey = newKey;
       }
     }
-  }
+  };
+  _BreakpointsController.EVENTS = {
+    CHANGE: "change.breakpointsController"
+  };
+  let BreakpointsController = _BreakpointsController;
   function startCase(str) {
     if (!str || typeof str !== "string") return "";
     return str.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[^a-zA-Z0-9]+/g, " ").split(" ").filter((word) => word.length > 0).map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
