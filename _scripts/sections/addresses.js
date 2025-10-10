@@ -1,6 +1,6 @@
-import BaseSection from './base'
+import BaseSection from '@/sections/base'
 
-import { postLink } from '../core/utils'
+import { postLink } from '@/core/utils'
 
 const selectors = {
   toggleNew: '[data-toggle-new]',

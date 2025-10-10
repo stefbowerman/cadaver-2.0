@@ -1,4 +1,4 @@
-import BaseComponent from '../base'
+import BaseComponent from '@/components/base'
 
 export default class A11yStatus extends BaseComponent {
   static TYPE = 'a11y-status'

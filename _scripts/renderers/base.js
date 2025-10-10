@@ -1,16 +1,17 @@
 import { Renderer } from '@unseenco/taxi'
 
-import SectionManager from '../core/sectionManager'
-import FeaturedProducts from '../sections/featuredProducts'
-import Addresses from '../sections/addresses'
-import Article from '../sections/article'
-import Blog from '../sections/blog'
-import Collection from '../sections/collection'
-import Product from '../sections/product'
-import ProductRelated from '../sections/productRelated'
-import Login from '../sections/login'
-import Search from '../sections/search'
-import PageHero from '../sections/pageHero'
+import SectionManager from '@/core/sectionManager'
+
+import FeaturedProducts from '@/sections/featuredProducts'
+import Addresses from '@/sections/addresses'
+import Article from '@/sections/article'
+import Blog from '@/sections/blog'
+import Collection from '@/sections/collection'
+import Product from '@/sections/product'
+import ProductRelated from '@/sections/productRelated'
+import Login from '@/sections/login'
+import Search from '@/sections/search'
+import PageHero from '@/sections/pageHero'
 
 const redirect = url => {
   setTimeout(() => {

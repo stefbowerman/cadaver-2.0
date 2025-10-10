@@ -1,5 +1,5 @@
-import BaseComponent from './base'
-import { toAriaBoolean } from '../core/utils/a11y'
+import BaseComponent from '@/components/base'
+import { toAriaBoolean } from '@/core/utils/a11y'
 
 const classes = {
   backdrop: 'backdrop',

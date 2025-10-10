@@ -14,7 +14,6 @@ const CACHED_CLASS = 'is-cached'
 
 export default class LazyImageController {
   /**
-   * 
    * @param {HTMLElement} el - Element containing all images
    */
   constructor(el) {

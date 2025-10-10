@@ -1,7 +1,7 @@
-import BaseSection from './base'
+import BaseSection from '@/sections/base'
 
-import { fetchDom } from '../core/utils/dom'
-import ResultsDisplay from '../components/results/resultsDisplay'
+import { fetchDom } from '@/core/utils/dom'
+import ResultsDisplay from '@/components/results/resultsDisplay'
 
 export default class ResultsSection extends BaseSection {
   static TYPE = 'results'

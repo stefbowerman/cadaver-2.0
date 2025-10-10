@@ -1,4 +1,4 @@
-import BaseSection from './base'
+import BaseSection from '@/sections/base'
 
 export default class PageHeroSection extends BaseSection {
   static TYPE = 'page-hero'

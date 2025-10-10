@@ -1,4 +1,4 @@
-import KlaviyoAPI from './klaviyoAPI'
+import KlaviyoAPI from '@/core/klaviyoAPI'
 
 const noop = () => {}
 

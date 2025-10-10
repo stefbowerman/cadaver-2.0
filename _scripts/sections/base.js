@@ -1,5 +1,5 @@
-import LazyImageController from '../core/lazyImageController'
-import { doComponentCleanup } from '../components/base'
+import LazyImageController from '@/core/lazyImageController'
+import { doComponentCleanup } from '@/components/base'
 
 // Standard components
 import GraphicCoverVideo from '../components/graphicCoverVideo'

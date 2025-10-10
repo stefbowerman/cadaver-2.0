@@ -1,9 +1,9 @@
 /* eslint-disable no-unused-vars */
 
 import { Transition } from '@unseenco/taxi'
-import gsap from '../core/gsap'
-import { prefersReducedMotion } from '../core/utils/a11y'
-import { dispatch } from '../core/utils/event'
+import gsap from '@/core/gsap'
+import { prefersReducedMotion } from '@/core/utils/a11y'
+import { dispatch } from '@/core/utils/event'
 
 export const DURATION_LEAVE = 0.2
 export const DURATION_ENTER = 0.5

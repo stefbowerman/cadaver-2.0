@@ -1,4 +1,4 @@
-import BaseComponent from './base'
+import BaseComponent from '@/components/base'
 
 const selectors = {
   form: 'form',

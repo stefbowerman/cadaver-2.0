@@ -1,6 +1,6 @@
-import Drawer from './'
-import SearchInline from '../search/searchInline'
-import { BREAKPOINTS } from '../../core/breakpointsController'
+import Drawer from '@/components/drawer'
+import SearchInline from '@/components/search/searchInline'
+import { BREAKPOINTS } from '@/core/breakpointsController'
 
 export default class MobileMenuDrawer extends Drawer {
   static TYPE = 'mobile-menu-drawer'

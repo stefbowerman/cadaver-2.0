@@ -1,6 +1,6 @@
 // Heavily inspired by Bootstrap's focusTrap - https://github.com/twbs/bootstrap/blob/main/js/src/util/focustrap.js
 
-import { getFocusableChildren } from './utils/dom'
+import { getFocusableChildren } from '@/core/utils/dom'
 
 const TAB_NAV_FORWARD = 'forward'
 const TAB_NAV_BACKWARD = 'backward'

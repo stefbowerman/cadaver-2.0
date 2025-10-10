@@ -1,8 +1,7 @@
-import BaseSection from './base'
-// import CartAPI from '../core/cartAPI'
-import { getQueryParams } from '../core/utils'
+import { getQueryParams } from '@/core/utils'
 
-import AJAXCart from '../components/ajaxCart'
+import BaseSection from '@/sections/base'
+import AJAXCart from '@/components/ajaxCart'
 
 const selectors = {
   cartJson: '[data-cart-json]'

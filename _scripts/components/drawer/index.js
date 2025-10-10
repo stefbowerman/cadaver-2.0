@@ -1,8 +1,8 @@
-import BaseComponent from '../base'
-import Backdrop from '../backdrop'
+import BaseComponent from '@/components/base'
+import Backdrop from '@/components/backdrop'
 
-import { toAriaBoolean } from '../../core/utils/a11y'
-import FocusTrap from '../../core/focusTrap'
+import { toAriaBoolean } from '@/core/utils/a11y'
+import FocusTrap from '@/core/focusTrap'
 
 const selectors = {
   scroller: '[data-scroller]',

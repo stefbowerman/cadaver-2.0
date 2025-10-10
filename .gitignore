@@ -75,3 +75,6 @@ TODO.md
 
 # Source maps
 *.map
+
+# Bundle Analyzer
+stats.html

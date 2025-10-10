@@ -1,4 +1,4 @@
-import BaseComponent from '../base'
+import BaseComponent from '@/components/base'
 
 export default class VariantPickerOption extends BaseComponent {
   static TYPE = 'variant-picker-option'

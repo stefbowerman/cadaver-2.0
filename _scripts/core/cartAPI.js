@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-import { dispatch } from './utils/event'
+import { dispatch } from '@/core/utils/event'
 
 const CartAPI = {
   EVENTS: {

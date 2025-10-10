@@ -1,5 +1,5 @@
-import ResultsSection from './results'
-import SearchInline from '../components/search/searchInline'
+import ResultsSection from '@/sections/results'
+import SearchInline from '@/components/search/searchInline'
 
 export default class SearchSection extends ResultsSection {
   #isLoading;

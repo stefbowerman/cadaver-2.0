@@ -1,6 +1,6 @@
-import BaseSection from './base'
-import ProductDetailForm from '../components/product/productDetailForm'
-import ProductDetailGallery from '../components/product/productDetailGallery'
+import BaseSection from '@/sections/base'
+import ProductDetailForm from '@/components/product/productDetailForm'
+import ProductDetailGallery from '@/components/product/productDetailGallery'
 
 export default class ProductSection extends BaseSection {
   static TYPE = 'product'
