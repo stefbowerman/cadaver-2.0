@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 import { Transition } from '@unseenco/taxi'
 import gsap from '@/core/gsap'
 import { prefersReducedMotion } from '@/core/utils/a11y'

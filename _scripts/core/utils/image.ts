@@ -9,11 +9,11 @@
  * Loads and caches an image in the browsers cache.
  * @param {string} path - An image url
  */
-export function loadImage(path) {
+export function loadImage(path: string): void {
   new Image().src = path;
 }
 
-export function removeProtocol(path) {
+export function removeProtocol(path: string): string {
   return path.replace(/http(s)?:/, '');
 }
 
@@ -23,7 +23,7 @@ export function removeProtocol(path) {
  * @param {string} src
  * @returns {null}
  */
-export function imageSize(src) {
+export function imageSize(src: string): string | null {
   const match = src.match(/.+_((?:pico|icon|thumb|small|compact|medium|large|grande)|\d{1,4}x\d{0,4}|x\d{1,4})[_\.@]/);
 
   if (match) {
@@ -40,7 +40,7 @@ export function imageSize(src) {
  * @param size
  * @returns {*}
  */
-export function getSizedImageUrl(src, size) {
+export function getSizedImageUrl(src: string, size: string | null): string | null {
   if (size === null || src === null) {
     return src;
   }
@@ -64,10 +64,10 @@ export function getSizedImageUrl(src, size) {
 /**
  * Preloads an image in memory and uses the browsers cache to store it until needed.
  *
- * @param {Array} images - A list of image urls
- * @param {String} size - A shopify image size attribute
+ * @param {string | string[]} images - A list of image urls
+ * @param {string | null} size - A shopify image size attribute
  */
-export function preload(images, size) {
+export function preload(images: string | string[], size: string | null): void {
   if (typeof images === 'string') {
     images = [images];
   }

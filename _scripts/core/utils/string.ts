@@ -3,7 +3,7 @@
  * @param {string} str - The string to convert
  * @returns {string} The converted string
  */
-export function upperFirst(str) {
+export function upperFirst(str: string): string {
   if (!str || typeof str !== 'string') return str || '';
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -13,7 +13,7 @@ export function upperFirst(str) {
  * @param {string} str - The string to convert
  * @returns {string} The camel cased string
  */
-export function camelCase(str) {
+export function camelCase(str: string): string {
   if (!str || typeof str !== 'string') return '';
   
   // Split on spaces, dashes, underscores, and handle mixed case
@@ -31,7 +31,7 @@ export function camelCase(str) {
  * @param {string} str - The string to convert
  * @returns {string} The start cased string
  */
-export function startCase(str) {
+export function startCase(str: string): string {
   if (!str || typeof str !== 'string') return '';
   
   return str
@@ -51,25 +51,21 @@ export function startCase(str) {
  * Pluralizes the unit for the nuber passed in.
  * Usage mirrors the Shopify 'pluralize' string filter
  *
- * @param {Number} num
+ * @param {Number} number
  * @param {String} singular
  * @param {String} plural
  * @return {String}
  */
-export function pluralize(num, singular, plural)  {
+export function pluralize(number: number, singular: string, plural?: string): string {
   let output = '';
-
-  const number = parseInt(num);
 
   if (number === 1) {
     output = singular;
   }
   else {
-    output = plural;
-    if (typeof plural === 'undefined') {
-      output = `${singular}s`; // last resort, turn singular into a plural
-    }
+    output = plural || `${singular}s`; // last resort, turn singular into a plural
   }
+  
   return output;
 }
 
@@ -79,6 +75,6 @@ export function pluralize(num, singular, plural)  {
  * @param {string} str - The string to be converted to a handle.
  * @returns {string} A valid Shopify handle.
  */
-export function toHandle(str) {
+export function toHandle(str: string): string {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-$/, '').replace(/^-/, '');
 }

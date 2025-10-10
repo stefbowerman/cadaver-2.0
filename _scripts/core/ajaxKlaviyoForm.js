@@ -55,7 +55,7 @@ export default class AJAXKlaviyoForm {
     this.isSubmitting = false
 
     if (!this.input === 0) {
-      console.warn(`[${this.name}] - Email input missing`) // eslint-disable-line no-console
+      console.warn(`[${this.name}] - Email input missing`)
       return false
     }    
 
@@ -106,7 +106,7 @@ export default class AJAXKlaviyoForm {
 
     // This prop validation should probably be handled in a promise rejection from the KlaviyoAPI...?
     if (!email) {
-      console.warn(`[${this.name}] - Email is required`) // eslint-disable-line no-console
+      console.warn(`[${this.name}] - Email is required`)
       return
     }    
 
@@ -121,10 +121,15 @@ export default class AJAXKlaviyoForm {
         source: this.settings.source
       })
 
-      success ? this.onSubmitSuccess() : this.onSubmitFail()
+      if (success) {
+        this.onSubmitSuccess()
+      }
+      else {
+        this.onSubmitFail()
+      }
     }
     catch (e) {
-      console.log('error', e) // eslint-disable-line no-console
+      console.warn('error', e)
     }
     finally {
       this.submit.removeAttribute('disabled')

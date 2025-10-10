@@ -1,9 +1,11 @@
+type DisabledElement = HTMLInputElement | HTMLButtonElement | HTMLSelectElement | HTMLTextAreaElement
+
 /**
  * Checks if the given object is a DOM element.
  * @param {*} object - The object to check.
  * @returns {boolean} True if the object is a DOM element, false otherwise.
  */
-export const isElement = object => {
+export const isElement = (object: unknown): boolean => {
   if (!object || typeof object !== 'object') {
     return false
   }
@@ -16,7 +18,7 @@ export const isElement = object => {
  * @param {Element} element - The element to check.
  * @returns {boolean} True if the element is disabled, false otherwise.
  */
-export const isDisabled = element => {
+export const isDisabled = (element: Element): boolean => {
   if (!element || element.nodeType !== Node.ELEMENT_NODE) {
     return true
   }
@@ -25,9 +27,9 @@ export const isDisabled = element => {
     return true
   }
 
-  if (typeof element.disabled !== 'undefined') {
-    return element.disabled
-  }
+  if ('disabled' in element) {
+    return (element as DisabledElement).disabled
+  }  
 
   return element.hasAttribute('disabled') && element.getAttribute('disabled') !== 'false'
 }
@@ -37,7 +39,7 @@ export const isDisabled = element => {
  * @param {Element} element - The element to check.
  * @returns {boolean} True if the element is visible, false otherwise.
  */
-export const isVisible = element => {
+export const isVisible = (element: Element): boolean => {
   if (!isElement(element) || element.getClientRects().length === 0) {
     return false
   }
@@ -69,7 +71,7 @@ export const isVisible = element => {
  * @param {Element} element - The parent element to search within.
  * @returns {Element[]} An array of focusable child elements.
  */
-export const getFocusableChildren = element => {
+export const getFocusableChildren = (element: Element): Element[] => {
   const focusables = [
     'a[href]',
     'button',
@@ -92,23 +94,23 @@ export const getFocusableChildren = element => {
  * @param {string} wrapperSelector - The selector of the wrapper element.
  * @param {string} wrapperClass - The class to add to the wrapper element.
  */
-export const wrap = (element, wrapperSelector, wrapperClass) => {
+export const wrap = (element: Element, wrapperSelector: string, wrapperClass: string): void => {
   const wrapper = document.createElement(wrapperSelector)
   wrapper.classList.add(wrapperClass)
   element.replaceWith(wrapper)
   wrapper.appendChild(element)
 }
 
-export const getDomFromString = (string) => {
+export const getDomFromString = (string: string): Document => {
   return new DOMParser().parseFromString(string, 'text/html')
 }
 
 /**
  * Fetches the DOM from the given URL.
  * @param {string} url - The URL to fetch the DOM from.
- * @returns {Document} The DOM.
+ * @returns {Document | undefined} The DOM.
  */
-export const fetchDom = async (url) => {
+export const fetchDom = async (url: string): Promise<Document | undefined> => {
   try {
     const response = await fetch(url)
 
@@ -121,5 +123,6 @@ export const fetchDom = async (url) => {
   }
   catch (e) {
     console.warn('something went wrong...', e)
+    return undefined
   }
 }
