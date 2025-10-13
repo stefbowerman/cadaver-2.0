@@ -11342,8 +11342,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     backdrop: "backdrop",
     open: "is-open"
   };
-  class Backdrop extends BaseComponent {
-    static TYPE = "backdrop";
+  const _Backdrop = class _Backdrop extends BaseComponent {
     static generate(parent, options = {}) {
       const el = document.createElement("button");
       const settings = {
@@ -11362,10 +11361,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (settings.ariaControls) {
         el.setAttribute("aria-controls", settings.ariaControls);
       }
-      el.setAttribute("data-component", Backdrop.TYPE);
+      el.setAttribute("data-component", _Backdrop.TYPE);
       const appendTo = parent || document.body;
       appendTo.appendChild(el);
-      return new Backdrop(el);
+      return new _Backdrop(el);
     }
     constructor(el) {
       super(el);
@@ -11382,7 +11381,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.el.classList.remove(classes$3.open);
       this.el.setAttribute("aria-hidden", toAriaBoolean(true));
     }
-  }
+  };
+  _Backdrop.TYPE = "backdrop";
+  let Backdrop = _Backdrop;
   const TAB_NAV_FORWARD = "forward";
   const TAB_NAV_BACKWARD = "backward";
   class FocusTrap {
