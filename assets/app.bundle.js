@@ -1,5 +1,13 @@
+var __typeError = (msg) => {
+  throw TypeError(msg);
+};
+var __accessCheck = (obj, member, msg) => member.has(obj) || __typeError("Cannot " + msg);
+var __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read from private field"), getter ? getter.call(obj) : member.get(obj));
+var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
+var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 (function() {
   "use strict";
+  var _settings;
   function SelectorSet() {
     if (!(this instanceof SelectorSet)) {
       return new SelectorSet();
@@ -1407,20 +1415,16 @@
       }
     }
   };
-  class BaseComponent {
-    #settings;
-    static TYPE = "base";
-    static get SELECTOR() {
-      return `[data-component="${this.TYPE}"]`;
-    }
+  const _BaseComponent = class _BaseComponent {
     constructor(el, options = {}) {
-      this.#settings = {
+      __privateAdd(this, _settings);
+      __privateSet(this, _settings, {
         watchResize: false,
         watchBreakpoint: false,
         watchScroll: false,
         watchCartUpdate: false,
         ...options
-      };
+      });
       this.el = el;
       this.type = this.constructor.TYPE;
       this.validateDom(this.el);
@@ -1432,32 +1436,35 @@
       this.onBreakpointChange = this.onBreakpointChange.bind(this);
       this.onScroll = this.onScroll.bind(this);
       this.onCartUpdate = this.onCartUpdate.bind(this);
-      if (this.#settings.watchResize) {
+      if (__privateGet(this, _settings).watchResize) {
         this.resizeObserver = new ResizeObserver((entries) => this.onResize(entries));
         this.resizeObserver.observe(this.el);
       }
-      if (this.#settings.watchBreakpoint) {
+      if (__privateGet(this, _settings).watchBreakpoint) {
         window.addEventListener(BreakpointsController.EVENTS.CHANGE, this.onBreakpointChange);
       }
-      if (this.#settings.watchScroll) {
+      if (__privateGet(this, _settings).watchScroll) {
         window.addEventListener("scroll", this.onScroll);
       }
-      if (this.#settings.watchCartUpdate) {
+      if (__privateGet(this, _settings).watchCartUpdate) {
         window.addEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate);
       }
+    }
+    static get SELECTOR() {
+      return `[data-component="${this.TYPE}"]`;
     }
     destroy() {
       if (this.resizeObserver) {
         this.resizeObserver.disconnect();
         this.resizeObserver = null;
       }
-      if (this.#settings.watchBreakpoint) {
+      if (__privateGet(this, _settings).watchBreakpoint) {
         window.removeEventListener(BreakpointsController.EVENTS.CHANGE, this.onBreakpointChange);
       }
-      if (this.#settings.watchScroll) {
+      if (__privateGet(this, _settings).watchScroll) {
         window.removeEventListener("scroll", this.onScroll);
       }
-      if (this.#settings.watchCartUpdate) {
+      if (__privateGet(this, _settings).watchCartUpdate) {
         window.removeEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate);
       }
       doComponentCleanup(this);
@@ -1475,9 +1482,9 @@
      * Queries for the first element matching the given selector within the component's element,
      * excluding elements that belong to nested components.
      * 
-     * @param {string} selector - The CSS selector to query for an element.
-     * @param {Element} dom - The DOM element to query within.  Defaults to the component's element.
-     * @returns {Element|undefined} The first matching Element object within the component's scope, or undefined if no match is found.
+     * @param selector - The CSS selector to query for an element.
+     * @param dom - The DOM element to query within.  Defaults to the component's element.
+     * @returns The first matching Element object within the component's scope, or undefined if no match is found.
      */
     qs(selector2, dom = this.el) {
       return this.qsa(selector2, dom)[0];
@@ -1486,9 +1493,9 @@
      * Queries for all elements matching the given selector within the component's element,
      * excluding elements that belong to nested components.
      * 
-     * @param {string} selector - The CSS selector to query for elements
-     * @param {Element} [dom=this.el] - The DOM element to query within. Defaults to the component's element
-     * @returns {Element[]} An array of matching Element objects within the component's scope
+     * @param selector - The CSS selector to query for elements
+     * @param dom - The DOM element to query within. Defaults to the component's element
+     * @returns An array of matching Element objects within the component's scope
      * 
      * @description
      * This method filters out elements that belong to nested components by checking if the
@@ -1502,8 +1509,9 @@
       });
     }
     // Make sure we're working with a DOM element that matches the component selector
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     validateDom(dom) {
-      if (!(dom instanceof Element || dom.matches(this.constructor.SELECTOR))) {
+      if (!(dom instanceof HTMLElement || dom.matches(this.constructor.SELECTOR))) {
         console.warn(`[${this.type}] Invalid DOM: Must be an Element matching the component selector`);
         return false;
       }
@@ -1511,13 +1519,18 @@
     }
     onResize(entries) {
     }
-    onBreakpointChange({ detail: { breakpoint, fromBreakpoint, direction } }) {
+    onBreakpointChange(e) {
+      const { detail: { breakpoint, fromBreakpoint, direction } } = e;
     }
     onScroll() {
     }
-    onCartUpdate({ detail: { cart } }) {
+    onCartUpdate(e) {
+      const { detail: { cart } } = e;
     }
-  }
+  };
+  _settings = new WeakMap();
+  _BaseComponent.TYPE = "base";
+  let BaseComponent = _BaseComponent;
   const doComponentCleanup = (instance2) => {
     if (!isObject$2(instance2)) {
       return;
