@@ -10811,7 +10811,7 @@
   }
   const redirect = (url) => {
     setTimeout(() => {
-      window.app?.taxi ? window.app.taxi.navigateTo(url) : window.location = url;
+      window.app?.taxi ? window.app.taxi.navigateTo(url) : window.location.href = url;
     }, 50);
   };
   class BaseRenderer extends Renderer {

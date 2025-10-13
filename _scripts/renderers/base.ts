@@ -1,4 +1,5 @@
-import { Renderer } from '@unseenco/taxi'
+import { Renderer, type Core } from '@unseenco/taxi'
+import type { RendererProps } from '@/types/taxi'
 
 import SectionManager from '@/core/sectionManager'
 
@@ -13,14 +14,27 @@ import Login from '@/sections/login'
 import Search from '@/sections/search'
 import PageHero from '@/sections/pageHero'
 
-const redirect = url => {
+// @TODO - Move this to app.ts once that file gets converted to TypeScript
+declare global {
+  interface Window {
+    app?: {
+      taxi?: Core & {
+        navigateTo: (url: string) => void;
+      };
+    };
+  }
+}
+
+const redirect = (url: string) => {
   setTimeout(() => {
-    window.app?.taxi ? window.app.taxi.navigateTo(url) : (window.location = url)
+    window.app?.taxi ? window.app.taxi.navigateTo(url) : (window.location.href = url)
   }, 50)
 }
 
 export default class BaseRenderer extends Renderer {
-  constructor(properties) {
+  sectionManager: SectionManager | null
+
+  constructor(properties: RendererProps) {
     super(properties)
   }
 
