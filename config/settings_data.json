@@ -1,4 +1,48 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "current": {
+    "sections": {
+      "header": {
+        "type": "header",
+        "settings": {
+          "primary_menu": "arch-main-menu"
+        }
+      },
+      "mobile-menu": {
+        "type": "mobile-menu",
+        "settings": {
+          "primary_menu": "arch-main-menu",
+          "secondary_menu": ""
+        }
+      },
+      "footer": {
+        "type": "footer",
+        "settings": {
+          "newsletter_title": "Newsletter Signup",
+          "newsletter_message": "",
+          "newsletter_success_message": "",
+          "socials_title": "Follow Us",
+          "socials_menu": "",
+          "copyright_text": ""
+        }
+      },
+      "ajax-cart": {
+        "type": "ajax-cart",
+        "settings": {
+          "checkout_button_text": "Proceed To Checkout",
+          "checkout_message": "",
+          "empty_text": "Looks like you have some shopping to do."
+        }
+      }
+    },
+    "content_for_index": []
   }
 }

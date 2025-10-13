@@ -1,7 +1,20 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
-      "type": "page-hero"
+      "type": "page-hero",
+      "settings": {
+        "image": "shopify://shop_images/Paradox-video-Mexico-City-Praxis-1-Francis-1997.webp",
+        "title": "Welcome to Cadavaer"
+      }
     }
   },
   "order": [
