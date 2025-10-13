@@ -25,6 +25,18 @@
       },
       "footer": {
         "type": "footer",
+        "blocks": {
+          "menu_j3BtzL": {
+            "type": "menu",
+            "settings": {
+              "title": "Info",
+              "menu": "arch-footer-primary"
+            }
+          }
+        },
+        "block_order": [
+          "menu_j3BtzL"
+        ],
         "settings": {
           "newsletter_title": "Newsletter Signup",
           "newsletter_message": "",
