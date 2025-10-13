@@ -19,7 +19,7 @@ type MediaQuery = {
   query: MediaQueryList
 }
 
-type BreakpointChangeEvent = {
+export type BreakpointChangeEvent = {
   breakpoint: number
   fromBreakpoint: number
   direction: number

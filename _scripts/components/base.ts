@@ -1,17 +1,30 @@
-import BreakpointsController from '@/core/breakpointsController'
+import BreakpointsController, { type BreakpointChangeEvent } from '@/core/breakpointsController'
 import CartAPI from '@/core/cartAPI'
 import { isObject } from '@/core/utils'
 
+interface BaseComponentSettings {
+  watchResize?: boolean;
+  watchBreakpoint?: boolean;
+  watchScroll?: boolean;
+  watchCartUpdate?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any; // Allow additional properties from subclasses
+}
+
 export default class BaseComponent {
-  #settings;
+  #settings: BaseComponentSettings;
 
-  static TYPE = 'base'
+  el: HTMLElement;
+  type: string;
+  resizeObserver: ResizeObserver | null;
 
-  static get SELECTOR() {
+  static TYPE: string = 'base'
+
+  static get SELECTOR(): string {
     return `[data-component="${this.TYPE}"]`
   }
 
-  constructor(el, options = {}) {
+  constructor(el: HTMLElement, options: BaseComponentSettings = {}) {
     this.#settings = {
       watchResize: false,
       watchBreakpoint: false,
@@ -21,7 +34,7 @@ export default class BaseComponent {
     }
     
     this.el = el
-    this.type = this.constructor.TYPE
+    this.type = (this.constructor as typeof BaseComponent).TYPE
 
     this.validateDom(this.el)
 
@@ -74,15 +87,15 @@ export default class BaseComponent {
     doComponentCleanup(this)
   }
 
-  get dataset() {
+  get dataset(): DOMStringMap {
     return this.el.dataset
   }
 
-  get isAriaHidden() {
+  get isAriaHidden(): boolean {
     return this.el.getAttribute('aria-hidden') === 'true'
   }
 
-  get ariaControlElements() {
+  get ariaControlElements(): Element[] {
     return [...document.querySelectorAll(`[aria-controls="${this.el.id}"]`)]
   }  
 
@@ -90,11 +103,11 @@ export default class BaseComponent {
    * Queries for the first element matching the given selector within the component's element,
    * excluding elements that belong to nested components.
    * 
-   * @param {string} selector - The CSS selector to query for an element.
-   * @param {Element} dom - The DOM element to query within.  Defaults to the component's element.
-   * @returns {Element|undefined} The first matching Element object within the component's scope, or undefined if no match is found.
+   * @param selector - The CSS selector to query for an element.
+   * @param dom - The DOM element to query within.  Defaults to the component's element.
+   * @returns The first matching Element object within the component's scope, or undefined if no match is found.
    */
-  qs(selector, dom = this.el) {
+  qs(selector: string, dom: HTMLElement = this.el): Element | undefined {
     return this.qsa(selector, dom)[0]
   }
 
@@ -102,16 +115,16 @@ export default class BaseComponent {
    * Queries for all elements matching the given selector within the component's element,
    * excluding elements that belong to nested components.
    * 
-   * @param {string} selector - The CSS selector to query for elements
-   * @param {Element} [dom=this.el] - The DOM element to query within. Defaults to the component's element
-   * @returns {Element[]} An array of matching Element objects within the component's scope
+   * @param selector - The CSS selector to query for elements
+   * @param dom - The DOM element to query within. Defaults to the component's element
+   * @returns An array of matching Element objects within the component's scope
    * 
    * @description
    * This method filters out elements that belong to nested components by checking if the
    * closest parent component is either the querying component itself or matches the
    * selector (which would make it a target of the query rather than a container to exclude).
    */
-  qsa(selector, dom = this.el) {
+  qsa(selector: string, dom: HTMLElement = this.el): Element[] {
     return [...dom.querySelectorAll(selector)].filter(el => {
       const closest = el.closest('[data-component]')
 
@@ -120,8 +133,9 @@ export default class BaseComponent {
   }
 
   // Make sure we're working with a DOM element that matches the component selector
-  validateDom(dom) {
-    if (!(dom instanceof Element || dom.matches(this.constructor.SELECTOR))) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  validateDom(dom: any) {
+    if (!(dom instanceof HTMLElement || dom.matches((this.constructor as typeof BaseComponent).SELECTOR))) {
       console.warn(`[${this.type}] Invalid DOM: Must be an Element matching the component selector`)
       
       return false
@@ -130,11 +144,12 @@ export default class BaseComponent {
     return true
   }
 
-  onResize(entries) {
+  onResize(entries: ResizeObserverEntry[]) {
     // override in subclass
   }
 
-  onBreakpointChange({ detail: { breakpoint, fromBreakpoint, direction } }) {
+  onBreakpointChange(e: CustomEvent<BreakpointChangeEvent>) {
+    const { detail: { breakpoint, fromBreakpoint, direction } } = e
     // override in subclass
   }
 
@@ -142,7 +157,8 @@ export default class BaseComponent {
     // override in subclass
   }
 
-  onCartUpdate({ detail: { cart } }) {
+  onCartUpdate(e: CustomEvent) {
+    const { detail: { cart } } = e
     // override in subclass
   }
 }
@@ -152,9 +168,10 @@ export default class BaseComponent {
  * Calls 'destroy' on any components that exists as instance variables or inside array instance variables
  * Inspiration from https://github.com/twbs/bootstrap/blob/main/js/src/base-component.js#L39
  * 
- * @param {object} instance
+ * @param instance - The instance to clean up
  */
-export const doComponentCleanup = (instance) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const doComponentCleanup = (instance: any) => {
   if (!isObject(instance)) {
     return
   }
