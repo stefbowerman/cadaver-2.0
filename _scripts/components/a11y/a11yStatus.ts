@@ -3,7 +3,7 @@ import BaseComponent from '@/components/base'
 export default class A11yStatus extends BaseComponent {
   static TYPE = 'a11y-status'
 
-  static generate(parent) {
+  static generate(parent: HTMLElement) {
     if (!parent) {
       console.warn('A11yStatus: No parent element provided')
       return
@@ -22,11 +22,11 @@ export default class A11yStatus extends BaseComponent {
     return new A11yStatus(el)
   }
 
-  constructor(el) {
+  constructor(el: HTMLElement) {
     super(el)
   }
 
-  set text(text) {
+  set text(text: string) {
     this.el.textContent = text
   }
 }

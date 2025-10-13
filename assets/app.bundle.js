@@ -6517,8 +6517,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }, "<");
     return tl;
   };
-  class A11yStatus extends BaseComponent {
-    static TYPE = "a11y-status";
+  const _A11yStatus = class _A11yStatus extends BaseComponent {
     static generate(parent) {
       if (!parent) {
         console.warn("A11yStatus: No parent element provided");
@@ -6529,10 +6528,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       el.setAttribute("aria-live", "polite");
       el.setAttribute("aria-atomic", "true");
       el.setAttribute("aria-hidden", "true");
-      el.setAttribute("data-component", A11yStatus.TYPE);
+      el.setAttribute("data-component", _A11yStatus.TYPE);
       el.classList.add("sr-only");
       parent.appendChild(el);
-      return new A11yStatus(el);
+      return new _A11yStatus(el);
     }
     constructor(el) {
       super(el);
@@ -6540,7 +6539,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     set text(text) {
       this.el.textContent = text;
     }
-  }
+  };
+  _A11yStatus.TYPE = "a11y-status";
+  let A11yStatus = _A11yStatus;
   const selectors$i = {
     list: "ul",
     more: "a[data-more]"
