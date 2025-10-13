@@ -6,10 +6,17 @@ const classes = {
   open: 'is-open'
 }
 
+type BackdropGenerateOptions = {
+  title?: string;
+  ariaLabel?: string;
+  ariaControls?: string | null;
+  ariaExpanded?: boolean;
+}
+
 export default class Backdrop extends BaseComponent {
   static TYPE = 'backdrop'
 
-  static generate(parent, options = {}) {
+  static generate(parent: Element | undefined, options: BackdropGenerateOptions = {}) {
     const el = document.createElement('button')
     
     const settings = {
@@ -39,7 +46,7 @@ export default class Backdrop extends BaseComponent {
     return new Backdrop(el)
   }
 
-  constructor(el) {
+  constructor(el: HTMLElement) {
     super(el)
   }
 
