@@ -1,3 +1,14 @@
+import type {
+  ThemeEditorGenericEvent,
+  ThemeEditorSectionLoadEvent,
+  ThemeEditorSectionUnloadEvent,
+  ThemeEditorSectionSelectEvent,
+  ThemeEditorSectionDeselectEvent,
+  ThemeEditorSectionReorderEvent,
+  ThemeEditorBlockSelectEvent,
+  ThemeEditorBlockDeselectEvent,
+} from '@/types/shopify'
+
 import { isThemeEditor } from '@/core/utils'
 import { startCase } from '@/core/utils/string'
 
@@ -12,18 +23,33 @@ const THEME_EDITOR_EVENTS = [
   'shopify:section:deselect',
   'shopify:section:reorder',
   'shopify:block:select',
-  'shopify:block:deselect'
+  'shopify:block:deselect',
+
+  // Not hooking these up just yet....
+  // 'shopify:inspector:activate',
+  // 'shopify:inspector:deactivate',
 ]
 
-// Turns 'shopify:section:load' => 'onSectionLoad'
-// Turns 'shopify:block:select' => 'onBlockSelect'
-function getEventHandlerName(event) {
-  let name = event.split(':').splice(1).map(startCase).join('')
+/**
+ * Converts en event name into and event handler name
+ * 
+ * @param {string} eventName - Event name
+ * @returns {string} Event handler name
+ *
+ * @example
+ * getEventHandlerName('shopify:section:load') => 'onSectionLoad'
+ */
+function getEventHandlerName(eventName: string): string {
+  const name = eventName.split(':').splice(1).map(startCase).join('')
 
   return `on${name}`
 }
 
 export default class SectionManager {
+
+  constructors: Record<string, typeof BaseSection>
+  instances: BaseSection[]
+
   constructor() {
     this.constructors = {}
     this.instances = []
@@ -63,15 +89,15 @@ export default class SectionManager {
     })
   }
 
-  getInstanceById(id) {
+  getInstanceById(id: string) {
     return this.instances.find(instance => instance.id === id)
   }
 
-  getSingleInstance(type) {
+  getSingleInstance(type: string) {
     return this.instances.find(instance => instance.type === type)
   }
 
-  load(container, constructor) {
+  load(container: HTMLElement, constructor?: typeof BaseSection) {
     const type = container.getAttribute(SECTION_TYPE_ATTR)
     const Konstructor = constructor || this.constructors[type] // No param re-assignment
 
@@ -84,7 +110,7 @@ export default class SectionManager {
     this.instances.push(instance)
   }
 
-  unload(id) {
+  unload(id: string) {
     const index = this.instances.findIndex(instance => instance.id === id)
 
     if (index !== -1) {
@@ -92,7 +118,7 @@ export default class SectionManager {
     }
   }
 
-  register(constructor) {
+  register(constructor: typeof BaseSection) {
     if (!(constructor.prototype instanceof BaseSection)) {
       return
     }
@@ -112,14 +138,14 @@ export default class SectionManager {
 
     this.constructors[TYPE] = constructor
 
-    document.querySelectorAll(`[${SECTION_TYPE_ATTR}="${TYPE}"]`).forEach(container => {
+    document.querySelectorAll(`[${SECTION_TYPE_ATTR}="${TYPE}"]`).forEach((container: HTMLElement) => {
       this.load(container, constructor)
     })
   }
 
   // Generic event is a non section:{load/unload} event
   // Simply triggers the appropriate instance method if available
-  onGenericEvent(e, func) {
+  onGenericEvent(e: ThemeEditorGenericEvent, func: string) {
     const instance = this.getInstanceById(e.detail.sectionId)
 
     if (instance && typeof instance[func] === 'function') {
@@ -127,15 +153,15 @@ export default class SectionManager {
     }    
   }
 
-  onSectionLoad(e) {
-    const container = e.target.querySelector(`[${SECTION_TYPE_ATTR}]`)
+  onSectionLoad(e: ThemeEditorSectionLoadEvent) {
+    const container = (e.target as HTMLElement).querySelector(`[${SECTION_TYPE_ATTR}]`)
 
     if (container) {
-      this.load(container)
+      this.load(container as HTMLElement)
     }
   }
 
-  onSectionUnload(e) {
+  onSectionUnload(e: ThemeEditorSectionUnloadEvent) {
     const instance = this.getInstanceById(e.detail.sectionId)
 
     if (!instance) {
@@ -147,23 +173,23 @@ export default class SectionManager {
     this.unload(e.detail.sectionId)
   }  
 
-  onSectionSelect(e) {
+  onSectionSelect(e: ThemeEditorSectionSelectEvent) {
     this.onGenericEvent(e, 'onSectionSelect')
   }
 
-  onSectionDeselect(e) {
+  onSectionDeselect(e: ThemeEditorSectionDeselectEvent) {
     this.onGenericEvent(e, 'onSectionDeselect')
   }
 
-  onSectionReorder(e) {
+  onSectionReorder(e: ThemeEditorSectionReorderEvent) {
     this.onGenericEvent(e, 'onSectionReorder')
   }
 
-  onBlockSelect(e) {
+  onBlockSelect(e: ThemeEditorBlockSelectEvent) {
     this.onGenericEvent(e, 'onBlockSelect')
   }
 
-  onBlockDeselect(e) {
+  onBlockDeselect(e: ThemeEditorBlockDeselectEvent) {
     this.onGenericEvent(e, 'onBlockDeselect')
   } 
 }

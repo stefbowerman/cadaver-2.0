@@ -1,3 +1,18 @@
+import type {
+  ThemeEditorSectionUnloadEvent,
+  ThemeEditorSectionSelectEvent,
+  ThemeEditorSectionDeselectEvent,
+  ThemeEditorSectionReorderEvent,
+  ThemeEditorBlockSelectEvent,
+  ThemeEditorBlockDeselectEvent,
+} from '@/types/shopify'
+
+import type {
+  TaxiNavigateOutEvent,
+  TaxiNavigateInEvent,
+  TaxiNavigateEndEvent,
+} from '@/types/taxi'
+
 import LazyImageController from '@/core/lazyImageController'
 import { doComponentCleanup } from '@/components/base'
 
@@ -80,9 +95,7 @@ export default class BaseSection {
     }) as HTMLElement[]
   }
 
-  // @TODO - Add types for these events
-
-  onUnload(e) {
+  onUnload(e: ThemeEditorSectionUnloadEvent) {
     window.removeEventListener('taxi.navigateOut', this.onNavigateOut)
     window.removeEventListener('taxi.navigateIn', this.onNavigateIn)
     window.removeEventListener('taxi.navigateEnd', this.onNavigateEnd)
@@ -92,35 +105,35 @@ export default class BaseSection {
     doComponentCleanup(this) // This automatically calls this.destroy() up all components recursively
   }
 
-  onSectionSelect(e) {
+  onSectionSelect(e: ThemeEditorSectionSelectEvent) {
     
   }
 
-  onSectionDeselect(e) {
+  onSectionDeselect(e: ThemeEditorSectionDeselectEvent) {
 
   }
 
-  onSectionReorder(e) {
+  onSectionReorder(e: ThemeEditorSectionReorderEvent) {
 
   }
 
-  onBlockSelect(e) {
+  onBlockSelect(e: ThemeEditorBlockSelectEvent) {
 
   }
 
-  onBlockDeselect(e) {
+  onBlockDeselect(e: ThemeEditorBlockDeselectEvent) {
 
   }
 
-  onNavigateOut(e) {
-    // const { from, trigger } = e.detail
+  onNavigateOut(e: TaxiNavigateOutEvent) {
+    
   }
 
-  onNavigateIn(e) {
-    // const { to, trigger } = e.detail
+  onNavigateIn(e: TaxiNavigateInEvent) {
+    
   }
 
-  onNavigateEnd(e) {
-    // const { to, from, trigger } = e.detail
+  onNavigateEnd(e: TaxiNavigateEndEvent) {
+    
   }    
 }
