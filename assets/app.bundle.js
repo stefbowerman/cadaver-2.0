@@ -10735,8 +10735,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     input: 'input[name="q"]',
     icon: "[data-icon]"
   };
-  class SearchInline extends BaseComponent {
-    static TYPE = "search-inline";
+  const _SearchInline = class _SearchInline extends BaseComponent {
     constructor(el, options = {}) {
       super(el);
       this.settings = {
@@ -10763,8 +10762,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onSubmit(e) {
       const data = new FormData(this.el);
-      const q = data.get("q")?.trim();
-      const type = data.get("type") || "product";
+      const q = data.get("q")?.toString().trim();
+      const type = data.get("type")?.toString() || "product";
       if (!q) {
         return;
       }
@@ -10786,7 +10785,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onKeyup(e) {
       this.settings.onKeyup(e);
     }
-  }
+  };
+  _SearchInline.TYPE = "search-inline";
+  let SearchInline = _SearchInline;
   class SearchSection extends ResultsSection {
     #isLoading;
     static TYPE = "search";
