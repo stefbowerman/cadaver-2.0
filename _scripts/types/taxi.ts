@@ -30,3 +30,11 @@ export type TaxiNavigateEndEvent = CustomEvent<{
   to: CacheEntry
   trigger: Trigger
 }>
+
+// See: https://github.com/craftedbygc/taxi/blob/main/src/Renderer.js
+export type RendererProps = {
+  content: HTMLElement|Element,
+  page: Document|Node,
+  title: string,
+  wrapper: Element
+}
