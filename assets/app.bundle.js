@@ -1681,7 +1681,6 @@
         return !closest || closest.isSameNode(el);
       });
     }
-    // @TODO - Add types for these events
     onUnload(e) {
       window.removeEventListener("taxi.navigateOut", this.onNavigateOut);
       window.removeEventListener("taxi.navigateIn", this.onNavigateIn);
@@ -1715,9 +1714,12 @@
     "shopify:section:reorder",
     "shopify:block:select",
     "shopify:block:deselect"
+    // Not hooking these up just yet....
+    // 'shopify:inspector:activate',
+    // 'shopify:inspector:deactivate',
   ];
-  function getEventHandlerName(event) {
-    let name = event.split(":").splice(1).map(startCase).join("");
+  function getEventHandlerName(eventName) {
+    const name = eventName.split(":").splice(1).map(startCase).join("");
     return `on${name}`;
   }
   class SectionManager {
