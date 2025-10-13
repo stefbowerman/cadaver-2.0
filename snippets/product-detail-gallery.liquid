@@ -130,10 +130,15 @@
     class="product-detail-gallery is-active"
     data-component="product-detail-gallery"
   >
-    <div class="swiper-container" data-slideshow>
-      <div class="swiper-wrapper">
-        {{ slides }}
+    <div class="embla">
+      <div class="embla__viewport" data-slideshow>
+        <div class="embla__container">
+          {{ slides }}
+        </div>
       </div>
+      
+      <div class="embla__pagination text-center"></div>
+      <div class="embla__dots"></div>
     </div>
 
     <div class="product-detail-gallery__list">

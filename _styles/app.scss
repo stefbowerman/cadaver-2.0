@@ -135,3 +135,71 @@ body.ajax-cart-open,
 body.drawer-open {
   @apply overflow-hidden;
 }
+
+
+// Putting this here for now..
+.embla {
+  --slide-spacing: 0;
+  --slide-size: 100%;
+
+  --text-body: rgb(54, 49, 61);
+  --detail-medium-contrast: rgb(234, 234, 234);
+  --text-high-contrast-rgb-value: 49, 49, 49;
+}
+.embla__viewport {
+  overflow: hidden;
+}
+.embla__container {
+  display: flex;
+  touch-action: pan-y pinch-zoom;
+  margin-left: calc(var(--slide-spacing) * -1);
+
+  .embla__viewport.is-disabled & {
+    transform: none !important;
+  }
+}
+.embla__slide {
+  transform: translate3d(0, 0, 0);
+  flex: 0 0 100%;
+  min-width: 0;
+  padding-left: var(--slide-spacing);
+}
+.embla__dots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.embla__dot {
+  -webkit-tap-highlight-color: rgba(var(--text-high-contrast-rgb-value), 0.5);
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  touch-action: manipulation;
+  display: inline-flex;
+  text-decoration: none;
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  width: 2.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+
+  &:after {
+    box-shadow: inset 0 0 0 2px var(--detail-medium-contrast);
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    content: '';
+  }
+
+  &--selected {
+    &:after {
+      box-shadow: inset 0 0 0 2px var(--text-body);
+    }
+  }
+}

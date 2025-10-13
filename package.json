@@ -19,11 +19,12 @@
     "terser": "^5.44.0",
     "terser-webpack-plugin": "^5.3.14",
     "vite": "^7.1.9",
-    "vite-plugin-eslint": "^1.8.1"    
+    "vite-plugin-eslint": "^1.8.1"
   },
   "dependencies": {
     "@unseenco/taxi": "^1.8.0",
     "animated-scroll-to": "^2.3.0",
+    "embla-carousel": "^8.6.0",
     "gsap": "^3.12.7",
     "lodash.debounce": "^4.0.8",
     "swiper": "^9.4.1"
