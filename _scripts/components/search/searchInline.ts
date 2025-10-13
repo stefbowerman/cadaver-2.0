@@ -5,10 +5,21 @@ const selectors = {
   icon: '[data-icon]'
 }
 
+type SearchInlineOptions = {
+  onSubmit?: (e: Event, url: string) => void | boolean;
+  onKeyup?: (e: Event) => void;
+}
+
 export default class SearchInline extends BaseComponent {
   static TYPE = 'search-inline'
 
-  constructor(el, options = {}) {
+  declare el: HTMLFormElement;
+  settings: SearchInlineOptions;
+  input: HTMLInputElement;
+  icon: HTMLElement;
+  action: string;
+
+  constructor(el: HTMLFormElement, options: SearchInlineOptions = {}) {
     super(el)
 
     this.settings = {
@@ -37,11 +48,11 @@ export default class SearchInline extends BaseComponent {
     this.input.value = ''
   }
 
-  onSubmit(e) {
+  onSubmit(e: SubmitEvent) {
     const data = new FormData(this.el)
 
-    const q = data.get('q')?.trim()
-    const type = data.get('type') || 'product'
+    const q = data.get('q')?.toString().trim()
+    const type = data.get('type')?.toString() || 'product'
 
     if (!q) {
       return
@@ -70,7 +81,7 @@ export default class SearchInline extends BaseComponent {
   }
 
 
-  onKeyup(e) {
+  onKeyup(e: KeyboardEvent) {
     this.settings.onKeyup(e)
   }
 }
