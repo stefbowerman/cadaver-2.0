@@ -11736,12 +11736,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const DEFAULT_MIN = 0;
   const DEFAULT_MAX = 999;
   const DEFAULT_STEP = 1;
-  class QuantityAdjuster extends BaseComponent {
-    static TYPE = "quantity-adjuster";
+  const _QuantityAdjuster = class _QuantityAdjuster extends BaseComponent {
     constructor(el, options = {}) {
       super(el);
       this.settings = {
-        onChange: () => {
+        onChange: (value) => {
         },
         ...options
       };
@@ -11777,20 +11776,20 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       return this.parseAttribute(this.input.step, DEFAULT_STEP);
     }
     set min(value) {
-      isNumber(value) ? this.input.min = value : this.input.removeAttribute("min");
+      isNumber(value) ? this.input.min = value.toString() : this.input.removeAttribute("min");
     }
     set max(value) {
-      isNumber(value) ? this.input.max = value : this.input.removeAttribute("max");
+      isNumber(value) ? this.input.max = value.toString() : this.input.removeAttribute("max");
     }
     set step(value) {
-      isNumber(value) ? this.input.step = value : this.input.removeAttribute("step");
+      isNumber(value) ? this.input.step = value.toString() : this.input.removeAttribute("step");
     }
     get value() {
       return parseInt(this.input.value, 10);
     }
     set value(q) {
       if (q === this.value) return;
-      this.input.value = q;
+      this.input.value = q.toString();
     }
     get disabled() {
       return this.input.disabled;
@@ -11843,7 +11842,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onInputMutation() {
       this.validate();
     }
-  }
+  };
+  _QuantityAdjuster.TYPE = "quantity-adjuster";
+  let QuantityAdjuster = _QuantityAdjuster;
   const selectors$4 = {
     remove: "[data-remove]",
     price: "[data-price]"
