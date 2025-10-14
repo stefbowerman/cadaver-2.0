@@ -21,6 +21,10 @@ declare global {
       taxi?: Core & {
         navigateTo: (url: string) => void;
       };
+      klaviyo?: {
+        companyId: string
+        listId: string
+      };      
     };
   }
 }
