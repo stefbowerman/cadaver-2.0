@@ -6,7 +6,8 @@
 @use 'core/rte';
 @use 'core/tables';
 @use 'core/buttons';
-@use 'core/forms'; 
+@use 'core/swatches';
+@use 'core/forms';
 
 .container {
   @apply w-full px-container mx-auto;

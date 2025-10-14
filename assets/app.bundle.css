@@ -161,6 +161,46 @@ button[disabled] {
   flex: 1 1 0%;
 }
 
+.swatch {
+  position: relative;
+  display: inline-block;
+  height: 2rem;
+  width: 2rem;
+  vertical-align: middle;
+}
+.swatch svg {
+  height: 100%;
+  width: 100%;
+}
+.swatch img {
+  position: absolute;
+  inset: 0px;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+input[type=checkbox] + label .swatch, input[type=radio] + label .swatch {
+  cursor: pointer;
+}
+input[type=checkbox]:not(:disabled):not(:checked) + label:hover .swatch, input[type=radio]:not(:disabled):not(:checked) + label:hover .swatch {
+  outline-style: solid;
+  outline-offset: 2px;
+  outline-color: #0F0;
+}
+input[type=checkbox]:checked + label .swatch, input[type=radio]:checked + label .swatch {
+  outline-style: solid;
+  outline-offset: 2px;
+  outline-color: #00F;
+}
+input[type=checkbox]:focus-visible + label .swatch, input[type=radio]:focus-visible + label .swatch {
+  outline-style: solid;
+  outline-offset: 2px;
+  outline-color: #F00;
+}
+input[type=checkbox]:disabled + label .swatch, input[type=radio]:disabled + label .swatch {
+  cursor: not-allowed;
+}
+
 label {
   display: inline-block;
 }
@@ -424,6 +464,30 @@ input[type=number] {
   font-family: Helvetica Neue LT, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-size: 1rem;
   line-height: 1.5rem;
+}
+
+.composable-input {
+  position: relative;
+}
+.composable-input label {
+  position: relative;
+  width: 100%;
+}
+.composable-input input[type=radio],
+.composable-input input[type=checkbox] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+.composable-input:focus-visible {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
 }
 
 .container {
@@ -1798,6 +1862,9 @@ a:focus-visible:not(:has([disabled])), button:focus-visible:not(:has([disabled])
 .h-0 {
   height: 0px;
 }
+.h-8 {
+  height: 2rem;
+}
 .h-\[100dvh\] {
   height: 100dvh;
 }
@@ -1815,6 +1882,9 @@ a:focus-visible:not(:has([disabled])), button:focus-visible:not(:has([disabled])
 }
 .w-0 {
   width: 0px;
+}
+.w-8 {
+  width: 2rem;
 }
 .w-\[100px\] {
   width: 100px;
@@ -1863,6 +1933,9 @@ a:focus-visible:not(:has([disabled])), button:focus-visible:not(:has([disabled])
 .transform {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
+.cursor-pointer {
+  cursor: pointer;
+}
 .appearance-none {
   appearance: none;
 }
@@ -1895,6 +1968,9 @@ a:focus-visible:not(:has([disabled])), button:focus-visible:not(:has([disabled])
 }
 .justify-between {
   justify-content: space-between;
+}
+.gap-2 {
+  gap: 0.5rem;
 }
 .gap-4 {
   gap: 1rem;
@@ -2040,6 +2116,10 @@ a:focus-visible:not(:has([disabled])), button:focus-visible:not(:has([disabled])
   padding-top: 1.25rem;
   padding-bottom: 1.25rem;
 }
+.py-2 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
 .pb-8 {
   padding-bottom: 2rem;
 }
@@ -2143,6 +2223,15 @@ a:focus-visible:not(:has([disabled])), button:focus-visible:not(:has([disabled])
 }
 .outline {
   outline-style: solid;
+}
+.outline-blue {
+  outline-color: #00F;
+}
+.outline-green {
+  outline-color: #0F0;
+}
+.outline-red {
+  outline-color: #F00;
 }
 .grayscale {
   --tw-grayscale: grayscale(100%);

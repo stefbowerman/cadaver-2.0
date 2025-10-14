@@ -1,20 +1,19 @@
-{%- comment %}
+{% doc %}
 
   Variant Picker Option
   ------------------------------------------------------------------------------
 
-  Usage:
+  @param {object} option - The option to display
+  @param {string} [selection_type] - The type of selection to display
 
-  {% render 'variant-picker-option',
-             option: { option } - required,
-             selection_type: { 'select' | 'radio' } - optional
-  %}
-
-{% endcomment -%}
+  @example
+    {% render 'variant-picker-option', option: option, selection_type: 'select' %}
+{% enddoc %}
 
 {%- liquid
   assign option_name_handle = option.name | handle
-  assign option_select_id = 'vpo-' | append: option_name_handle | append: '-' | append: section.id
+  assign option_parent_id = 'vpo-' | append: option_name_handle | append: '-' | append: product.id
+  assign swatch_count = option.values | map: 'swatch' | compact | size
   assign is_radio = false
 
   if selection_type == 'radio'
@@ -24,28 +23,38 @@
 
 {% capture option_values_content %}
   {% if is_radio %}
-    <div>
+    <div class="flex flex-wrap gap-4">
       {%- for value in option.values -%}
         {%- liquid
-          assign input_id = section.id | append: '-' | append: option_name_handle | append: '-' | append: forloop.index0
+          assign input_id = option_parent_id | append: forloop.index0
         -%}
       
-        <div>
+        <div class="composable-input">
           <input
             type="radio"
             id="{{ input_id }}"
             name="{{ option.name | escape }}"
             value="{{ value | escape }}"
+            aria-label="{{ value | escape }}"
             {% if value.selected %}
               checked
             {% endif %}
             {% if value.available != true %}
               disabled
+              aria-disabled="true"
             {% endif %}
           >
 
           <label for="{{ input_id }}">
-            {{- value -}}
+            {% if swatch_count > 0 and value.swatch %}
+              {% comment %} This probably needs a tool tip or something? {% endcomment %}
+              {% render 'swatch', option_value: value, swatch: value.swatch, variant_image: value.variant.featured_media, use_variant_image: false %}
+            {% else %}
+              {% comment %} This will need interactive styling similar to _swatches.scss {% endcomment %}
+              <span class="inline-block py-2 px-4 border border-black rounded leading-none cursor-pointer">
+                {{- value -}}
+              </span>
+            {% endif %}
           </label>
         </div>
       {%- endfor -%}
@@ -53,7 +62,7 @@
   {% else %}
     <div class="form-control">
       <select
-        id="{{ option_select_id }}"
+        id="{{ option_parent_id }}"
         name="{{ option.name | escape }}"
       >
         {%- for value in option.values -%}
@@ -79,8 +88,8 @@
 {% endcapture %}
 
 <div
-  class="js"
   data-component="variant-picker-option"
+  data-name="{{ option.name }}"
 >
   {% comment %} Radio options require a fieldset since they use a list of inputs, each with their own label {% endcomment %}
   {% if is_radio %}
@@ -93,7 +102,7 @@
     </fieldset>
   {% else %}
     <div>
-      <label for="{{ option_select_id }}" style="font-weight: bold">
+      <label for="{{ option_parent_id }}" style="font-weight: bold">
         {{ option_label_content }}
       </label>
 

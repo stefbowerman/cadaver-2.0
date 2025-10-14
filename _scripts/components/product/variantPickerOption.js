@@ -11,6 +11,8 @@ export default class VariantPickerOption extends BaseComponent {
       ...options
     }
 
+    this.name = this.dataset.name
+
     // Picker options are either <select> tags or a series of <input> tags
     this.select = this.qs('select')
     this.inputs = this.qsa('input')

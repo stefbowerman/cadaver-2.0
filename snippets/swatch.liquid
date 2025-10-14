@@ -1,0 +1,58 @@
+{% # theme-check-disable UnusedAssign %}
+
+{% doc %}
+  Swatch
+  ------------------------------------------------------------------------------
+
+  @param {object} option_value - ProductOptionValueDrop
+  @param {object} swatch - ProductOptionValueSwatchDrop
+  @param {boolean} [use_variant_image] - Whether to show the variant image
+  @param {object} [variant_image] - The variant image to display
+
+  @example
+    {% render 'swatch', option_value: option_value, swatch: swatch, variant_image: variant_image %}
+{% enddoc %}
+
+{% liquid
+  assign use_variant_image = use_variant_image | default: false
+
+  assign has_swatch = false
+  assign swatch_image = nil
+  assign swatch_color = nil
+
+  if use_variant_image and variant_image
+    assign swatch_image = variant_image
+  elsif swatch.image
+    assign swatch_image = swatch.image
+  elsif swatch.color
+    assign swatch_color = swatch.color
+  endif
+
+  if swatch_image or swatch_color
+    assign has_swatch = true
+  endif
+%}
+
+{% comment %} if has_swatch is false, display "unavailable" ? {% endcomment %}
+
+<span
+  class="swatch"
+  {% if swatch.color %}
+    style="color: rgb({{ swatch.color.rgb }});"
+  {% endif %}
+>
+  {% comment %} I forget why I'm using an SVG to represent the swatch color but it was an a11y requirement on the GitHub site {% endcomment %}
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="24" height="24" fill="currentColor"/>
+  </svg>
+
+  {% if swatch_image %}
+    <img
+      src="{{ swatch_image | image_url: width: 80 }}"
+      alt="{{ swatch_image.alt | default: option_value.name }}"
+      width="{{ swatch_image.width }}"
+      height="{{ swatch_image.height }}"
+      style="object-position: {{ swatch_image.presentation.focal_point }}"
+    >
+  {% endif %}
+</span>

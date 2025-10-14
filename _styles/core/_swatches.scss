@@ -1,0 +1,53 @@
+@use 'sass:map';
+
+@mixin input-state($state) {
+  $selectors: (
+    'default': ' + label',
+    'hover': ':not(:disabled):not(:checked) + label:hover',
+    'active': ':not(:disabled):not(:checked) + label:active',
+    'selected': ':checked + label',
+    'focus': ':focus-visible + label',
+    'disabled': ':disabled + label'
+  );
+
+  input[type="checkbox"]#{map.get($selectors, $state)} &,
+  input[type="radio"]#{map.get($selectors, $state)} & {
+    @content;
+  }
+}
+
+
+.swatch {
+  @apply relative inline-block h-8 w-8 align-middle;
+
+  svg {
+    @apply h-full w-full;
+  }
+
+  img {
+    @apply absolute inset-0 h-full w-full object-cover;
+  }
+
+  // Input states - Not sure if it makes sense to scope these to a parent element
+  // e.g. .composable-input input[type="checkbox"] + label &
+
+  @include input-state('default') {
+    cursor: pointer;
+  }
+
+  @include input-state('hover') {
+    @apply outline outline-green outline-offset-2;
+  }
+
+  @include input-state('selected') {
+    @apply outline outline-blue outline-offset-2;
+  }
+
+  @include input-state('focus') {
+    @apply outline outline-red outline-offset-2;
+  }  
+
+  @include input-state('disabled') {
+    cursor: not-allowed;
+  }  
+}

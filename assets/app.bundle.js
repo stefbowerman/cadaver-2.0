@@ -6783,6 +6783,7 @@
         },
         ...options
       };
+      this.name = this.dataset.name;
       this.select = this.qs("select");
       this.inputs = this.qsa("input");
       this.el.addEventListener("change", this.onChange.bind(this));
