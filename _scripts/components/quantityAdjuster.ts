@@ -10,22 +10,33 @@ const DEFAULT_MIN = 0
 const DEFAULT_MAX = 999
 const DEFAULT_STEP = 1
 
+interface QuantityAdjusterSettings {
+  onChange?: (value: number) => void
+}
+
 export default class QuantityAdjuster extends BaseComponent {
   static TYPE = 'quantity-adjuster'
 
-  constructor(el, options = {}) {
+  settings: QuantityAdjusterSettings
+  changeEvent: Event
+  input: HTMLInputElement
+  increment: HTMLButtonElement
+  decrement: HTMLButtonElement
+  observer: MutationObserver
+
+  constructor(el: HTMLElement, options: QuantityAdjusterSettings = {}) {
     super(el)
 
     this.settings = {
-      onChange: () => {},
+      onChange: (value: number) => {},
       ...options
     }
 
     this.changeEvent = new Event('change', { bubbles: true }) // stepUp / stepDown doesn't trigger input change
 
-    this.input = this.el.querySelector('input[type="number"]')
-    this.increment = this.el.querySelector(selectors.increment)
-    this.decrement = this.el.querySelector(selectors.decrement)
+    this.input = this.el.querySelector('input[type="number"]')!
+    this.increment = this.el.querySelector(selectors.increment)!
+    this.decrement = this.el.querySelector(selectors.decrement)!
 
     this.input.addEventListener('change', this.onChange.bind(this))
     this.increment.addEventListener('click', this.onStepClick.bind(this))
@@ -46,51 +57,51 @@ export default class QuantityAdjuster extends BaseComponent {
     super.destroy()
   }
 
-  parseAttribute(value, defaultValue) {
+  parseAttribute(value: string, defaultValue: number): number {
     const parsed = parseInt(value, 10)
     
     return isNaN(parsed) ? defaultValue : parsed
   }
 
-  get min() {
+  get min(): number {
     return this.parseAttribute(this.input.min, DEFAULT_MIN)
   }
 
-  get max() {
+  get max(): number {
     return this.parseAttribute(this.input.max, DEFAULT_MAX)
   }
   
-  get step() {
+  get step(): number {
     return this.parseAttribute(this.input.step, DEFAULT_STEP)
   }
 
-  set min(value) {
-    isNumber(value) ? this.input.min = value : this.input.removeAttribute('min')
+  set min(value: number) {
+    isNumber(value) ? this.input.min = value.toString() : this.input.removeAttribute('min')
   }
 
-  set max(value) {
-    isNumber(value) ? this.input.max = value : this.input.removeAttribute('max')
+  set max(value: number) {
+    isNumber(value) ? this.input.max = value.toString() : this.input.removeAttribute('max')
   }
 
-  set step(value) {
-    isNumber(value) ? this.input.step = value : this.input.removeAttribute('step')
+  set step(value: number) {
+    isNumber(value) ? this.input.step = value.toString() : this.input.removeAttribute('step')
   }
 
-  get value() {
+  get value(): number {
     return parseInt(this.input.value, 10)
   }
 
-  set value(q) {
+  set value(q: number) {
     if (q === this.value) return // Prevent onChange
 
-    this.input.value = q
+    this.input.value = q.toString()
   }
   
-  get disabled() {
+  get disabled(): boolean {
     return this.input.disabled
   }
 
-  set disabled(isDisabled) {
+  set disabled(isDisabled: boolean) {
     this.input.disabled = isDisabled
     this.increment.disabled = isDisabled
     this.decrement.disabled = isDisabled
@@ -126,7 +137,7 @@ export default class QuantityAdjuster extends BaseComponent {
     this.settings.onChange(this.value)
   }
 
-  onStepClick(e) {
+  onStepClick(e: MouseEvent) {
     const previousValue = this.value
 
     if (e.currentTarget === this.increment) {
