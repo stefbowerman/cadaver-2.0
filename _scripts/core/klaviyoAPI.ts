@@ -1,5 +1,22 @@
-const companyId = window.app.klaviyo && window.app.klaviyo.companyId
-const listId = window.app.klaviyo && window.app.klaviyo.listId
+import { type Core } from '@unseenco/taxi'
+
+// @TODO - Move this to app.ts once that file gets converted to TypeScript
+declare global {
+  interface Window {
+    app?: {
+      taxi?: Core & {
+        navigateTo: (url: string) => void;
+      };
+      klaviyo?: {
+        companyId: string
+        listId: string
+      };      
+    };
+  }
+}
+
+const companyId = window.app?.klaviyo?.companyId
+const listId = window.app?.klaviyo?.listId
 
 if (!companyId) {
   console.warn('[KlaviyoAPI] - Klaviyo company ID not found')
@@ -10,7 +27,7 @@ if (!listId) {
 }
 
 const KlaviyoAPI = {
-  async makeRequest(path, data) {
+  async makeRequest(path: string, data: Record<string, unknown>) {
     try {
       const response = await fetch(`https://a.klaviyo.com${path}?company_id=${companyId}`, {
         method: 'POST',
@@ -29,13 +46,13 @@ const KlaviyoAPI = {
     catch (error) {
       return {
         message: 'Something went wrong',
-        errors: [error.message]
+        errors: [error as string]
       }
     }
   },
 
   // See: https://developers.klaviyo.com/en/reference/create_client_subscription
-  createClientSubscription({ email, source }) {
+  createClientSubscription({ email, source }: { email: string, source?: string }) {
     // Email and List ID are requred
     if (!email || !listId) {
       return 
@@ -72,14 +89,14 @@ const KlaviyoAPI = {
   },
 
   // see: https://developers.klaviyo.com/en/reference/create_client_back_in_stock_subscription
-  createBackInStockSubscription({ email, variant, external_id }) {
+  createBackInStockSubscription({ email, variant, external_id }: { email: string, variant: string, external_id?: string }) {
     // Email and variant are requred
     if (!email || !variant) {
       return 
     }
 
     const channels = ['EMAIL']
-    const profileAttributes = {
+    const profileAttributes: Record<string, string> = {
       email
     }
 

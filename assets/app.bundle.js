@@ -11036,8 +11036,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.primaryNavLinks.forEach((link) => setAriaCurrent(link, currentPath));
     }
   }
-  const companyId = window.app.klaviyo && window.app.klaviyo.companyId;
-  const listId = window.app.klaviyo && window.app.klaviyo.listId;
+  const companyId = window.app?.klaviyo?.companyId;
+  const listId = window.app?.klaviyo?.listId;
   if (!companyId) {
     console.warn("[KlaviyoAPI] - Klaviyo company ID not found");
   }
@@ -11061,7 +11061,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       } catch (error) {
         return {
           message: "Something went wrong",
-          errors: [error.message]
+          errors: [error]
         };
       }
     },
