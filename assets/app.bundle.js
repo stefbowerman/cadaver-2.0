@@ -1252,13 +1252,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const CACHED_CLASS = "is-cached";
   class LazyImageController {
     /**
-     * @param {HTMLElement} el - Element containing all images
+     * @param el - Element containing all images
      */
     constructor(el) {
       this.el = el;
-      if (!this.el) {
-        return;
-      }
       this.observedElements = /* @__PURE__ */ new WeakSet();
       this.imageObserver = new IntersectionObserver(this.onIntersection.bind(this), {
         rootMargin: "0px 0px 50% 0px"
@@ -1309,7 +1306,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onMutation(mutationsList) {
       const processNodes = (nodes, handler) => {
         nodes.forEach((node) => {
-          if (!(node instanceof Element)) return;
+          if (!(node instanceof HTMLElement)) return;
           if (node.matches && node.matches(SELECTOR)) {
             handler(node);
           } else {
