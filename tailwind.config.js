@@ -22,6 +22,7 @@ export default {
         current: 'currentColor',
         red: '#F00',
         blue: '#00F',
+        green: '#0F0',
         grey: '#999'
       },      
       spacing: {

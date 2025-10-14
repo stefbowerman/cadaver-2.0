@@ -256,3 +256,22 @@ input[type="number"] {
     @apply flex-1 min-w-4 text-center appearance-none font-sans text-base;
   }
 }
+
+.composable-input {
+  position: relative;
+
+  label {
+    position: relative;
+    width: 100%;
+  }
+  
+  input[type="radio"],
+  input[type="checkbox"] {
+    @apply sr-only;
+  }
+
+  // Child elements are responsible for focus-visible styles
+  &:focus-visible {
+    @apply outline-none;
+  }
+}
