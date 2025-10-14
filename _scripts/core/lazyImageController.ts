@@ -13,17 +13,17 @@ const LOADED_CLASS = 'is-loaded'
 const CACHED_CLASS = 'is-cached'
 
 export default class LazyImageController {
+  el: HTMLElement
+  observedElements: WeakSet<HTMLImageElement>
+  imageObserver: IntersectionObserver
+  mutationObserver: MutationObserver
+
   /**
-   * @param {HTMLElement} el - Element containing all images
+   * @param el - Element containing all images
    */
-  constructor(el) {
+  constructor(el: HTMLElement) {
     this.el = el
     
-    if (!this.el) {
-      return
-    }
-
-
     // Create a weakset to keep track of which elements are already being observed
     this.observedElements = new WeakSet()
 
@@ -34,7 +34,7 @@ export default class LazyImageController {
     this.mutationObserver = new MutationObserver(this.onMutation.bind(this))
     this.mutationObserver.observe(this.el, { childList: true, subtree: true })
 
-    this.el.querySelectorAll(SELECTOR).forEach(img => this.observeImage(img))
+    this.el.querySelectorAll(SELECTOR).forEach(img => this.observeImage(img as HTMLImageElement))
   }
 
   destroy() {
@@ -42,7 +42,7 @@ export default class LazyImageController {
     this.mutationObserver.disconnect()
   }
 
-  unobserveImage(img) {
+  unobserveImage(img: HTMLImageElement) {
     if (!this.observedElements.has(img)) {
       return
     }
@@ -51,7 +51,7 @@ export default class LazyImageController {
     this.observedElements.delete(img)
   }
 
-  observeImage(img) {
+  observeImage(img: HTMLImageElement) {
     if (this.observedElements.has(img)) {
       return
     }
@@ -60,22 +60,22 @@ export default class LazyImageController {
     this.observedElements.add(img)
   }
 
-  onImageLoad(img) {
+  onImageLoad(img: HTMLImageElement) {
     img.classList.add(LOADED_CLASS)
   }
 
-  onIntersection(entries, observer) {
+  onIntersection(entries: IntersectionObserverEntry[], observer: IntersectionObserver) {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const img = entry.target
 
         // Create a named function so that we can remove the eventListener
         const loadHandler = () => {
-          this.onImageLoad(img)
+          this.onImageLoad(img as HTMLImageElement)
           img.removeEventListener('load', loadHandler)
         }        
 
-        if (img.complete) {
+        if ((img as HTMLImageElement).complete) {
           loadHandler()
           img.classList.add(CACHED_CLASS)
         }
@@ -88,16 +88,16 @@ export default class LazyImageController {
     })
   }
 
-  onMutation(mutationsList) {
-    const processNodes = (nodes, handler) => {
+  onMutation(mutationsList: MutationRecord[]) {
+    const processNodes = (nodes: NodeList, handler: (node: HTMLElement) => void) => {
       nodes.forEach(node => {
-        if (!(node instanceof Element)) return
+        if (!(node instanceof HTMLElement)) return
   
         if (node.matches && node.matches(SELECTOR)) {
-          handler(node)
+          handler(node as HTMLImageElement)
         }
         else {
-          node.querySelectorAll(SELECTOR).forEach(img => handler(img))
+          node.querySelectorAll(SELECTOR).forEach(img => handler(img as HTMLImageElement))
         }
       })
     }
