@@ -1840,12 +1840,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.onGenericEvent(e, "onBlockDeselect");
     }
   }
-  class ProductCard extends BaseComponent {
-    static TYPE = "product-card";
+  const _ProductCard = class _ProductCard extends BaseComponent {
     constructor(el) {
       super(el);
     }
-  }
+  };
+  _ProductCard.TYPE = "product-card";
+  let ProductCard = _ProductCard;
   class FeaturedProductsSection extends BaseSection {
     static TYPE = "featured-products";
     constructor(container) {
@@ -6712,8 +6713,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     compare: "[data-compare]",
     comparePrice: "[data-compare-price]"
   };
-  class ProductPrice extends BaseComponent {
-    static TYPE = "product-price";
+  const _ProductPrice = class _ProductPrice extends BaseComponent {
     constructor(el) {
       super(el);
       this.price = this.qs(selectors$h.price);
@@ -6723,16 +6723,18 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     /**
      * Updates the product price display based on the given variant.
      *
-     * @param {Object} variant - The product variant object.
-     * @param {string} variant.price_formatted - The formatted price of the variant.
-     * @param {number} variant.price - The price of the variant.
-     * @param {number} variant.compare_at_price - The compare at price of the variant.
-     * @param {string} variant.compare_at_price_formatted - The formatted compare at price of the variant.
+     * @param variant - The product variant object.
+     * @param variant.price_formatted - The formatted price of the variant.
+     * @param variant.price - The price of the variant.
+     * @param variant.compare_at_price - The compare at price of the variant.
+     * @param variant.compare_at_price_formatted - The formatted compare at price of the variant.
      */
     update(variant) {
       if (variant) {
-        this.price.textContent = variant.price_formatted;
         const onSale = variant.compare_at_price > variant.price;
+        if (this.price) {
+          this.price.textContent = variant.price_formatted;
+        }
         if (this.compare) {
           this.comparePrice.textContent = onSale ? variant.compare_at_price_formatted : "";
           this.comparePrice.style.display = onSale ? "" : "none";
@@ -6742,33 +6744,39 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         this.el.style.display = "none";
       }
     }
-  }
+  };
+  _ProductPrice.TYPE = "product-price";
+  let ProductPrice = _ProductPrice;
   const selectors$g = {
     label: "[data-label]"
   };
-  class ATCButton extends BaseComponent {
-    static TYPE = "atc-button";
+  const _ATCButton = class _ATCButton extends BaseComponent {
     constructor(el) {
       super(el);
       this.tempText = null;
       this.label = this.qs(selectors$g.label);
+      if (!this.label) {
+        console.warn("No label found");
+      }
+    }
+    getString(key, fallback) {
+      return window.app?.strings?.[key] || fallback;
     }
     /**
      * Updates the DOM state of the add to cart button based on the given variant.
      *
-     * @param {Object} variant - Shopify variant object
-     * @param {boolean} variant.available - Indicates if the variant is available
+     * @param variant - LiteVariant object
      */
     update(variant) {
       let isDisabled2 = true;
-      let labelText = app.strings.unavailable;
+      let labelText = this.getString("unavailable", "Unavailable");
       if (variant) {
         if (variant.available) {
           isDisabled2 = false;
-          labelText = app.strings.addToCart;
+          labelText = this.getString("addToCart", "Add To Cart");
         } else {
           isDisabled2 = true;
-          labelText = app.strings.soldOut;
+          labelText = this.getString("soldOut", "Sold Out");
         }
       }
       this.el.disabled = isDisabled2;
@@ -6776,20 +6784,22 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onAddStart() {
       this.tempText = this.label.innerText;
-      this.label.innerText = app.strings.adding || "Adding...";
+      this.label.innerText = this.getString("adding", "Adding...");
     }
     onAddSuccess() {
-      this.label.innerText = app.strings.added || "Added!";
+      this.label.innerText = this.getString("added", "Added!");
       setTimeout(() => {
         this.label.innerText = this.tempText;
         this.tempText = null;
       }, 1e3);
     }
+    // @TODO - Add onAddFail and reset the text
     onAddDone() {
     }
-  }
-  class VariantPickerOption extends BaseComponent {
-    static TYPE = "variant-picker-option";
+  };
+  _ATCButton.TYPE = "atc-button";
+  let ATCButton = _ATCButton;
+  const _VariantPickerOption = class _VariantPickerOption extends BaseComponent {
     constructor(el, options = {}) {
       super(el);
       this.settings = {
@@ -6798,12 +6808,16 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         ...options
       };
       this.name = this.dataset.name;
+      if (!this.name) {
+        console.warn("No name attribute found");
+      }
       this.select = this.qs("select");
       this.inputs = this.qsa("input");
       this.el.addEventListener("change", this.onChange.bind(this));
     }
     get selectedOption() {
-      let name, value;
+      let name = void 0;
+      let value = void 0;
       if (this.select) {
         name = this.select.name;
         value = this.select.value;
@@ -6814,7 +6828,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
           value = selectedInput.value;
         }
       }
-      return { name, value };
+      return name && value ? { name, value } : void 0;
     }
     updateValueAvailability(value, available) {
       if (this.select) {
@@ -6832,14 +6846,15 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onChange(e) {
       this.settings.onChange();
     }
-  }
-  class VariantPicker extends BaseComponent {
-    static TYPE = "variant-picker";
+  };
+  _VariantPickerOption.TYPE = "variant-picker-option";
+  let VariantPickerOption = _VariantPickerOption;
+  const _VariantPicker = class _VariantPicker extends BaseComponent {
     constructor(el, options = {}) {
       super(el);
       this.settings = {
         product: null,
-        onVariantChange: () => {
+        onVariantChange: (e) => {
         },
         ...options
       };
@@ -6882,7 +6897,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       });
       this.onVariantChange({ variant, selectedOptions });
     }
-  }
+  };
+  _VariantPicker.TYPE = "variant-picker";
+  let VariantPicker = _VariantPicker;
   const selectors$f = {
     form: 'form[action*="/cart/add"]',
     submit: '[type="submit"]',

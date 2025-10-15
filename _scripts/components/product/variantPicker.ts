@@ -1,15 +1,31 @@
+import type { LiteProduct, LiteVariant } from '@/types/shopify'
 import BaseComponent from '@/components/base'
-import VariantPickerOption from '@/components/product/variantPickerOption'
+import VariantPickerOption, { type SelectedOption } from '@/components/product/variantPickerOption'
+
+interface VariantChangeEvent {
+  variant: LiteVariant
+  selectedOptions: SelectedOption[]
+}
+
+interface VariantPickerSettings {
+  product?: LiteProduct
+  onVariantChange?: (e: VariantChangeEvent) => void
+}
 
 export default class VariantPicker extends BaseComponent {
   static TYPE = 'variant-picker'
 
-  constructor(el, options = {}) {
+  settings: VariantPickerSettings
+  product: LiteProduct | null
+  availableVariants: LiteVariant[]
+  pickerOptions: VariantPickerOption[]
+
+  constructor(el: HTMLElement, options: VariantPickerSettings = {}) {
     super(el)
 
     this.settings = {
       product: null,
-      onVariantChange: () => {},
+      onVariantChange: (e: VariantChangeEvent) => {},
       ...options
     }
 
@@ -24,15 +40,15 @@ export default class VariantPicker extends BaseComponent {
     this.onVariantPickerOptionChange = this.onVariantPickerOptionChange.bind(this)
 
     this.pickerOptions = this.qsa(VariantPickerOption.SELECTOR).map(el => {
-      return new VariantPickerOption(el, {
+      return new VariantPickerOption(el as HTMLElement, {
         onChange: this.onVariantPickerOptionChange
       })
     })
   }
 
-  updateOptionValues(selectedOptions) {   
+  updateOptionValues(selectedOptions: SelectedOption[]) {   
     // Recursive function to check option values for variant availability, Goes deeper until we run out of product options
-    const checkOption = (idx, availableVariantsArray) => {
+    const checkOption = (idx: number, availableVariantsArray: LiteVariant[]) => {
       const option = this.product.options_with_values[idx] // e.g. { name: 'Color', position: 1, values: ['Red', 'Blue', 'Green'] }
 
       if (!option) return
@@ -54,7 +70,7 @@ export default class VariantPicker extends BaseComponent {
     checkOption(0, this.availableVariants)
   }
 
-  onVariantChange(e) {
+  onVariantChange(e: VariantChangeEvent) {
     this.updateOptionValues(e.selectedOptions)
 
     this.settings.onVariantChange(e)

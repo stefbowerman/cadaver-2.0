@@ -1,9 +1,23 @@
 import BaseComponent from '@/components/base'
 
+export interface SelectedOption {
+  name: string
+  value: string
+}
+
+interface VariantPickerOptionSettings {
+  onChange?: () => void
+}
+
 export default class VariantPickerOption extends BaseComponent {
   static TYPE = 'variant-picker-option'
 
-  constructor(el, options = {}) {
+  settings: VariantPickerOptionSettings
+  name: string
+  select: HTMLSelectElement | null
+  inputs: HTMLInputElement[]
+
+  constructor(el: HTMLElement, options: VariantPickerOptionSettings = {}) {
     super(el)
 
     this.settings = {
@@ -13,15 +27,20 @@ export default class VariantPickerOption extends BaseComponent {
 
     this.name = this.dataset.name
 
+    if (!this.name) {
+      console.warn('No name attribute found')
+    }
+    
     // Picker options are either <select> tags or a series of <input> tags
-    this.select = this.qs('select')
-    this.inputs = this.qsa('input')
+    this.select = this.qs('select') as HTMLSelectElement | null
+    this.inputs = this.qsa('input') as HTMLInputElement[]
 
     this.el.addEventListener('change', this.onChange.bind(this))
   }
 
-  get selectedOption() {
-    let name, value
+  get selectedOption(): SelectedOption | undefined {
+    let name: string | undefined = undefined
+    let value: string | undefined = undefined
 
     if (this.select) {
       name = this.select.name
@@ -36,12 +55,12 @@ export default class VariantPickerOption extends BaseComponent {
       }
     }
 
-    return { name, value }
+    return name && value ? { name, value } : undefined
   }
 
-  updateValueAvailability(value, available) {
+  updateValueAvailability(value: string, available: boolean) {
     if (this.select) {
-      [...this.select.children].forEach(option => {
+      [...this.select.children].forEach((option: HTMLOptionElement) => {
         if (option.value === value) {
           option.disabled = !available
         }
@@ -56,7 +75,7 @@ export default class VariantPickerOption extends BaseComponent {
     }
   }
 
-  onChange(e) {
+  onChange(e: Event) {
     this.settings.onChange()
   }
 }

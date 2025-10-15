@@ -4,6 +4,13 @@ import { type Core } from '@unseenco/taxi'
 declare global {
   interface Window {
     app?: {
+      strings: {
+        addToCart: string
+        soldOut: string
+        unavailable: string
+        adding: string
+        added: string
+      };      
       taxi?: Core & {
         navigateTo: (url: string) => void;
       };
