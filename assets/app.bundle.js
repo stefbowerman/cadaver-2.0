@@ -1570,8 +1570,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const classes$8 = {
     isReady: "is-ready"
   };
-  class GraphicCoverVideo extends BaseComponent {
-    static TYPE = "graphic-cover-video";
+  const _GraphicCoverVideo = class _GraphicCoverVideo extends BaseComponent {
     constructor(el) {
       super(el);
       this.autoPlayEnabled = prefersReducedMotion() ? false : true;
@@ -1642,7 +1641,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onIntersection(entries) {
       this.onVisibilityChange(entries[0].isIntersecting);
     }
-  }
+  };
+  _GraphicCoverVideo.TYPE = "graphic-cover-video";
+  let GraphicCoverVideo = _GraphicCoverVideo;
   class BaseSection {
     constructor(container) {
       this.container = container;

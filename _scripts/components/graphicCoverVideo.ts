@@ -8,12 +8,17 @@ const classes = {
 export default class GraphicCoverVideo extends BaseComponent {
   static TYPE = 'graphic-cover-video'
 
-  constructor(el) {
+  autoPlayEnabled: boolean
+  video: HTMLVideoElement | null
+  inView: boolean
+  observer: IntersectionObserver
+
+  constructor(el: HTMLElement) {
     super(el)
 
     this.autoPlayEnabled = prefersReducedMotion() ? false : true
 
-    this.video = this.qs('video')
+    this.video = this.qs('video') as HTMLVideoElement | null
     this.inView = false
 
     if (!this.video) {
@@ -51,7 +56,7 @@ export default class GraphicCoverVideo extends BaseComponent {
     try {
       await this.video.play()
     }
-    catch (e) {
+    catch (e: unknown) {
       console.warn(e)
     }
   }
@@ -79,7 +84,7 @@ export default class GraphicCoverVideo extends BaseComponent {
 
   }
 
-  onError(e) {
+  onError(e: ErrorEvent) {
     console.warn('Video error', e)
     this.video.style.display = 'none'
   }
@@ -100,7 +105,7 @@ export default class GraphicCoverVideo extends BaseComponent {
     }
   }
 
-  onIntersection(entries) {
+  onIntersection(entries: IntersectionObserverEntry[]) {
     this.onVisibilityChange(entries[0].isIntersecting)
   }
 }
