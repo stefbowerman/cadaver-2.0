@@ -17,7 +17,7 @@ export function isObject(value: unknown): boolean {
  *
  */
 export function isThemeEditor(): boolean {
-  return window.Shopify?.designMode 
+  return window.Shopify?.designMode ?? false
 }
 
 /**

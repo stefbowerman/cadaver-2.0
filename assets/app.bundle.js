@@ -1204,7 +1204,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     return value != null && (type === "object" || type === "function");
   }
   function isThemeEditor() {
-    return window.Shopify?.designMode;
+    return window.Shopify?.designMode ?? false;
   }
   function getQueryParams() {
     const queryParams = {};
@@ -1351,7 +1351,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         const cart = JSON.parse(data);
         return cart;
       } catch (e) {
-        throw new Error(`Could not retrieve cart items: ${e.message}`);
+        throw new Error(`Could not retrieve cart items: ${e instanceof Error ? e.message : "Unknown error"}`);
       }
     },
     /**
@@ -1501,7 +1501,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
      * selector (which would make it a target of the query rather than a container to exclude).
      */
     qsa(selector2, dom = this.el) {
-      return [...dom.querySelectorAll(selector2)].filter((el) => {
+      return Array.from(dom.querySelectorAll(selector2)).filter((el) => {
         const closest = el.closest("[data-component]");
         return closest.isSameNode(this.el) || closest.matches(selector2);
       });
@@ -1509,11 +1509,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     // Make sure we're working with a DOM element that matches the component selector
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     validateDom(dom) {
-      if (!(dom instanceof HTMLElement || dom.matches(this.constructor.SELECTOR))) {
-        console.warn(`[${this.type}] Invalid DOM: Must be an Element matching the component selector`);
-        return false;
+      if (dom instanceof HTMLElement && dom.matches(this.constructor.SELECTOR)) {
+        return true;
       }
-      return true;
+      console.warn(`[${this.type}] Invalid DOM: Must be an Element matching the component selector`);
+      return false;
     }
     onResize(entries) {
     }
@@ -1737,6 +1737,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     constructor() {
       this.constructors = {};
       this.instances = [];
+      THEME_EDITOR_EVENTS.forEach((ev) => {
+        const handlerName = getEventHandlerName(ev);
+        if (this[handlerName]) {
+          this[handlerName] = this[handlerName].bind(this);
+        }
+      });
       this.attachEvents();
     }
     destroy() {
@@ -1747,8 +1753,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     attachEvents() {
       if (!isThemeEditor()) return;
       THEME_EDITOR_EVENTS.forEach((ev) => {
-        const handlerName = getEventHandlerName(ev);
-        const handler = this[handlerName];
+        const handler = this[getEventHandlerName(ev)];
         if (handler) {
           window.document.addEventListener(ev, handler.bind(this));
         }
@@ -1756,8 +1761,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     removeEvents() {
       THEME_EDITOR_EVENTS.forEach((ev) => {
-        const handlerName = getEventHandlerName(ev);
-        const handler = this[handlerName];
+        const handler = this[getEventHandlerName(ev)];
         if (handler) {
           window.document.removeEventListener(ev, handler);
         }

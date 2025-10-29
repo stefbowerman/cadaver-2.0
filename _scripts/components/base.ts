@@ -125,7 +125,7 @@ export default class BaseComponent {
    * selector (which would make it a target of the query rather than a container to exclude).
    */
   qsa(selector: string, dom: HTMLElement = this.el): HTMLElement[] {
-    return [...dom.querySelectorAll(selector)].filter(el => {
+    return Array.from(dom.querySelectorAll(selector)).filter(el => {
       const closest = el.closest('[data-component]')
 
       return closest.isSameNode(this.el) || closest.matches(selector)
@@ -135,13 +135,12 @@ export default class BaseComponent {
   // Make sure we're working with a DOM element that matches the component selector
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   validateDom(dom: any) {
-    if (!(dom instanceof HTMLElement || dom.matches((this.constructor as typeof BaseComponent).SELECTOR))) {
-      console.warn(`[${this.type}] Invalid DOM: Must be an Element matching the component selector`)
-      
-      return false
+    if (dom instanceof HTMLElement && dom.matches((this.constructor as typeof BaseComponent).SELECTOR)) {
+      return true
     }
 
-    return true
+    console.warn(`[${this.type}] Invalid DOM: Must be an Element matching the component selector`)
+    return false
   }
 
   onResize(entries: ResizeObserverEntry[]) {

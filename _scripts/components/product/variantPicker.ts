@@ -3,7 +3,7 @@ import BaseComponent from '@/components/base'
 import VariantPickerOption from '@/components/product/variantPickerOption'
 
 export interface VariantChangeEvent {
-  variant: LiteVariant
+  variant?: LiteVariant
   selectedOptions: SelectedOption[]
 }
 

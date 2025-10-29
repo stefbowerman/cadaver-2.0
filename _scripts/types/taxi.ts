@@ -12,7 +12,7 @@ type CacheEntry = {
   content: HTMLElement | Element
 }
 
-type Trigger = string | HTMLElement |false
+type Trigger = string | HTMLElement | false
 
 export type TaxiNavigateOutProps = {
   from: CacheEntry | null

@@ -39,7 +39,7 @@ const CartAPI = {
       return cart
     }
     catch (e) {
-      throw new Error(`Could not retrieve cart items: ${e.message}`);
+      throw new Error(`Could not retrieve cart items: ${e instanceof Error ? e.message : 'Unknown error'}`);
     }
   },
 

@@ -25,7 +25,7 @@ export default class BaseSection {
   container: HTMLElement
   id: string
   type: string
-  parent: HTMLElement | null
+  parent: HTMLElement
   parentId: string
   lazyImageController: LazyImageController
   graphicCoverVideos: GraphicCoverVideo[]

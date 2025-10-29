@@ -32,7 +32,7 @@ export type ThemeEditorBlockDeselectEvent = CustomEvent<{
 
 export type ThemeEditorGenericEvent = ThemeEditorSectionSelectEvent | ThemeEditorSectionDeselectEvent | ThemeEditorSectionReorderEvent | ThemeEditorBlockSelectEvent | ThemeEditorBlockDeselectEvent
 
-interface ProductOption {
+export interface ProductOption {
   name: string
   position: number
   selected_value: string

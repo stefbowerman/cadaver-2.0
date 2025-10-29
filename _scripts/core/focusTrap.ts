@@ -107,7 +107,7 @@ export default class FocusTrap {
       })
     }
 
-    this.settings.onFocusin(focusEl)
+    this.settings.onFocusin(focusEl as HTMLElement)
   }
 
   onKeydown(event: KeyboardEvent) {

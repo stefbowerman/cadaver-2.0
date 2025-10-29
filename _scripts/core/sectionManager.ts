@@ -33,8 +33,8 @@ const THEME_EDITOR_EVENTS = [
 /**
  * Converts en event name into and event handler name
  * 
- * @param {string} eventName - Event name
- * @returns {string} Event handler name
+ * @param eventName - Event name
+ * @returns Event handler name
  *
  * @example
  * getEventHandlerName('shopify:section:load') => 'onSectionLoad'
@@ -54,6 +54,15 @@ export default class SectionManager {
     this.constructors = {}
     this.instances = []
 
+    // Bind all the theme editor event handlers
+    THEME_EDITOR_EVENTS.forEach(ev => {
+      const handlerName = getEventHandlerName(ev)
+
+      if (this[handlerName]) {
+        this[handlerName] = this[handlerName].bind(this)
+      }
+    })
+
     this.attachEvents()
   }
 
@@ -69,8 +78,7 @@ export default class SectionManager {
     if (!isThemeEditor()) return
 
     THEME_EDITOR_EVENTS.forEach(ev => {
-      const handlerName = getEventHandlerName(ev)
-      const handler = this[handlerName]
+      const handler = this[getEventHandlerName(ev)]
 
       if (handler) {
         window.document.addEventListener(ev, handler.bind(this))
@@ -80,8 +88,7 @@ export default class SectionManager {
 
   removeEvents() {
     THEME_EDITOR_EVENTS.forEach(ev => {
-      const handlerName = getEventHandlerName(ev)
-      const handler = this[handlerName]
+      const handler = this[getEventHandlerName(ev)]
 
       if (handler) {
         window.document.removeEventListener(ev, handler)
