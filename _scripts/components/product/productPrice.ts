@@ -10,18 +10,18 @@ const selectors = {
 export default class ProductPrice extends BaseComponent {
   static TYPE = 'product-price'
 
-  price: HTMLElement | null
-  compare: HTMLElement | null
-  comparePrice: HTMLElement | null
+  price: HTMLElement | undefined
+  compare: HTMLElement | undefined
+  comparePrice: HTMLElement | undefined
 
   constructor(el: HTMLElement) {
     super(el)
 
-    this.price = this.qs(selectors.price) as HTMLElement | null
+    this.price = this.qs(selectors.price) as HTMLElement | undefined
      
     // These only exists if the item is on sale
-    this.compare = this.qs(selectors.compare) as HTMLElement | null
-    this.comparePrice = this.qs(selectors.comparePrice) as HTMLElement | null
+    this.compare = this.qs(selectors.compare) as HTMLElement | undefined
+    this.comparePrice = this.qs(selectors.comparePrice) as HTMLElement | undefined
   }
 
   /**

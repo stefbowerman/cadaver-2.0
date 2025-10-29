@@ -46,6 +46,7 @@ export default class ATCButton extends BaseComponent {
     }
   }
 
+  // @TODO - Move this to a utility function
   getString(key: string, fallback: string): string {
     return window.app?.strings?.[key] || fallback
   }
@@ -83,6 +84,7 @@ export default class ATCButton extends BaseComponent {
   onAddSuccess() {
     this.label.innerText = this.getString('added', 'Added!')
 
+    // @TODO - Add this timeout as an instance variable
     setTimeout(() => {
       // Reset the button text
       this.label.innerText = this.tempText
@@ -90,9 +92,7 @@ export default class ATCButton extends BaseComponent {
     }, 1000)
   }
 
-  // @TODO - Add onAddFail and reset the text
-
-  onAddDone() {
-
+  onAddFail(e: Error) {
+    this.label.innerText = this.tempText
   }
 }

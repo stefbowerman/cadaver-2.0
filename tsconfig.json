@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "es6",
+    "lib": ["es6", "dom", "dom.iterable"],
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "baseUrl": ".",

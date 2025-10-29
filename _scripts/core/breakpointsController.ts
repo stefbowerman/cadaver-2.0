@@ -19,11 +19,11 @@ type MediaQuery = {
   query: MediaQueryList
 }
 
-export type BreakpointChangeEvent = {
+export type BreakpointChangeEvent = CustomEvent<{
   breakpoint: number
   fromBreakpoint: number
   direction: number
-}
+}>
 
 export default class BreakpointsController {
   static EVENTS = {
@@ -90,7 +90,7 @@ export default class BreakpointsController {
         breakpoint,
         fromBreakpoint,
         direction
-      } as BreakpointChangeEvent)
+      })
       
       this.currentKey = newKey
     }

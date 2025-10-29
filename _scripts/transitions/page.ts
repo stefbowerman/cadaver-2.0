@@ -2,6 +2,8 @@ import { Transition } from '@unseenco/taxi'
 import gsap from '@/core/gsap'
 import { prefersReducedMotion } from '@/core/utils/a11y'
 import { dispatch } from '@/core/utils/event'
+import type { TransitionProps, TransitionOnLeaveProps, TransitionOnEnterProps } from '@/types/taxi'
+
 
 export const DURATION_LEAVE = 0.2
 export const DURATION_ENTER = 0.5
@@ -26,7 +28,13 @@ export default class PageTransition extends Transition {
     AFTER_LEAVE: 'afterLeave.transition'
   }
 
-	constructor(args) {
+  fromHeight: number
+  toHeight: number
+  autoScrollCompleteFlag: boolean
+  autoScrollCleanup: (() => void) | null
+  autoScrollTimeoutId: NodeJS.Timeout | null
+
+	constructor(args: TransitionProps) {
 		super(args)
 
     this.fromHeight = 0
@@ -40,9 +48,9 @@ export default class PageTransition extends Transition {
   /**
    * Sets or removes height style on wrapper element
    * Only sets numeric height if autoScrollCompleteFlag is false
-   * @param {number} [height] - Optional height in pixels. If omitted, height style is removed
+   * @param [height] - Optional height in pixels. If omitted, height style is removed
    */
-  setWrapperHeightIfNeeded(height) {   
+  setWrapperHeightIfNeeded(height?: number) {   
     if (height !== undefined && !this.autoScrollCompleteFlag) {
       this.wrapper.style.height = `${height}px`
     }
@@ -55,9 +63,9 @@ export default class PageTransition extends Transition {
    * Smoothly scrolls the window to the top and returns a Promise that resolves when the scroll animation completes.
    * Uses the native scrollend event when available, otherwise falls back to a timeout-based approach.
    * 
-   * @returns {Promise<void>} Resolves when the scroll animation completes
+   * @returns Resolves when the scroll animation completes
    */
-  autoScrollToTop() {
+  autoScrollToTop(): Promise<void> {
     this.autoScrollCleanup?.()
 
     if (window.scrollY === 0) {
@@ -65,7 +73,7 @@ export default class PageTransition extends Transition {
       return Promise.resolve()
     }
 
-    const p = new Promise(resolve => {
+    const p = new Promise<void>(resolve => {
       const onComplete = () => {
         this.autoScrollCompleteFlag = true
         resolve()
@@ -103,9 +111,10 @@ export default class PageTransition extends Transition {
 
   /**
    * Handle the transition leaving the previous page.
-   * @param { { from: HTMLElement, trigger: string|HTMLElement|false, done: function } } props
    */
-  onLeave({ from, trigger, done }) { 
+  onLeave(e: TransitionOnLeaveProps) {
+    const { from, done } = e
+
     this.fromHeight = from.clientHeight
 
     this.autoScrollCleanup?.()
@@ -114,7 +123,7 @@ export default class PageTransition extends Transition {
     })
 
     const onStart = () => {
-      dispatch(this.constructor.EVENTS.LEAVE)
+      dispatch(PageTransition.EVENTS.LEAVE)
     }
 
     const onComplete = () => {
@@ -122,7 +131,7 @@ export default class PageTransition extends Transition {
       // This is how we avoid the footer jump
       this.setWrapperHeightIfNeeded(this.fromHeight)
 
-      dispatch(this.constructor.EVENTS.AFTER_LEAVE) 
+      dispatch(PageTransition.EVENTS.AFTER_LEAVE) 
 
       done()
     }     
@@ -144,9 +153,10 @@ export default class PageTransition extends Transition {
 
   /**
    * Handle the transition entering the next page.
-   * @param { { to: HTMLElement, trigger: string|HTMLElement|false, done: function } } props
    */
-  onEnter({ to, trigger, done }) {   
+  onEnter(e: TransitionOnEnterProps) {   
+    const { to, done } = e
+
     this.toHeight = to.clientHeight
 
     if (this.toHeight > this.fromHeight) {
@@ -154,7 +164,7 @@ export default class PageTransition extends Transition {
     }
 
     const onStart = () => {
-      dispatch(this.constructor.EVENTS.ENTER)
+      dispatch(PageTransition.EVENTS.ENTER)
     }
 
     const onComplete = () => {

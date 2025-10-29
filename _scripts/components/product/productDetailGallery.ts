@@ -14,10 +14,17 @@ const classes = {
 export default class ProductDetailGallery extends BaseComponent {
   static TYPE = 'product-detail-gallery'
 
+  images: HTMLImageElement[]
+  slideshow: HTMLElement | undefined
+  slideCount: number
+  color: string
+  isActive: boolean
+  swiper: Swiper
+
   constructor(el) {
     super(el)
 
-    this.images = this.qsa('img')
+    this.images = this.qsa('img') as HTMLImageElement[]
 
     this.slideshow = this.qs(selectors.slideshow)
 
@@ -32,7 +39,7 @@ export default class ProductDetailGallery extends BaseComponent {
       speed: 600,
       simulateTouch: true,
       on: {
-        realIndexChange: (swiper) => {
+        realIndexChange: (swiper: Swiper) => {
           // 
         }
       }       

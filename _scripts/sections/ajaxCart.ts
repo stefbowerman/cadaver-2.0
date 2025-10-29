@@ -10,7 +10,9 @@ const selectors = {
 export default class AJAXCartSection extends BaseSection {
   static TYPE = 'ajax-cart'
 
-  constructor(container) {
+  ajaxCart: AJAXCart
+
+  constructor(container: HTMLElement) {
     super(container)
 
     const cartData = JSON.parse(this.qs(selectors.cartJson).textContent)

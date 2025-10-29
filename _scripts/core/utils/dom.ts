@@ -68,10 +68,10 @@ export const isVisible = (element: Element): boolean => {
 
 /**
  * Gets all focusable children of a given element.
- * @param {Element} element - The parent element to search within.
- * @returns {Element[]} An array of focusable child elements.
+ * @param element - The parent element to search within.
+ * @returns An array of focusable child elements.
  */
-export const getFocusableChildren = (element: Element): Element[] => {
+export const getFocusableChildren = (element: Element): HTMLElement[] => {
   const focusables = [
     'a[href]',
     'button',
@@ -79,20 +79,20 @@ export const getFocusableChildren = (element: Element): Element[] => {
     'textarea',
     'select',
     'details',
-    '[tabindex]:not([tabindex^="-"]',
+    '[tabindex]:not([tabindex^="-"])',
     '[contenteditable="true"]'
   ].join(',')
 
-  const children = Array.from(element.querySelectorAll(focusables))
+  const children = Array.from(element.querySelectorAll(focusables)) as HTMLElement[]
 
   return children.filter(el => !isDisabled(el) && isVisible(el))  
 }
 
 /**
  * Wraps the given element in a wrapper element.
- * @param {Element} element - The element to wrap.
- * @param {string} wrapperSelector - The selector of the wrapper element.
- * @param {string} wrapperClass - The class to add to the wrapper element.
+ * @param element - The element to wrap.
+ * @param wrapperSelector - The selector of the wrapper element.
+ * @param wrapperClass - The class to add to the wrapper element.
  */
 export const wrap = (element: Element, wrapperSelector: string, wrapperClass: string): void => {
   const wrapper = document.createElement(wrapperSelector)
@@ -107,10 +107,10 @@ export const getDomFromString = (string: string): Document => {
 
 /**
  * Fetches the DOM from the given URL.
- * @param {string} url - The URL to fetch the DOM from.
- * @returns {Document | undefined} The DOM.
+ * @param url - The URL to fetch the DOM from.
+ * @returns The DOM.
  */
-export const fetchDom = async (url: string): Promise<Document | undefined> => {
+export const fetchDom = async (url: string | URL): Promise<Document | undefined> => {
   try {
     const response = await fetch(url)
 

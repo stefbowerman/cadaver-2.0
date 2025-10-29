@@ -1,8 +1,9 @@
-import BaseComponent from '@/components/base'
+import BaseComponent, { type BaseComponentSettings } from '@/components/base'
 import Backdrop from '@/components/backdrop'
 
 import { toAriaBoolean } from '@/core/utils/a11y'
 import FocusTrap from '@/core/focusTrap'
+import { BreakpointChangeEvent } from '@/core/breakpointsController'
 
 const selectors = {
   scroller: '[data-scroller]',
@@ -14,10 +15,21 @@ const classes = {
   bodyIsOpen: 'drawer-open'
 }
 
+interface DrawerSettings extends BaseComponentSettings {
+  maxBreakpoint?: number | null
+  backdrop?: boolean
+}
+
 export default class Drawer extends BaseComponent {
   static TYPE = 'drawer'
 
-  constructor(el, options = {}) {
+  settings: DrawerSettings
+  role: string | null
+  focusTrap: FocusTrap
+  scroller: HTMLElement | undefined
+  backdrop: Backdrop | null
+
+  constructor(el: HTMLElement, options: DrawerSettings = {}) {
     super(el, {
       watchBreakpoint: options.maxBreakpoint ? true : false,
       ...options
@@ -87,7 +99,7 @@ export default class Drawer extends BaseComponent {
 
     this.focusTrap.activate()   // @NOTE - If using JS for animation, activation should happen on openComplete
 
-    this.scroller.scrollTop = 0
+    if (this.scroller) this.scroller.scrollTop = 0
   }
 
   close() {
@@ -112,7 +124,9 @@ export default class Drawer extends BaseComponent {
     this.isOpen ? this.close() : this.open()
   }
 
-  onBreakpointChange({ detail: { breakpoint } }) {
+  onBreakpointChange(e: BreakpointChangeEvent) {
+    const { detail: { breakpoint } } = e
+
     if (!this.isOpen || !this.settings.maxBreakpoint) return
 
     if (breakpoint > this.settings.maxBreakpoint) {
@@ -120,22 +134,23 @@ export default class Drawer extends BaseComponent {
     }
   }
 
-  onClick(e) {
-    if (e.target.closest(selectors.close)) {
+  onClick(e: MouseEvent) {
+    const target = e.target as HTMLElement
+
+    if (target?.closest(selectors.close)) {
       e.preventDefault()
       this.close()
     }
   }
 
-  onBodyClick(e) {
-    if (this.ariaControlElements.filter(el => {
-      return (
-        el.isSameNode(e.target) ||
-        el.contains(e.target)
-      )
-    }).length > 0) {
+  onBodyClick(e: MouseEvent) {
+    const target = e.target as HTMLElement
+
+    if (this.ariaControlElements.some(el => 
+      el.isSameNode(target) || el.contains(target)
+    )) {
       e.preventDefault()
       this.toggle()
-    }  
+    } 
   }  
 }

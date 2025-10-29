@@ -1,11 +1,17 @@
+import type { ThemeEditorSectionUnloadEvent, SelectedOption } from '@/types/shopify'
+
 import BaseSection from '@/sections/base'
+import type { VariantChangeEvent } from '@/components/product/variantPicker'
 import ProductDetailForm from '@/components/product/productDetailForm'
 import ProductDetailGallery from '@/components/product/productDetailGallery'
 
 export default class ProductSection extends BaseSection {
   static TYPE = 'product'
 
-  constructor(container) {
+  productDetailForm: ProductDetailForm
+  galleries: ProductDetailGallery[]
+
+  constructor(container: HTMLElement) {
     super(container)
 
     this.productDetailForm = new ProductDetailForm(this.qs(ProductDetailForm.SELECTOR), {
@@ -17,41 +23,35 @@ export default class ProductSection extends BaseSection {
     })
   }
 
-  onUnload() {    
+  onUnload(e: ThemeEditorSectionUnloadEvent) {    
     this.productDetailForm.destroy()
     this.galleries.forEach(g => g.destroy())
 
-    super.onUnload()
+    super.onUnload(e)
   }
 
   /**
    * Look for a gallery matching one of the selected variant's options and switch to that gallery
    * If a matching gallery doesn't exist, look for the variant's featured image in the main gallery and switch to that
-   *
-   * @param {Object} variant - Shopify variant object
-   * @param {Array} selectedOptions - Array of options
-   * @param {Object} [option]
-   * @param {String} option.name  - i.e. "Color"
-   * @param {String} option.value - i.e. "Gun Metal"
    */
-  onVariantChange({ variant, selectedOptions }) {
-    this.updateGalleries(selectedOptions)
+  onVariantChange(e: VariantChangeEvent) {
+    this.updateGalleries(e.selectedOptions)
   }
 
-  updateGalleries(currentOptions) {
-    const currentColorOption = currentOptions.find(opt => (opt.name && opt.name.toLowerCase()) === 'color') || {}
-    const selectedColor = currentColorOption.value
+  updateGalleries(currentOptions: SelectedOption[]) {
+    const currentColorOption = currentOptions.find(opt => opt.name?.toLowerCase() === 'color')
+    const selectedColor = currentColorOption?.value
 
     if (this.galleries.length > 1) {
-      if (selectedColor !== null) {
+      if (selectedColor !== undefined) {
         const activeGallery = this.galleries.find(g => g.isActive)
         const selectedColorGallery = this.galleries.find(g => g.color === selectedColor)
 
         if (activeGallery !== selectedColorGallery) {
-          activeGallery.el.style.opacity = 0
+          activeGallery.el.style.opacity = '0'
           activeGallery.deactivate()
 
-          selectedColorGallery.el.style.opacity = 0
+          selectedColorGallery.el.style.opacity = '0'
           selectedColorGallery.activate()
           selectedColorGallery.el.style.opacity = ''
         }

@@ -39,5 +39,11 @@ export default defineConfig([
         "Shopify": "readonly"
       }
     }
+  },
+  {
+    files: ["**/*.{ts,mts,cts}"],
+    rules: {
+      "no-undef": "off" // TypeScript compiler handles this
+    }
   }
 ]);

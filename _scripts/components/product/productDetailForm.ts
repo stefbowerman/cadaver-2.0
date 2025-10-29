@@ -1,11 +1,12 @@
 import CartAPI from '@/core/cartAPI'
+import { toAriaBoolean } from '@/core/utils/a11y'
+import type { LiteProduct, LiteVariant } from '@/types/shopify'
 
 import BaseComponent from '@/components/base'
 import ProductPrice from '@/components/product/productPrice'
 import ATCButton from '@/components/product/atcButton'
-import VariantPicker from '@/components/product/variantPicker'
+import VariantPicker, { type VariantChangeEvent } from '@/components/product/variantPicker'
 import A11yStatus from '@/components/a11y/a11yStatus'
-import { toAriaBoolean } from '@/core/utils/a11y'
 
 const selectors = {
   form: 'form[action*="/cart/add"]',
@@ -14,34 +15,49 @@ const selectors = {
   masterSelect: 'select[name="id"]'
 }
 
+interface ProductDetailFormSettings {
+  onVariantChange?: (e: VariantChangeEvent) => void
+  enableHistoryState?: boolean
+}
+
 export default class ProductDetailForm extends BaseComponent {
   static TYPE = 'product-detail-form'
+
+  settings: ProductDetailFormSettings
+  submitInProgress: boolean
+  form: HTMLFormElement
+  masterSelect: HTMLSelectElement
+  product: LiteProduct
+  price: ProductPrice
+  atcButton: ATCButton
+  variantPicker: VariantPicker
+  a11yStatus: A11yStatus
 
   /**
    * ProductDetailForm constructor
    *
-   * @param { HTMLElement } el
-   * @param { Object } options
-   * @param { Function } options.onVariantChange -  Called when a new variant has been selected from the form,
-   * @param { Boolean } options.enableHistoryState - If set to "true", turns on URL updating when switching variant
+   * @param el
+   * @param options
+   * @param options.onVariantChange -  Called when a new variant has been selected from the form,
+   * @param options.enableHistoryState - If set to "true", turns on URL updating when switching variant
    */  
-  constructor(el, options = {}) {
+  constructor(el: HTMLElement, options: ProductDetailFormSettings = {}) {
     super(el)
 
     this.settings = {
-      onVariantChange: () => {},
+      onVariantChange: (e: VariantChangeEvent) => {},
       enableHistoryState: true,
       ...options
     }
 
     this.submitInProgress = false
 
-    this.form = this.qs(selectors.form)
-    this.masterSelect = this.qs(selectors.masterSelect)
+    this.form = this.qs(selectors.form) as HTMLFormElement
+    this.masterSelect = this.qs(selectors.masterSelect) as HTMLSelectElement
 
     this.product = JSON.parse(this.qs(selectors.productJSON).textContent)
     this.price = new ProductPrice(this.qs(ProductPrice.SELECTOR))
-    this.atcButton = new ATCButton(this.qs(ATCButton.SELECTOR))
+    this.atcButton = new ATCButton(this.qs(ATCButton.SELECTOR) as HTMLButtonElement)
 
     this.variantPicker = new VariantPicker(this.qs(VariantPicker.SELECTOR), {
       product: this.product,
@@ -53,13 +69,13 @@ export default class ProductDetailForm extends BaseComponent {
     this.form.addEventListener('submit', this.onFormSubmit.bind(this))
   }
 
-  updateHistoryState(variant) {
+  updateHistoryState(variant: LiteVariant) {
     if (!this.settings.enableHistoryState) return
 
     const newurl = new URL(window.location.href)
 
     if (variant) {
-      newurl.searchParams.set('variant', variant.id)
+      newurl.searchParams.set('variant', variant.id.toString())
     }
     else {
       newurl.searchParams.delete('variant')
@@ -68,10 +84,10 @@ export default class ProductDetailForm extends BaseComponent {
     window.history.replaceState({ path: newurl.href }, '', newurl.href)
   }
 
-  onVariantChange(e) {
+  onVariantChange(e: VariantChangeEvent) {
     const { variant } = e
 
-    this.masterSelect.value = variant?.id
+    this.masterSelect.value = variant?.id.toString() || ''
 
     this.updateHistoryState(variant)
     this.atcButton.update(variant)
@@ -85,12 +101,12 @@ export default class ProductDetailForm extends BaseComponent {
   }
 
 
-  onFormSubmit(e) {
+  onFormSubmit(e: SubmitEvent) {
     e.preventDefault()
 
     if (this.submitInProgress) return
 
-    const submit = this.form.querySelector(selectors.submit)
+    const submit = this.form.querySelector(selectors.submit) as HTMLButtonElement
 
     // Disable the button so the user knows the form is being submitted
     submit.disabled = true
@@ -102,7 +118,7 @@ export default class ProductDetailForm extends BaseComponent {
       .then(() => {
         this.onAddSuccess()
       })
-      .catch((e) => {
+      .catch((e: Error) => {
         this.onAddFail(e)
       })
       .finally(() => {
@@ -123,11 +139,9 @@ export default class ProductDetailForm extends BaseComponent {
     this.atcButton.onAddSuccess()
   }
 
-  onAddFail(e) {
+  onAddFail(e: Error) {
     this.a11yStatus.text = e.message || 'Error adding to cart'
     this.form.removeAttribute('aria-busy')
-
-    // eslint-disable-next-line no-console
-    console.log('@TODO - onAddFail', e)
+    this.atcButton.onAddFail(e)
   }  
 }

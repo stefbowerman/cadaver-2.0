@@ -2,21 +2,23 @@ import ResultsSection from '@/sections/results'
 import SearchInline from '@/components/search/searchInline'
 
 export default class SearchSection extends ResultsSection {
-  #isLoading;
-
   static TYPE = 'search'
 
-  constructor(container) {
+  #isLoading: boolean
+
+  searchInline: SearchInline
+
+  constructor(container: HTMLElement) {
     super(container)
 
     this.#isLoading = false
 
-    this.searchInline = new SearchInline(this.qs(SearchInline.SELECTOR), {
+    this.searchInline = new SearchInline(this.qs(SearchInline.SELECTOR) as HTMLFormElement, {
       onSubmit: this.onSubmit.bind(this)
     })
   }
 
-  async runSearch(url) {
+  async runSearch(url: string) {
     try {
       this.#isLoading = true
 
@@ -35,7 +37,7 @@ export default class SearchSection extends ResultsSection {
   }
 
   // @NOTE - This must be a synchronous function and return false to prevent the default form submission behavior
-  onSubmit(e, url) {
+  onSubmit(e: SubmitEvent, url: string) {
     e.preventDefault()
 
     if (this.#isLoading) return false

@@ -7,7 +7,7 @@ var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot
 var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 (function() {
   "use strict";
-  var _settings;
+  var _settings, _isLoading;
   function SelectorSet() {
     if (!(this instanceof SelectorSet)) {
       return new SelectorSet();
@@ -1201,7 +1201,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     return value != null && (type === "object" || type === "function");
   }
   function isThemeEditor() {
-    return window.Shopify && window.Shopify.designMode;
+    return window.Shopify?.designMode;
   }
   function getQueryParams() {
     const queryParams = {};
@@ -1358,6 +1358,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
      * @param {HTMLFormElement} form - The form element
      * @return {Promise} - Resolve returns JSON cart | Reject returns an error message
      */
+    // @TODO - Add return value here
     async addItemFromForm(form) {
       try {
         const formData = new FormData(form);
@@ -1521,6 +1522,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onScroll() {
     }
+    // @TODO - Add type for the cart object
     onCartUpdate(e) {
       const { detail: { cart } } = e;
     }
@@ -1847,13 +1849,14 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _ProductCard.TYPE = "product-card";
   let ProductCard = _ProductCard;
-  class FeaturedProductsSection extends BaseSection {
-    static TYPE = "featured-products";
+  const _FeaturedProductsSection = class _FeaturedProductsSection extends BaseSection {
     constructor(container) {
       super(container);
       this.productCards = this.qsa(ProductCard.SELECTOR).map((el) => new ProductCard(el));
     }
-  }
+  };
+  _FeaturedProductsSection.TYPE = "featured-products";
+  let FeaturedProductsSection = _FeaturedProductsSection;
   const selectors$j = {
     toggleNew: "[data-toggle-new]",
     newForm: "[data-new]",
@@ -1903,18 +1906,20 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       });
     }
   }
-  class ArticleSection extends BaseSection {
-    static TYPE = "article";
+  const _ArticleSection = class _ArticleSection extends BaseSection {
     constructor(container) {
       super(container);
     }
-  }
-  class BlogSection extends BaseSection {
-    static TYPE = "blog";
+  };
+  _ArticleSection.TYPE = "article";
+  let ArticleSection = _ArticleSection;
+  const _BlogSection = class _BlogSection extends BaseSection {
     constructor(container) {
       super(container);
     }
-  }
+  };
+  _BlogSection.TYPE = "blog";
+  let BlogSection = _BlogSection;
   const isElement = (object) => {
     if (!object || typeof object !== "object") {
       return false;
@@ -1961,7 +1966,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       "textarea",
       "select",
       "details",
-      '[tabindex]:not([tabindex^="-"]',
+      '[tabindex]:not([tabindex^="-"])',
       '[contenteditable="true"]'
     ].join(",");
     const children = Array.from(element.querySelectorAll(focusables));
@@ -6545,8 +6550,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     list: "ul",
     more: "a[data-more]"
   };
-  class ResultsDisplay extends BaseComponent {
-    static TYPE = "results-display";
+  const _ResultsDisplay = class _ResultsDisplay extends BaseComponent {
     constructor(el, options = {}) {
       super(el);
       this.settings = {
@@ -6659,11 +6663,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onMoreIntersection(entries) {
       if (!this.more) return;
-      this.settings.onMoreIntersection(entries);
+      this.settings.onMoreIntersection?.(entries);
     }
-  }
-  class ResultsSection extends BaseSection {
-    static TYPE = "results";
+  };
+  _ResultsDisplay.TYPE = "results-display";
+  let ResultsDisplay = _ResultsDisplay;
+  const _ResultsSection = class _ResultsSection extends BaseSection {
     constructor(container) {
       super(container);
       this.isFetching = false;
@@ -6677,7 +6682,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       try {
         this.isFetching = true;
         const fetchUrl = new URL(url, window.location.origin);
-        fetchUrl.searchParams.set("t", Date.now());
+        fetchUrl.searchParams.set("t", Date.now().toString());
         fetchUrl.searchParams.set("section_id", this.id);
         const dom = await fetchDom(fetchUrl);
         return dom.getElementById(this.parentId)?.querySelector(ResultsDisplay.SELECTOR);
@@ -6691,7 +6696,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       const entry = entries[0];
       if (!entry.isIntersecting) return;
       try {
-        const newResults = await this.fetchResults(entry.target.href);
+        const target = entry.target;
+        const newResults = await this.fetchResults(target.href);
         this.resultsDisplay.add(newResults);
       } catch (e) {
         console.warn("something went wrong...", e);
@@ -6701,13 +6707,16 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onReplaceComplete(resultsDisplay) {
     }
-  }
-  class CollectionSection extends ResultsSection {
-    static TYPE = "collection";
+  };
+  _ResultsSection.TYPE = "results";
+  let ResultsSection = _ResultsSection;
+  const _CollectionSection = class _CollectionSection extends ResultsSection {
     constructor(container) {
       super(container);
     }
-  }
+  };
+  _CollectionSection.TYPE = "collection";
+  let CollectionSection = _CollectionSection;
   const selectors$h = {
     price: "[data-price]",
     compare: "[data-compare]",
@@ -6759,6 +6768,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         console.warn("No label found");
       }
     }
+    // @TODO - Move this to a utility function
     getString(key, fallback) {
       return window.app?.strings?.[key] || fallback;
     }
@@ -6793,8 +6803,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         this.tempText = null;
       }, 1e3);
     }
-    // @TODO - Add onAddFail and reset the text
-    onAddDone() {
+    onAddFail(e) {
+      this.label.innerText = this.tempText;
     }
   };
   _ATCButton.TYPE = "atc-button";
@@ -6811,13 +6821,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (!this.name) {
         console.warn("No name attribute found");
       }
-      this.select = this.qs("select");
+      this.select = this.qs("select") || null;
       this.inputs = this.qsa("input");
       this.el.addEventListener("change", this.onChange.bind(this));
     }
     get selectedOption() {
-      let name = void 0;
-      let value = void 0;
+      let name;
+      let value;
       if (this.select) {
         name = this.select.name;
         value = this.select.value;
@@ -6843,7 +6853,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         input.disabled = !available;
       }
     }
-    onChange(e) {
+    onChange() {
       this.settings.onChange();
     }
   };
@@ -6906,20 +6916,19 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     productJSON: "[data-product-json]",
     masterSelect: 'select[name="id"]'
   };
-  class ProductDetailForm extends BaseComponent {
-    static TYPE = "product-detail-form";
+  const _ProductDetailForm = class _ProductDetailForm extends BaseComponent {
     /**
      * ProductDetailForm constructor
      *
-     * @param { HTMLElement } el
-     * @param { Object } options
-     * @param { Function } options.onVariantChange -  Called when a new variant has been selected from the form,
-     * @param { Boolean } options.enableHistoryState - If set to "true", turns on URL updating when switching variant
+     * @param el
+     * @param options
+     * @param options.onVariantChange -  Called when a new variant has been selected from the form,
+     * @param options.enableHistoryState - If set to "true", turns on URL updating when switching variant
      */
     constructor(el, options = {}) {
       super(el);
       this.settings = {
-        onVariantChange: () => {
+        onVariantChange: (e) => {
         },
         enableHistoryState: true,
         ...options
@@ -6941,7 +6950,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (!this.settings.enableHistoryState) return;
       const newurl = new URL(window.location.href);
       if (variant) {
-        newurl.searchParams.set("variant", variant.id);
+        newurl.searchParams.set("variant", variant.id.toString());
       } else {
         newurl.searchParams.delete("variant");
       }
@@ -6949,7 +6958,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onVariantChange(e) {
       const { variant } = e;
-      this.masterSelect.value = variant?.id;
+      this.masterSelect.value = variant?.id.toString() || "";
       this.updateHistoryState(variant);
       this.atcButton.update(variant);
       this.price.update(variant);
@@ -6987,9 +6996,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onAddFail(e) {
       this.a11yStatus.text = e.message || "Error adding to cart";
       this.form.removeAttribute("aria-busy");
-      console.log("@TODO - onAddFail", e);
+      this.atcButton.onAddFail(e);
     }
-  }
+  };
+  _ProductDetailForm.TYPE = "product-detail-form";
+  let ProductDetailForm = _ProductDetailForm;
   function isObject$1(obj) {
     return obj !== null && typeof obj === "object" && "constructor" in obj && obj.constructor === Object;
   }
@@ -10594,8 +10605,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     isActive: "is-active",
     slideshowDisabled: "is-disabled"
   };
-  class ProductDetailGallery extends BaseComponent {
-    static TYPE = "product-detail-gallery";
+  const _ProductDetailGallery = class _ProductDetailGallery extends BaseComponent {
     constructor(el) {
       super(el);
       this.images = this.qsa("img");
@@ -10629,9 +10639,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.el.classList.remove(classes$6.isActive);
       this.isActive = false;
     }
-  }
-  class ProductSection extends BaseSection {
-    static TYPE = "product";
+  };
+  _ProductDetailGallery.TYPE = "product-detail-gallery";
+  let ProductDetailGallery = _ProductDetailGallery;
+  const _ProductSection = class _ProductSection extends BaseSection {
     constructor(container) {
       super(container);
       this.productDetailForm = new ProductDetailForm(this.qs(ProductDetailForm.SELECTOR), {
@@ -10641,48 +10652,43 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         return new ProductDetailGallery(el);
       });
     }
-    onUnload() {
+    onUnload(e) {
       this.productDetailForm.destroy();
       this.galleries.forEach((g) => g.destroy());
-      super.onUnload();
+      super.onUnload(e);
     }
     /**
      * Look for a gallery matching one of the selected variant's options and switch to that gallery
      * If a matching gallery doesn't exist, look for the variant's featured image in the main gallery and switch to that
-     *
-     * @param {Object} variant - Shopify variant object
-     * @param {Array} selectedOptions - Array of options
-     * @param {Object} [option]
-     * @param {String} option.name  - i.e. "Color"
-     * @param {String} option.value - i.e. "Gun Metal"
      */
-    onVariantChange({ variant, selectedOptions }) {
-      this.updateGalleries(selectedOptions);
+    onVariantChange(e) {
+      this.updateGalleries(e.selectedOptions);
     }
     updateGalleries(currentOptions) {
-      const currentColorOption = currentOptions.find((opt) => (opt.name && opt.name.toLowerCase()) === "color") || {};
-      const selectedColor = currentColorOption.value;
+      const currentColorOption = currentOptions.find((opt) => opt.name?.toLowerCase() === "color");
+      const selectedColor = currentColorOption?.value;
       if (this.galleries.length > 1) {
-        if (selectedColor !== null) {
+        if (selectedColor !== void 0) {
           const activeGallery = this.galleries.find((g) => g.isActive);
           const selectedColorGallery = this.galleries.find((g) => g.color === selectedColor);
           if (activeGallery !== selectedColorGallery) {
-            activeGallery.el.style.opacity = 0;
+            activeGallery.el.style.opacity = "0";
             activeGallery.deactivate();
-            selectedColorGallery.el.style.opacity = 0;
+            selectedColorGallery.el.style.opacity = "0";
             selectedColorGallery.activate();
             selectedColorGallery.el.style.opacity = "";
           }
         }
       }
     }
-  }
+  };
+  _ProductSection.TYPE = "product";
+  let ProductSection = _ProductSection;
   const selectors$d = {
     contentTarget: "[data-content-target]",
     content: "[data-content]"
   };
-  class ProductRelatedSection extends BaseSection {
-    static TYPE = "product-related";
+  const _ProductRelatedSection = class _ProductRelatedSection extends BaseSection {
     constructor(container) {
       super(container);
       this.productCards = [];
@@ -10694,9 +10700,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       });
       this.observer.observe(this.container);
     }
-    onUnload() {
+    onUnload(e) {
       this.observer.disconnect();
-      super.onUnload();
+      super.onUnload(e);
     }
     onIntersection(entries) {
       if (!entries[0].isIntersecting) return;
@@ -10715,14 +10721,15 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         this.container.setAttribute("aria-hidden", "true");
       }
     }
-  }
+  };
+  _ProductRelatedSection.TYPE = "product-related";
+  let ProductRelatedSection = _ProductRelatedSection;
   const selectors$c = {
     loginForm: "#customer-login-form",
     recoverForm: "#recover-password-form",
     toggleRecover: "[data-toggle-recover]"
   };
-  class LoginSection extends BaseSection {
-    static TYPE = "login";
+  const _LoginSection = class _LoginSection extends BaseSection {
     constructor(container) {
       super(container);
       this.loginForm = this.qs(selectors$c.loginForm);
@@ -10745,7 +10752,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.loginForm.style.display = "";
       this.recoverForm.style.display = "none";
     }
-  }
+  };
+  _LoginSection.TYPE = "login";
+  let LoginSection = _LoginSection;
   const selectors$b = {
     input: 'input[name="q"]',
     icon: "[data-icon]"
@@ -10803,42 +10812,45 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _SearchInline.TYPE = "search-inline";
   let SearchInline = _SearchInline;
-  class SearchSection extends ResultsSection {
-    #isLoading;
-    static TYPE = "search";
+  const _SearchSection = class _SearchSection extends ResultsSection {
     constructor(container) {
       super(container);
-      this.#isLoading = false;
+      __privateAdd(this, _isLoading);
+      __privateSet(this, _isLoading, false);
       this.searchInline = new SearchInline(this.qs(SearchInline.SELECTOR), {
         onSubmit: this.onSubmit.bind(this)
       });
     }
     async runSearch(url) {
       try {
-        this.#isLoading = true;
+        __privateSet(this, _isLoading, true);
         const results = await this.fetchResults(url);
         this.resultsDisplay.replace(results);
         window.history.replaceState({}, "", url);
       } catch (e) {
         console.warn("something went wrong...", e);
       } finally {
-        this.#isLoading = false;
+        __privateSet(this, _isLoading, false);
       }
     }
     // @NOTE - This must be a synchronous function and return false to prevent the default form submission behavior
     onSubmit(e, url) {
       e.preventDefault();
-      if (this.#isLoading) return false;
+      if (__privateGet(this, _isLoading)) return false;
       this.runSearch(url);
       return false;
     }
-  }
-  class PageHeroSection extends BaseSection {
-    static TYPE = "page-hero";
+  };
+  _isLoading = new WeakMap();
+  _SearchSection.TYPE = "search";
+  let SearchSection = _SearchSection;
+  const _PageHeroSection = class _PageHeroSection extends BaseSection {
     constructor(container) {
       super(container);
     }
-  }
+  };
+  _PageHeroSection.TYPE = "page-hero";
+  let PageHeroSection = _PageHeroSection;
   const redirect = (url) => {
     setTimeout(() => {
       window.app?.taxi ? window.app.taxi.navigateTo(url) : window.location.href = url;
@@ -10888,13 +10900,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const DURATION_LEAVE = 0.2;
   const DURATION_ENTER = 0.5;
   const DELAY_ENTER = 0.15;
-  class PageTransition extends Transition {
-    static EVENTS = {
-      ENTER: "enter.transition",
-      AFTER_ENTER: "afterEnter.transition",
-      LEAVE: "leave.transition",
-      AFTER_LEAVE: "afterLeave.transition"
-    };
+  const _PageTransition = class _PageTransition extends Transition {
     constructor(args) {
       super(args);
       this.fromHeight = 0;
@@ -10906,7 +10912,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     /**
      * Sets or removes height style on wrapper element
      * Only sets numeric height if autoScrollCompleteFlag is false
-     * @param {number} [height] - Optional height in pixels. If omitted, height style is removed
+     * @param [height] - Optional height in pixels. If omitted, height style is removed
      */
     setWrapperHeightIfNeeded(height) {
       if (height !== void 0 && !this.autoScrollCompleteFlag) {
@@ -10919,7 +10925,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
      * Smoothly scrolls the window to the top and returns a Promise that resolves when the scroll animation completes.
      * Uses the native scrollend event when available, otherwise falls back to a timeout-based approach.
      * 
-     * @returns {Promise<void>} Resolves when the scroll animation completes
+     * @returns Resolves when the scroll animation completes
      */
     autoScrollToTop() {
       this.autoScrollCleanup?.();
@@ -10955,20 +10961,20 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     /**
      * Handle the transition leaving the previous page.
-     * @param { { from: HTMLElement, trigger: string|HTMLElement|false, done: function } } props
      */
-    onLeave({ from, trigger, done }) {
+    onLeave(e) {
+      const { from, done } = e;
       this.fromHeight = from.clientHeight;
       this.autoScrollCleanup?.();
       this.autoScrollToTop().then(() => {
         this.setWrapperHeightIfNeeded();
       });
       const onStart = () => {
-        dispatch(this.constructor.EVENTS.LEAVE);
+        dispatch(_PageTransition.EVENTS.LEAVE);
       };
       const onComplete = () => {
         this.setWrapperHeightIfNeeded(this.fromHeight);
-        dispatch(this.constructor.EVENTS.AFTER_LEAVE);
+        dispatch(_PageTransition.EVENTS.AFTER_LEAVE);
         done();
       };
       if (prefersReducedMotion()) {
@@ -10986,15 +10992,15 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     /**
      * Handle the transition entering the next page.
-     * @param { { to: HTMLElement, trigger: string|HTMLElement|false, done: function } } props
      */
-    onEnter({ to, trigger, done }) {
+    onEnter(e) {
+      const { to, done } = e;
       this.toHeight = to.clientHeight;
       if (this.toHeight > this.fromHeight) {
         this.setWrapperHeightIfNeeded(this.toHeight);
       }
       const onStart = () => {
-        dispatch(this.constructor.EVENTS.ENTER);
+        dispatch(_PageTransition.EVENTS.ENTER);
       };
       const onComplete = () => {
         this.autoScrollCleanup?.();
@@ -11019,7 +11025,14 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         onComplete
       });
     }
-  }
+  };
+  _PageTransition.EVENTS = {
+    ENTER: "enter.transition",
+    AFTER_ENTER: "afterEnter.transition",
+    LEAVE: "leave.transition",
+    AFTER_LEAVE: "afterLeave.transition"
+  };
+  let PageTransition = _PageTransition;
   const selectors$a = {
     count: "[data-count]"
   };
@@ -11042,8 +11055,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const selectors$9 = {
     primaryNav: "[data-primary-nav]"
   };
-  class HeaderSection extends BaseSection {
-    static TYPE = "header";
+  const _HeaderSection = class _HeaderSection extends BaseSection {
     constructor(container) {
       super(container);
       this.primaryNav = this.qs(selectors$9.primaryNav);
@@ -11054,7 +11066,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       const currentPath = new URL(e.detail.to.finalUrl).pathname;
       this.primaryNavLinks.forEach((link) => setAriaCurrent(link, currentPath));
     }
-  }
+  };
+  _HeaderSection.TYPE = "header";
+  let HeaderSection = _HeaderSection;
   const companyId = window.app?.klaviyo?.companyId;
   const listId = window.app?.klaviyo?.listId;
   if (!companyId) {
@@ -11156,7 +11170,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const noop = () => {
   };
   class AJAXKlaviyoForm {
-    constructor(el, options) {
+    constructor(el, options = {}) {
       this.name = "ajaxKlaviyoForm";
       this.settings = {
         source: "Shopify Form",
@@ -11177,9 +11191,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.input = this.form.querySelector('input[type="email"]');
       this.submit = this.form.querySelector('[type="submit"]');
       this.isSubmitting = false;
-      if (!this.input === 0) {
+      if (!this.input) {
         console.warn(`[${this.name}] - Email input missing`);
-        return false;
+        return;
       }
       this.form.addEventListener("submit", this.onFormSubmit.bind(this));
       this.settings.onInit();
@@ -11187,7 +11201,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     logErrors(errors) {
       if (Array.isArray(errors) && errors.length) {
         for (let i = errors.length - 1; i >= 0; i--) {
-          console.warn(`[${this.name}] - onSubmitFail error: ${errors[i]}`);
+          console.warn(`[${this.name}] - onSubmitFail error: ${errors[i].message}`);
         }
       }
     }
@@ -11202,6 +11216,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         return true;
       }
       return false;
+    }
+    onSubmitSuccess() {
+      this.settings.onSubscribeSuccess?.();
     }
     onSubmitFail(errors) {
       this.submit.removeAttribute("disabled");
@@ -11220,7 +11237,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
       try {
         this.isSubmitting = true;
-        this.submit.setAttribute("disabled", true);
+        this.submit.setAttribute("disabled", "true");
         this.settings.onSubmitStart();
         const success = await KlaviyoAPI.createClientSubscription({
           email,
@@ -11229,10 +11246,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         if (success) {
           this.onSubmitSuccess();
         } else {
-          this.onSubmitFail();
+          this.onSubmitFail([
+            new Error("Failed to subscribe to newsletter")
+          ]);
         }
       } catch (e2) {
-        console.warn("error", e2);
+        const error = e2 instanceof Error ? e2 : new Error(String(e2));
+        this.onSubmitFail([error]);
       } finally {
         this.submit.removeAttribute("disabled");
         this.isSubmitting = false;
@@ -11329,8 +11349,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const selectors$7 = {
     navLink: "[data-nav] a"
   };
-  class FooterSection extends BaseSection {
-    static TYPE = "footer";
+  const _FooterSection = class _FooterSection extends BaseSection {
     constructor(container) {
       super(container);
       this.navLinks = this.qsa(selectors$7.navLink);
@@ -11355,7 +11374,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       const currentPath = new URL(e.detail.to.finalUrl).pathname;
       this.navLinks.forEach((link) => setAriaCurrent(link, currentPath));
     }
-  }
+  };
+  _FooterSection.TYPE = "footer";
+  let FooterSection = _FooterSection;
   const classes$3 = {
     backdrop: "backdrop",
     open: "is-open"
@@ -11402,8 +11423,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _Backdrop.TYPE = "backdrop";
   let Backdrop = _Backdrop;
-  const TAB_NAV_FORWARD = "forward";
-  const TAB_NAV_BACKWARD = "backward";
   class FocusTrap {
     constructor(el, options = {}) {
       this.settings = {
@@ -11458,12 +11477,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         return;
       }
       let focusEl = null;
-      if (this.el.contains(event.target)) {
+      if (event.target instanceof HTMLElement && this.el.contains(event.target)) {
         focusEl = event.target;
       } else {
         if (this.focusableElements.length === 0) {
           focusEl = this.el;
-        } else if (this.lastTabNavDirection === TAB_NAV_BACKWARD) {
+        } else if (this.lastTabNavDirection === "backward") {
           focusEl = this.focusableElements[this.focusableElements.length - 1];
         } else {
           focusEl = this.focusableElements[0];
@@ -11478,7 +11497,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (event.key !== "Tab") {
         return;
       }
-      this.lastTabNavDirection = event.shiftKey ? TAB_NAV_BACKWARD : TAB_NAV_FORWARD;
+      this.lastTabNavDirection = event.shiftKey ? "backward" : "forward";
     }
   }
   const selectors$6 = {
@@ -11489,8 +11508,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     isOpen: "is-open",
     bodyIsOpen: "drawer-open"
   };
-  class Drawer extends BaseComponent {
-    static TYPE = "drawer";
+  const _Drawer = class _Drawer extends BaseComponent {
     constructor(el, options = {}) {
       super(el, {
         watchBreakpoint: options.maxBreakpoint ? true : false,
@@ -11542,7 +11560,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.backdrop?.show();
       this.el.removeAttribute("inert");
       this.focusTrap.activate();
-      this.scroller.scrollTop = 0;
+      if (this.scroller) this.scroller.scrollTop = 0;
     }
     close() {
       if (!this.isOpen) return;
@@ -11558,38 +11576,43 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     toggle() {
       this.isOpen ? this.close() : this.open();
     }
-    onBreakpointChange({ detail: { breakpoint } }) {
+    onBreakpointChange(e) {
+      const { detail: { breakpoint } } = e;
       if (!this.isOpen || !this.settings.maxBreakpoint) return;
       if (breakpoint > this.settings.maxBreakpoint) {
         this.close();
       }
     }
     onClick(e) {
-      if (e.target.closest(selectors$6.close)) {
+      const target = e.target;
+      if (target?.closest(selectors$6.close)) {
         e.preventDefault();
         this.close();
       }
     }
     onBodyClick(e) {
-      if (this.ariaControlElements.filter((el) => {
-        return el.isSameNode(e.target) || el.contains(e.target);
-      }).length > 0) {
+      const target = e.target;
+      if (this.ariaControlElements.some(
+        (el) => el.isSameNode(target) || el.contains(target)
+      )) {
         e.preventDefault();
         this.toggle();
       }
     }
-  }
-  class MobileMenuDrawer extends Drawer {
-    static TYPE = "mobile-menu-drawer";
+  };
+  _Drawer.TYPE = "drawer";
+  let Drawer = _Drawer;
+  const _MobileMenuDrawer = class _MobileMenuDrawer extends Drawer {
     constructor(el) {
       super(el, {
         maxBreakpoint: BREAKPOINTS.md
       });
       this.searchInline = new SearchInline(this.qs(SearchInline.SELECTOR));
     }
-  }
-  class MobileMenuSection extends BaseSection {
-    static TYPE = "mobile-menu";
+  };
+  _MobileMenuDrawer.TYPE = "mobile-menu-drawer";
+  let MobileMenuDrawer = _MobileMenuDrawer;
+  const _MobileMenuSection = class _MobileMenuSection extends BaseSection {
     constructor(container) {
       super(container);
       this.drawer = new MobileMenuDrawer(this.qs(MobileMenuDrawer.SELECTOR));
@@ -11602,12 +11625,15 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onNavigateIn(e) {
       const currentPath = new URL(e.detail.to.finalUrl).pathname;
-      this.drawer.el.querySelectorAll("nav a").forEach((link) => setAriaCurrent(link, currentPath));
+      const links = this.drawer.el.querySelectorAll("nav a");
+      links.forEach((link) => setAriaCurrent(link, currentPath));
     }
     onNavigateOut() {
       this.drawer.close();
     }
-  }
+  };
+  _MobileMenuSection.TYPE = "mobile-menu";
+  let MobileMenuSection = _MobileMenuSection;
   var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
   function getDefaultExportFromCjs(x) {
     return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x["default"] : x;
@@ -12143,8 +12169,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const selectors = {
     cartJson: "[data-cart-json]"
   };
-  class AJAXCartSection extends BaseSection {
-    static TYPE = "ajax-cart";
+  const _AJAXCartSection = class _AJAXCartSection extends BaseSection {
     constructor(container) {
       super(container);
       const cartData = JSON.parse(this.qs(selectors.cartJson).textContent);
@@ -12175,7 +12200,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         this.open({ delay: true });
       }
     }
-  }
+  };
+  _AJAXCartSection.TYPE = "ajax-cart";
+  let AJAXCartSection = _AJAXCartSection;
   window.app = window.app || {};
   window.app.taxi = null;
   function init() {

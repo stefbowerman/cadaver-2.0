@@ -2,11 +2,22 @@
 
 import { getFocusableChildren } from '@/core/utils/dom'
 
-const TAB_NAV_FORWARD = 'forward'
-const TAB_NAV_BACKWARD = 'backward'
+type FocusTrapOptions = {
+  autofocus?: boolean
+  returnFocus?: boolean
+  preventScroll?: boolean
+  onFocusin?: (element: Element) => void
+}
 
 export default class FocusTrap {
-  constructor(el, options = {}) {
+  settings: FocusTrapOptions
+  el: HTMLElement
+  isActive: boolean
+  lastTabNavDirection: null | 'forward' | 'backward'
+  focusableElements: HTMLElement[]
+  previouslyFocusedElement: HTMLElement | null
+
+  constructor(el: HTMLElement, options: FocusTrapOptions = {}) {
     this.settings = {
       autofocus: true,
       returnFocus: true,
@@ -39,7 +50,7 @@ export default class FocusTrap {
     }
 
     // Store the currently focused element before activating the trap
-    this.previouslyFocusedElement = document.activeElement
+    this.previouslyFocusedElement = document.activeElement as HTMLElement | null
 
     this.focusableElements = getFocusableChildren(this.el)
  
@@ -69,21 +80,21 @@ export default class FocusTrap {
     }
   }
 
-  onFocusin(event) {
+  onFocusin(event: FocusEvent) {
     if (event.target === document || event.target === this.el) {
       return
     }
 
-    let focusEl = null
+    let focusEl: HTMLElement | null = null
 
-    if (this.el.contains(event.target)) {
+    if (event.target instanceof HTMLElement && this.el.contains(event.target)) {
       focusEl = event.target
     }
     else {
       if (this.focusableElements.length === 0) {
         focusEl = this.el
       }
-      else if (this.lastTabNavDirection === TAB_NAV_BACKWARD) {
+      else if (this.lastTabNavDirection === 'backward') {
         focusEl = this.focusableElements[this.focusableElements.length - 1]
       }
       else {
@@ -91,7 +102,7 @@ export default class FocusTrap {
       }
 
       // focusEl isn't event.target so we need to manually focus it
-      focusEl.focus({
+      (focusEl as HTMLElement).focus({
         preventScroll: this.settings.preventScroll
       })
     }
@@ -99,11 +110,11 @@ export default class FocusTrap {
     this.settings.onFocusin(focusEl)
   }
 
-  onKeydown(event) {
+  onKeydown(event: KeyboardEvent) {
     if (event.key !== 'Tab') {
       return
     }
 
-    this.lastTabNavDirection = event.shiftKey ? TAB_NAV_BACKWARD : TAB_NAV_FORWARD    
+    this.lastTabNavDirection = event.shiftKey ? 'backward' : 'forward'    
   }
 }

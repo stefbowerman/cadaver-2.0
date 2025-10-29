@@ -1,4 +1,5 @@
 import { setAriaCurrent } from '@/core/utils/a11y'
+import type { TaxiNavigateInEvent } from '@/types/taxi'
 import AJAXKlaviyoForm from '@/core/ajaxKlaviyoForm'
 
 import BaseSection from '@/sections/base'
@@ -12,10 +13,15 @@ const selectors = {
 export default class FooterSection extends BaseSection {
   static TYPE = 'footer'
 
-  constructor(container) {
+  navLinks: HTMLAnchorElement[]
+  newsletterFormEl: HTMLElement
+  newsletterForm: NewsletterForm | null
+  ajaxForm: AJAXKlaviyoForm | null
+
+  constructor(container: HTMLElement) {
     super(container)
 
-    this.navLinks = this.qsa(selectors.navLink)
+    this.navLinks = this.qsa(selectors.navLink ) as HTMLAnchorElement[]
 
     this.newsletterFormEl = this.qs(NewsletterForm.SELECTOR)
     this.newsletterForm = null
@@ -38,7 +44,7 @@ export default class FooterSection extends BaseSection {
     this.newsletterForm?.destroy()
   }
 
-  onNavigateIn(e) {
+  onNavigateIn(e: TaxiNavigateInEvent) {
     const currentPath = new URL(e.detail.to.finalUrl).pathname
 
     this.navLinks.forEach(link => setAriaCurrent(link, currentPath))

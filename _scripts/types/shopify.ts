@@ -61,3 +61,8 @@ export interface LiteProduct {
   options: string[]
   options_with_values: ProductOption[]
 }
+
+export interface SelectedOption {
+  name: string
+  value: string
+}

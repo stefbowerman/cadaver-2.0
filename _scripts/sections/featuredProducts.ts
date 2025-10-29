@@ -4,9 +4,11 @@ import ProductCard from '@/components/product/productCard'
 export default class FeaturedProductsSection extends BaseSection {
   static TYPE = 'featured-products'
 
-  constructor(container) {
+  productCards: ProductCard[]
+
+  constructor(container: HTMLElement) {
     super(container)
 
-    this.productCards = this.qsa(ProductCard.SELECTOR).map(el => new ProductCard(el))
+    this.productCards = this.qsa(ProductCard.SELECTOR).map((el: HTMLElement) => new ProductCard(el))
   }
 }

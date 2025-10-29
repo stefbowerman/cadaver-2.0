@@ -1,8 +1,8 @@
-import type { LiteProduct, LiteVariant } from '@/types/shopify'
+import type { LiteProduct, LiteVariant, SelectedOption } from '@/types/shopify'
 import BaseComponent from '@/components/base'
-import VariantPickerOption, { type SelectedOption } from '@/components/product/variantPickerOption'
+import VariantPickerOption from '@/components/product/variantPickerOption'
 
-interface VariantChangeEvent {
+export interface VariantChangeEvent {
   variant: LiteVariant
   selectedOptions: SelectedOption[]
 }

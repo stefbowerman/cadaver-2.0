@@ -1,12 +1,15 @@
-import BaseSection from '@/sections/base'
-
 import { fetchDom } from '@/core/utils/dom'
+
+import BaseSection from '@/sections/base'
 import ResultsDisplay from '@/components/results/resultsDisplay'
 
 export default class ResultsSection extends BaseSection {
   static TYPE = 'results'
 
-  constructor(container) {
+  isFetching: boolean
+  resultsDisplay: ResultsDisplay
+
+  constructor(container: HTMLElement) {
     super(container)
 
     this.isFetching = false
@@ -17,14 +20,14 @@ export default class ResultsSection extends BaseSection {
     })
   }
 
-  async fetchResults(url) {
+  async fetchResults(url: string): Promise<HTMLElement | undefined> {
     if (this.isFetching) return
 
     try {
       this.isFetching = true
 
       const fetchUrl = new URL(url, window.location.origin)
-            fetchUrl.searchParams.set('t', Date.now()) // Add timestamp to prevent caching?
+            fetchUrl.searchParams.set('t', Date.now().toString()) // Add timestamp to prevent caching?
             fetchUrl.searchParams.set('section_id', this.id)
 
       const dom = await fetchDom(fetchUrl)
@@ -39,13 +42,14 @@ export default class ResultsSection extends BaseSection {
     }
   }
 
-  async onMoreIntersection(entries) {
+  async onMoreIntersection(entries: IntersectionObserverEntry[]) {
     const entry = entries[0]
 
     if (!entry.isIntersecting) return
 
     try {
-      const newResults = await this.fetchResults(entry.target.href)
+      const target = entry.target as HTMLAnchorElement
+      const newResults = await this.fetchResults(target.href)
       
       this.resultsDisplay.add(newResults)
     }
@@ -57,7 +61,7 @@ export default class ResultsSection extends BaseSection {
     }        
   }
 
-  onReplaceComplete(resultsDisplay) {
+  onReplaceComplete(resultsDisplay: ResultsDisplay) {
     // console.log('onReplaceComplete', resultsDisplay)
   }
 }

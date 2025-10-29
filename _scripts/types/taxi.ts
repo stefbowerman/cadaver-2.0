@@ -38,3 +38,20 @@ export type RendererProps = {
   title: string,
   wrapper: Element
 }
+
+// https://github.com/craftedbygc/taxi/blob/main/src/Transition.js
+export type TransitionProps = {
+  wrapper: HTMLElement
+}
+
+export type TransitionOnLeaveProps = {
+  from: HTMLElement | Element,
+  trigger: string | HTMLElement | false,
+  done: Function
+}
+
+export type TransitionOnEnterProps = {
+  to: HTMLElement | Element,
+  trigger: string | HTMLElement | false,
+  done: Function
+}

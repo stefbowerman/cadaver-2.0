@@ -8,27 +8,29 @@ const noop = () => {}
  *
  * Handles AJAX form submission and callback event
  *
- * NOTE: This has not been rigorously tested yet...
+ * NOTE: This has not been rigorously tested...
  *
  */
+interface AJAXKlaviyoFormSettings {
+  source?: string
+  onInit?: () => void
+  onBeforeSend?: () => boolean | void
+  onSubmitStart?: () => void
+  onSubmitFail?: (errors: Error[]) => void
+  onSubscribeSuccess?: () => void
+  onSubscribeFail?: () => void
+}
 
-
-/**
- * AJAX Klaviyo Form Constructor
- *
- * @param {HTMLElement} form - Form element
- * @param {Object} options
- * @param {String} options.source - Klaviyo custom $source property
- * @param {Function} options.onInit
- * @param {Function} options.onBeforeSend - Prevent AJAX submission by returning false here
- * @param {Function} options.onSubmitStart - Triggered once the AJAX request kicks off
- * @param {Function} options.onSubmitFail  
- * @param {Function} options.onSubscribeSuccess
- * @param {Function} options.onSubscribeFail
- * @return {self}
- */
 export default class AJAXKlaviyoForm {
-  constructor(el, options) {
+  name: string
+  settings: AJAXKlaviyoFormSettings
+  el: HTMLElement
+  form: HTMLFormElement
+  input: HTMLInputElement
+  submit: HTMLButtonElement
+  isSubmitting: boolean
+
+  constructor(el: HTMLElement, options: AJAXKlaviyoFormSettings = {}) {
     this.name = 'ajaxKlaviyoForm'
 
     this.settings = {
@@ -43,7 +45,7 @@ export default class AJAXKlaviyoForm {
     }
 
     this.el = el
-    this.form = this.el.tagName === 'FORM' ? this.el : this.el.querySelector('form')
+    this.form = this.el.tagName === 'FORM' ? this.el as HTMLFormElement : this.el.querySelector('form')
 
     if (!this.form) {
       console.warn(`[${this.name}] - Form element required to initialize`)
@@ -54,9 +56,9 @@ export default class AJAXKlaviyoForm {
     this.submit = this.form.querySelector('[type="submit"]')
     this.isSubmitting = false
 
-    if (!this.input === 0) {
+    if (!this.input) {
       console.warn(`[${this.name}] - Email input missing`)
-      return false
+      return
     }    
 
     this.form.addEventListener('submit', this.onFormSubmit.bind(this))
@@ -64,10 +66,10 @@ export default class AJAXKlaviyoForm {
     this.settings.onInit()
   }
 
-  logErrors(errors) {
+  logErrors(errors: Error[]) {
     if (Array.isArray(errors) && errors.length) {
       for (let i = errors.length - 1; i >= 0; i--) {
-        console.warn(`[${this.name}] - onSubmitFail error: ${errors[i]}`);
+        console.warn(`[${this.name}] - onSubmitFail error: ${errors[i].message}`);
       }
     }
   }
@@ -88,14 +90,18 @@ export default class AJAXKlaviyoForm {
     return false;
   }
 
-  onSubmitFail(errors) {
+  onSubmitSuccess() {
+    this.settings.onSubscribeSuccess?.()
+  }
+
+  onSubmitFail(errors: Error[]) {
     this.submit.removeAttribute('disabled')
 
     this.logErrors(errors)
-    this.settings.onSubmitFail(errors)
+    this.settings.onSubmitFail(errors) // @TODO - Are we using strings?  or Error objects?
   }
 
-  async onFormSubmit(e) {
+  async onFormSubmit(e: SubmitEvent) {
     e.preventDefault()
 
     if (this.isSubmitting || this.onBeforeSend() === false) {
@@ -113,7 +119,7 @@ export default class AJAXKlaviyoForm {
     try {
       this.isSubmitting = true;
 
-      this.submit.setAttribute('disabled', true)
+      this.submit.setAttribute('disabled', 'true')
       this.settings.onSubmitStart()
 
       const success = await KlaviyoAPI.createClientSubscription({
@@ -125,11 +131,14 @@ export default class AJAXKlaviyoForm {
         this.onSubmitSuccess()
       }
       else {
-        this.onSubmitFail()
+        this.onSubmitFail([
+          new Error('Failed to subscribe to newsletter')
+        ])
       }
     }
-    catch (e) {
-      console.warn('error', e)
+    catch (e: unknown) {
+      const error = e instanceof Error ? e : new Error(String(e))
+      this.onSubmitFail([error])
     }
     finally {
       this.submit.removeAttribute('disabled')

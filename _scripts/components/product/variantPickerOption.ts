@@ -1,9 +1,5 @@
 import BaseComponent from '@/components/base'
-
-export interface SelectedOption {
-  name: string
-  value: string
-}
+import type { SelectedOption } from '@/types/shopify'
 
 interface VariantPickerOptionSettings {
   onChange?: () => void
@@ -13,7 +9,7 @@ export default class VariantPickerOption extends BaseComponent {
   static TYPE = 'variant-picker-option'
 
   settings: VariantPickerOptionSettings
-  name: string
+  name: string | undefined
   select: HTMLSelectElement | null
   inputs: HTMLInputElement[]
 
@@ -32,15 +28,15 @@ export default class VariantPickerOption extends BaseComponent {
     }
     
     // Picker options are either <select> tags or a series of <input> tags
-    this.select = this.qs('select') as HTMLSelectElement | null
+    this.select = this.qs('select') as HTMLSelectElement || null
     this.inputs = this.qsa('input') as HTMLInputElement[]
 
     this.el.addEventListener('change', this.onChange.bind(this))
   }
 
   get selectedOption(): SelectedOption | undefined {
-    let name: string | undefined = undefined
-    let value: string | undefined = undefined
+    let name: string | undefined
+    let value: string | undefined
 
     if (this.select) {
       name = this.select.name
@@ -75,7 +71,7 @@ export default class VariantPickerOption extends BaseComponent {
     }
   }
 
-  onChange(e: Event) {
+  onChange() {
     this.settings.onChange()
   }
 }

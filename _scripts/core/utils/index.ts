@@ -23,18 +23,16 @@ export function isObject(value: unknown): boolean {
 /**
  * Check if we're running the theme inside the theme editor
  *
- * @return {bool}
  */
-export function isThemeEditor() {
-  return window.Shopify && window.Shopify.designMode
+export function isThemeEditor(): boolean {
+  return window.Shopify?.designMode 
 }
 
 /**
  * Constructs an object of key / value pairs out of the parameters of the query string
  *
- * @return {Object}
  */
-export function getQueryParams() {
+export function getQueryParams(): Record<string, string | boolean> {
   const queryParams = {}
   const params = new URLSearchParams(window.location.search)
 
@@ -50,8 +48,6 @@ export function getQueryParams() {
  * Useful for hashing content into a some-what unique identifier to use for cookies.
  * Reference - https://stackoverflow.com/a/7616484
  *
- * @param {string}
- * @return {int}
  */
 export function hashFromString(string: string): number {
   let hash = 0;
@@ -74,7 +70,7 @@ export function hashFromString(string: string): number {
  * Browser cookies are required to use the cart. This function checks if
  * cookies are enabled in the browser.
  */
-export function cookiesEnabled() {
+export function cookiesEnabled(): boolean {
   if (navigator.cookieEnabled) {
     return true
   }
@@ -149,11 +145,11 @@ export function random(min = 0, max = 1): number {
  *
  * @param {Number} num
  * @param {Number} width
- * @param {Number} z - pad value
+ * @param {String} pad value - default is '0'
  * @return {Number}
  */
-export function pad(num: number, width: number, z: string): string {
-  z = z || '0';
+export function pad(num: number, width: number, z?: string): string {
+  z = z ?? '0';
   const n = num + '';
 
   return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;

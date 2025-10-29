@@ -2,7 +2,7 @@ import BreakpointsController, { type BreakpointChangeEvent } from '@/core/breakp
 import CartAPI from '@/core/cartAPI'
 import { isObject } from '@/core/utils'
 
-interface BaseComponentSettings {
+export interface BaseComponentSettings {
   watchResize?: boolean;
   watchBreakpoint?: boolean;
   watchScroll?: boolean;
@@ -95,8 +95,8 @@ export default class BaseComponent {
     return this.el.getAttribute('aria-hidden') === 'true'
   }
 
-  get ariaControlElements(): Element[] {
-    return [...document.querySelectorAll(`[aria-controls="${this.el.id}"]`)]
+  get ariaControlElements(): HTMLElement[] {
+    return [...document.querySelectorAll(`[aria-controls="${this.el.id}"]`)] as HTMLElement[]
   }  
 
   /**
@@ -107,7 +107,7 @@ export default class BaseComponent {
    * @param dom - The DOM element to query within.  Defaults to the component's element.
    * @returns The first matching Element object within the component's scope, or undefined if no match is found.
    */
-  qs(selector: string, dom: HTMLElement = this.el): Element | undefined {
+  qs(selector: string, dom: HTMLElement = this.el): HTMLElement | undefined {
     return this.qsa(selector, dom)[0]
   }
 
@@ -124,12 +124,12 @@ export default class BaseComponent {
    * closest parent component is either the querying component itself or matches the
    * selector (which would make it a target of the query rather than a container to exclude).
    */
-  qsa(selector: string, dom: HTMLElement = this.el): Element[] {
+  qsa(selector: string, dom: HTMLElement = this.el): HTMLElement[] {
     return [...dom.querySelectorAll(selector)].filter(el => {
       const closest = el.closest('[data-component]')
 
       return closest.isSameNode(this.el) || closest.matches(selector)
-    })
+    }) as HTMLElement[]
   }
 
   // Make sure we're working with a DOM element that matches the component selector
@@ -148,7 +148,7 @@ export default class BaseComponent {
     // override in subclass
   }
 
-  onBreakpointChange(e: CustomEvent<BreakpointChangeEvent>) {
+  onBreakpointChange(e: BreakpointChangeEvent) {
     const { detail: { breakpoint, fromBreakpoint, direction } } = e
     // override in subclass
   }
@@ -157,6 +157,7 @@ export default class BaseComponent {
     // override in subclass
   }
 
+  // @TODO - Add type for the cart object
   onCartUpdate(e: CustomEvent) {
     const { detail: { cart } } = e
     // override in subclass

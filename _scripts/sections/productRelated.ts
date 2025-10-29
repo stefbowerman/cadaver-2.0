@@ -1,4 +1,6 @@
 import { fetchDom } from '@/core/utils/dom'
+import type { ThemeEditorSectionUnloadEvent } from '@/types/shopify'
+
 import BaseSection from '@/sections/base'
 import ProductCard from '@/components/product/productCard'
 
@@ -10,7 +12,13 @@ const selectors = {
 export default class ProductRelatedSection extends BaseSection {
   static TYPE = 'product-related'
 
-  constructor(container) {
+  productCards: ProductCard[]
+  contentTarget: HTMLElement
+  content: HTMLElement
+  recommendationsUrl: string
+  observer: IntersectionObserver
+
+  constructor(container: HTMLElement) {
     super(container)
 
     this.productCards = []
@@ -29,13 +37,13 @@ export default class ProductRelatedSection extends BaseSection {
     this.observer.observe(this.container)
   }
 
-  onUnload() {
+  onUnload(e: ThemeEditorSectionUnloadEvent) {
     this.observer.disconnect()
 
-    super.onUnload()
+    super.onUnload(e)
   }
 
-  onIntersection(entries) {
+  onIntersection(entries: IntersectionObserverEntry[]) {
     if (!entries[0].isIntersecting) return
 
     this.observer.disconnect() // We only want to check for intersection *once*
@@ -50,7 +58,7 @@ export default class ProductRelatedSection extends BaseSection {
 
       this.contentTarget.replaceChildren(content)
 
-      this.productCards = this.qsa(ProductCard.SELECTOR, this.contentTarget).map(el => new ProductCard(el))
+      this.productCards = this.qsa(ProductCard.SELECTOR, this.contentTarget).map((el: HTMLElement) => new ProductCard(el))
     }
     catch (e) {
       console.warn(e)

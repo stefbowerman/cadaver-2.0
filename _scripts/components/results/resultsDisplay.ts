@@ -10,10 +10,24 @@ const selectors = {
   more: 'a[data-more]'
 }
 
+interface ResultsDisplaySettings {
+  onMoreIntersection?: (entries: IntersectionObserverEntry[]) => void
+  onReplaceStart?: (resultsDisplay: ResultsDisplay) => void
+  onReplaceComplete?: (resultsDisplay: ResultsDisplay) => void
+}
+
 export default class ResultsDisplay extends BaseComponent {
   static TYPE = 'results-display'
 
-  constructor(el, options = {}) {
+  settings: ResultsDisplaySettings
+  productCards: ProductCard[]
+  list: HTMLUListElement | null
+  a11yStatus: A11yStatus | null
+  more: HTMLAnchorElement | undefined
+  moreObserver: IntersectionObserver | null
+  replacementTl: gsap.core.Timeline | null
+
+  constructor(el: HTMLElement, options: ResultsDisplaySettings = {}) {
     super(el)
 
     this.settings = {
@@ -39,8 +53,8 @@ export default class ResultsDisplay extends BaseComponent {
   setup() {
     this.productCards = this.qsa(ProductCard.SELECTOR).map(el => new ProductCard(el))
 
-    this.list = this.qs(selectors.list)
-    this.more = this.qs(selectors.more)
+    this.list = this.qs(selectors.list) as HTMLUListElement | null
+    this.more = this.qs(selectors.more) as HTMLAnchorElement | undefined
 
     if (this.more) {
       const rootMargin = window.innerWidth < BREAKPOINTS.md ? '1000px' : `${Math.max(window.innerHeight*2, 1500)}px`
@@ -85,7 +99,7 @@ export default class ResultsDisplay extends BaseComponent {
   }
 
   // Replace the entire contents of the results display
-  replace(dom) {
+  replace(dom: HTMLElement | undefined) {
     if (!this.validateDom(dom)) return
 
     this.replacementTl = gsap.timeline({ paused: true })
@@ -118,7 +132,7 @@ export default class ResultsDisplay extends BaseComponent {
     this.replacementTl.play()
   }
 
-  add(dom) {
+  add(dom: HTMLElement | undefined) {
     if (!this.validateDom(dom)) return
 
     const newList = dom.querySelector(selectors.list)
@@ -131,7 +145,7 @@ export default class ResultsDisplay extends BaseComponent {
       newItems.forEach(el => {      
         fragment.append(el) // el === <li>
         
-        const card = el.querySelector(ProductCard.SELECTOR)
+        const card = el.querySelector(ProductCard.SELECTOR) as HTMLElement
 
         if (card) {
           this.productCards.push(new ProductCard(card))
@@ -142,7 +156,7 @@ export default class ResultsDisplay extends BaseComponent {
       this.a11yStatus.text = `${newItems.length} items loaded`
 
       // Replace the "more" link if it exists
-      const newMore = dom.querySelector(selectors.more)
+      const newMore = dom.querySelector(selectors.more) as HTMLAnchorElement | undefined
 
       if (this.more && newMore) {
         this.more.href = newMore.href
@@ -161,9 +175,9 @@ export default class ResultsDisplay extends BaseComponent {
     this.moreObserver = null
   }  
 
-  onMoreIntersection(entries) {
+  onMoreIntersection(entries: IntersectionObserverEntry[]) {
     if (!this.more) return // Prevent a race condition
 
-    this.settings.onMoreIntersection(entries)
+    this.settings.onMoreIntersection?.(entries)
   }
 }

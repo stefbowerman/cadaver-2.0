@@ -9,7 +9,10 @@ const selectors = {
 export default class LoginSection extends BaseSection {
   static TYPE = 'login'
 
-  constructor(container) {
+  loginForm: HTMLElement
+  recoverForm: HTMLElement
+
+  constructor(container: HTMLElement) {
     super(container)
 
     this.loginForm = this.qs(selectors.loginForm)
@@ -22,9 +25,9 @@ export default class LoginSection extends BaseSection {
     }  
   }
 
-  onClick(e) {
-    if (e.target.closest(selectors.toggleRecover)) {
-      e.target.dataset.toggleRecover === 'true' ? this.showRecoverForm() : this.hideRecoverForm()
+  onClick(e: MouseEvent) {
+    if ((e.target as HTMLElement).closest(selectors.toggleRecover)) {
+      (e.target as HTMLElement).dataset.toggleRecover === 'true' ? this.showRecoverForm() : this.hideRecoverForm()
     }
   }
 
