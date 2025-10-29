@@ -1,4 +1,42 @@
+import { type Core } from '@unseenco/taxi'
 import { dispatch } from '@/core/utils/event'
+import type { LiteCart } from '@/types/shopify'
+
+declare global {
+  interface Window {
+    app?: {
+      strings: {
+        addToCart: string
+        soldOut: string
+        unavailable: string
+        adding: string
+        added: string
+      };
+      routes: {
+        root_url: string
+        predictive_search_url: string
+        cart_add_url: string
+        cart_change_url: string
+        cart_update_url: string
+        cart_clear_url: string
+        cart_url: string
+        account_addresses_url: string
+        account_url: string
+      };      
+      taxi?: Core & {
+        navigateTo: (url: string) => void;
+      };
+      klaviyo?: {
+        companyId: string
+        listId: string
+      };      
+    };
+  }
+}
+
+export type CartAPIEvent = CustomEvent<{
+  cart: LiteCart
+}>
 
 const CartAPI = {
   EVENTS: {
@@ -10,17 +48,15 @@ const CartAPI = {
 
   routes: window.app.routes,
 
-  dispatch(eventName, cart) {
-    // Leaving this CartAPI.dispatch() here for backwards compatibility
-    dispatch(eventName, { cart })
-  },  
+  dispatch(eventName: string, cart: LiteCart) {
+    dispatch(eventName, { cart }) // Leaving this CartAPI.dispatch() here for backwards compatibility
+  },
 
   /**
    * Retrieve a JSON respresentation of the users cart
    *
-   * @return {Promise} - JSON cart
    */
-  async getCart() {
+  async getCart(): Promise<LiteCart> {
     try {
       const response = await fetch(`${this.routes.cart_url}?view=json`, {
         method: 'GET',
@@ -36,21 +72,21 @@ const CartAPI = {
       return cart
     }
     catch (e) {
-      throw new Error('Could not retrieve cart items', e);
+      throw new Error(`Could not retrieve cart items: ${e.message}`);
     }
   },
 
   /**
    * AJAX submit an 'add to cart' form
    *
-   * @param {HTMLFormElement} form - The form element
-   * @return {Promise} - Resolve returns JSON cart | Reject returns an error message
    */
-  // @TODO - Add return value here
-  async addItemFromForm(form) {
+  async addItemFromForm(form: HTMLFormElement): Promise<LiteCart> {
     try {
       const formData = new FormData(form)
-      const body = new URLSearchParams([...formData].filter(([_, value]) => value !== '' && value != null)) // Remove empty values
+      const body = new URLSearchParams(
+        [...formData].filter(([_, value]) => value !== '' && value != null)
+          .map(([key, value]) => [key, value.toString()])
+      )
   
       const response = await fetch(`${this.routes.cart_add_url}.js`, {
         method: 'POST',
@@ -95,11 +131,10 @@ const CartAPI = {
    * Item is specified by line_item key
    * https://shopify.dev/api/ajax/reference/cart#post-locale-cart-change-js
    *
-   * @param {String} id - Cart line item id // https://shopify.dev/docs/api/liquid/objects/line_item#line_item-id
-   * @param {Integer} qty - New quantity of the variant
-   * @return {Promise} - JSON cart
+   * @param id - Cart line item id // https://shopify.dev/docs/api/liquid/objects/line_item#line_item-id
+   * @param qty - New quantity of the variant
    */
-  async changeLineItemQuantity(id, qty) {
+  async changeLineItemQuantity(id: number, qty: number): Promise<LiteCart> {
     try {
       const response = await fetch(`${this.routes.cart_change_url}.js`, {
         method: 'POST',

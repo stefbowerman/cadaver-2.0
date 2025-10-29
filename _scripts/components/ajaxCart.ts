@@ -1,5 +1,7 @@
 import { toAriaBoolean } from '@/core/utils/a11y'
 import FocusTrap from '@/core/focusTrap'
+import type { LiteCart } from '@/types/shopify'
+import type { CartAPIEvent } from '@/core/cartAPI'
 
 import BaseComponent from '@/components/base'
 import Backdrop from '@/components/backdrop'
@@ -20,7 +22,15 @@ const classes = {
 export default class AJAXCart extends BaseComponent {
   static TYPE = 'ajax-cart'
 
-  constructor(el, cartData) {
+  isOpen: boolean
+  requestInProgress: boolean
+  role: string | null
+  cartBody: CartBody
+  cartFooter: CartFooter
+  focusTrap: FocusTrap
+  backdrop: Backdrop
+
+  constructor(el: HTMLElement, cartData: LiteCart) {
     super(el, {
       watchCartUpdate: true,
     })
@@ -62,7 +72,7 @@ export default class AJAXCart extends BaseComponent {
     super.destroy()
   }
 
-  setEmpty(isEmpty) {
+  setEmpty(isEmpty: boolean) {
     this.el.classList.toggle(classes.empty, isEmpty)
   }  
 
@@ -106,7 +116,7 @@ export default class AJAXCart extends BaseComponent {
     this.isOpen = false
   }
 
-  onCartUpdate(e) {
+  onCartUpdate(e: CartAPIEvent) {
     const { cart } = e.detail
 
     this.setEmpty(cart.item_count === 0)
@@ -114,22 +124,24 @@ export default class AJAXCart extends BaseComponent {
     this.open()
   }
 
-  onBodyClick(e) {
-    if (e.target.closest(selectors.close)) {
+  onBodyClick(e: MouseEvent) {
+    const target = e.target as HTMLElement
+
+    if (target?.closest(selectors.close)) {
       return this.onCloseClick(e)
     }
-    else if (e.target.closest(selectors.toggle)?.getAttribute('aria-controls') === this.el.id) {
+    else if (target?.closest(selectors.toggle)?.getAttribute('aria-controls') === this.el.id) {
       return this.onToggleClick(e)
     }
   }
 
-  onToggleClick(e) {
+  onToggleClick(e: MouseEvent) {
     e.preventDefault()
 
     this.toggle()
   }
 
-  onCloseClick(e) {
+  onCloseClick(e: MouseEvent) {
     e.preventDefault()
     this.close()
   }

@@ -1,5 +1,5 @@
 import BreakpointsController, { type BreakpointChangeEvent } from '@/core/breakpointsController'
-import CartAPI from '@/core/cartAPI'
+import CartAPI, { type CartAPIEvent } from '@/core/cartAPI'
 import { isObject } from '@/core/utils'
 
 export interface BaseComponentSettings {
@@ -157,9 +157,7 @@ export default class BaseComponent {
     // override in subclass
   }
 
-  // @TODO - Add type for the cart object
-  onCartUpdate(e: CustomEvent) {
-    const { detail: { cart } } = e
+  onCartUpdate(e: CartAPIEvent) {
     // override in subclass
   }
 }

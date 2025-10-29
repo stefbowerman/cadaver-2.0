@@ -1,13 +1,14 @@
-import debounce from 'lodash.debounce'
+import debounce, { type DebouncedFunc } from 'lodash.debounce'
 
 import CartAPI from '@/core/cartAPI'
 import { isTouch } from '@/core/utils'
+import type { LiteLineItem } from '@/types/shopify'
 
 import BaseComponent from '@/components/base'
 import QuantityAdjuster from '@/components/quantityAdjuster'
 
 const selectors = {
-  remove: '[data-remove]',
+  remove: 'button[data-remove]',
   price: '[data-price]',
 }
 
@@ -24,15 +25,23 @@ export default class CartItem extends BaseComponent {
     UPDATING: 'updating'
   }
 
-  constructor(el, itemData) {
+  #state: string | undefined
+  id: number
+  itemData: LiteLineItem
+  remove: HTMLButtonElement
+  price: HTMLElement
+  debouncedOnQuantityAdjusterChange: DebouncedFunc<(qty: number) => void>
+  quantityAdjuster: QuantityAdjuster
+
+  constructor(el: HTMLElement, itemData: LiteLineItem) {
     super(el)
 
-    this._state = undefined
+    this.#state = undefined
 
     this.id = parseInt(this.el.dataset.id, 10)
     this.itemData = itemData
 
-    this.remove = this.qs(selectors.remove)
+    this.remove = this.qs(selectors.remove) as HTMLButtonElement
     this.price = this.qs(selectors.price)
 
     this.debouncedOnQuantityAdjusterChange = debounce(this.onQuantityAdjusterChange.bind(this), (isTouch() ? 500 : 250)) // <- Longer debounce for touch devices since fast touches are taken as a double click which causes page zoom
@@ -73,11 +82,11 @@ export default class CartItem extends BaseComponent {
         break
     }
 
-    this._state = state
+    this.#state = state
   }
 
   get state() {
-    return this._state
+    return this.#state
   }
 
   /**
@@ -86,7 +95,7 @@ export default class CartItem extends BaseComponent {
    * @param {number} item.quantity - The new quantity of the item
    * @param {string} item.item_price_html - The HTML string representing the updated price
    */
-  update(itemData) {
+  update(itemData: LiteLineItem) {
     if (!itemData || typeof itemData !== 'object') {
       console.error('Invalid item data provided to update method')
       return
@@ -101,7 +110,7 @@ export default class CartItem extends BaseComponent {
     this.itemData = itemData
   }
 
-  async onQuantityAdjusterChange(q) {
+  async onQuantityAdjusterChange(q: number) {
     if (this.state !== undefined) return
 
     try {
@@ -122,7 +131,7 @@ export default class CartItem extends BaseComponent {
     }
   }
 
-  async onRemoveClick(e) {
+  async onRemoveClick(e: MouseEvent) {
     e.preventDefault()
 
     try {

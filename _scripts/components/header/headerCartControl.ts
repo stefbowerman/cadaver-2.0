@@ -1,4 +1,5 @@
 import BaseComponent from '@/components/base'
+import type { CartAPIEvent } from '@/core/cartAPI'
 
 const selectors = {
   count: '[data-count]'
@@ -11,7 +12,9 @@ const classes = {
 export default class HeaderCartControl extends BaseComponent {
   static TYPE = 'header-cart-control'
 
-  constructor(el) {
+  count: HTMLElement
+
+  constructor(el: HTMLElement) {
     super(el, {
       watchCartUpdate: true,
     })
@@ -19,8 +22,10 @@ export default class HeaderCartControl extends BaseComponent {
     this.count = this.qs(selectors.count)
   }
 
-  onCartUpdate({ detail: { cart } }) {
-    this.count.innerText = cart.item_count
+  onCartUpdate(e: CartAPIEvent) {
+    const { cart } = e.detail
+    
+    this.count.innerText = cart.item_count.toString()
     this.el.classList.toggle(classes.hasItems, cart.item_count > 0)
   }
 }

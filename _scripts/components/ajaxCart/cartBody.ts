@@ -1,5 +1,7 @@
 import { slideUp } from '@/core/gsap'
 import { getDomFromString } from '@/core/utils/dom'
+import type { LiteCart } from '@/types/shopify'
+import type { CartAPIEvent } from '@/core/cartAPI'
 
 import BaseComponent from '@/components/base'
 import CartItem from '@/components/ajaxCart/cartItem'
@@ -11,7 +13,11 @@ const selectors = {
 export default class CartBody extends BaseComponent {
   static TYPE = 'cart-body'
 
-  constructor(el, cartData) {
+  cartData: LiteCart
+  list: HTMLElement
+  itemInstances: CartItem[]
+
+  constructor(el: HTMLElement, cartData: LiteCart) {
     super(el, {
       watchCartUpdate: true,
     })
@@ -23,20 +29,20 @@ export default class CartBody extends BaseComponent {
     this.itemInstances = this.qsa(CartItem.SELECTOR).map((el, i) => new CartItem(el, this.cartData.items[i]))
   }
 
-  cleanupItemInstance(item) {
+  cleanupItemInstance(item: CartItem) {
     item.destroy()
     item.el.remove()
   }
 
   /**
    * Synchronizes the cart UI with new cart data received from an update event
-   * @param {CustomEvent} e - Cart update event containing new cart data
-   * @param {Object} e.detail.cart - The new cart data
-   * @param {Array} e.detail.cart.items - Array of cart items
-   * @param {string} e.detail.cart.items[].id - Unique identifier for cart item
-   * @param {string} e.detail.cart.items[].item_html - HTML string representation of cart item
+   * @param e - Cart update event containing new cart data
+   * @param e.detail.cart - The new cart data
+   * @param e.detail.cart.items - Array of cart items
+   * @param e.detail.cart.items[].id - Unique identifier for cart item
+   * @param e.detail.cart.items[].item_html - HTML string representation of cart item
    */
-  syncCart(e) {
+  syncCart(e: CartAPIEvent) {
     const newCartData = e.detail.cart
 
     // First handle additions and updates
@@ -53,8 +59,8 @@ export default class CartBody extends BaseComponent {
 
       // If item wasn't found, it's new - add it
       if (!found) {
-        const newItemEl = getDomFromString(newItemData.item_html).querySelector(CartItem.SELECTOR)
-        const newItemInstance = new CartItem(newItemEl)
+        const newItemEl = getDomFromString(newItemData.item_html).querySelector(CartItem.SELECTOR) as HTMLElement
+        const newItemInstance = new CartItem(newItemEl, newItemData)
         
         // Insert to list DOM
         this.list.insertBefore(newItemInstance.el, this.itemInstances[newIndex]?.el || null)
@@ -89,7 +95,7 @@ export default class CartBody extends BaseComponent {
     this.cartData = newCartData
   }
 
-  onCartUpdate(e) {
+  onCartUpdate(e: CartAPIEvent) {
     this.syncCart(e)
   }
 }

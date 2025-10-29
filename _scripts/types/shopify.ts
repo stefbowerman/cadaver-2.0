@@ -39,7 +39,7 @@ interface ProductOption {
   values: string[]
 }
 
-// 'Lite' prefixed types are defined in snippets/product-json-lite.liquid
+// 'LiteVariant' and 'LiteProduct' types are defined in snippets/product-json-lite.liquid
 export interface LiteVariant {
   available: boolean
   compare_at_price: number | null
@@ -60,6 +60,41 @@ export interface LiteProduct {
   variants: LiteVariant[]
   options: string[]
   options_with_values: ProductOption[]
+}
+
+// 'LiteCart' type is defined in snippets/cart-json.liquid
+export interface LiteCart {
+  total_price: number
+  total_price_formatted: string
+  original_total_price: number
+  original_total_price_formatted: string
+  items_subtotal_price: number
+  items_subtotal_price_formatted: string
+  item_count: number
+  items: LiteLineItem[]
+}
+
+export interface LiteLineItem {
+  id: number
+  key: string
+  title: string
+  price: number
+  final_line_price: number
+  original_line_price: number
+  original_price: number
+  quantity: number
+  sku: string
+  vendor: string
+  properties: Record<string, string>
+  variant_id: number
+  url: string
+  image: string
+  handle: string
+  product_title: string
+  variant_title: string
+  variant_options: string[]
+  item_html: string
+  item_price_html: string
 }
 
 export interface SelectedOption {

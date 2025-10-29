@@ -1,4 +1,5 @@
 import { getQueryParams } from '@/core/utils'
+import type { LiteCart } from '@/types/shopify'
 
 import BaseSection from '@/sections/base'
 import AJAXCart from '@/components/ajaxCart'
@@ -15,7 +16,13 @@ export default class AJAXCartSection extends BaseSection {
   constructor(container: HTMLElement) {
     super(container)
 
-    const cartData = JSON.parse(this.qs(selectors.cartJson).textContent)
+    const cartJsonEl = this.qs(selectors.cartJson)
+    
+    if (!cartJsonEl?.textContent) {
+      throw new Error('Cart JSON element not found')
+    }
+
+    const cartData: LiteCart = JSON.parse(cartJsonEl.textContent)
 
     this.ajaxCart = new AJAXCart(this.qs(AJAXCart.SELECTOR), cartData)
 

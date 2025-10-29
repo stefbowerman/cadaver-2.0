@@ -7,7 +7,7 @@ var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot
 var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 (function() {
   "use strict";
-  var _settings, _isLoading;
+  var _settings, _isLoading, _state;
   function SelectorSet() {
     if (!(this instanceof SelectorSet)) {
       return new SelectorSet();
@@ -1337,7 +1337,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     /**
      * Retrieve a JSON respresentation of the users cart
      *
-     * @return {Promise} - JSON cart
      */
     async getCart() {
       try {
@@ -1349,20 +1348,19 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         const cart = JSON.parse(data);
         return cart;
       } catch (e) {
-        throw new Error("Could not retrieve cart items", e);
+        throw new Error(`Could not retrieve cart items: ${e.message}`);
       }
     },
     /**
      * AJAX submit an 'add to cart' form
      *
-     * @param {HTMLFormElement} form - The form element
-     * @return {Promise} - Resolve returns JSON cart | Reject returns an error message
      */
-    // @TODO - Add return value here
     async addItemFromForm(form) {
       try {
         const formData = new FormData(form);
-        const body = new URLSearchParams([...formData].filter(([_, value]) => value !== "" && value != null));
+        const body = new URLSearchParams(
+          [...formData].filter(([_, value]) => value !== "" && value != null).map(([key, value]) => [key, value.toString()])
+        );
         const response = await fetch(`${this.routes.cart_add_url}.js`, {
           method: "POST",
           body,
@@ -1387,9 +1385,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
      * Item is specified by line_item key
      * https://shopify.dev/api/ajax/reference/cart#post-locale-cart-change-js
      *
-     * @param {String} id - Cart line item id // https://shopify.dev/docs/api/liquid/objects/line_item#line_item-id
-     * @param {Integer} qty - New quantity of the variant
-     * @return {Promise} - JSON cart
+     * @param id - Cart line item id // https://shopify.dev/docs/api/liquid/objects/line_item#line_item-id
+     * @param qty - New quantity of the variant
      */
     async changeLineItemQuantity(id, qty) {
       try {
@@ -1522,9 +1519,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onScroll() {
     }
-    // @TODO - Add type for the cart object
     onCartUpdate(e) {
-      const { detail: { cart } } = e;
     }
   };
   _settings = new WeakMap();
@@ -11039,19 +11034,21 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const classes$5 = {
     hasItems: "has-items"
   };
-  class HeaderCartControl extends BaseComponent {
-    static TYPE = "header-cart-control";
+  const _HeaderCartControl = class _HeaderCartControl extends BaseComponent {
     constructor(el) {
       super(el, {
         watchCartUpdate: true
       });
       this.count = this.qs(selectors$a.count);
     }
-    onCartUpdate({ detail: { cart } }) {
-      this.count.innerText = cart.item_count;
+    onCartUpdate(e) {
+      const { cart } = e.detail;
+      this.count.innerText = cart.item_count.toString();
       this.el.classList.toggle(classes$5.hasItems, cart.item_count > 0);
     }
-  }
+  };
+  _HeaderCartControl.TYPE = "header-cart-control";
+  let HeaderCartControl = _HeaderCartControl;
   const selectors$9 = {
     primaryNav: "[data-primary-nav]"
   };
@@ -11890,22 +11887,18 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   _QuantityAdjuster.TYPE = "quantity-adjuster";
   let QuantityAdjuster = _QuantityAdjuster;
   const selectors$4 = {
-    remove: "[data-remove]",
+    remove: "button[data-remove]",
     price: "[data-price]"
   };
   const classes$1 = {
     removing: "is-removing",
     updating: "is-updating"
   };
-  class CartItem extends BaseComponent {
-    static TYPE = "cart-item";
-    static states = {
-      REMOVING: "removing",
-      UPDATING: "updating"
-    };
+  const _CartItem = class _CartItem extends BaseComponent {
     constructor(el, itemData) {
       super(el);
-      this._state = void 0;
+      __privateAdd(this, _state);
+      __privateSet(this, _state, void 0);
       this.id = parseInt(this.el.dataset.id, 10);
       this.itemData = itemData;
       this.remove = this.qs(selectors$4.remove);
@@ -11925,12 +11918,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     set state(state) {
       switch (state) {
-        case CartItem.states.REMOVING:
+        case _CartItem.states.REMOVING:
           this.remove.disabled = true;
           this.remove.setAttribute("aria-disabled", "true");
           this.el.classList.add(classes$1.removing);
           break;
-        case CartItem.states.UPDATING:
+        case _CartItem.states.UPDATING:
           this.remove.disabled = true;
           this.remove.setAttribute("aria-disabled", "true");
           this.el.classList.add(classes$1.updating);
@@ -11942,10 +11935,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
           this.el.classList.remove(classes$1.removing, classes$1.updating);
           break;
       }
-      this._state = state;
+      __privateSet(this, _state, state);
     }
     get state() {
-      return this._state;
+      return __privateGet(this, _state);
     }
     /**
      * Updates the item with new data
@@ -11967,7 +11960,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     async onQuantityAdjusterChange(q) {
       if (this.state !== void 0) return;
       try {
-        this.state = q === 0 ? CartItem.states.REMOVING : CartItem.states.UPDATING;
+        this.state = q === 0 ? _CartItem.states.REMOVING : _CartItem.states.UPDATING;
         await CartAPI.changeLineItemQuantity(this.id, q);
       } catch (error) {
         this.state = void 0;
@@ -11982,19 +11975,25 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     async onRemoveClick(e) {
       e.preventDefault();
       try {
-        this.state = CartItem.states.REMOVING;
+        this.state = _CartItem.states.REMOVING;
         await CartAPI.changeLineItemQuantity(this.id, 0);
       } catch (error) {
         console.warn("Error removing item", error);
         this.state = void 0;
       }
     }
-  }
+  };
+  _state = new WeakMap();
+  _CartItem.TYPE = "cart-item";
+  _CartItem.states = {
+    REMOVING: "removing",
+    UPDATING: "updating"
+  };
+  let CartItem = _CartItem;
   const selectors$3 = {
     list: "[data-list]"
   };
-  class CartBody extends BaseComponent {
-    static TYPE = "cart-body";
+  const _CartBody = class _CartBody extends BaseComponent {
     constructor(el, cartData) {
       super(el, {
         watchCartUpdate: true
@@ -12009,11 +12008,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     /**
      * Synchronizes the cart UI with new cart data received from an update event
-     * @param {CustomEvent} e - Cart update event containing new cart data
-     * @param {Object} e.detail.cart - The new cart data
-     * @param {Array} e.detail.cart.items - Array of cart items
-     * @param {string} e.detail.cart.items[].id - Unique identifier for cart item
-     * @param {string} e.detail.cart.items[].item_html - HTML string representation of cart item
+     * @param e - Cart update event containing new cart data
+     * @param e.detail.cart - The new cart data
+     * @param e.detail.cart.items - Array of cart items
+     * @param e.detail.cart.items[].id - Unique identifier for cart item
+     * @param e.detail.cart.items[].item_html - HTML string representation of cart item
      */
     syncCart(e) {
       const newCartData = e.detail.cart;
@@ -12027,7 +12026,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         });
         if (!found) {
           const newItemEl = getDomFromString(newItemData.item_html).querySelector(CartItem.SELECTOR);
-          const newItemInstance = new CartItem(newItemEl);
+          const newItemInstance = new CartItem(newItemEl, newItemData);
           this.list.insertBefore(newItemInstance.el, this.itemInstances[newIndex]?.el || null);
           this.itemInstances.splice(newIndex, 0, newItemInstance);
         }
@@ -12052,13 +12051,14 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onCartUpdate(e) {
       this.syncCart(e);
     }
-  }
+  };
+  _CartBody.TYPE = "cart-body";
+  let CartBody = _CartBody;
   const selectors$2 = {
     submit: '[type="submit"]',
     subtotalPrice: "[data-subtotal-price]"
   };
-  class CartFooter extends BaseComponent {
-    static TYPE = "cart-footer";
+  const _CartFooter = class _CartFooter extends BaseComponent {
     constructor(el) {
       super(el, {
         watchCartUpdate: true
@@ -12075,7 +12075,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         this.submit.removeAttribute("disabled");
       }
     }
-  }
+  };
+  _CartFooter.TYPE = "cart-footer";
+  let CartFooter = _CartFooter;
   const selectors$1 = {
     close: "[data-ajax-cart-close]",
     toggle: "[data-ajax-cart-toggle][aria-controls]"
@@ -12086,8 +12088,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     empty: "is-empty",
     bodyCartOpen: "ajax-cart-open"
   };
-  class AJAXCart extends BaseComponent {
-    static TYPE = "ajax-cart";
+  const _AJAXCart = class _AJAXCart extends BaseComponent {
     constructor(el, cartData) {
       super(el, {
         watchCartUpdate: true
@@ -12151,9 +12152,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.open();
     }
     onBodyClick(e) {
-      if (e.target.closest(selectors$1.close)) {
+      const target = e.target;
+      if (target?.closest(selectors$1.close)) {
         return this.onCloseClick(e);
-      } else if (e.target.closest(selectors$1.toggle)?.getAttribute("aria-controls") === this.el.id) {
+      } else if (target?.closest(selectors$1.toggle)?.getAttribute("aria-controls") === this.el.id) {
         return this.onToggleClick(e);
       }
     }
@@ -12165,14 +12167,20 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       e.preventDefault();
       this.close();
     }
-  }
+  };
+  _AJAXCart.TYPE = "ajax-cart";
+  let AJAXCart = _AJAXCart;
   const selectors = {
     cartJson: "[data-cart-json]"
   };
   const _AJAXCartSection = class _AJAXCartSection extends BaseSection {
     constructor(container) {
       super(container);
-      const cartData = JSON.parse(this.qs(selectors.cartJson).textContent);
+      const cartJsonEl = this.qs(selectors.cartJson);
+      if (!cartJsonEl?.textContent) {
+        throw new Error("Cart JSON element not found");
+      }
+      const cartData = JSON.parse(cartJsonEl.textContent);
       this.ajaxCart = new AJAXCart(this.qs(AJAXCart.SELECTOR), cartData);
       if (getQueryParams().cart) {
         this.open({ delay: true });

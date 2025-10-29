@@ -1,4 +1,5 @@
 import BaseComponent from '@/components/base'
+import type { CartAPIEvent } from '@/core/cartAPI'
 
 const selectors = {
   submit: '[type="submit"]',
@@ -9,16 +10,19 @@ const selectors = {
 export default class CartFooter extends BaseComponent {
   static TYPE = 'cart-footer'
 
-  constructor(el) {
+  submit: HTMLButtonElement
+  subtotalPrice: HTMLElement
+
+  constructor(el: HTMLElement) {
     super(el, {
       watchCartUpdate: true,
     })
-
-    this.submit = this.qs(selectors.submit)
+    
+    this.submit = this.qs(selectors.submit) as HTMLButtonElement
     this.subtotalPrice = this.qs(selectors.subtotalPrice)
   }
 
-  onCartUpdate(e) {
+  onCartUpdate(e: CartAPIEvent) {
     const { cart } = e.detail
 
     this.subtotalPrice.textContent = cart.items_subtotal_price_formatted
