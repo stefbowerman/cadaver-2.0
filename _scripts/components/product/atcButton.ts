@@ -1,5 +1,6 @@
 import type { LiteVariant } from '@/types/shopify'
 import BaseComponent from '@/components/base'
+import { getAppString } from '@/core/utils/string'
 
 const selectors = {
   label: '[data-label]'
@@ -9,13 +10,16 @@ export default class ATCButton extends BaseComponent {
   static TYPE = 'atc-button'
 
   declare el: HTMLButtonElement;
+
   tempText: string | null
   label: HTMLElement
+  successTimeoutId: ReturnType<typeof setTimeout> | null
 
   constructor(el: HTMLButtonElement) {
     super(el)
 
     this.tempText = null
+    this.successTimeoutId = null
 
     this.label = this.qs(selectors.label) as HTMLElement
 
@@ -24,9 +28,10 @@ export default class ATCButton extends BaseComponent {
     }
   }
 
-  // @TODO - Move this to a utility function
-  getString(key: string, fallback: string): string {
-    return window.app?.strings?.[key] || fallback
+  destroy() {
+    window.clearTimeout(this.successTimeoutId)
+
+    super.destroy()
   }
 
   /**
@@ -36,16 +41,16 @@ export default class ATCButton extends BaseComponent {
    */
   update(variant: LiteVariant) {
     let isDisabled = true
-    let labelText = this.getString('unavailable', 'Unavailable')
+    let labelText = getAppString('unavailable', 'Unavailable')
 
     if (variant) {
       if (variant.available) {
         isDisabled = false
-        labelText = this.getString('addToCart', 'Add To Cart')
+        labelText = getAppString('addToCart', 'Add To Cart')
       }
       else {
         isDisabled = true
-        labelText = this.getString('soldOut', 'Sold Out')
+        labelText = getAppString('soldOut', 'Sold Out')
       }
     }
 
@@ -56,14 +61,13 @@ export default class ATCButton extends BaseComponent {
 
   onAddStart() {
     this.tempText = this.label.innerText // Save a copy of the original text
-    this.label.innerText = this.getString('adding', 'Adding...') // Run the "adding" animation
+    this.label.innerText = getAppString('adding', 'Adding...') // Run the "adding" animation
   }
 
   onAddSuccess() {
-    this.label.innerText = this.getString('added', 'Added!')
+    this.label.innerText = getAppString('added', 'Added!')
 
-    // @TODO - Add this timeout as an instance variable
-    setTimeout(() => {
+    this.successTimeoutId = setTimeout(() => {
       // Reset the button text
       this.label.innerText = this.tempText
       this.tempText = null

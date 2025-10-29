@@ -1196,6 +1196,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     if (!str || typeof str !== "string") return "";
     return str.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[^a-zA-Z0-9]+/g, " ").split(" ").filter((word) => word.length > 0).map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
   }
+  function getAppString(key, fallback = "") {
+    return window.app?.strings?.[key] || fallback;
+  }
   function isObject$2(value) {
     const type = typeof value;
     return value != null && (type === "object" || type === "function");
@@ -6760,14 +6763,15 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     constructor(el) {
       super(el);
       this.tempText = null;
+      this.successTimeoutId = null;
       this.label = this.qs(selectors$g.label);
       if (!this.label) {
         console.warn("No label found");
       }
     }
-    // @TODO - Move this to a utility function
-    getString(key, fallback) {
-      return window.app?.strings?.[key] || fallback;
+    destroy() {
+      window.clearTimeout(this.successTimeoutId);
+      super.destroy();
     }
     /**
      * Updates the DOM state of the add to cart button based on the given variant.
@@ -6776,14 +6780,14 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
      */
     update(variant) {
       let isDisabled2 = true;
-      let labelText = this.getString("unavailable", "Unavailable");
+      let labelText = getAppString("unavailable", "Unavailable");
       if (variant) {
         if (variant.available) {
           isDisabled2 = false;
-          labelText = this.getString("addToCart", "Add To Cart");
+          labelText = getAppString("addToCart", "Add To Cart");
         } else {
           isDisabled2 = true;
-          labelText = this.getString("soldOut", "Sold Out");
+          labelText = getAppString("soldOut", "Sold Out");
         }
       }
       this.el.disabled = isDisabled2;
@@ -6791,11 +6795,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onAddStart() {
       this.tempText = this.label.innerText;
-      this.label.innerText = this.getString("adding", "Adding...");
+      this.label.innerText = getAppString("adding", "Adding...");
     }
     onAddSuccess() {
-      this.label.innerText = this.getString("added", "Added!");
-      setTimeout(() => {
+      this.label.innerText = getAppString("added", "Added!");
+      this.successTimeoutId = setTimeout(() => {
         this.label.innerText = this.tempText;
         this.tempText = null;
       }, 1e3);

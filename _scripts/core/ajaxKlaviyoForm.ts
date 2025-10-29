@@ -98,7 +98,7 @@ export default class AJAXKlaviyoForm {
     this.submit.removeAttribute('disabled')
 
     this.logErrors(errors)
-    this.settings.onSubmitFail(errors) // @TODO - Are we using strings?  or Error objects?
+    this.settings.onSubmitFail(errors)
   }
 
   async onFormSubmit(e: SubmitEvent) {

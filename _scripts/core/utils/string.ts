@@ -46,7 +46,6 @@ export function startCase(str: string): string {
     .join(' ');
 }
 
-
 /**
  * Pluralizes the unit for the nuber passed in.
  * Usage mirrors the Shopify 'pluralize' string filter
@@ -77,4 +76,14 @@ export function pluralize(number: number, singular: string, plural?: string): st
  */
 export function toHandle(str: string): string {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-$/, '').replace(/^-/, '');
+}
+
+
+/**
+ * Gets a string from the app.strings object defined in the head-scripts.liquid file.
+ * @param key - The key of the string to get.
+ * @param fallback - The fallback string to return if the key is not found.
+ */
+export function getAppString(key: string, fallback: string = ''): string {
+  return window.app?.strings?.[key] || fallback
 }
