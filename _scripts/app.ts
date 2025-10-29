@@ -3,6 +3,11 @@ import 'swiper/css/effect-fade'
 import '../_styles/app.scss'
 
 import { Core as TaxiCore } from '@unseenco/taxi'
+import type {
+  TaxiNavigateOutProps,
+  TaxiNavigateInProps,
+  TaxiNavigateEndProps
+} from '@/types/taxi'
 
 import BreakpointsController from '@/core/breakpointsController'
 
@@ -46,7 +51,7 @@ function init() {
   // START Taxi
   if (isThemeEditor()) {
     // Prevent taxi js from running
-    Array.from(document.getElementsByTagName('a')).forEach(a => a.setAttribute('data-taxi-ignore', true))
+    Array.from(document.getElementsByTagName('a')).forEach(a => a.setAttribute('data-taxi-ignore', 'true'))
   }
 
   const taxi = new TaxiCore({
@@ -58,7 +63,6 @@ function init() {
     },
     reloadJsFilter: (element) => {
       // Whitelist any scripts here that need to be reloaded on page change
-
       return element.dataset.taxiReload !== undefined || viewContainer.contains(element)
     },
     allowInterruption: true,
@@ -66,16 +70,13 @@ function init() {
   })
 
   // This event is sent before the `onLeave()` method of a transition is run to hide a `data-router-view`
-  taxi.on('NAVIGATE_OUT', e => {
-    // const { from, trigger } = e
-
+  taxi.on('NAVIGATE_OUT', (e: TaxiNavigateOutProps) => {
     dispatch('taxi.navigateOut', e)
   })
-  
+    
   // This event is sent everytime a `data-taxi-view` is added to the DOM
-  taxi.on('NAVIGATE_IN', e => {
-    const { to } = e
-
+  taxi.on('NAVIGATE_IN', (e: TaxiNavigateInProps) => {
+    const toPage = e.to.page as Document
     const body = document.body
 
     // Remove any body classes that match the template regex
@@ -86,7 +87,7 @@ function init() {
     })
 
     // Add any body classes for the *new* page that match the template regex
-    Array.from(to.page.body.classList).forEach(cn => {
+    Array.from(toPage.body.classList as DOMTokenList).forEach(cn => {
       if (TEMPLATE_REGEX.test(cn)) {
         body.classList.add(cn)
       }
@@ -96,9 +97,7 @@ function init() {
   })
 
   // This event is sent everytime the `done()` method is called in the `onEnter()` method of a transition
-  taxi.on('NAVIGATE_END', e => {
-    // const { to, from, trigger } = e
-
+  taxi.on('NAVIGATE_END', (e: TaxiNavigateEndProps) => {
     taxi.clearCache('/cart')
     taxi.cache.forEach((_, key) => {
       if (key.includes('products') || key.includes('account') || key.includes('cart')) {

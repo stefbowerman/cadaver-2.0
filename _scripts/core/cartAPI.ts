@@ -1,38 +1,5 @@
-import { type Core } from '@unseenco/taxi'
 import { dispatch } from '@/core/utils/event'
 import type { LiteCart } from '@/types/shopify'
-
-declare global {
-  interface Window {
-    app?: {
-      strings: {
-        addToCart: string
-        soldOut: string
-        unavailable: string
-        adding: string
-        added: string
-      };
-      routes: {
-        root_url: string
-        predictive_search_url: string
-        cart_add_url: string
-        cart_change_url: string
-        cart_update_url: string
-        cart_clear_url: string
-        cart_url: string
-        account_addresses_url: string
-        account_url: string
-      };      
-      taxi?: Core & {
-        navigateTo: (url: string) => void;
-      };
-      klaviyo?: {
-        companyId: string
-        listId: string
-      };      
-    };
-  }
-}
 
 export type CartAPIEvent = CustomEvent<{
   cart: LiteCart

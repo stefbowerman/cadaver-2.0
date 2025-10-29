@@ -1,4 +1,4 @@
-import { Renderer, type Core } from '@unseenco/taxi'
+import { Renderer } from '@unseenco/taxi'
 import type { RendererProps } from '@/types/taxi'
 
 import SectionManager from '@/core/sectionManager'
@@ -13,39 +13,6 @@ import ProductRelated from '@/sections/productRelated'
 import Login from '@/sections/login'
 import Search from '@/sections/search'
 import PageHero from '@/sections/pageHero'
-
-// @TODO - Move this to app.ts once that file gets converted to TypeScript
-declare global {
-  interface Window {
-    app?: {
-      strings: {
-        addToCart: string
-        soldOut: string
-        unavailable: string
-        adding: string
-        added: string
-      };
-      routes: {
-        root_url: string
-        predictive_search_url: string
-        cart_add_url: string
-        cart_change_url: string
-        cart_update_url: string
-        cart_clear_url: string
-        cart_url: string
-        account_addresses_url: string
-        account_url: string
-      };      
-      taxi?: Core & {
-        navigateTo: (url: string) => void;
-      };
-      klaviyo?: {
-        companyId: string
-        listId: string
-      };      
-    };
-  }
-}
 
 const redirect = (url: string) => {
   setTimeout(() => {

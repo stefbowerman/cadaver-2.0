@@ -12223,7 +12223,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     sectionManager.register(MobileMenuSection);
     sectionManager.register(AJAXCartSection);
     if (isThemeEditor()) {
-      Array.from(document.getElementsByTagName("a")).forEach((a) => a.setAttribute("data-taxi-ignore", true));
+      Array.from(document.getElementsByTagName("a")).forEach((a) => a.setAttribute("data-taxi-ignore", "true"));
     }
     const taxi = new Core({
       renderers: {
@@ -12242,14 +12242,14 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       dispatch("taxi.navigateOut", e);
     });
     taxi.on("NAVIGATE_IN", (e) => {
-      const { to } = e;
+      const toPage = e.to.page;
       const body = document.body;
       Array.from(body.classList).forEach((cn) => {
         if (TEMPLATE_REGEX.test(cn)) {
           body.classList.remove(cn);
         }
       });
-      Array.from(to.page.body.classList).forEach((cn) => {
+      Array.from(toPage.body.classList).forEach((cn) => {
         if (TEMPLATE_REGEX.test(cn)) {
           body.classList.add(cn);
         }

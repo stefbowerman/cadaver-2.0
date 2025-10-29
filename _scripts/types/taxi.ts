@@ -14,22 +14,26 @@ type CacheEntry = {
 
 type Trigger = string | HTMLElement |false
 
-export type TaxiNavigateOutEvent = CustomEvent<{
+export type TaxiNavigateOutProps = {
   from: CacheEntry | null
   trigger: Trigger
-}>
+}
 
-export type TaxiNavigateInEvent = CustomEvent<{
+export type TaxiNavigateInProps = {
   from: CacheEntry | null
   to: CacheEntry
   trigger: Trigger
-}>
+}
 
-export type TaxiNavigateEndEvent = CustomEvent<{
+export type TaxiNavigateEndProps = {
   from: CacheEntry | null
   to: CacheEntry
   trigger: Trigger
-}>
+}
+
+export type TaxiNavigateOutEvent = CustomEvent<TaxiNavigateOutProps>
+export type TaxiNavigateInEvent = CustomEvent<TaxiNavigateInProps>
+export type TaxiNavigateEndEvent = CustomEvent<TaxiNavigateEndProps>
 
 // See: https://github.com/craftedbygc/taxi/blob/main/src/Renderer.js
 export type RendererProps = {
