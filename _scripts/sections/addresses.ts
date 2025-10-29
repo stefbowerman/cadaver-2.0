@@ -9,7 +9,7 @@ const selectors = {
   deleteAddress: '[data-delete-address]'
 }
 
-function toggle(el) {
+function toggle(el: HTMLElement) {
   if (el.style.display == 'none') {
     el.style.display = ''
   }
@@ -20,29 +20,33 @@ function toggle(el) {
 
 export default class AddressesSection extends BaseSection {
   static TYPE = 'addresses'
+
+  newForm: HTMLElement
   
-  constructor(container) {
+  constructor(container: HTMLElement) {
     super(container)
 
     this.newForm = this.qs(selectors.newForm)
 
     this.container.addEventListener('click', (e) => {
-      if (e.target.matches(selectors.toggleNew)) {
+      const target = e.target as HTMLElement
+
+      if (target.matches(selectors.toggleNew)) {
         e.preventDefault()
         toggle(this.newForm)
         return
       }
 
-      if (e.target.matches(selectors.toggleForm)) {
+      if (target.matches(selectors.toggleForm)) {
         e.preventDefault()
-        toggle(this.qs(`#edit-address-${e.target.dataset.id}`))
+        toggle(this.qs(`#edit-address-${target.dataset.id}`))
         return
       }
 
-      if (e.target.matches(selectors.deleteAddress)) {
+      if (target.matches(selectors.deleteAddress)) {
         e.preventDefault()
 
-        const id = e.target.dataset.id
+        const id = target.dataset.id
   
         if (confirm('Are you sure you wish to delete this address?')) {
           postLink('/account/addresses/' + id, {'parameters': {'_method': 'delete'}})
@@ -53,14 +57,14 @@ export default class AddressesSection extends BaseSection {
     })
 
     // Initialize observers on address selectors
-    new Shopify.CountryProvinceSelector('address-country-new', 'address-province-new', {
+    new window.Shopify.CountryProvinceSelector('address-country-new', 'address-province-new', {
       hideElement: 'address-province-container-new'
     })
 
-    this.qsa('[data-address-form]').forEach(el => {
+    this.qsa('[data-address-form]').forEach((el: HTMLElement) => {
       const id = el.dataset.id
 
-      new Shopify.CountryProvinceSelector(`address-country-${id}`, `address-province-${id}`, {
+      new window.Shopify.CountryProvinceSelector(`address-country-${id}`, `address-province-${id}`, {
         hideElement: `address-province-container-${id}`
       })
     })

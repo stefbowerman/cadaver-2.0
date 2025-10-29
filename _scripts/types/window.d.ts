@@ -5,6 +5,7 @@ declare global {
   interface Window {
     Shopify?: {
       designMode?: boolean;
+      CountryProvinceSelector: any
     }
     app: {
       strings?: {
