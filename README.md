@@ -17,8 +17,8 @@ __Features:__
 __JavaScript Architecture:__
 The frontend application is architected with three primary goals:
 1. SPA-like browsing experience via Taxi.js.
-2. First-class section elements via [BaseSection](_scripts/sections/base.js) class combined with a [SectionManager](_scripts/core/sectionManager.js) class to handle all Shopify [theme editor events](https://shopify.dev/docs/storefronts/themes/best-practices/editor/integrate-sections-and-blocks) along with initialization and clean up during the Taxi.js [renderer lifecycle](https://taxi.js.org/renderers/).
-3. Nestable components with auto-cleanup via [BaseComponent](_scripts/components/base.js) class.
+2. First-class section elements via [BaseSection](_scripts/sections/base.ts) class combined with a [SectionManager](_scripts/core/sectionManager.ts) class to handle all Shopify [theme editor events](https://shopify.dev/docs/storefronts/themes/best-practices/editor/integrate-sections-and-blocks) along with initialization and clean up during the Taxi.js [renderer lifecycle](https://taxi.js.org/renderers/).
+3. Nestable components with auto-cleanup via [BaseComponent](_scripts/components/base.ts) class.
 
 > Note: This is a working theme that I use as a boilerplate for all production Shopify projects.  I continutally update it so that I can leverage all of the core e-commerce solutions that I have developed on previous projects.  It is not built as a production-ready theme, but rather a battle-tested foundation for quickly creating new themes.  It contains minimal styling on purpose.
 
@@ -28,7 +28,7 @@ The frontend application is architected with three primary goals:
 
 ```
 ├── _js
-│   └── Working javascript files.  Bundled as `app.bundle.js`.
+│   └── Working typescript files.  Bundled as `app.bundle.ts`.
 ├── _styles
 │   └── Working scss files.  Bundled as `app.bundle.css`.
 ├── assets
@@ -61,7 +61,7 @@ The frontend application is architected with three primary goals:
 
 ## NPM Scripts
 
-- Start webpack watcher -> `npm run dev`
+- Start vite dev process -> `npm run dev`
 - Compile for production -> `npm run build`
 
 ## Development
@@ -69,7 +69,6 @@ The frontend application is architected with three primary goals:
 - Node version - `v22.XX`
 
 ```
-# Start the webpack watcher
 $ npm run dev
 
 # Start the theme watcher in another terminal
