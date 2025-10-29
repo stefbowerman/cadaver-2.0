@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       eslint({
-        include: ['_scripts/**/*.js'], // For TS support, include: ['_scripts/**/*.{js,ts}']
+        include: ['_scripts/**/*.{js,ts}'],
         exclude: ['node_modules']
       }),
       visualizer({

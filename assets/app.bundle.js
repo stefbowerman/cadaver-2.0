@@ -1,5 +1,13 @@
+var __typeError = (msg) => {
+  throw TypeError(msg);
+};
+var __accessCheck = (obj, member, msg) => member.has(obj) || __typeError("Cannot " + msg);
+var __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read from private field"), getter ? getter.call(obj) : member.get(obj));
+var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
+var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 (function() {
   "use strict";
+  var _settings, _isLoading, _state;
   function SelectorSet() {
     if (!(this instanceof SelectorSet)) {
       return new SelectorSet();
@@ -1130,10 +1138,7 @@
     xxxl: 1800
   };
   const BREAKPOINTS_MAP = new Map(Object.entries(BREAKPOINTS).sort((a, b) => a[1] - b[1]));
-  class BreakpointsController {
-    static EVENTS = {
-      CHANGE: "change.breakpointsController"
-    };
+  const _BreakpointsController = class _BreakpointsController {
     constructor() {
       this.currentKey = this.getKeyForWidth(window.innerWidth);
       this.mediaQueries = /* @__PURE__ */ new Map();
@@ -1153,11 +1158,11 @@
      * Returns the key for one of the BREAKPOINTS_MAP, whichever has a value closest to but smaller to the passed in width
      * e.g. If we pass in a width between 'sm' and 'md', this will return 'sm'
      *
-     * @param {int} w - width to search for
+     * @param {number} w - width to search for
      * @return {undefined|string} foundKey
      */
     getKeyForWidth(w) {
-      let foundKey;
+      let foundKey = void 0;
       for (const [key, breakpoint] of BREAKPOINTS_MAP) {
         if (w >= breakpoint) {
           foundKey = key;
@@ -1174,7 +1179,7 @@
         const breakpoint = this.mediaQueries.get(newKey).minWidth;
         const fromBreakpoint = this.mediaQueries.get(oldKey).minWidth;
         const direction = window.innerWidth > this.mediaQueries.get(oldKey).minWidth ? 1 : -1;
-        dispatch(BreakpointsController.EVENTS.CHANGE, {
+        dispatch(_BreakpointsController.EVENTS.CHANGE, {
           breakpoint,
           fromBreakpoint,
           direction
@@ -1182,27 +1187,34 @@
         this.currentKey = newKey;
       }
     }
-  }
+  };
+  _BreakpointsController.EVENTS = {
+    CHANGE: "change.breakpointsController"
+  };
+  let BreakpointsController = _BreakpointsController;
   function startCase(str) {
     if (!str || typeof str !== "string") return "";
     return str.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[^a-zA-Z0-9]+/g, " ").split(" ").filter((word) => word.length > 0).map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
+  }
+  function getAppString(key, fallback = "") {
+    return window.app?.strings?.[key] || fallback;
   }
   function isObject$2(value) {
     const type = typeof value;
     return value != null && (type === "object" || type === "function");
   }
   function isThemeEditor() {
-    return window.Shopify && window.Shopify.designMode;
+    return window.Shopify?.designMode ?? false;
   }
   function getQueryParams() {
     const queryParams = {};
     const params = new URLSearchParams(window.location.search);
-    for (const [key, value] of params.entries()) {
+    for (const [key, value] of Array.from(params.entries())) {
       queryParams[key] = value || true;
     }
     return queryParams;
   }
-  function postLink(t, e) {
+  function postLink(t, e = {}) {
     const n = (e = e || {}).method || "post";
     const i = e.parameters || {};
     const o = document.createElement("form");
@@ -1221,14 +1233,13 @@
     return Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
   }
   function targetBlankExternalLinks() {
-    for (var c = document.getElementsByTagName("a"), a = 0; a < c.length; a++) {
-      var b = c[a];
-      var href = b.getAttribute("href");
-      if (href && b.hostname !== location.hostname && !href.includes("mailto:")) {
-        b.target = "_blank";
-        b.setAttribute("aria-describedby", "a11y-new-window-message");
+    document.querySelectorAll("a").forEach((link) => {
+      const href = link.getAttribute("href");
+      if (href && link.hostname !== location.hostname && !href.includes("mailto:")) {
+        link.target = "_blank";
+        link.setAttribute("aria-describedby", "a11y-new-window-message");
       }
-    }
+    });
   }
   function isNumber(value) {
     return typeof value === "number" && !isNaN(value);
@@ -1237,20 +1248,17 @@
     if (typeof window === "undefined") {
       return false;
     }
-    return "ontouchstart" in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+    return "ontouchstart" in window || navigator.maxTouchPoints > 0;
   };
   const SELECTOR = "img.lazy-image";
   const LOADED_CLASS = "is-loaded";
   const CACHED_CLASS = "is-cached";
   class LazyImageController {
     /**
-     * @param {HTMLElement} el - Element containing all images
+     * @param el - Element containing all images
      */
     constructor(el) {
       this.el = el;
-      if (!this.el) {
-        return;
-      }
       this.observedElements = /* @__PURE__ */ new WeakSet();
       this.imageObserver = new IntersectionObserver(this.onIntersection.bind(this), {
         rootMargin: "0px 0px 50% 0px"
@@ -1301,7 +1309,7 @@
     onMutation(mutationsList) {
       const processNodes = (nodes, handler) => {
         nodes.forEach((node) => {
-          if (!(node instanceof Element)) return;
+          if (!(node instanceof HTMLElement)) return;
           if (node.matches && node.matches(SELECTOR)) {
             handler(node);
           } else {
@@ -1332,7 +1340,6 @@
     /**
      * Retrieve a JSON respresentation of the users cart
      *
-     * @return {Promise} - JSON cart
      */
     async getCart() {
       try {
@@ -1344,19 +1351,19 @@
         const cart = JSON.parse(data);
         return cart;
       } catch (e) {
-        throw new Error("Could not retrieve cart items", e);
+        throw new Error(`Could not retrieve cart items: ${e instanceof Error ? e.message : "Unknown error"}`);
       }
     },
     /**
      * AJAX submit an 'add to cart' form
      *
-     * @param {HTMLFormElement} form - The form element
-     * @return {Promise} - Resolve returns JSON cart | Reject returns an error message
      */
     async addItemFromForm(form) {
       try {
         const formData = new FormData(form);
-        const body = new URLSearchParams([...formData].filter(([_, value]) => value !== "" && value != null));
+        const body = new URLSearchParams(
+          [...formData].filter(([_, value]) => value !== "" && value != null).map(([key, value]) => [key, value.toString()])
+        );
         const response = await fetch(`${this.routes.cart_add_url}.js`, {
           method: "POST",
           body,
@@ -1381,9 +1388,8 @@
      * Item is specified by line_item key
      * https://shopify.dev/api/ajax/reference/cart#post-locale-cart-change-js
      *
-     * @param {String} id - Cart line item id // https://shopify.dev/docs/api/liquid/objects/line_item#line_item-id
-     * @param {Integer} qty - New quantity of the variant
-     * @return {Promise} - JSON cart
+     * @param id - Cart line item id // https://shopify.dev/docs/api/liquid/objects/line_item#line_item-id
+     * @param qty - New quantity of the variant
      */
     async changeLineItemQuantity(id, qty) {
       try {
@@ -1407,20 +1413,16 @@
       }
     }
   };
-  class BaseComponent {
-    #settings;
-    static TYPE = "base";
-    static get SELECTOR() {
-      return `[data-component="${this.TYPE}"]`;
-    }
+  const _BaseComponent = class _BaseComponent {
     constructor(el, options = {}) {
-      this.#settings = {
+      __privateAdd(this, _settings);
+      __privateSet(this, _settings, {
         watchResize: false,
         watchBreakpoint: false,
         watchScroll: false,
         watchCartUpdate: false,
         ...options
-      };
+      });
       this.el = el;
       this.type = this.constructor.TYPE;
       this.validateDom(this.el);
@@ -1432,32 +1434,35 @@
       this.onBreakpointChange = this.onBreakpointChange.bind(this);
       this.onScroll = this.onScroll.bind(this);
       this.onCartUpdate = this.onCartUpdate.bind(this);
-      if (this.#settings.watchResize) {
+      if (__privateGet(this, _settings).watchResize) {
         this.resizeObserver = new ResizeObserver((entries) => this.onResize(entries));
         this.resizeObserver.observe(this.el);
       }
-      if (this.#settings.watchBreakpoint) {
+      if (__privateGet(this, _settings).watchBreakpoint) {
         window.addEventListener(BreakpointsController.EVENTS.CHANGE, this.onBreakpointChange);
       }
-      if (this.#settings.watchScroll) {
+      if (__privateGet(this, _settings).watchScroll) {
         window.addEventListener("scroll", this.onScroll);
       }
-      if (this.#settings.watchCartUpdate) {
+      if (__privateGet(this, _settings).watchCartUpdate) {
         window.addEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate);
       }
+    }
+    static get SELECTOR() {
+      return `[data-component="${this.TYPE}"]`;
     }
     destroy() {
       if (this.resizeObserver) {
         this.resizeObserver.disconnect();
         this.resizeObserver = null;
       }
-      if (this.#settings.watchBreakpoint) {
+      if (__privateGet(this, _settings).watchBreakpoint) {
         window.removeEventListener(BreakpointsController.EVENTS.CHANGE, this.onBreakpointChange);
       }
-      if (this.#settings.watchScroll) {
+      if (__privateGet(this, _settings).watchScroll) {
         window.removeEventListener("scroll", this.onScroll);
       }
-      if (this.#settings.watchCartUpdate) {
+      if (__privateGet(this, _settings).watchCartUpdate) {
         window.removeEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate);
       }
       doComponentCleanup(this);
@@ -1475,9 +1480,9 @@
      * Queries for the first element matching the given selector within the component's element,
      * excluding elements that belong to nested components.
      * 
-     * @param {string} selector - The CSS selector to query for an element.
-     * @param {Element} dom - The DOM element to query within.  Defaults to the component's element.
-     * @returns {Element|undefined} The first matching Element object within the component's scope, or undefined if no match is found.
+     * @param selector - The CSS selector to query for an element.
+     * @param dom - The DOM element to query within.  Defaults to the component's element.
+     * @returns The first matching Element object within the component's scope, or undefined if no match is found.
      */
     qs(selector2, dom = this.el) {
       return this.qsa(selector2, dom)[0];
@@ -1486,9 +1491,9 @@
      * Queries for all elements matching the given selector within the component's element,
      * excluding elements that belong to nested components.
      * 
-     * @param {string} selector - The CSS selector to query for elements
-     * @param {Element} [dom=this.el] - The DOM element to query within. Defaults to the component's element
-     * @returns {Element[]} An array of matching Element objects within the component's scope
+     * @param selector - The CSS selector to query for elements
+     * @param dom - The DOM element to query within. Defaults to the component's element
+     * @returns An array of matching Element objects within the component's scope
      * 
      * @description
      * This method filters out elements that belong to nested components by checking if the
@@ -1496,30 +1501,33 @@
      * selector (which would make it a target of the query rather than a container to exclude).
      */
     qsa(selector2, dom = this.el) {
-      return [...dom.querySelectorAll(selector2)].filter((el) => {
+      return Array.from(dom.querySelectorAll(selector2)).filter((el) => {
         const closest = el.closest("[data-component]");
         return closest.isSameNode(this.el) || closest.matches(selector2);
       });
     }
     // Make sure we're working with a DOM element that matches the component selector
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     validateDom(dom) {
-      if (!(dom instanceof Element || dom.matches(this.constructor.SELECTOR))) {
-        console.warn(`[${this.type}] Invalid DOM: Must be an Element matching the component selector`);
-        return false;
+      if (dom instanceof HTMLElement && dom.matches(this.constructor.SELECTOR)) {
+        return true;
       }
-      return true;
+      console.warn(`[${this.type}] Invalid DOM: Must be an Element matching the component selector`);
+      return false;
     }
-    // eslint-disable-next-line no-unused-vars
     onResize(entries) {
     }
-    // eslint-disable-next-line no-unused-vars
-    onBreakpointChange({ detail: { breakpoint, fromBreakpoint, direction } }) {
+    onBreakpointChange(e) {
+      const { detail: { breakpoint, fromBreakpoint, direction } } = e;
     }
     onScroll() {
     }
-    onCartUpdate({ detail: { cart } }) {
+    onCartUpdate(e) {
     }
-  }
+  };
+  _settings = new WeakMap();
+  _BaseComponent.TYPE = "base";
+  let BaseComponent = _BaseComponent;
   const doComponentCleanup = (instance2) => {
     if (!isObject$2(instance2)) {
       return;
@@ -1562,8 +1570,7 @@
   const classes$8 = {
     isReady: "is-ready"
   };
-  class GraphicCoverVideo extends BaseComponent {
-    static TYPE = "graphic-cover-video";
+  const _GraphicCoverVideo = class _GraphicCoverVideo extends BaseComponent {
     constructor(el) {
       super(el);
       this.autoPlayEnabled = prefersReducedMotion() ? false : true;
@@ -1634,7 +1641,9 @@
     onIntersection(entries) {
       this.onVisibilityChange(entries[0].isIntersecting);
     }
-  }
+  };
+  _GraphicCoverVideo.TYPE = "graphic-cover-video";
+  let GraphicCoverVideo = _GraphicCoverVideo;
   class BaseSection {
     constructor(container) {
       this.container = container;
@@ -1678,7 +1687,7 @@
      *
      */
     qsa(selector2, dom = this.container) {
-      return [...dom.querySelectorAll(selector2)].filter((el) => {
+      return Array.from(dom.querySelectorAll(selector2)).filter((el) => {
         const closest = el.closest("[data-component]");
         return !closest || closest.isSameNode(el);
       });
@@ -1716,15 +1725,24 @@
     "shopify:section:reorder",
     "shopify:block:select",
     "shopify:block:deselect"
+    // Not hooking these up just yet....
+    // 'shopify:inspector:activate',
+    // 'shopify:inspector:deactivate',
   ];
-  function getEventHandlerName(event) {
-    let name = event.split(":").splice(1).map(startCase).join("");
+  function getEventHandlerName(eventName) {
+    const name = eventName.split(":").splice(1).map(startCase).join("");
     return `on${name}`;
   }
   class SectionManager {
     constructor() {
       this.constructors = {};
       this.instances = [];
+      THEME_EDITOR_EVENTS.forEach((ev) => {
+        const handlerName = getEventHandlerName(ev);
+        if (this[handlerName]) {
+          this[handlerName] = this[handlerName].bind(this);
+        }
+      });
       this.attachEvents();
     }
     destroy() {
@@ -1735,8 +1753,7 @@
     attachEvents() {
       if (!isThemeEditor()) return;
       THEME_EDITOR_EVENTS.forEach((ev) => {
-        const handlerName = getEventHandlerName(ev);
-        const handler = this[handlerName];
+        const handler = this[getEventHandlerName(ev)];
         if (handler) {
           window.document.addEventListener(ev, handler.bind(this));
         }
@@ -1744,8 +1761,7 @@
     }
     removeEvents() {
       THEME_EDITOR_EVENTS.forEach((ev) => {
-        const handlerName = getEventHandlerName(ev);
-        const handler = this[handlerName];
+        const handler = this[getEventHandlerName(ev)];
         if (handler) {
           window.document.removeEventListener(ev, handler);
         }
@@ -1828,19 +1844,21 @@
       this.onGenericEvent(e, "onBlockDeselect");
     }
   }
-  class ProductCard extends BaseComponent {
-    static TYPE = "product-card";
+  const _ProductCard = class _ProductCard extends BaseComponent {
     constructor(el) {
       super(el);
     }
-  }
-  class FeaturedProductsSection extends BaseSection {
-    static TYPE = "featured-products";
+  };
+  _ProductCard.TYPE = "product-card";
+  let ProductCard = _ProductCard;
+  const _FeaturedProductsSection = class _FeaturedProductsSection extends BaseSection {
     constructor(container) {
       super(container);
       this.productCards = this.qsa(ProductCard.SELECTOR).map((el) => new ProductCard(el));
     }
-  }
+  };
+  _FeaturedProductsSection.TYPE = "featured-products";
+  let FeaturedProductsSection = _FeaturedProductsSection;
   const selectors$j = {
     toggleNew: "[data-toggle-new]",
     newForm: "[data-new]",
@@ -1854,54 +1872,58 @@
       el.style.display = "none";
     }
   }
-  class AddressesSection extends BaseSection {
-    static TYPE = "addresses";
+  const _AddressesSection = class _AddressesSection extends BaseSection {
     constructor(container) {
       super(container);
       this.newForm = this.qs(selectors$j.newForm);
       this.container.addEventListener("click", (e) => {
-        if (e.target.matches(selectors$j.toggleNew)) {
+        const target = e.target;
+        if (target.matches(selectors$j.toggleNew)) {
           e.preventDefault();
           toggle(this.newForm);
           return;
         }
-        if (e.target.matches(selectors$j.toggleForm)) {
+        if (target.matches(selectors$j.toggleForm)) {
           e.preventDefault();
-          toggle(this.qs(`#edit-address-${e.target.dataset.id}`));
+          toggle(this.qs(`#edit-address-${target.dataset.id}`));
           return;
         }
-        if (e.target.matches(selectors$j.deleteAddress)) {
+        if (target.matches(selectors$j.deleteAddress)) {
           e.preventDefault();
-          const id = e.target.dataset.id;
+          const id = target.dataset.id;
           if (confirm("Are you sure you wish to delete this address?")) {
             postLink("/account/addresses/" + id, { "parameters": { "_method": "delete" } });
           }
           return;
         }
       });
-      new Shopify.CountryProvinceSelector("address-country-new", "address-province-new", {
+      new window.Shopify.CountryProvinceSelector("address-country-new", "address-province-new", {
         hideElement: "address-province-container-new"
       });
       this.qsa("[data-address-form]").forEach((el) => {
         const id = el.dataset.id;
-        new Shopify.CountryProvinceSelector(`address-country-${id}`, `address-province-${id}`, {
+        new window.Shopify.CountryProvinceSelector(`address-country-${id}`, `address-province-${id}`, {
           hideElement: `address-province-container-${id}`
         });
       });
     }
-  }
-  class ArticleSection extends BaseSection {
-    static TYPE = "article";
+  };
+  _AddressesSection.TYPE = "addresses";
+  let AddressesSection = _AddressesSection;
+  const _ArticleSection = class _ArticleSection extends BaseSection {
     constructor(container) {
       super(container);
     }
-  }
-  class BlogSection extends BaseSection {
-    static TYPE = "blog";
+  };
+  _ArticleSection.TYPE = "article";
+  let ArticleSection = _ArticleSection;
+  const _BlogSection = class _BlogSection extends BaseSection {
     constructor(container) {
       super(container);
     }
-  }
+  };
+  _BlogSection.TYPE = "blog";
+  let BlogSection = _BlogSection;
   const isElement = (object) => {
     if (!object || typeof object !== "object") {
       return false;
@@ -1915,7 +1937,7 @@
     if (element.classList.contains("disabled")) {
       return true;
     }
-    if (typeof element.disabled !== "undefined") {
+    if ("disabled" in element) {
       return element.disabled;
     }
     return element.hasAttribute("disabled") && element.getAttribute("disabled") !== "false";
@@ -1948,7 +1970,7 @@
       "textarea",
       "select",
       "details",
-      '[tabindex]:not([tabindex^="-"]',
+      '[tabindex]:not([tabindex^="-"])',
       '[contenteditable="true"]'
     ].join(",");
     const children = Array.from(element.querySelectorAll(focusables));
@@ -1966,6 +1988,7 @@
       return dom;
     } catch (e) {
       console.warn("something went wrong...", e);
+      return void 0;
     }
   };
   function _assertThisInitialized(self2) {
@@ -6502,8 +6525,7 @@
     }, "<");
     return tl;
   };
-  class A11yStatus extends BaseComponent {
-    static TYPE = "a11y-status";
+  const _A11yStatus = class _A11yStatus extends BaseComponent {
     static generate(parent) {
       if (!parent) {
         console.warn("A11yStatus: No parent element provided");
@@ -6514,10 +6536,10 @@
       el.setAttribute("aria-live", "polite");
       el.setAttribute("aria-atomic", "true");
       el.setAttribute("aria-hidden", "true");
-      el.setAttribute("data-component", A11yStatus.TYPE);
+      el.setAttribute("data-component", _A11yStatus.TYPE);
       el.classList.add("sr-only");
       parent.appendChild(el);
-      return new A11yStatus(el);
+      return new _A11yStatus(el);
     }
     constructor(el) {
       super(el);
@@ -6525,13 +6547,14 @@
     set text(text) {
       this.el.textContent = text;
     }
-  }
+  };
+  _A11yStatus.TYPE = "a11y-status";
+  let A11yStatus = _A11yStatus;
   const selectors$i = {
     list: "ul",
     more: "a[data-more]"
   };
-  class ResultsDisplay extends BaseComponent {
-    static TYPE = "results-display";
+  const _ResultsDisplay = class _ResultsDisplay extends BaseComponent {
     constructor(el, options = {}) {
       super(el);
       this.settings = {
@@ -6644,11 +6667,12 @@
     }
     onMoreIntersection(entries) {
       if (!this.more) return;
-      this.settings.onMoreIntersection(entries);
+      this.settings.onMoreIntersection?.(entries);
     }
-  }
-  class ResultsSection extends BaseSection {
-    static TYPE = "results";
+  };
+  _ResultsDisplay.TYPE = "results-display";
+  let ResultsDisplay = _ResultsDisplay;
+  const _ResultsSection = class _ResultsSection extends BaseSection {
     constructor(container) {
       super(container);
       this.isFetching = false;
@@ -6662,7 +6686,7 @@
       try {
         this.isFetching = true;
         const fetchUrl = new URL(url, window.location.origin);
-        fetchUrl.searchParams.set("t", Date.now());
+        fetchUrl.searchParams.set("t", Date.now().toString());
         fetchUrl.searchParams.set("section_id", this.id);
         const dom = await fetchDom(fetchUrl);
         return dom.getElementById(this.parentId)?.querySelector(ResultsDisplay.SELECTOR);
@@ -6676,7 +6700,8 @@
       const entry = entries[0];
       if (!entry.isIntersecting) return;
       try {
-        const newResults = await this.fetchResults(entry.target.href);
+        const target = entry.target;
+        const newResults = await this.fetchResults(target.href);
         this.resultsDisplay.add(newResults);
       } catch (e) {
         console.warn("something went wrong...", e);
@@ -6686,20 +6711,22 @@
     }
     onReplaceComplete(resultsDisplay) {
     }
-  }
-  class CollectionSection extends ResultsSection {
-    static TYPE = "collection";
+  };
+  _ResultsSection.TYPE = "results";
+  let ResultsSection = _ResultsSection;
+  const _CollectionSection = class _CollectionSection extends ResultsSection {
     constructor(container) {
       super(container);
     }
-  }
+  };
+  _CollectionSection.TYPE = "collection";
+  let CollectionSection = _CollectionSection;
   const selectors$h = {
     price: "[data-price]",
     compare: "[data-compare]",
     comparePrice: "[data-compare-price]"
   };
-  class ProductPrice extends BaseComponent {
-    static TYPE = "product-price";
+  const _ProductPrice = class _ProductPrice extends BaseComponent {
     constructor(el) {
       super(el);
       this.price = this.qs(selectors$h.price);
@@ -6709,16 +6736,18 @@
     /**
      * Updates the product price display based on the given variant.
      *
-     * @param {Object} variant - The product variant object.
-     * @param {string} variant.price_formatted - The formatted price of the variant.
-     * @param {number} variant.price - The price of the variant.
-     * @param {number} variant.compare_at_price - The compare at price of the variant.
-     * @param {string} variant.compare_at_price_formatted - The formatted compare at price of the variant.
+     * @param variant - The product variant object.
+     * @param variant.price_formatted - The formatted price of the variant.
+     * @param variant.price - The price of the variant.
+     * @param variant.compare_at_price - The compare at price of the variant.
+     * @param variant.compare_at_price_formatted - The formatted compare at price of the variant.
      */
     update(variant) {
       if (variant) {
-        this.price.textContent = variant.price_formatted;
         const onSale = variant.compare_at_price > variant.price;
+        if (this.price) {
+          this.price.textContent = variant.price_formatted;
+        }
         if (this.compare) {
           this.comparePrice.textContent = onSale ? variant.compare_at_price_formatted : "";
           this.comparePrice.style.display = onSale ? "" : "none";
@@ -6728,33 +6757,41 @@
         this.el.style.display = "none";
       }
     }
-  }
+  };
+  _ProductPrice.TYPE = "product-price";
+  let ProductPrice = _ProductPrice;
   const selectors$g = {
     label: "[data-label]"
   };
-  class ATCButton extends BaseComponent {
-    static TYPE = "atc-button";
+  const _ATCButton = class _ATCButton extends BaseComponent {
     constructor(el) {
       super(el);
       this.tempText = null;
+      this.successTimeoutId = null;
       this.label = this.qs(selectors$g.label);
+      if (!this.label) {
+        console.warn("No label found");
+      }
+    }
+    destroy() {
+      window.clearTimeout(this.successTimeoutId);
+      super.destroy();
     }
     /**
      * Updates the DOM state of the add to cart button based on the given variant.
      *
-     * @param {Object} variant - Shopify variant object
-     * @param {boolean} variant.available - Indicates if the variant is available
+     * @param variant - LiteVariant object
      */
     update(variant) {
       let isDisabled2 = true;
-      let labelText = app.strings.unavailable;
+      let labelText = getAppString("unavailable", "Unavailable");
       if (variant) {
         if (variant.available) {
           isDisabled2 = false;
-          labelText = app.strings.addToCart;
+          labelText = getAppString("addToCart", "Add To Cart");
         } else {
           isDisabled2 = true;
-          labelText = app.strings.soldOut;
+          labelText = getAppString("soldOut", "Sold Out");
         }
       }
       this.el.disabled = isDisabled2;
@@ -6762,20 +6799,22 @@
     }
     onAddStart() {
       this.tempText = this.label.innerText;
-      this.label.innerText = app.strings.adding || "Adding...";
+      this.label.innerText = getAppString("adding", "Adding...");
     }
     onAddSuccess() {
-      this.label.innerText = app.strings.added || "Added!";
-      setTimeout(() => {
+      this.label.innerText = getAppString("added", "Added!");
+      this.successTimeoutId = setTimeout(() => {
         this.label.innerText = this.tempText;
         this.tempText = null;
       }, 1e3);
     }
-    onAddDone() {
+    onAddFail(e) {
+      this.label.innerText = this.tempText;
     }
-  }
-  class VariantPickerOption extends BaseComponent {
-    static TYPE = "variant-picker-option";
+  };
+  _ATCButton.TYPE = "atc-button";
+  let ATCButton = _ATCButton;
+  const _VariantPickerOption = class _VariantPickerOption extends BaseComponent {
     constructor(el, options = {}) {
       super(el);
       this.settings = {
@@ -6784,12 +6823,16 @@
         ...options
       };
       this.name = this.dataset.name;
-      this.select = this.qs("select");
+      if (!this.name) {
+        console.warn("No name attribute found");
+      }
+      this.select = this.qs("select") || null;
       this.inputs = this.qsa("input");
       this.el.addEventListener("change", this.onChange.bind(this));
     }
     get selectedOption() {
-      let name, value;
+      let name;
+      let value;
       if (this.select) {
         name = this.select.name;
         value = this.select.value;
@@ -6800,7 +6843,7 @@
           value = selectedInput.value;
         }
       }
-      return { name, value };
+      return name && value ? { name, value } : void 0;
     }
     updateValueAvailability(value, available) {
       if (this.select) {
@@ -6815,17 +6858,18 @@
         input.disabled = !available;
       }
     }
-    onChange(e) {
+    onChange() {
       this.settings.onChange();
     }
-  }
-  class VariantPicker extends BaseComponent {
-    static TYPE = "variant-picker";
+  };
+  _VariantPickerOption.TYPE = "variant-picker-option";
+  let VariantPickerOption = _VariantPickerOption;
+  const _VariantPicker = class _VariantPicker extends BaseComponent {
     constructor(el, options = {}) {
       super(el);
       this.settings = {
         product: null,
-        onVariantChange: () => {
+        onVariantChange: (e) => {
         },
         ...options
       };
@@ -6868,27 +6912,28 @@
       });
       this.onVariantChange({ variant, selectedOptions });
     }
-  }
+  };
+  _VariantPicker.TYPE = "variant-picker";
+  let VariantPicker = _VariantPicker;
   const selectors$f = {
     form: 'form[action*="/cart/add"]',
     submit: '[type="submit"]',
     productJSON: "[data-product-json]",
     masterSelect: 'select[name="id"]'
   };
-  class ProductDetailForm extends BaseComponent {
-    static TYPE = "product-detail-form";
+  const _ProductDetailForm = class _ProductDetailForm extends BaseComponent {
     /**
      * ProductDetailForm constructor
      *
-     * @param { HTMLElement } el
-     * @param { Object } options
-     * @param { Function } options.onVariantChange -  Called when a new variant has been selected from the form,
-     * @param { Boolean } options.enableHistoryState - If set to "true", turns on URL updating when switching variant
+     * @param el
+     * @param options
+     * @param options.onVariantChange -  Called when a new variant has been selected from the form,
+     * @param options.enableHistoryState - If set to "true", turns on URL updating when switching variant
      */
     constructor(el, options = {}) {
       super(el);
       this.settings = {
-        onVariantChange: () => {
+        onVariantChange: (e) => {
         },
         enableHistoryState: true,
         ...options
@@ -6910,7 +6955,7 @@
       if (!this.settings.enableHistoryState) return;
       const newurl = new URL(window.location.href);
       if (variant) {
-        newurl.searchParams.set("variant", variant.id);
+        newurl.searchParams.set("variant", variant.id.toString());
       } else {
         newurl.searchParams.delete("variant");
       }
@@ -6918,7 +6963,7 @@
     }
     onVariantChange(e) {
       const { variant } = e;
-      this.masterSelect.value = variant?.id;
+      this.masterSelect.value = variant?.id.toString() || "";
       this.updateHistoryState(variant);
       this.atcButton.update(variant);
       this.price.update(variant);
@@ -6956,9 +7001,11 @@
     onAddFail(e) {
       this.a11yStatus.text = e.message || "Error adding to cart";
       this.form.removeAttribute("aria-busy");
-      console.log("@TODO - onAddFail", e);
+      this.atcButton.onAddFail(e);
     }
-  }
+  };
+  _ProductDetailForm.TYPE = "product-detail-form";
+  let ProductDetailForm = _ProductDetailForm;
   function isObject$1(obj) {
     return obj !== null && typeof obj === "object" && "constructor" in obj && obj.constructor === Object;
   }
@@ -10563,8 +10610,7 @@
     isActive: "is-active",
     slideshowDisabled: "is-disabled"
   };
-  class ProductDetailGallery extends BaseComponent {
-    static TYPE = "product-detail-gallery";
+  const _ProductDetailGallery = class _ProductDetailGallery extends BaseComponent {
     constructor(el) {
       super(el);
       this.images = this.qsa("img");
@@ -10598,9 +10644,10 @@
       this.el.classList.remove(classes$6.isActive);
       this.isActive = false;
     }
-  }
-  class ProductSection extends BaseSection {
-    static TYPE = "product";
+  };
+  _ProductDetailGallery.TYPE = "product-detail-gallery";
+  let ProductDetailGallery = _ProductDetailGallery;
+  const _ProductSection = class _ProductSection extends BaseSection {
     constructor(container) {
       super(container);
       this.productDetailForm = new ProductDetailForm(this.qs(ProductDetailForm.SELECTOR), {
@@ -10610,48 +10657,43 @@
         return new ProductDetailGallery(el);
       });
     }
-    onUnload() {
+    onUnload(e) {
       this.productDetailForm.destroy();
       this.galleries.forEach((g) => g.destroy());
-      super.onUnload();
+      super.onUnload(e);
     }
     /**
      * Look for a gallery matching one of the selected variant's options and switch to that gallery
      * If a matching gallery doesn't exist, look for the variant's featured image in the main gallery and switch to that
-     *
-     * @param {Object} variant - Shopify variant object
-     * @param {Array} selectedOptions - Array of options
-     * @param {Object} [option]
-     * @param {String} option.name  - i.e. "Color"
-     * @param {String} option.value - i.e. "Gun Metal"
      */
-    onVariantChange({ variant, selectedOptions }) {
-      this.updateGalleries(selectedOptions);
+    onVariantChange(e) {
+      this.updateGalleries(e.selectedOptions);
     }
     updateGalleries(currentOptions) {
-      const currentColorOption = currentOptions.find((opt) => (opt.name && opt.name.toLowerCase()) === "color") || {};
-      const selectedColor = currentColorOption.value;
+      const currentColorOption = currentOptions.find((opt) => opt.name?.toLowerCase() === "color");
+      const selectedColor = currentColorOption?.value;
       if (this.galleries.length > 1) {
-        if (selectedColor !== null) {
+        if (selectedColor !== void 0) {
           const activeGallery = this.galleries.find((g) => g.isActive);
           const selectedColorGallery = this.galleries.find((g) => g.color === selectedColor);
           if (activeGallery !== selectedColorGallery) {
-            activeGallery.el.style.opacity = 0;
+            activeGallery.el.style.opacity = "0";
             activeGallery.deactivate();
-            selectedColorGallery.el.style.opacity = 0;
+            selectedColorGallery.el.style.opacity = "0";
             selectedColorGallery.activate();
             selectedColorGallery.el.style.opacity = "";
           }
         }
       }
     }
-  }
+  };
+  _ProductSection.TYPE = "product";
+  let ProductSection = _ProductSection;
   const selectors$d = {
     contentTarget: "[data-content-target]",
     content: "[data-content]"
   };
-  class ProductRelatedSection extends BaseSection {
-    static TYPE = "product-related";
+  const _ProductRelatedSection = class _ProductRelatedSection extends BaseSection {
     constructor(container) {
       super(container);
       this.productCards = [];
@@ -10663,9 +10705,9 @@
       });
       this.observer.observe(this.container);
     }
-    onUnload() {
+    onUnload(e) {
       this.observer.disconnect();
-      super.onUnload();
+      super.onUnload(e);
     }
     onIntersection(entries) {
       if (!entries[0].isIntersecting) return;
@@ -10684,14 +10726,15 @@
         this.container.setAttribute("aria-hidden", "true");
       }
     }
-  }
+  };
+  _ProductRelatedSection.TYPE = "product-related";
+  let ProductRelatedSection = _ProductRelatedSection;
   const selectors$c = {
     loginForm: "#customer-login-form",
     recoverForm: "#recover-password-form",
     toggleRecover: "[data-toggle-recover]"
   };
-  class LoginSection extends BaseSection {
-    static TYPE = "login";
+  const _LoginSection = class _LoginSection extends BaseSection {
     constructor(container) {
       super(container);
       this.loginForm = this.qs(selectors$c.loginForm);
@@ -10714,13 +10757,14 @@
       this.loginForm.style.display = "";
       this.recoverForm.style.display = "none";
     }
-  }
+  };
+  _LoginSection.TYPE = "login";
+  let LoginSection = _LoginSection;
   const selectors$b = {
     input: 'input[name="q"]',
     icon: "[data-icon]"
   };
-  class SearchInline extends BaseComponent {
-    static TYPE = "search-inline";
+  const _SearchInline = class _SearchInline extends BaseComponent {
     constructor(el, options = {}) {
       super(el);
       this.settings = {
@@ -10747,8 +10791,8 @@
     }
     onSubmit(e) {
       const data = new FormData(this.el);
-      const q = data.get("q")?.trim();
-      const type = data.get("type") || "product";
+      const q = data.get("q")?.toString().trim();
+      const type = data.get("type")?.toString() || "product";
       if (!q) {
         return;
       }
@@ -10770,46 +10814,51 @@
     onKeyup(e) {
       this.settings.onKeyup(e);
     }
-  }
-  class SearchSection extends ResultsSection {
-    #isLoading;
-    static TYPE = "search";
+  };
+  _SearchInline.TYPE = "search-inline";
+  let SearchInline = _SearchInline;
+  const _SearchSection = class _SearchSection extends ResultsSection {
     constructor(container) {
       super(container);
-      this.#isLoading = false;
+      __privateAdd(this, _isLoading);
+      __privateSet(this, _isLoading, false);
       this.searchInline = new SearchInline(this.qs(SearchInline.SELECTOR), {
         onSubmit: this.onSubmit.bind(this)
       });
     }
     async runSearch(url) {
       try {
-        this.#isLoading = true;
+        __privateSet(this, _isLoading, true);
         const results = await this.fetchResults(url);
         this.resultsDisplay.replace(results);
         window.history.replaceState({}, "", url);
       } catch (e) {
         console.warn("something went wrong...", e);
       } finally {
-        this.#isLoading = false;
+        __privateSet(this, _isLoading, false);
       }
     }
     // @NOTE - This must be a synchronous function and return false to prevent the default form submission behavior
     onSubmit(e, url) {
       e.preventDefault();
-      if (this.#isLoading) return false;
+      if (__privateGet(this, _isLoading)) return false;
       this.runSearch(url);
       return false;
     }
-  }
-  class PageHeroSection extends BaseSection {
-    static TYPE = "page-hero";
+  };
+  _isLoading = new WeakMap();
+  _SearchSection.TYPE = "search";
+  let SearchSection = _SearchSection;
+  const _PageHeroSection = class _PageHeroSection extends BaseSection {
     constructor(container) {
       super(container);
     }
-  }
+  };
+  _PageHeroSection.TYPE = "page-hero";
+  let PageHeroSection = _PageHeroSection;
   const redirect = (url) => {
     setTimeout(() => {
-      window.app?.taxi ? window.app.taxi.navigateTo(url) : window.location = url;
+      window.app?.taxi ? window.app.taxi.navigateTo(url) : window.location.href = url;
     }, 50);
   };
   class BaseRenderer extends Renderer {
@@ -10856,13 +10905,7 @@
   const DURATION_LEAVE = 0.2;
   const DURATION_ENTER = 0.5;
   const DELAY_ENTER = 0.15;
-  class PageTransition extends Transition {
-    static EVENTS = {
-      ENTER: "enter.transition",
-      AFTER_ENTER: "afterEnter.transition",
-      LEAVE: "leave.transition",
-      AFTER_LEAVE: "afterLeave.transition"
-    };
+  const _PageTransition = class _PageTransition extends Transition {
     constructor(args) {
       super(args);
       this.fromHeight = 0;
@@ -10874,7 +10917,7 @@
     /**
      * Sets or removes height style on wrapper element
      * Only sets numeric height if autoScrollCompleteFlag is false
-     * @param {number} [height] - Optional height in pixels. If omitted, height style is removed
+     * @param [height] - Optional height in pixels. If omitted, height style is removed
      */
     setWrapperHeightIfNeeded(height) {
       if (height !== void 0 && !this.autoScrollCompleteFlag) {
@@ -10887,7 +10930,7 @@
      * Smoothly scrolls the window to the top and returns a Promise that resolves when the scroll animation completes.
      * Uses the native scrollend event when available, otherwise falls back to a timeout-based approach.
      * 
-     * @returns {Promise<void>} Resolves when the scroll animation completes
+     * @returns Resolves when the scroll animation completes
      */
     autoScrollToTop() {
       this.autoScrollCleanup?.();
@@ -10923,20 +10966,20 @@
     }
     /**
      * Handle the transition leaving the previous page.
-     * @param { { from: HTMLElement, trigger: string|HTMLElement|false, done: function } } props
      */
-    onLeave({ from, trigger, done }) {
+    onLeave(e) {
+      const { from, done } = e;
       this.fromHeight = from.clientHeight;
       this.autoScrollCleanup?.();
       this.autoScrollToTop().then(() => {
         this.setWrapperHeightIfNeeded();
       });
       const onStart = () => {
-        dispatch(this.constructor.EVENTS.LEAVE);
+        dispatch(_PageTransition.EVENTS.LEAVE);
       };
       const onComplete = () => {
         this.setWrapperHeightIfNeeded(this.fromHeight);
-        dispatch(this.constructor.EVENTS.AFTER_LEAVE);
+        dispatch(_PageTransition.EVENTS.AFTER_LEAVE);
         done();
       };
       if (prefersReducedMotion()) {
@@ -10954,15 +10997,15 @@
     }
     /**
      * Handle the transition entering the next page.
-     * @param { { to: HTMLElement, trigger: string|HTMLElement|false, done: function } } props
      */
-    onEnter({ to, trigger, done }) {
+    onEnter(e) {
+      const { to, done } = e;
       this.toHeight = to.clientHeight;
       if (this.toHeight > this.fromHeight) {
         this.setWrapperHeightIfNeeded(this.toHeight);
       }
       const onStart = () => {
-        dispatch(this.constructor.EVENTS.ENTER);
+        dispatch(_PageTransition.EVENTS.ENTER);
       };
       const onComplete = () => {
         this.autoScrollCleanup?.();
@@ -10987,31 +11030,39 @@
         onComplete
       });
     }
-  }
+  };
+  _PageTransition.EVENTS = {
+    ENTER: "enter.transition",
+    AFTER_ENTER: "afterEnter.transition",
+    LEAVE: "leave.transition",
+    AFTER_LEAVE: "afterLeave.transition"
+  };
+  let PageTransition = _PageTransition;
   const selectors$a = {
     count: "[data-count]"
   };
   const classes$5 = {
     hasItems: "has-items"
   };
-  class HeaderCartControl extends BaseComponent {
-    static TYPE = "header-cart-control";
+  const _HeaderCartControl = class _HeaderCartControl extends BaseComponent {
     constructor(el) {
       super(el, {
         watchCartUpdate: true
       });
       this.count = this.qs(selectors$a.count);
     }
-    onCartUpdate({ detail: { cart } }) {
-      this.count.innerText = cart.item_count;
+    onCartUpdate(e) {
+      const { cart } = e.detail;
+      this.count.innerText = cart.item_count.toString();
       this.el.classList.toggle(classes$5.hasItems, cart.item_count > 0);
     }
-  }
+  };
+  _HeaderCartControl.TYPE = "header-cart-control";
+  let HeaderCartControl = _HeaderCartControl;
   const selectors$9 = {
     primaryNav: "[data-primary-nav]"
   };
-  class HeaderSection extends BaseSection {
-    static TYPE = "header";
+  const _HeaderSection = class _HeaderSection extends BaseSection {
     constructor(container) {
       super(container);
       this.primaryNav = this.qs(selectors$9.primaryNav);
@@ -11022,9 +11073,11 @@
       const currentPath = new URL(e.detail.to.finalUrl).pathname;
       this.primaryNavLinks.forEach((link) => setAriaCurrent(link, currentPath));
     }
-  }
-  const companyId = window.app.klaviyo && window.app.klaviyo.companyId;
-  const listId = window.app.klaviyo && window.app.klaviyo.listId;
+  };
+  _HeaderSection.TYPE = "header";
+  let HeaderSection = _HeaderSection;
+  const companyId = window.app?.klaviyo?.companyId;
+  const listId = window.app?.klaviyo?.listId;
   if (!companyId) {
     console.warn("[KlaviyoAPI] - Klaviyo company ID not found");
   }
@@ -11048,7 +11101,7 @@
       } catch (error) {
         return {
           message: "Something went wrong",
-          errors: [error.message]
+          errors: [error]
         };
       }
     },
@@ -11124,7 +11177,7 @@
   const noop = () => {
   };
   class AJAXKlaviyoForm {
-    constructor(el, options) {
+    constructor(el, options = {}) {
       this.name = "ajaxKlaviyoForm";
       this.settings = {
         source: "Shopify Form",
@@ -11145,9 +11198,9 @@
       this.input = this.form.querySelector('input[type="email"]');
       this.submit = this.form.querySelector('[type="submit"]');
       this.isSubmitting = false;
-      if (!this.input === 0) {
+      if (!this.input) {
         console.warn(`[${this.name}] - Email input missing`);
-        return false;
+        return;
       }
       this.form.addEventListener("submit", this.onFormSubmit.bind(this));
       this.settings.onInit();
@@ -11155,7 +11208,7 @@
     logErrors(errors) {
       if (Array.isArray(errors) && errors.length) {
         for (let i = errors.length - 1; i >= 0; i--) {
-          console.warn(`[${this.name}] - onSubmitFail error: ${errors[i]}`);
+          console.warn(`[${this.name}] - onSubmitFail error: ${errors[i].message}`);
         }
       }
     }
@@ -11170,6 +11223,9 @@
         return true;
       }
       return false;
+    }
+    onSubmitSuccess() {
+      this.settings.onSubscribeSuccess?.();
     }
     onSubmitFail(errors) {
       this.submit.removeAttribute("disabled");
@@ -11188,15 +11244,22 @@
       }
       try {
         this.isSubmitting = true;
-        this.submit.setAttribute("disabled", true);
+        this.submit.setAttribute("disabled", "true");
         this.settings.onSubmitStart();
         const success = await KlaviyoAPI.createClientSubscription({
           email,
           source: this.settings.source
         });
-        success ? this.onSubmitSuccess() : this.onSubmitFail();
+        if (success) {
+          this.onSubmitSuccess();
+        } else {
+          this.onSubmitFail([
+            new Error("Failed to subscribe to newsletter")
+          ]);
+        }
       } catch (e2) {
-        console.log("error", e2);
+        const error = e2 instanceof Error ? e2 : new Error(String(e2));
+        this.onSubmitFail([error]);
       } finally {
         this.submit.removeAttribute("disabled");
         this.isSubmitting = false;
@@ -11214,16 +11277,13 @@
     showContents: "show-contents",
     showMessage: "show-message"
   };
-  class NewsletterForm extends BaseComponent {
-    static TYPE = "newsletter-form";
+  const _NewsletterForm = class _NewsletterForm extends BaseComponent {
     /**
      * NewsletterForm constructor
-     *
-     * @param {HTMLElement} el - Element used for scoping any element selection.  Can either be a containing element or the form element itself
      */
     constructor(el) {
       super(el);
-      this.timeout = null;
+      this.timeoutId = null;
       this.form = this.el.tagName === "FORM" ? this.el : this.qs(selectors$8.form);
       if (!this.form) {
         console.warn(`[${this.type}] - Form element required to initialize`);
@@ -11234,19 +11294,20 @@
       this.formMessage = this.form.querySelector(selectors$8.formMessage);
     }
     destroy() {
-      window.clearTimeout(this.timeout);
+      window.clearTimeout(this.timeoutId);
       super.destroy();
     }
     /**
      * Temporarily shows the form message
      *
-     * @param {Boolean} reset - If true, will call this.reset when finished
+     * @param message - The message to show
+     * @param reset - If true, will call this.reset when finished
      */
     showMessageWithTimeout(message, reset = false) {
       this.formMessage.innerHTML = message;
       this.formContents.classList.add(classes$4.showMessage);
-      window.clearTimeout(this.timeout);
-      this.timeout = setTimeout((function() {
+      window.clearTimeout(this.timeoutId);
+      this.timeoutId = setTimeout((function() {
         if (reset) {
           this.reset();
         }
@@ -11273,11 +11334,8 @@
       this.formInput.value = "";
       this.formInput.dispatchEvent(new Event("change"));
     }
-    onSubscribeSuccess(response) {
-      const isSubscribed = response && response.data && response.data.is_subscribed;
-      const msgKey = isSubscribed ? "alreadySubscribed" : "success";
-      const reset = !isSubscribed;
-      this.showMessageWithTimeout(this.formMessage.dataset[msgKey], reset);
+    onSubscribeSuccess() {
+      this.showMessageWithTimeout(this.formMessage.dataset.success, true);
     }
     onSubmitStart() {
       this.showMessageWithTimeout("Submitting...", false);
@@ -11289,12 +11347,13 @@
     onSubscribeFail() {
       this.showMessageWithTimeout(this.formMessage.dataset.fail, false);
     }
-  }
+  };
+  _NewsletterForm.TYPE = "newsletter-form";
+  let NewsletterForm = _NewsletterForm;
   const selectors$7 = {
     navLink: "[data-nav] a"
   };
-  class FooterSection extends BaseSection {
-    static TYPE = "footer";
+  const _FooterSection = class _FooterSection extends BaseSection {
     constructor(container) {
       super(container);
       this.navLinks = this.qsa(selectors$7.navLink);
@@ -11319,13 +11378,14 @@
       const currentPath = new URL(e.detail.to.finalUrl).pathname;
       this.navLinks.forEach((link) => setAriaCurrent(link, currentPath));
     }
-  }
+  };
+  _FooterSection.TYPE = "footer";
+  let FooterSection = _FooterSection;
   const classes$3 = {
     backdrop: "backdrop",
     open: "is-open"
   };
-  class Backdrop extends BaseComponent {
-    static TYPE = "backdrop";
+  const _Backdrop = class _Backdrop extends BaseComponent {
     static generate(parent, options = {}) {
       const el = document.createElement("button");
       const settings = {
@@ -11344,10 +11404,10 @@
       if (settings.ariaControls) {
         el.setAttribute("aria-controls", settings.ariaControls);
       }
-      el.setAttribute("data-component", Backdrop.TYPE);
+      el.setAttribute("data-component", _Backdrop.TYPE);
       const appendTo = parent || document.body;
       appendTo.appendChild(el);
-      return new Backdrop(el);
+      return new _Backdrop(el);
     }
     constructor(el) {
       super(el);
@@ -11364,9 +11424,9 @@
       this.el.classList.remove(classes$3.open);
       this.el.setAttribute("aria-hidden", toAriaBoolean(true));
     }
-  }
-  const TAB_NAV_FORWARD = "forward";
-  const TAB_NAV_BACKWARD = "backward";
+  };
+  _Backdrop.TYPE = "backdrop";
+  let Backdrop = _Backdrop;
   class FocusTrap {
     constructor(el, options = {}) {
       this.settings = {
@@ -11421,12 +11481,12 @@
         return;
       }
       let focusEl = null;
-      if (this.el.contains(event.target)) {
+      if (event.target instanceof HTMLElement && this.el.contains(event.target)) {
         focusEl = event.target;
       } else {
         if (this.focusableElements.length === 0) {
           focusEl = this.el;
-        } else if (this.lastTabNavDirection === TAB_NAV_BACKWARD) {
+        } else if (this.lastTabNavDirection === "backward") {
           focusEl = this.focusableElements[this.focusableElements.length - 1];
         } else {
           focusEl = this.focusableElements[0];
@@ -11441,7 +11501,7 @@
       if (event.key !== "Tab") {
         return;
       }
-      this.lastTabNavDirection = event.shiftKey ? TAB_NAV_BACKWARD : TAB_NAV_FORWARD;
+      this.lastTabNavDirection = event.shiftKey ? "backward" : "forward";
     }
   }
   const selectors$6 = {
@@ -11452,8 +11512,7 @@
     isOpen: "is-open",
     bodyIsOpen: "drawer-open"
   };
-  class Drawer extends BaseComponent {
-    static TYPE = "drawer";
+  const _Drawer = class _Drawer extends BaseComponent {
     constructor(el, options = {}) {
       super(el, {
         watchBreakpoint: options.maxBreakpoint ? true : false,
@@ -11505,7 +11564,7 @@
       this.backdrop?.show();
       this.el.removeAttribute("inert");
       this.focusTrap.activate();
-      this.scroller.scrollTop = 0;
+      if (this.scroller) this.scroller.scrollTop = 0;
     }
     close() {
       if (!this.isOpen) return;
@@ -11521,38 +11580,43 @@
     toggle() {
       this.isOpen ? this.close() : this.open();
     }
-    onBreakpointChange({ detail: { breakpoint } }) {
+    onBreakpointChange(e) {
+      const { detail: { breakpoint } } = e;
       if (!this.isOpen || !this.settings.maxBreakpoint) return;
       if (breakpoint > this.settings.maxBreakpoint) {
         this.close();
       }
     }
     onClick(e) {
-      if (e.target.closest(selectors$6.close)) {
+      const target = e.target;
+      if (target?.closest(selectors$6.close)) {
         e.preventDefault();
         this.close();
       }
     }
     onBodyClick(e) {
-      if (this.ariaControlElements.filter((el) => {
-        return el.isSameNode(e.target) || el.contains(e.target);
-      }).length > 0) {
+      const target = e.target;
+      if (this.ariaControlElements.some(
+        (el) => el.isSameNode(target) || el.contains(target)
+      )) {
         e.preventDefault();
         this.toggle();
       }
     }
-  }
-  class MobileMenuDrawer extends Drawer {
-    static TYPE = "mobile-menu-drawer";
+  };
+  _Drawer.TYPE = "drawer";
+  let Drawer = _Drawer;
+  const _MobileMenuDrawer = class _MobileMenuDrawer extends Drawer {
     constructor(el) {
       super(el, {
         maxBreakpoint: BREAKPOINTS.md
       });
       this.searchInline = new SearchInline(this.qs(SearchInline.SELECTOR));
     }
-  }
-  class MobileMenuSection extends BaseSection {
-    static TYPE = "mobile-menu";
+  };
+  _MobileMenuDrawer.TYPE = "mobile-menu-drawer";
+  let MobileMenuDrawer = _MobileMenuDrawer;
+  const _MobileMenuSection = class _MobileMenuSection extends BaseSection {
     constructor(container) {
       super(container);
       this.drawer = new MobileMenuDrawer(this.qs(MobileMenuDrawer.SELECTOR));
@@ -11565,12 +11629,15 @@
     }
     onNavigateIn(e) {
       const currentPath = new URL(e.detail.to.finalUrl).pathname;
-      this.drawer.el.querySelectorAll("nav a").forEach((link) => setAriaCurrent(link, currentPath));
+      const links = this.drawer.el.querySelectorAll("nav a");
+      links.forEach((link) => setAriaCurrent(link, currentPath));
     }
     onNavigateOut() {
       this.drawer.close();
     }
-  }
+  };
+  _MobileMenuSection.TYPE = "mobile-menu";
+  let MobileMenuSection = _MobileMenuSection;
   var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
   function getDefaultExportFromCjs(x) {
     return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x["default"] : x;
@@ -11717,12 +11784,11 @@
   const DEFAULT_MIN = 0;
   const DEFAULT_MAX = 999;
   const DEFAULT_STEP = 1;
-  class QuantityAdjuster extends BaseComponent {
-    static TYPE = "quantity-adjuster";
+  const _QuantityAdjuster = class _QuantityAdjuster extends BaseComponent {
     constructor(el, options = {}) {
       super(el);
       this.settings = {
-        onChange: () => {
+        onChange: (value) => {
         },
         ...options
       };
@@ -11758,20 +11824,20 @@
       return this.parseAttribute(this.input.step, DEFAULT_STEP);
     }
     set min(value) {
-      isNumber(value) ? this.input.min = value : this.input.removeAttribute("min");
+      isNumber(value) ? this.input.min = value.toString() : this.input.removeAttribute("min");
     }
     set max(value) {
-      isNumber(value) ? this.input.max = value : this.input.removeAttribute("max");
+      isNumber(value) ? this.input.max = value.toString() : this.input.removeAttribute("max");
     }
     set step(value) {
-      isNumber(value) ? this.input.step = value : this.input.removeAttribute("step");
+      isNumber(value) ? this.input.step = value.toString() : this.input.removeAttribute("step");
     }
     get value() {
       return parseInt(this.input.value, 10);
     }
     set value(q) {
       if (q === this.value) return;
-      this.input.value = q;
+      this.input.value = q.toString();
     }
     get disabled() {
       return this.input.disabled;
@@ -11824,24 +11890,22 @@
     onInputMutation() {
       this.validate();
     }
-  }
+  };
+  _QuantityAdjuster.TYPE = "quantity-adjuster";
+  let QuantityAdjuster = _QuantityAdjuster;
   const selectors$4 = {
-    remove: "[data-remove]",
+    remove: "button[data-remove]",
     price: "[data-price]"
   };
   const classes$1 = {
     removing: "is-removing",
     updating: "is-updating"
   };
-  class CartItem extends BaseComponent {
-    static TYPE = "cart-item";
-    static states = {
-      REMOVING: "removing",
-      UPDATING: "updating"
-    };
+  const _CartItem = class _CartItem extends BaseComponent {
     constructor(el, itemData) {
       super(el);
-      this._state = void 0;
+      __privateAdd(this, _state);
+      __privateSet(this, _state, void 0);
       this.id = parseInt(this.el.dataset.id, 10);
       this.itemData = itemData;
       this.remove = this.qs(selectors$4.remove);
@@ -11861,12 +11925,12 @@
     }
     set state(state) {
       switch (state) {
-        case CartItem.states.REMOVING:
+        case _CartItem.states.REMOVING:
           this.remove.disabled = true;
           this.remove.setAttribute("aria-disabled", "true");
           this.el.classList.add(classes$1.removing);
           break;
-        case CartItem.states.UPDATING:
+        case _CartItem.states.UPDATING:
           this.remove.disabled = true;
           this.remove.setAttribute("aria-disabled", "true");
           this.el.classList.add(classes$1.updating);
@@ -11878,10 +11942,10 @@
           this.el.classList.remove(classes$1.removing, classes$1.updating);
           break;
       }
-      this._state = state;
+      __privateSet(this, _state, state);
     }
     get state() {
-      return this._state;
+      return __privateGet(this, _state);
     }
     /**
      * Updates the item with new data
@@ -11903,7 +11967,7 @@
     async onQuantityAdjusterChange(q) {
       if (this.state !== void 0) return;
       try {
-        this.state = q === 0 ? CartItem.states.REMOVING : CartItem.states.UPDATING;
+        this.state = q === 0 ? _CartItem.states.REMOVING : _CartItem.states.UPDATING;
         await CartAPI.changeLineItemQuantity(this.id, q);
       } catch (error) {
         this.state = void 0;
@@ -11918,19 +11982,25 @@
     async onRemoveClick(e) {
       e.preventDefault();
       try {
-        this.state = CartItem.states.REMOVING;
+        this.state = _CartItem.states.REMOVING;
         await CartAPI.changeLineItemQuantity(this.id, 0);
       } catch (error) {
         console.warn("Error removing item", error);
         this.state = void 0;
       }
     }
-  }
+  };
+  _state = new WeakMap();
+  _CartItem.TYPE = "cart-item";
+  _CartItem.states = {
+    REMOVING: "removing",
+    UPDATING: "updating"
+  };
+  let CartItem = _CartItem;
   const selectors$3 = {
     list: "[data-list]"
   };
-  class CartBody extends BaseComponent {
-    static TYPE = "cart-body";
+  const _CartBody = class _CartBody extends BaseComponent {
     constructor(el, cartData) {
       super(el, {
         watchCartUpdate: true
@@ -11945,11 +12015,11 @@
     }
     /**
      * Synchronizes the cart UI with new cart data received from an update event
-     * @param {CustomEvent} e - Cart update event containing new cart data
-     * @param {Object} e.detail.cart - The new cart data
-     * @param {Array} e.detail.cart.items - Array of cart items
-     * @param {string} e.detail.cart.items[].id - Unique identifier for cart item
-     * @param {string} e.detail.cart.items[].item_html - HTML string representation of cart item
+     * @param e - Cart update event containing new cart data
+     * @param e.detail.cart - The new cart data
+     * @param e.detail.cart.items - Array of cart items
+     * @param e.detail.cart.items[].id - Unique identifier for cart item
+     * @param e.detail.cart.items[].item_html - HTML string representation of cart item
      */
     syncCart(e) {
       const newCartData = e.detail.cart;
@@ -11963,7 +12033,7 @@
         });
         if (!found) {
           const newItemEl = getDomFromString(newItemData.item_html).querySelector(CartItem.SELECTOR);
-          const newItemInstance = new CartItem(newItemEl);
+          const newItemInstance = new CartItem(newItemEl, newItemData);
           this.list.insertBefore(newItemInstance.el, this.itemInstances[newIndex]?.el || null);
           this.itemInstances.splice(newIndex, 0, newItemInstance);
         }
@@ -11988,13 +12058,14 @@
     onCartUpdate(e) {
       this.syncCart(e);
     }
-  }
+  };
+  _CartBody.TYPE = "cart-body";
+  let CartBody = _CartBody;
   const selectors$2 = {
     submit: '[type="submit"]',
     subtotalPrice: "[data-subtotal-price]"
   };
-  class CartFooter extends BaseComponent {
-    static TYPE = "cart-footer";
+  const _CartFooter = class _CartFooter extends BaseComponent {
     constructor(el) {
       super(el, {
         watchCartUpdate: true
@@ -12011,7 +12082,9 @@
         this.submit.removeAttribute("disabled");
       }
     }
-  }
+  };
+  _CartFooter.TYPE = "cart-footer";
+  let CartFooter = _CartFooter;
   const selectors$1 = {
     close: "[data-ajax-cart-close]",
     toggle: "[data-ajax-cart-toggle][aria-controls]"
@@ -12022,8 +12095,7 @@
     empty: "is-empty",
     bodyCartOpen: "ajax-cart-open"
   };
-  class AJAXCart extends BaseComponent {
-    static TYPE = "ajax-cart";
+  const _AJAXCart = class _AJAXCart extends BaseComponent {
     constructor(el, cartData) {
       super(el, {
         watchCartUpdate: true
@@ -12087,9 +12159,10 @@
       this.open();
     }
     onBodyClick(e) {
-      if (e.target.closest(selectors$1.close)) {
+      const target = e.target;
+      if (target?.closest(selectors$1.close)) {
         return this.onCloseClick(e);
-      } else if (e.target.closest(selectors$1.toggle)?.getAttribute("aria-controls") === this.el.id) {
+      } else if (target?.closest(selectors$1.toggle)?.getAttribute("aria-controls") === this.el.id) {
         return this.onToggleClick(e);
       }
     }
@@ -12101,15 +12174,20 @@
       e.preventDefault();
       this.close();
     }
-  }
+  };
+  _AJAXCart.TYPE = "ajax-cart";
+  let AJAXCart = _AJAXCart;
   const selectors = {
     cartJson: "[data-cart-json]"
   };
-  class AJAXCartSection extends BaseSection {
-    static TYPE = "ajax-cart";
+  const _AJAXCartSection = class _AJAXCartSection extends BaseSection {
     constructor(container) {
       super(container);
-      const cartData = JSON.parse(this.qs(selectors.cartJson).textContent);
+      const cartJsonEl = this.qs(selectors.cartJson);
+      if (!cartJsonEl?.textContent) {
+        throw new Error("Cart JSON element not found");
+      }
+      const cartData = JSON.parse(cartJsonEl.textContent);
       this.ajaxCart = new AJAXCart(this.qs(AJAXCart.SELECTOR), cartData);
       if (getQueryParams().cart) {
         this.open({ delay: true });
@@ -12137,7 +12215,9 @@
         this.open({ delay: true });
       }
     }
-  }
+  };
+  _AJAXCartSection.TYPE = "ajax-cart";
+  let AJAXCartSection = _AJAXCartSection;
   window.app = window.app || {};
   window.app.taxi = null;
   function init() {
@@ -12150,7 +12230,7 @@
     sectionManager.register(MobileMenuSection);
     sectionManager.register(AJAXCartSection);
     if (isThemeEditor()) {
-      Array.from(document.getElementsByTagName("a")).forEach((a) => a.setAttribute("data-taxi-ignore", true));
+      Array.from(document.getElementsByTagName("a")).forEach((a) => a.setAttribute("data-taxi-ignore", "true"));
     }
     const taxi = new Core({
       renderers: {
@@ -12169,14 +12249,14 @@
       dispatch("taxi.navigateOut", e);
     });
     taxi.on("NAVIGATE_IN", (e) => {
-      const { to } = e;
+      const toPage = e.to.page;
       const body = document.body;
       Array.from(body.classList).forEach((cn) => {
         if (TEMPLATE_REGEX.test(cn)) {
           body.classList.remove(cn);
         }
       });
-      Array.from(to.page.body.classList).forEach((cn) => {
+      Array.from(toPage.body.classList).forEach((cn) => {
         if (TEMPLATE_REGEX.test(cn)) {
           body.classList.add(cn);
         }

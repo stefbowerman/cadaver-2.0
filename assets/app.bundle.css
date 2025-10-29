@@ -1727,12 +1727,6 @@ a:focus-visible:not(:has([disabled])), button:focus-visible:not(:has([disabled])
 .pointer-events-none {
   pointer-events: none;
 }
-.visible {
-  visibility: visible;
-}
-.static {
-  position: static;
-}
 .fixed {
   position: fixed;
 }
@@ -1846,9 +1840,6 @@ a:focus-visible:not(:has([disabled])), button:focus-visible:not(:has([disabled])
 }
 .grid {
   display: grid;
-}
-.contents {
-  display: contents;
 }
 .hidden {
   display: none;
