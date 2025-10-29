@@ -11267,16 +11267,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     showContents: "show-contents",
     showMessage: "show-message"
   };
-  class NewsletterForm extends BaseComponent {
-    static TYPE = "newsletter-form";
+  const _NewsletterForm = class _NewsletterForm extends BaseComponent {
     /**
      * NewsletterForm constructor
-     *
-     * @param {HTMLElement} el - Element used for scoping any element selection.  Can either be a containing element or the form element itself
      */
     constructor(el) {
       super(el);
-      this.timeout = null;
+      this.timeoutId = null;
       this.form = this.el.tagName === "FORM" ? this.el : this.qs(selectors$8.form);
       if (!this.form) {
         console.warn(`[${this.type}] - Form element required to initialize`);
@@ -11287,19 +11284,20 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.formMessage = this.form.querySelector(selectors$8.formMessage);
     }
     destroy() {
-      window.clearTimeout(this.timeout);
+      window.clearTimeout(this.timeoutId);
       super.destroy();
     }
     /**
      * Temporarily shows the form message
      *
-     * @param {Boolean} reset - If true, will call this.reset when finished
+     * @param message - The message to show
+     * @param reset - If true, will call this.reset when finished
      */
     showMessageWithTimeout(message, reset = false) {
       this.formMessage.innerHTML = message;
       this.formContents.classList.add(classes$4.showMessage);
-      window.clearTimeout(this.timeout);
-      this.timeout = setTimeout((function() {
+      window.clearTimeout(this.timeoutId);
+      this.timeoutId = setTimeout((function() {
         if (reset) {
           this.reset();
         }
@@ -11326,11 +11324,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.formInput.value = "";
       this.formInput.dispatchEvent(new Event("change"));
     }
-    onSubscribeSuccess(response) {
-      const isSubscribed = response && response.data && response.data.is_subscribed;
-      const msgKey = isSubscribed ? "alreadySubscribed" : "success";
-      const reset = !isSubscribed;
-      this.showMessageWithTimeout(this.formMessage.dataset[msgKey], reset);
+    onSubscribeSuccess() {
+      this.showMessageWithTimeout(this.formMessage.dataset.success, true);
     }
     onSubmitStart() {
       this.showMessageWithTimeout("Submitting...", false);
@@ -11342,7 +11337,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onSubscribeFail() {
       this.showMessageWithTimeout(this.formMessage.dataset.fail, false);
     }
-  }
+  };
+  _NewsletterForm.TYPE = "newsletter-form";
+  let NewsletterForm = _NewsletterForm;
   const selectors$7 = {
     navLink: "[data-nav] a"
   };

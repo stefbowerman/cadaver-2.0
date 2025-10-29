@@ -32,7 +32,7 @@ export default class PageTransition extends Transition {
   toHeight: number
   autoScrollCompleteFlag: boolean
   autoScrollCleanup: (() => void) | null
-  autoScrollTimeoutId: NodeJS.Timeout | null
+  autoScrollTimeoutId: ReturnType<typeof setTimeout> | null
 
 	constructor(args: TransitionProps) {
 		super(args)

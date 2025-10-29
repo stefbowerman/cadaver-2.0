@@ -14,17 +14,21 @@ const classes = {
 export default class NewsletterForm extends BaseComponent {
   static TYPE = 'newsletter-form'
 
+  timeoutId: ReturnType<typeof setTimeout> | null
+  form: HTMLFormElement
+  formInput: HTMLInputElement
+  formContents: HTMLElement
+  formMessage: HTMLElement
+
   /**
    * NewsletterForm constructor
-   *
-   * @param {HTMLElement} el - Element used for scoping any element selection.  Can either be a containing element or the form element itself
    */  
-  constructor(el) {
+  constructor(el: HTMLElement) {
     super(el)
 
-    this.timeout = null
+    this.timeoutId = null
 
-    this.form = this.el.tagName === 'FORM' ? this.el : this.qs(selectors.form)
+    this.form = this.el.tagName === 'FORM' ? this.el as HTMLFormElement : this.qs(selectors.form) as HTMLFormElement
     
     if (!this.form) {
       console.warn(`[${this.type}] - Form element required to initialize`)
@@ -37,7 +41,7 @@ export default class NewsletterForm extends BaseComponent {
   }
 
   destroy() {
-    window.clearTimeout(this.timeout)
+    window.clearTimeout(this.timeoutId)
 
     super.destroy()
   }
@@ -45,15 +49,16 @@ export default class NewsletterForm extends BaseComponent {
   /**
    * Temporarily shows the form message
    *
-   * @param {Boolean} reset - If true, will call this.reset when finished
+   * @param message - The message to show
+   * @param reset - If true, will call this.reset when finished
    */  
-  showMessageWithTimeout(message, reset = false) {
+  showMessageWithTimeout(message: string, reset: boolean = false) {
     this.formMessage.innerHTML = message
     this.formContents.classList.add(classes.showMessage)
 
-    window.clearTimeout(this.timeout);
+    window.clearTimeout(this.timeoutId);
 
-    this.timeout = setTimeout(function() {
+    this.timeoutId = setTimeout(function() {
       if (reset) {
         this.reset();
       } 
@@ -87,21 +92,23 @@ export default class NewsletterForm extends BaseComponent {
     this.formInput.dispatchEvent(new Event('change'))
   }
 
-  onSubscribeSuccess(response) {
-    const isSubscribed = response && response.data && response.data.is_subscribed;
-    const msgKey = isSubscribed ? 'alreadySubscribed' : 'success';
+  onSubscribeSuccess() {
+    // const isSubscribed = response && response.data && response.data.is_subscribed;
+    // const msgKey = isSubscribed ? 'alreadySubscribed' : 'success';
 
     // Don't reset the form if they're already subscribed, they might want to just enter a different email
-    const reset = !isSubscribed;
+    // const reset = !isSubscribed;
     
-    this.showMessageWithTimeout(this.formMessage.dataset[msgKey], reset);
+    // this.showMessageWithTimeout(this.formMessage.dataset[msgKey], reset);
+
+    this.showMessageWithTimeout(this.formMessage.dataset.success, true);
   }
 
   onSubmitStart() {
     this.showMessageWithTimeout('Submitting...', false);
   }  
 
-  onSubmitFail(errors) {
+  onSubmitFail(errors: Error[] | string) {
     const msg = Array.isArray(errors) ? errors.join('  ') : errors;
     this.showMessageWithTimeout(msg, false);
   }
