@@ -78,7 +78,6 @@ export function toHandle(str: string): string {
   return str.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-$/, '').replace(/^-/, '');
 }
 
-
 /**
  * Gets a string from the app.strings object defined in the head-scripts.liquid file.
  * @param key - The key of the string to get.
