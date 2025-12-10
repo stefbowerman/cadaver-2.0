@@ -2,13 +2,12 @@
 
 Cadaver is a custom architected, Shopify Online 2.0 theme boilerplate.
 
-__In Action__ - Used as the starter theme for the official [GitHub Shop](https://thegithubshop.com/).
 
 __Features:__
 - Minimal JS framework for working with Shopify sections and DOM components.
 - [Taxi.js](https://taxi.js.org/) with link pre-fetching built-in for fast, SPA like browsing experience
 - [Tailwind](https://v3.tailwindcss.com/) for styling
-- Webpack configuration for bundling SCSS and JS files
+- Webpack configuration for bundling CSS and JS files
 - 95+ scoring on all lighthouse speed tests.
 - Lazy image loading
 - GSAP powered animations and page transitions
@@ -24,13 +23,20 @@ The frontend application is architected with three primary goals:
 
 > I do not "version" this theme as it is a constant work in progress.  Please note it is liable to change at any time.
 
+## Real World Examples
+Production examples of this project in action:
+- [The GitHub Shop](https://thegithubshop.com/)
+- [Fucking Awesome](https://faworldentertainment.com/)
+- [+44](https://plus44.world/)
+- [SIHA](https://siha.com.au/) - by [@AllanPooley](https://github.com/AllanPooley)
+
 ## Project Structure
 
 ```
 ├── _js
 │   └── Working typescript files.  Bundled as `app.bundle.ts`.
 ├── _styles
-│   └── Working scss files.  Bundled as `app.bundle.css`.
+│   └── Working css files.  Bundled as `app.bundle.css`.
 ├── assets
 │   └── Javascript, CSS, Font Files, Images, SVGs, etc..
 ├── config
