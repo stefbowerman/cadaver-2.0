@@ -61,11 +61,6 @@ export default defineConfig(({ mode }) => {
     },
 
     css: {
-      preprocessorOptions: {
-        scss: {
-          api: 'modern'
-        }
-      },
       postcss: './postcss.config.js',
     }    
   }

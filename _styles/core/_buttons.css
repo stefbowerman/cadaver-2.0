@@ -1,0 +1,40 @@
+button[disabled] {
+  @apply cursor-not-allowed;
+}
+
+.btn-group {
+  @apply flex flex-wrap gap-x-12 gap-y-5;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center text-center; /* Layout */
+  @apply py-3 px-5 rounded-sm border; /* Design */
+  @apply bg-[#444] text-white border-[#222]; /* Colors */
+  @apply uppercase text-sm leading-none font-bold; /* Text */
+
+  transition-property: background-color, border-color, color;
+  transition-duration: 250ms;
+  transition-timing-function: ease;
+
+  &[disabled] {
+    @apply bg-[#222] border-[#111] text-[#DDD];
+  }
+
+  &:not([disabled]) {
+    @apply hover:bg-[#222] hover:border-black;
+    @apply active:bg-black active:border-black;
+  }
+
+  &:focus-visible {
+    @apply outline outline-blue;
+  }
+
+  /* Alternative styles go here... */
+  /* &--primary {
+
+  } */
+}
+
+.btn-block {
+  @apply w-full flex-1;
+}

@@ -1,0 +1,76 @@
+/*
+  This used to use a SCSS mixin to generate the swatch styles for the checkbox and radio inputs.
+
+  @mixin input-state($state) {
+    $selectors: (
+      'default': ' + label',
+      'hover': ':not(:disabled):not(:checked) + label:hover',
+      'active': ':not(:disabled):not(:checked) + label:active',
+      'selected': ':checked + label',
+      'focus': ':focus-visible + label',
+      'disabled': ':disabled + label'
+    );
+
+    input[type="checkbox"]#{map.get($selectors, $state)} &,
+    input[type="radio"]#{map.get($selectors, $state)} & {
+      @content;
+    }
+  }
+
+  Usage:
+
+    @include input-state('hover') {
+      @apply outline outline-green outline-offset-2;
+    }
+*/
+
+.swatch {
+  position: relative;
+  display: inline-block;
+  height: 2rem;
+  width: 2rem;
+  vertical-align: middle;
+
+  svg {
+    height: 100%;
+    width: 100%;
+  }  
+
+  img {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+}
+
+/* Default state */
+input[type="checkbox"] + label .swatch,
+input[type="radio"] + label .swatch {
+  cursor: pointer;
+}
+
+/* Hover state */
+input[type="checkbox"]:not(:disabled):not(:checked) + label:hover .swatch,
+input[type="radio"]:not(:disabled):not(:checked) + label:hover .swatch {
+  @apply outline outline-green outline-offset-2;
+}
+
+/* Selected state */
+input[type="checkbox"]:checked + label .swatch,
+input[type="radio"]:checked + label .swatch {
+  @apply outline outline-blue outline-offset-2;
+}
+
+/* Focus state */
+input[type="checkbox"]:focus-visible + label .swatch,
+input[type="radio"]:focus-visible + label .swatch {
+  @apply outline outline-red outline-offset-2;
+}
+
+/* Disabled state */
+input[type="checkbox"]:disabled + label .swatch,
+input[type="radio"]:disabled + label .swatch {
+  cursor: not-allowed;
+}

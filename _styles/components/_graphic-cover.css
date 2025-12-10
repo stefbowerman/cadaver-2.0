@@ -8,7 +8,7 @@
   }
   
   img {
-    @apply z-1; // img opacity is automatically animated via lazy-image
+    @apply z-1; /* img opacity is automatically animated via lazy-image */
   }
 
   video {

@@ -1,7 +1,7 @@
 table {
   @apply w-full max-w-full bg-transparent border-spacing-0;
 
-  // Override any styles that get set from Shopify WYSIWYG
+  /* Override any styles that get set from Shopify WYSIWYG */
   tr, td {
     height: auto !important;
     width: auto !important;
