@@ -11,7 +11,7 @@
     @apply relative w-full overflow-hidden lg:hidden;
   }  
 
-  &__list {
+  .product-detail-gallery__list {
     @apply hidden flex-col gap-y-3 lg:flex;
   }
 }

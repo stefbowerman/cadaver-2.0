@@ -105,7 +105,8 @@
   @apply absolute top-0 left-0 h-full w-full flex flex-col justify-center bg-white;
   z-index: var(--z-empty);  
 
-  padding: 0 calc(var(--ajax-cart-padding-h) + var(--ajax-cart-inner-padding-h)); // @TODO...something about this?
+  /* @TODO...something about this inner padding? */
+  padding: 0 calc(var(--ajax-cart-padding-h) + var(--ajax-cart-inner-padding-h));
 
   @apply opacity-0 pointer-events-none;
   transition: opacity 100ms ease-out;
@@ -119,11 +120,9 @@
 .ajax-cart__empty-text {
   opacity: 0;
   transform: translateY(10px);
-  transition: {
-    property: opacity, transform;
-    duration: 0.5s;
-    timing-function: ease;
-  }
+  transition-property: opacity, transform;
+  transition-duration: 0.5s;
+  transition-timing-function: ease;
 
   .is-empty & {
     opacity: 1;

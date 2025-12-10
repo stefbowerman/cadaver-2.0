@@ -1,6 +1,6 @@
 import 'swiper/css'
 import 'swiper/css/effect-fade'
-import '../_styles/app.scss'
+import '../_styles/app.css'
 
 import { Core as TaxiCore } from '@unseenco/taxi'
 import type {

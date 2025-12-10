@@ -32,7 +32,7 @@ export default class ResultsSection extends BaseSection {
 
       const dom = await fetchDom(fetchUrl)
       
-      return dom.getElementById(this.parentId)?.querySelector(ResultsDisplay.SELECTOR)
+      return dom.getElementById(this.parentId)?.querySelector(ResultsDisplay.SELECTOR) as HTMLElement
     }
     catch (e) {
       console.warn('something went wrong...', e)

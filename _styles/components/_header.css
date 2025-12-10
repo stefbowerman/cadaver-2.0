@@ -39,7 +39,7 @@ header.header {
 }
 
 .header-nav__list {
-  // z to push above the drawer
+  /* z to push above the drawer */
   @apply relative z-1 flex items-center gap-x-4;
   height: var(--header-height);
 }

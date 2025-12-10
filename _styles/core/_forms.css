@@ -2,14 +2,14 @@ label {
   @apply inline-block;
 }
 
-// Hide the cancel button on search inputs
+/* Hide the cancel button on search inputs */
 input[type="search"]::-webkit-search-cancel-button {
   -webkit-appearance: none;
   appearance: none;
   display: none;
 }
 
-// Hide the up / down buttons on number inputs
+/* Hide the up / down buttons on number inputs */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -21,7 +21,7 @@ input[type="number"] {
   appearance: textfield;
 }
 
-// Fix font size on form elements in iOS
+/* Fix font size on form elements in iOS */
 @media screen and (-webkit-min-device-pixel-ratio: 0) and (max-device-width: 1024px) {
   select,
   textarea,
@@ -39,43 +39,42 @@ input[type="number"] {
     @apply font-medium text-black mb-1 text-sm;
   }
 
-  &__helper,
-  &__error {
+  .form-group__helper,
+  .form-group__error {
     @apply block mt-1 text-sm;
   }
 
-  &__helper {
+  .form-group__helper {
     @apply text-grey;
   }
 
-  &__error {
+  .form-group__error {
     @apply text-red;
   }  
 }
 
-// This wraps the input, icon, etc.
-// Markup / styling is heavily inspired by -> https://primer.style/components/text-input/react/alpha
+/* This wraps the input, icon, etc. */
+/* Markup / styling is heavily inspired by -> https://primer.style/components/text-input/react/alpha */
 .form-control {
   @apply relative w-full flex items-stretch gap-x-2 appearance-none overflow-hidden;
   @apply border border-black rounded;
   @apply text-black;
 
-  transition: {
-    property: background-color, border-color, color;
-    duration: 250ms;
-    timing-function: ease;
-  }
-  // Add hover states
+  transition-property: background-color, border-color, color;
+  transition-duration: 250ms;
+  transition-timing-function: ease;
+
+  /* Add hover states */
   @apply hover:border-black active:border-black focus:border-black;
 
-  // When disabled...
+  /* When disabled... */
   &:has([aria-disabled="true"]),
   &:has([disabled]) {
     @apply cursor-not-allowed;
     @apply bg-[#DDD];
 
-    // Kill hover states - override with the default styles
-    // @apply hover:border-accent-border active:bg-bground-secondary focus:bg-bground-secondary;
+    /* Kill hover states - override with the default styles */
+    /* @apply hover:border-accent-border active:bg-bground-secondary focus:bg-bground-secondary; */
   }
 
   &:focus-within {
@@ -85,7 +84,7 @@ input[type="number"] {
   &:has(input:focus-visible),
   &:has(select:focus-visible),
   &:has(textarea:focus-visible) {
-    @apply outline-none; // Applies outline-width and offset
+    @apply outline-none; /* Applies outline-width and offset */
     @apply outline-blue;
 
     input {
@@ -100,14 +99,14 @@ input[type="number"] {
   &:has(select) {
     select {
       @apply pr-8;
-      appearance: none; // Hide the default browser icon
+      appearance: none; /* Hide the default browser icon */
 
       &:not([disabled]) {
         @apply cursor-pointer;
       }
     }
 
-    // Uncomment to add an icon to the right of the select
+    /* Uncomment to add an icon to the right of the select */
     .form-control__affix:last-child {
       @apply absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none;
     }
@@ -158,7 +157,7 @@ input[type="number"] {
 
 
 
-// Checkbox + Radio
+/* Checkbox + Radio */
 .form-check {
   display: block;
   min-height: 1.5rem;
@@ -183,7 +182,7 @@ input[type="number"] {
   background-position: center;
   background-size: contain;
   border: 1px solid rgba(0,0,0,.25);
-  // border: none;
+  /* border: none; */
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -214,7 +213,7 @@ input[type="number"] {
 }
 
 
-// Quantity Adjuster
+/* Quantity Adjuster */
 .quantity-adjuster {
   @apply h-full inline-flex items-stretch justify-between rounded border;
 
@@ -234,17 +233,21 @@ input[type="number"] {
       @apply pl-[4px];
     }
 
-    // &:focus-visible {
-    //   // @apply outline-accent-focus;
-    // }    
+    /* 
+    &:focus-visible {
+      @apply outline-accent-focus;
+    }  
+    */  
 
     &[disabled] {
       @apply opacity-50;
     }
 
-    // &:not([disabled]) {
-    //   // @apply hover:text-fground-tertiary;
-    // }
+    /*
+    &:not([disabled]) {
+      @apply hover:text-fground-tertiary;
+    }
+    */
 
     svg {
       width: 8px;
@@ -270,7 +273,7 @@ input[type="number"] {
     @apply sr-only;
   }
 
-  // Child elements are responsible for focus-visible styles
+  /* Child elements are responsible for focus-visible styles */
   &:focus-visible {
     @apply outline-none;
   }

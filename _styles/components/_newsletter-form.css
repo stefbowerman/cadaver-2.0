@@ -1,0 +1,38 @@
+.newsletter-form {
+  --t-d-start: 400ms;
+  --t-d-end: 500ms;
+}
+
+.newsletter-form-contents {
+  @apply relative;
+}
+
+.newsletter-form-inputs {
+  transition: opacity var(--t-d-end) ease-out;
+  transition-delay: var(--t-d-start);
+}
+
+.newsletter-form-message {
+  @apply absolute inset-0 z-1 flex items-center opacity-0 pointer-events-none;
+
+  transition: opacity var(--t-d-start) ease-out;
+  transition-delay: 0ms;
+}
+
+.newsletter-form-contents.show-message {
+  .newsletter-form-inputs {
+    @apply opacity-0 pointer-events-none;
+
+    transition-duration: var(--t-d-start);
+    transition-delay: 0ms;
+    transition-timing-function: ease-in;
+  }
+
+  .newsletter-form-message {
+    @apply opacity-100 pointer-events-auto;
+
+    transition-duration: var(--t-d-end);
+    transition-delay: var(--t-d-start);
+    transition-timing-function: ease-out;
+  }
+}

@@ -2,11 +2,11 @@ import defaultTheme from 'tailwindcss/defaultTheme'
 
 export default {
   corePlugins: {
-    container: false // Define our own in app.scss
+    container: false // Define our own in app.css
   },
   content: [
     './_scripts/**/*.js',
-    './_styles/**/*.scss',
+    './_styles/**/*.css',
     './templates/**/*.liquid',
     './snippets/**/*.liquid',
     './layout/**/*.liquid',
