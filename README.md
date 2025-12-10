@@ -29,6 +29,8 @@ Production examples of this project in action:
 - [Fucking Awesome](https://faworldentertainment.com/)
 - [+44](https://plus44.world/)
 - [SIHA](https://siha.com.au/) - by [@AllanPooley](https://github.com/AllanPooley)
+- [Palantir Store](https://store.palantir.com/) - by [Doubleday & Cartwright
+](https://www.doubledayandcartwright.com/)
 
 ## Project Structure
 
