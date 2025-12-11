@@ -28,7 +28,7 @@
   {% endcapture %}
 
   <body id="{{ page_title | handle }}" class="{{ body_class | strip | strip_newlines }}">
-    <a class="sr-only focus:not-sr-only" href="#view-container">
+    <a class="z-(--z-skip) sr-only focus:not-sr-only" href="#view-container">
       {{ 'accessibility.skip_to_content' | t }}
     </a>
 

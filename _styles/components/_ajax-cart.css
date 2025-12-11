@@ -7,7 +7,7 @@
   --z-empty: 4;
   --z-header: 5;
 
-  @apply fixed z-ajax-cart top-0 right-0 h-screen w-full max-w-[min(90vw,500px)] bg-white translate-x-full;
+  @apply fixed z-(--z-ajax-cart) top-0 right-0 h-screen w-full max-w-[min(90vw,500px)] bg-white translate-x-full;
 
   pointer-events: none;
   transition: var(--transition-drawer-out);

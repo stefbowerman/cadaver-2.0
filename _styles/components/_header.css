@@ -1,5 +1,5 @@
 header.header {
-  @apply fixed z-header top-0 left-0 right-0 bg-white/50;
+  @apply fixed z-(--z-header) top-0 left-0 right-0 bg-white/50;
   height: var(--header-height);
 
   nav {
