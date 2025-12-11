@@ -6,7 +6,7 @@ Cadaver is a custom architected, Shopify Online 2.0 theme boilerplate.
 __Features:__
 - Minimal JS framework for working with Shopify sections and DOM components.
 - [Taxi.js](https://taxi.js.org/) with link pre-fetching built-in for fast, SPA like browsing experience
-- [Tailwind](https://v3.tailwindcss.com/) for styling
+- [Tailwind V4](https://tailwindcss.com/) for styling
 - Webpack configuration for bundling CSS and JS files
 - 95+ scoring on all lighthouse speed tests.
 - Lazy image loading
