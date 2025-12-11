@@ -1,5 +1,5 @@
 .drawer {
-  @apply fixed z-drawer top-0 left-0 h-[100dvh] w-full max-w-[min(90vw,500px)] -translate-x-full;
+  @apply fixed z-(--z-drawer) top-0 left-0 h-[100dvh] w-full max-w-[min(90vw,500px)] -translate-x-full;
   @apply bg-white;
 
   transition: var(--transition-drawer-out);
@@ -11,7 +11,7 @@
 }
 
 .backdrop {
-  @apply fixed z-backdrop top-0 left-0 h-full w-full pointer-events-none cursor-pointer;
+  @apply fixed z-(--z-backdrop) top-0 left-0 h-full w-full pointer-events-none cursor-pointer;
 
   background-color: var(--backdrop-color);
   opacity: 0;

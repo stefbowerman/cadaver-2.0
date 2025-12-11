@@ -2,6 +2,7 @@ import { resolve } from 'path'
 import { defineConfig } from 'vite'
 import eslint from 'vite-plugin-eslint'
 import { visualizer } from 'rollup-plugin-visualizer'
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig(({ mode }) => {
   const isDev = mode === 'development'
@@ -14,7 +15,8 @@ export default defineConfig(({ mode }) => {
       }),
       visualizer({
         open: false //
-      })
+      }),
+      tailwindcss()
     ],
 
 
@@ -58,10 +60,6 @@ export default defineConfig(({ mode }) => {
       },
 
       cssCodeSplit: false
-    },
-
-    css: {
-      postcss: './postcss.config.js',
-    }    
+    }
   }
 })
