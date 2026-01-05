@@ -62,14 +62,43 @@ export default class BaseRenderer extends Renderer {
 
   onLeave() {
     // run before the transition.onLeave method is called
-    if (this.sectionManager) {
-      this.sectionManager.destroy()
-      this.sectionManager = null
-    }
+    // if (this.sectionManager) {
+    //   this.sectionManager.destroy()
+    //   this.sectionManager = null
+    // }
   }
+
+  /**
+   * This method is called by the page transition class and
+   * waits for all section onRendererLeaveStart methods to complete before allowing the main page transition to proceed.
+   * 
+   * @param {number} transitionDuration - Duration of the main page transition in seconds
+   * @returns {Promise<void>}
+   * 
+   * @remarks
+   * - Not inherited from the base Taxi Renderer class - this is a custom method
+   * - Called from transition.onLeave method to coordinate section-level animations
+   */
+  async onLeaveStart(transitionDuration: number) : Promise<void> {
+    if (!this.sectionManager || this.sectionManager.instances.length === 0) return
+    
+    const results = await Promise.allSettled(
+      this.sectionManager.instances.map(section => section.onRendererLeaveStart(transitionDuration))
+    )
+    
+    results.forEach((result, index) => {
+      if (result.status === 'rejected') {
+        console.warn(`Section ${index} onRendererLeaveStart failed:`, result.reason)
+      }
+    })
+  }  
 
   onLeaveCompleted() {
     // run after the transition.onleave has fully completed
+    if (this.sectionManager) {
+      this.sectionManager.destroy()
+      this.sectionManager = null
+    }    
   }
 
   redirectIfNecessary() {

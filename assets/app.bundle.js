@@ -1693,6 +1693,19 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         return !closest || closest.isSameNode(el);
       });
     }
+    /**
+     * Called before the page transition begins to allow sections to run their own exit animations.
+     * This method is awaited by the page transition system, so any async animations or cleanup
+     * can delay the start of the main page transition until they complete.
+     * 
+     * the `transitionDuration` parameter is included to allow sections to sync their animations with the main page transition.
+     * 
+     * @param {number} transitionDuration - Duration of the main page transition in seconds
+     * @returns {Promise<void>} Promise that resolves when section exit animations are complete
+     *
+     */
+    async onRendererLeaveStart(transitionDuration) {
+    }
     onUnload(e) {
       window.removeEventListener("taxi.navigateOut", this.onNavigateOut);
       window.removeEventListener("taxi.navigateIn", this.onNavigateIn);
@@ -10890,12 +10903,34 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.redirectIfNecessary();
     }
     onLeave() {
+    }
+    /**
+     * This method is called by the page transition class and
+     * waits for all section onRendererLeaveStart methods to complete before allowing the main page transition to proceed.
+     * 
+     * @param {number} transitionDuration - Duration of the main page transition in seconds
+     * @returns {Promise<void>}
+     * 
+     * @remarks
+     * - Not inherited from the base Taxi Renderer class - this is a custom method
+     * - Called from transition.onLeave method to coordinate section-level animations
+     */
+    async onLeaveStart(transitionDuration) {
+      if (!this.sectionManager || this.sectionManager.instances.length === 0) return;
+      const results = await Promise.allSettled(
+        this.sectionManager.instances.map((section) => section.onRendererLeaveStart(transitionDuration))
+      );
+      results.forEach((result, index) => {
+        if (result.status === "rejected") {
+          console.warn(`Section ${index} onRendererLeaveStart failed:`, result.reason);
+        }
+      });
+    }
+    onLeaveCompleted() {
       if (this.sectionManager) {
         this.sectionManager.destroy();
         this.sectionManager = null;
       }
-    }
-    onLeaveCompleted() {
     }
     redirectIfNecessary() {
       if (window.location.pathname === "/cart") {
@@ -10968,8 +11003,16 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     /**
      * Handle the transition leaving the previous page.
      */
-    onLeave(e) {
+    async onLeave(e) {
       const { from, done } = e;
+      const renderer = window.app?.taxi?.currentCacheEntry?.renderer;
+      if (renderer && renderer.onLeaveStart) {
+        try {
+          await renderer.onLeaveStart(DURATION_LEAVE);
+        } catch (error) {
+          console.warn("Renderer onLeaveStart failed:", error);
+        }
+      }
       this.fromHeight = from.clientHeight;
       this.autoScrollCleanup?.();
       this.autoScrollToTop().then(() => {

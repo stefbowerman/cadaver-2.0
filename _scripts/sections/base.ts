@@ -95,6 +95,21 @@ export default class BaseSection {
     }) as HTMLElement[]
   }
 
+  /**
+   * Called before the page transition begins to allow sections to run their own exit animations.
+   * This method is awaited by the page transition system, so any async animations or cleanup
+   * can delay the start of the main page transition until they complete.
+   * 
+   * the `transitionDuration` parameter is included to allow sections to sync their animations with the main page transition.
+   * 
+   * @param {number} transitionDuration - Duration of the main page transition in seconds
+   * @returns {Promise<void>} Promise that resolves when section exit animations are complete
+   *
+   */
+  async onRendererLeaveStart(transitionDuration: number) : Promise<void> {
+
+  }
+
   onUnload(e: ThemeEditorSectionUnloadEvent) {
     window.removeEventListener('taxi.navigateOut', this.onNavigateOut)
     window.removeEventListener('taxi.navigateIn', this.onNavigateIn)
