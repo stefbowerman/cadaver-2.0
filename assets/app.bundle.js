@@ -1600,8 +1600,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
       try {
         await this.video.play();
+        if (!this.isPlaying) {
+          throw new Error("Autoplay resolved but not advancing (likely blocked)");
+        }
       } catch (e) {
-        console.warn(e);
+        console.warn("Autoplay blocked or failed:", e);
       }
     }
     togglePlay() {

@@ -55,9 +55,13 @@ export default class GraphicCoverVideo extends BaseComponent {
 
     try {
       await this.video.play()
+
+      if (!this.isPlaying) {
+        throw new Error('Autoplay resolved but not advancing (likely blocked)')
+      }
     }
     catch (e: unknown) {
-      console.warn(e)
+      console.warn('Autoplay blocked or failed:', e)
     }
   }
 
