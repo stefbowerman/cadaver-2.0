@@ -42,16 +42,26 @@
             <button class="ajax-cart__item-remove" data-remove>Remove</button>
           </div>
 
-          {%- unless item.product.has_only_default_variant %}
-            <div>
-              {% for option in item.options_with_values -%}
-                <div class="ajax-cart__item-detail">{{ option.name }}: {{ option.value }}</div>
-              {%- endfor %}
-            </div>
-          {% endunless %}          
+          {% capture item_details %}
+            {% for option in item.options_with_values -%}
+              <div class="ajax-cart__item-detail">{{ option.name }}: {{ option.value }}</div>
+            {%- endfor %}
+            
+            {% for property in item.properties %}
+              {% comment %} https://shopify.dev/docs/api/ajax/reference/cart#private-properties-and-attributes {% endcomment %}
+              {% assign first_characater = property.first | slice: 0 %}
+              {% unless first_characater == '_' %}
+                <div class="ajax-cart__item-detail">{{ property.first }}: {{ property.last }}</div>
+              {% endunless %}
+            {% endfor %}
+          {% endcapture %}
+
+          {%- if item_details != blank %}
+            <div>{{ item_details }}</div>
+          {% endif %}          
         </div>
 
-        <div style="display: flex; justify-content: space-between">
+        <div class="flex justify-between">
           <div>
             {%- liquid
               assign max = item.variant.quantity_rule.max

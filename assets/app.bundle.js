@@ -1356,13 +1356,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     /**
      * AJAX submit an 'add to cart' form
      *
+     * https://shopify.dev/docs/api/ajax/reference/cart#post--locale-cart-addjs
+     * @param form - The "add to cart" form to submit
      */
     async addItemFromForm(form) {
       try {
-        const formData = new FormData(form);
-        const body = new URLSearchParams(
-          [...formData].filter(([_, value]) => value !== "" && value != null).map(([key, value]) => [key, value.toString()])
-        );
+        const body = new FormData(form);
         const response = await fetch(`${this.routes.cart_add_url}.js`, {
           method: "POST",
           body,
