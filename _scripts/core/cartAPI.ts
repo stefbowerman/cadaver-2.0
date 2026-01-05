@@ -50,15 +50,25 @@ const CartAPI = {
   async addItemFromForm(form: HTMLFormElement): Promise<LiteCart> {
     try {
       const formData = new FormData(form)
-      const body = new URLSearchParams(
-        [...formData].filter(([_, value]) => value !== '' && value != null)
-          .map(([key, value]) => [key, value.toString()])
-      )
-  
+
+      // Convert FormData to object, filtering out empty values
+      // @TODO - Does this work for "properties" ?  Which need to be object subproperties like item.properties._nickname ?
+      const item = Object.fromEntries(
+        [...formData]
+          .filter(([_, value]) => value !== '' && value != null)
+          .map(([key, value]) => [key, value.toString()]
+      ))
+
+      const body = {
+        items: [item],
+        sections: 'ajax-cart'
+      }
+
       const response = await fetch(`${this.routes.cart_add_url}.js`, {
         method: 'POST',
-        body,
+        body: JSON.stringify(body),
         headers: {
+          'Content-Type': 'application/json',
           'Accept': 'application/json',
           'X-Requested-With': 'XMLHttpRequest'
         }
@@ -67,6 +77,12 @@ const CartAPI = {
       if (!response.ok) {
         throw new Error('The quantity you entered is not available.')
       }
+
+      response.json().then(data => {
+        const ajaxCartHTML = data.sections['ajax-cart']
+        const ajaxCartDom = new DOMParser().parseFromString(ajaxCartHTML, 'text/html')
+        console.log(ajaxCartDom)
+      })
 
       // const addedItem = await response.text() // @TODO - Merge this with the cart response somehow... ? is it needed?
       const cart = await this.getCart() // Retrieve the updated cart

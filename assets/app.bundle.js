@@ -1360,13 +1360,20 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     async addItemFromForm(form) {
       try {
         const formData = new FormData(form);
-        const body = new URLSearchParams(
-          [...formData].filter(([_, value]) => value !== "" && value != null).map(([key, value]) => [key, value.toString()])
+        const item = Object.fromEntries(
+          [...formData].filter(([_, value]) => value !== "" && value != null).map(
+            ([key, value]) => [key, value.toString()]
+          )
         );
+        const body = {
+          items: [item],
+          sections: "ajax-cart"
+        };
         const response = await fetch(`${this.routes.cart_add_url}.js`, {
           method: "POST",
-          body,
+          body: JSON.stringify(body),
           headers: {
+            "Content-Type": "application/json",
             "Accept": "application/json",
             "X-Requested-With": "XMLHttpRequest"
           }
@@ -1374,6 +1381,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         if (!response.ok) {
           throw new Error("The quantity you entered is not available.");
         }
+        response.json().then((data) => {
+          const ajaxCartHTML = data.sections["ajax-cart"];
+          const ajaxCartDom = new DOMParser().parseFromString(ajaxCartHTML, "text/html");
+          console.log(ajaxCartDom);
+        });
         const cart = await this.getCart();
         this.dispatch(CartAPI.EVENTS.UPDATE, cart);
         this.dispatch(CartAPI.EVENTS.ADD, cart);
