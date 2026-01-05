@@ -1,16 +1,18 @@
-{%- comment %}
-
+{% doc %}
+  
   Cart Footer
   ------------------------------------------------------------------------------
 
-  Usage:
+  @param {string} [checkout_button_text] - The text for the checkout button
+  @param {string} [checkout_message] - The message to display in the footer
 
-  {% render 'cart-footer',
-             checkout_button_text: { text } - optional
-             checkout_message: { text } - optional
-  %}
+  @example
+    {% render 'cart-footer',
+             checkout_button_text: 'Proceed To Checkout',
+             checkout_message: 'Taxes will be calculated at checkout'
+    %}
+{% enddoc %}
 
-{% endcomment -%}
 
 <div
   class="ajax-cart__footer"

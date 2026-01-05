@@ -1,15 +1,13 @@
-{%- comment %}
-
+{% doc %}
+  
   Cart Item
   ------------------------------------------------------------------------------
 
-  Usage:
+  @param {object} item - The cart item to display
 
-  {% render 'cart-item',
-             item: { cart.items[] } - required
-  %}
-
-{% endcomment -%}
+  @example
+    {% render 'cart-item', item: item %}
+{% enddoc %}
 
 {% if item != blank %}
   <div
