@@ -3,7 +3,7 @@ import gsap from '@/core/gsap'
 import { prefersReducedMotion } from '@/core/utils/a11y'
 import { dispatch } from '@/core/utils/event'
 import type { TransitionProps, TransitionOnLeaveProps, TransitionOnEnterProps } from '@/types/taxi'
-
+import type BaseRenderer from '@/renderers/base'
 
 export const DURATION_LEAVE = 0.2
 export const DURATION_ENTER = 0.5
@@ -112,8 +112,19 @@ export default class PageTransition extends Transition {
   /**
    * Handle the transition leaving the previous page.
    */
-  onLeave(e: TransitionOnLeaveProps) {
+  async onLeave(e: TransitionOnLeaveProps) {
     const { from, done } = e
+
+    const renderer = window.app?.taxi?.currentCacheEntry?.renderer as BaseRenderer | undefined
+
+    if (renderer && renderer.onLeaveStart) {
+      try {
+        await renderer.onLeaveStart(DURATION_LEAVE)
+      } catch (error) {
+        console.warn('Renderer onLeaveStart failed:', error)
+        // Continue with transition anyway
+      }
+    }
 
     this.fromHeight = from.clientHeight
 
