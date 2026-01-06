@@ -1,5 +1,3 @@
-{% # theme-check-disable ValidSchema %}
-
 {%- liquid
   assign product_count = 0
   assign product_source = section.settings.collection.products
@@ -8,7 +6,7 @@
     assign product_source = section.settings.product_list
   endif
 
-  capture product_card_set_items
+  capture product_grid_items
     for product in product_source
       render 'product-card', product: product
 
@@ -41,7 +39,7 @@
 
   <div class="container">
     <div class="product-grid">
-      {{ product_card_set_items }}
+      {{ product_grid_items }}
     </div>
   </div>
 </section>  
