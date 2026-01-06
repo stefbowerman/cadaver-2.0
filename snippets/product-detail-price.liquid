@@ -1,22 +1,20 @@
-{%- comment %}
+{% doc %}
+  Product Detail Price
 
-  Product Price
-  ------------------------------------------------------------------------------
+  Price displayed on the product detail page.
 
-  Usage:
+  @param {object} product - The product to display - required
+  @param {object} [current_variant] - The current variant to display - optional
 
-  {% render 'product-price',
-             product: { product } - required
-             current_variant: current_variant
-  %}
+  @example
+    {% render 'product-price',
+              product: product,
+              current_variant: product.variants.first
+    %}
+{% enddoc %}
 
-{% endcomment -%}
-
-{% comment %} Defaults {% endcomment %}
 {%- liquid
-  if current_variant == blank
-    assign current_variant = product.selected_or_first_available_variant
-  endif
+  assign current_variant = current_variant | default: product.selected_or_first_available_variant
 
   comment
     Template Vars
@@ -32,7 +30,6 @@
     assign current_variant_on_sale = true
   endif  
 %}
-{% comment %} End Defaults {% endcomment %}
 
 <div
   data-component="product-price"

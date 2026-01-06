@@ -120,7 +120,8 @@ export default class PageTransition extends Transition {
     if (renderer && renderer.onLeaveStart) {
       try {
         await renderer.onLeaveStart(DURATION_LEAVE)
-      } catch (error) {
+      }
+      catch (error) {
         console.warn('Renderer onLeaveStart failed:', error)
         // Continue with transition anyway
       }

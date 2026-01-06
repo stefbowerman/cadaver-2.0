@@ -1,29 +1,23 @@
 {% # theme-check-disable RemoteAsset %}
 {% # theme-check-disable UnusedAssign %}
 
-{%- comment %}
+{% doc %}
+  Product Detail Form
 
-  Product Detail Form Snippet
-  ------------------------------------------------------------------------------
+  @param {object} product - The product to display - required
+  @param {object} [current_variant] - The current variant to display - optional
 
-  Usage:
-
-  {% include 'product-detail-form',
-              product: { product } - required
-              current_variant: { variant } - optional,
-  %}
-
-{% endcomment -%}
+  @example
+    {% render 'product-price',
+              product: product
+    %}
+{% enddoc %}
 
 {% unless product == empty %}
 
-  {% comment %} Assign Defaults {% endcomment %} 
   {%- liquid
-    if current_variant == blank
-      assign current_variant = product.selected_or_first_available_variant
-    endif
+    assign current_variant = current_variant | default: product.selected_or_first_available_variant
   %}
-  {% comment %} End Assign Defaults {% endcomment %}
 
   <div
     class="h-full"

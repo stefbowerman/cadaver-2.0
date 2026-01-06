@@ -1,0 +1,95 @@
+{% # theme-check-disable %}
+
+{% doc %}
+  Product Card Snippet Template Example:
+
+  @param {product} product - The product to display - required
+  @param {string} [loading] - Optional loading attribute for the image - defaults to "lazy"
+  @param {string} [sizes] - Optional sizes attribute for the image - defaults to sizes for results grid
+  @param {number} [image_min_width] - Optional minimum width for the image - defaults to 500
+  @param {number} [image_max_width] - Optional maximum width for the image - defaults to 900  
+
+  @example
+  {% render 'product-card',
+             product: product,
+             loading: 'eager',
+             sizes: '(max-width: 767.98px) 100vw, 25vw',
+             image_min_width: 500,
+             image_max_width: 900,
+  %}
+{% enddoc %}
+
+{% if product %}
+  {%- liquid
+    if image_min_width == blank
+      assign image_min_width = 500
+    endif
+
+    if image_max_width == blank
+      assign image_max_width = 900
+    endif
+
+    capture image_widths
+      render 'image-widths', min_width: image_min_width, max_width: image_max_width
+    endcapture
+
+    if loading == blank
+      assign loading = 'lazy'
+    endif
+
+    if sizes == blank
+      assign sizes = '(max-width: 767.98px) 50vw, (max-width: 1023.98px) 33vw, 25vw'
+    endif
+
+    assign product_url = product.url
+    if collection and collection.handle != 'all'
+      assign product_url = product.url | within: collection
+    endif    
+  -%}
+
+  {%- capture alt_text %}
+    {% if product.featured_image.alt %}
+      {{ product.featured_image.alt }}
+    {% else %}
+      "{{ product.title }}" Featured Image
+    {% endif %}
+  {%- endcapture %}
+  {% assign alt_text = alt_text | strip_newlines | strip %}
+
+
+  <div
+    class="h-full"
+    data-component="product-card"
+  >
+    <div class="flex flex-col gap-4">
+      <div class="relative w-full aspect-square">
+        <a href="{{ product_url }}" title="{{ product.title }}">
+          <div class="h-full w-full">
+            {{ product.featured_image
+              | image_url: width: image_max_width
+              | image_tag:
+                loading: loading,
+                widths: image_widths,
+                alt: alt_text,
+                class: 'h-full w-full object-contain lazy-image',
+                sizes: sizes
+            }}             
+          </div>
+        </a>
+      </div> 
+
+      <a href="{{ product_url }}" title="{{ product.title }}">
+        <div class="text-center px-4">
+          <div class="font-bold">{{ product.title }}</div>
+          <div>
+            {% if product.available %}
+              {{ product.selected_or_first_available_variant.price | money_without_trailing_zeros }}
+            {% else %}
+              Sold Out
+            {% endif %}
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+{% endif %}
