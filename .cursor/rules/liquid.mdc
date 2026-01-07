@@ -128,8 +128,16 @@ For props that are relatively straightforward, prefer to inline the liquid inste
 **✅ Do this (inline approach):**
 
 ```liquid
+{%-liquid
+  assign link_class = "text-black bg-white"
+
+  if settings.link_style == "secondary"
+    assign link_class = "text-gray-500 bg-pink"
+  endif
+%}
+
 <div
-  class='component component--{{ settings.style_modifier }}'
+  class='component'
   style='
     color: {{ settings.text_color }};
     {% if settings.show_border %}
@@ -143,7 +151,7 @@ For props that are relatively straightforward, prefer to inline the liquid inste
 
   <a
     href='{{ link_url }}'
-    class='link--{{ settings.link_style | default: 'primary' }}'
+    class='{{ link_class }}'
   >
     {{ 'general.read_more' | t }}
   </a>
@@ -157,7 +165,6 @@ For props that are relatively straightforward, prefer to inline the liquid inste
   assign component_class = 'component component--' | append: settings.style_modifier
   assign text_color = settings.text_color
   assign truncate_length = settings.max_length | default: 200
-  assign link_class = 'link--' | append: settings.link_style | default: 'primary'
 %}
 
 {% capture component_style %}
@@ -177,7 +184,6 @@ For props that are relatively straightforward, prefer to inline the liquid inste
 
   <a
     href='{{ link_url }}'
-    class='{{ link_class }}'
   >
     {{ 'general.read_more' | t }}
   </a>
@@ -197,3 +203,36 @@ For props that are relatively straightforward, prefer to inline the liquid inste
 - No need to scroll up and down to find variable definitions
 - Reduces cognitive load in larger components
 - Makes the code more maintainable
+
+## Element Class Declaration
+
+When creating classnames for elements, either through inlining or variable declaration, do not create dynamic classes that are used by Tailwind because it can't register these kinds of classes.  For these classes, write them explicitly in full.
+It is okay to do this for classes that we have written ourselves in the _styles directory.  Typically these are classes that use B.E.M. syntax - e.g. "link--primary"
+
+**✅ Do this (fully qualified classnames):**
+
+```liquid
+{%-liquid
+  assign element_class = "text-black bg-white"
+
+  if settings.element_style == "secondary"
+    assign element_class = "text-gray-500 bg-pink"
+  endif
+%}
+
+<div
+  class='component {{ element_class }}'
+>
+  <h2>{{ 'sections.component.title' | t }}</h2>
+</div>
+```
+
+**❌ Don't do this (dynamic Tailwind classes):**
+
+```liquid
+<div
+  class='component text-{{ settings.text_style }} bg-{{ settings.bg_style }}'
+>
+  <h2>{{ 'sections.component.title' | t }}</h2>
+</div>
+```
