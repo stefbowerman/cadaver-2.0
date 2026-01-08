@@ -1,16 +1,13 @@
-{%- liquid
-  assign current_year = 'now' | date: '%Y' 
-%}
-
 <footer
   class="footer"
   data-section-id="{{ section.id }}"
   data-section-type="footer"
 >
   <div class="container">
-    <div class="footer-grid">
-      <div class="footer-area__newsletter">
-        <h3 class="footer-title">
+    <div class="grid lg:grid-cols-2 gap-y-8 lg:gap-y-20 gap-x-(--grid-column-gap)">
+      {% comment %} Newsletter {% endcomment %}
+      <div>
+        <h3>
           {{ section.settings.newsletter_title | default: 'Newsletter Signup' }}
         </h3>
 
@@ -20,50 +17,21 @@
           </div>
         {% endif %}
 
-        <form
-          method="post"
-          class="newsletter-form"
-          data-component="newsletter-form"
-        >
-          <div class="newsletter-form-contents" data-form-contents>
-            <div class="newsletter-form-inputs">
-              <div class="flex items-center gap-x-2">
-                <div class="form-group flex-1">
-                  <label for="footer-newsletter-input" class="sr-only">Enter your email</label>
-        
-                  <div class="form-control">
-                    <input
-                      id="footer-newsletter-input"
-                      type="email"
-                      placeholder="Your Email"
-                    />
-                  </div>
-                </div>
-
-                <button type="submit" class="underline">
-                  Join
-                </button>
-              </div>
-            </div>
-
-            <div class="newsletter-form-message"
-              data-form-message
-              data-success="{{ section.settings.newsletter_success_message | default: 'Thank you for subscribing' }}"
-              data-already-subscribed="This email address is already subscribed"
-              data-fail="Please check your email and try again">
-              <!-- -->
-            </div>
-          </div>
-        </form>
+        {% render 'newsletter-form',
+                  id_prefix: section.id,
+                  success_message: section.settings.newsletter_success_message
+                  source: 'footer'
+        %}
       </div>
 
-      <div class="footer-area__socials">
-        <h3 class="footer-title">
+      {% comment %} Socials {% endcomment %}
+      <div>
+        <h3>
           {{ section.settings.socials_title }}
         </h3>
         
         {%- if section.settings.socials_menu != blank -%}
-          <div class="footer-menu footer-menu--socials">
+          <div class="footer-menu">
             <ul>
               {%- for link in section.settings.socials_menu.links -%}
                 <li>
@@ -78,14 +46,24 @@
       </div>
     
       {% comment %} Menus {% endcomment %}       
-      <div class="footer-area__menus">
-        <div class="footer-menus" style="--menu-count: {{ section.blocks.size }};">
+      <div class="lg:col-span-2">
+        <div
+          class="grid grid-cols-2 gap-y-10 gap-x-5 lg:grid-cols-(--menu-cols)"
+          style="--menu-cols: repeat({{ section.blocks.size }}, minmax(0, 1fr));"
+        >
           {% for block in section.blocks %}
+            {% assign menu_title_id = 'menu-title-' | append: block.id %}
+
             <div class="footer-menu" {{ block.shopify_attributes }}>
-              <div id="menu-title-{{ block.id }}" class="footer-menu__title">{{ block.settings.title }}</div>
+              <div
+                id="{{ menu_title_id }}"
+                class="mb-4 xl:mb-2 font-bold"
+              >
+                {{ block.settings.title }}
+              </div>
 
               {%- if block.settings.menu != blank -%}
-                <nav aria-labelledby="menu-title-{{ block.id }}" data-nav>
+                <nav aria-labelledby="{{ menu_title_id }}">
                   <ul>
                     {%- for link in block.settings.menu.links -%}
                       <li>
@@ -108,8 +86,13 @@
       </div>
       
       {% if section.settings.copyright_text != blank %}
-        <div class="footer-area__copyright">
-          {{ section.settings.copyright_text | replace: '$year', current_year }}
+        {%- liquid
+          assign current_year = 'now' | date: '%Y' 
+          assign shop_name = shop.name
+        %}
+
+        <div class="lg:col-start-2 text-center lg:text-left">
+          {{ section.settings.copyright_text | replace: '$year', current_year | replace: '$shop', shop_name }}
         </div>
       {% endif %}
     </div>
@@ -168,10 +151,10 @@
       "content": "Copyright"
     },
     {
-      "type": "text",
+      "type": "textarea",
       "id": "copyright_text",
       "label": "Copyright Text",
-      "info": "Use $year to include the current year"
+      "info": "Use $year to include the current year.  Use $shop to include the shop name."
     }
   ],
   "blocks": [

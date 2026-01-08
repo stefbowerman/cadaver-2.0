@@ -52,6 +52,11 @@ export default class AJAXKlaviyoForm {
       return;
     }
 
+    // Allow the source to be set via the data-source attribute on the form element
+    if (this.form.dataset.source) {
+      this.setSource(this.form.dataset.source)
+    }
+
     this.input = this.form.querySelector('input[type="email"]')
     this.submit = this.form.querySelector('[type="submit"]')
     this.isSubmitting = false
@@ -61,9 +66,14 @@ export default class AJAXKlaviyoForm {
       return
     }    
 
-    this.form.addEventListener('submit', this.onFormSubmit.bind(this))
+    this.onFormSubmit = this.onFormSubmit.bind(this)
+    this.form.addEventListener('submit', this.onFormSubmit)
 
     this.settings.onInit()
+  }
+
+  destroy() {
+    this.form.removeEventListener('submit', this.onFormSubmit)
   }
 
   logErrors(errors: Error[]) {

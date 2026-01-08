@@ -7,7 +7,7 @@ import BaseSection from '@/sections/base'
 import NewsletterForm from '@/components/newsletterForm'
 
 const selectors = {
-  navLink: '[data-nav] a'
+  navLink: 'nav a'
 }
 
 export default class FooterSection extends BaseSection {
@@ -21,7 +21,7 @@ export default class FooterSection extends BaseSection {
   constructor(container: HTMLElement) {
     super(container)
 
-    this.navLinks = this.qsa(selectors.navLink ) as HTMLAnchorElement[]
+    this.navLinks = this.qsa(selectors.navLink) as HTMLAnchorElement[]
 
     this.newsletterFormEl = this.qs(NewsletterForm.SELECTOR)
     this.newsletterForm = null
@@ -31,7 +31,6 @@ export default class FooterSection extends BaseSection {
       this.newsletterForm = new NewsletterForm(this.newsletterFormEl)
 
       this.ajaxForm = new AJAXKlaviyoForm(this.newsletterFormEl, {
-        source: this.newsletterFormEl.dataset.source,
         onSubmitStart: () => this.newsletterForm.onSubmitStart(),
         onSubmitFail: errors => this.newsletterForm.onSubmitFail(errors),
         onSubscribeSuccess: () => this.newsletterForm.onSubscribeSuccess(),
@@ -42,6 +41,7 @@ export default class FooterSection extends BaseSection {
 
   onUnload() {
     this.newsletterForm?.destroy()
+    this.ajaxForm?.destroy()
   }
 
   onNavigateIn(e: TaxiNavigateInEvent) {

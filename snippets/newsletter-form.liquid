@@ -1,0 +1,61 @@
+{% doc %}
+  Newsletter Form
+
+  @param {string} id_prefix - The id prefix to use for the form inputs - required
+  @param {string} [success_message] - The success message to display - defaults to "Thank you for subscribing"
+  @param {string} [submit_text] - The text to display for the submit button - defaults to "Join"  
+  @param {string} [input_placeholder] - The placeholder text for the input field - defaults to "Your Email"
+  @param {string} [source] - The subscription source to use for the form (see Klaviyo API documentation for createClientSubscription)
+
+  @example
+    {% render 'newsletter-form',
+              id_prefix: section.id,
+              source: 'footer'
+    %}
+{% enddoc %}
+
+{%- liquid
+  assign id_prefix = id_prefix | default: 'newsletter-form'
+  assign input_id = id_prefix | append: '-input'
+-%}
+
+<form
+  method="post"
+  class="newsletter-form"
+  data-component="newsletter-form"
+  {% if source %}
+    data-source="{{ source }}"
+  {% endif %}
+>
+  <div class="newsletter-form-contents" data-form-contents>
+    <div class="newsletter-form-inputs">
+      <div class="flex items-center gap-x-2">
+        <div class="form-group flex-1">
+          <label for="{{ input_id }}" class="sr-only">Enter your email</label>
+
+          <div class="form-control">
+            <input
+              id="{{ input_id }}"
+              type="email"
+              placeholder="{{ input_placeholder | default: 'Your Email' }}"
+            />
+          </div>
+        </div>
+
+        <button type="submit" class="underline">
+          {{ submit_text | default: 'Join' }}
+        </button>
+      </div>
+    </div>
+
+    <div
+      class="newsletter-form-message"
+      data-form-message
+      data-success="{{ success_message | default: 'Thank you for subscribing' }}"
+      data-already-subscribed="This email address is already subscribed"
+      data-fail="Please check your email and try again"
+    >
+      <!-- -->
+    </div>
+  </div>
+</form>
