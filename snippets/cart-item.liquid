@@ -37,7 +37,7 @@
             <div class="ajax-cart__item-title">
               <a href="{{ item.product.url }}">{{- item.product.title | escape -}}</a>
             </div>
-            <button class="ajax-cart__item-remove" data-remove>Remove</button>
+            <button class="ajax-cart__item-remove" type="button" aria-label="Remove {{ item.product.title | escape }} from cart" data-remove>Remove</button>
           </div>
 
           {% capture item_details %}

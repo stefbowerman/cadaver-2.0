@@ -17,7 +17,5 @@
 }
 
 .product-detail-form {
-  --pdf-padding-h: clamp(30px, 10px + 3.9vw, 80px);
-
-  padding: 0 var(--pdf-padding-h);
+  padding: 0 clamp(30px, 10px + 3.9vw, 80px);
 }
