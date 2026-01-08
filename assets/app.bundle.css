@@ -691,6 +691,10 @@
     column-gap: 4vw;
   }
 
+  .gap-x-\[var\(--grid-column-gap\)\] {
+    column-gap: var(--grid-column-gap);
+  }
+
   .gap-y-2 {
     row-gap: calc(var(--spacing) * 2);
   }
@@ -949,6 +953,10 @@
 
     .lg\:grid-cols-2 {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .lg\:grid-cols-\[var\(--menu-cols\)\] {
+      grid-template-columns: var(--menu-cols);
     }
 
     .lg\:grid-cols-\[var\(--menu-count\)\] {

@@ -11218,19 +11218,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       return this.makeRequest("/client/back-in-stock-subscriptions", data);
     }
   };
-  const noop = () => {
-  };
   class AJAXKlaviyoForm {
     constructor(el, options = {}) {
       this.name = "ajaxKlaviyoForm";
       this.settings = {
         source: "Shopify Form",
-        onInit: noop,
-        onBeforeSend: noop,
-        onSubmitStart: noop,
-        onSubmitFail: noop,
-        onSubscribeSuccess: noop,
-        onSubscribeFail: noop,
         ...options
       };
       this.el = el;
@@ -11251,7 +11243,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
       this.onFormSubmit = this.onFormSubmit.bind(this);
       this.form.addEventListener("submit", this.onFormSubmit);
-      this.settings.onInit();
+      this.settings.onInit?.();
     }
     destroy() {
       this.form.removeEventListener("submit", this.onFormSubmit);
@@ -11267,7 +11259,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.settings.source = source;
     }
     onBeforeSend() {
-      if (this.settings.onBeforeSend() === false) {
+      if (this.settings.onBeforeSend?.() === false) {
         return false;
       }
       if (this.input.value && this.input.value.length) {
@@ -11275,13 +11267,19 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
       return false;
     }
-    onSubmitSuccess() {
+    onSubscribeSuccess() {
       this.settings.onSubscribeSuccess?.();
     }
+    onSubscribeFail(errors) {
+      this.submit.removeAttribute("disabled");
+      this.logErrors(errors);
+      this.settings.onSubscribeFail?.();
+    }
+    // This is when something goes wrong with the form submissions / network request, not the subscription itself
     onSubmitFail(errors) {
       this.submit.removeAttribute("disabled");
       this.logErrors(errors);
-      this.settings.onSubmitFail(errors);
+      this.settings.onSubmitFail?.(errors);
     }
     async onFormSubmit(e) {
       e.preventDefault();
@@ -11296,16 +11294,16 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       try {
         this.isSubmitting = true;
         this.submit.setAttribute("disabled", "true");
-        this.settings.onSubmitStart();
+        this.settings.onSubmitStart?.();
         const success = await KlaviyoAPI.createClientSubscription({
           email,
           source: this.settings.source
         });
         if (success) {
-          this.onSubmitSuccess();
+          this.onSubscribeSuccess();
         } else {
-          this.onSubmitFail([
-            new Error("Failed to subscribe to newsletter")
+          this.onSubscribeFail([
+            new Error("Subscription failed")
           ]);
         }
       } catch (e2) {

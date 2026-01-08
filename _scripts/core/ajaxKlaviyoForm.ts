@@ -1,14 +1,10 @@
 import KlaviyoAPI from '@/core/klaviyoAPI'
 
-const noop = () => {}
-
 /**
  * AJAX Klaviyo Form
  * -----------------------------------------------------------------------------
  *
- * Handles AJAX form submission and callback event
- *
- * NOTE: This has not been rigorously tested...
+ * Handles AJAX form submission and client subscription via the Klaviyo API
  *
  */
 interface AJAXKlaviyoFormSettings {
@@ -35,12 +31,6 @@ export default class AJAXKlaviyoForm {
 
     this.settings = {
       source: 'Shopify Form',
-      onInit: noop,
-      onBeforeSend: noop,
-      onSubmitStart: noop,
-      onSubmitFail: noop,
-      onSubscribeSuccess: noop,
-      onSubscribeFail: noop,
       ...options
     }
 
@@ -69,7 +59,7 @@ export default class AJAXKlaviyoForm {
     this.onFormSubmit = this.onFormSubmit.bind(this)
     this.form.addEventListener('submit', this.onFormSubmit)
 
-    this.settings.onInit()
+    this.settings.onInit?.()
   }
 
   destroy() {
@@ -89,7 +79,7 @@ export default class AJAXKlaviyoForm {
   }
 
   onBeforeSend() {
-    if (this.settings.onBeforeSend() === false) {
+    if (this.settings.onBeforeSend?.() === false) {
       return false;
     }
 
@@ -100,15 +90,23 @@ export default class AJAXKlaviyoForm {
     return false;
   }
 
-  onSubmitSuccess() {
+  onSubscribeSuccess() {
     this.settings.onSubscribeSuccess?.()
   }
 
+  onSubscribeFail(errors: Error[]) {
+    this.submit.removeAttribute('disabled')
+
+    this.logErrors(errors)  
+    this.settings.onSubscribeFail?.()
+  }
+
+  // This is when something goes wrong with the form submissions / network request, not the subscription itself
   onSubmitFail(errors: Error[]) {
     this.submit.removeAttribute('disabled')
 
     this.logErrors(errors)
-    this.settings.onSubmitFail(errors)
+    this.settings.onSubmitFail?.(errors)
   }
 
   async onFormSubmit(e: SubmitEvent) {
@@ -130,7 +128,7 @@ export default class AJAXKlaviyoForm {
       this.isSubmitting = true;
 
       this.submit.setAttribute('disabled', 'true')
-      this.settings.onSubmitStart()
+      this.settings.onSubmitStart?.()
 
       const success = await KlaviyoAPI.createClientSubscription({
         email,
@@ -138,11 +136,11 @@ export default class AJAXKlaviyoForm {
       })
 
       if (success) {
-        this.onSubmitSuccess()
+        this.onSubscribeSuccess()
       }
       else {
-        this.onSubmitFail([
-          new Error('Failed to subscribe to newsletter')
+        this.onSubscribeFail([
+          new Error('Subscription failed') as Error
         ])
       }
     }
