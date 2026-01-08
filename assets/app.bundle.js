@@ -11218,19 +11218,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       return this.makeRequest("/client/back-in-stock-subscriptions", data);
     }
   };
-  const noop = () => {
-  };
   class AJAXKlaviyoForm {
     constructor(el, options = {}) {
       this.name = "ajaxKlaviyoForm";
       this.settings = {
         source: "Shopify Form",
-        onInit: noop,
-        onBeforeSend: noop,
-        onSubmitStart: noop,
-        onSubmitFail: noop,
-        onSubscribeSuccess: noop,
-        onSubscribeFail: noop,
         ...options
       };
       this.el = el;
@@ -11239,6 +11231,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         console.warn(`[${this.name}] - Form element required to initialize`);
         return;
       }
+      if (this.form.dataset.source) {
+        this.setSource(this.form.dataset.source);
+      }
       this.input = this.form.querySelector('input[type="email"]');
       this.submit = this.form.querySelector('[type="submit"]');
       this.isSubmitting = false;
@@ -11246,8 +11241,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         console.warn(`[${this.name}] - Email input missing`);
         return;
       }
-      this.form.addEventListener("submit", this.onFormSubmit.bind(this));
-      this.settings.onInit();
+      this.onFormSubmit = this.onFormSubmit.bind(this);
+      this.form.addEventListener("submit", this.onFormSubmit);
+      this.settings.onInit?.();
+    }
+    destroy() {
+      this.form.removeEventListener("submit", this.onFormSubmit);
     }
     logErrors(errors) {
       if (Array.isArray(errors) && errors.length) {
@@ -11260,7 +11259,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.settings.source = source;
     }
     onBeforeSend() {
-      if (this.settings.onBeforeSend() === false) {
+      if (this.settings.onBeforeSend?.() === false) {
         return false;
       }
       if (this.input.value && this.input.value.length) {
@@ -11268,13 +11267,19 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
       return false;
     }
-    onSubmitSuccess() {
+    onSubscribeSuccess() {
       this.settings.onSubscribeSuccess?.();
     }
+    onSubscribeFail(errors) {
+      this.submit.removeAttribute("disabled");
+      this.logErrors(errors);
+      this.settings.onSubscribeFail?.();
+    }
+    // This is when something goes wrong with the form submissions / network request, not the subscription itself
     onSubmitFail(errors) {
       this.submit.removeAttribute("disabled");
       this.logErrors(errors);
-      this.settings.onSubmitFail(errors);
+      this.settings.onSubmitFail?.(errors);
     }
     async onFormSubmit(e) {
       e.preventDefault();
@@ -11289,16 +11294,16 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       try {
         this.isSubmitting = true;
         this.submit.setAttribute("disabled", "true");
-        this.settings.onSubmitStart();
+        this.settings.onSubmitStart?.();
         const success = await KlaviyoAPI.createClientSubscription({
           email,
           source: this.settings.source
         });
         if (success) {
-          this.onSubmitSuccess();
+          this.onSubscribeSuccess();
         } else {
-          this.onSubmitFail([
-            new Error("Failed to subscribe to newsletter")
+          this.onSubscribeFail([
+            new Error("Subscription failed")
           ]);
         }
       } catch (e2) {
@@ -11395,7 +11400,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   _NewsletterForm.TYPE = "newsletter-form";
   let NewsletterForm = _NewsletterForm;
   const selectors$7 = {
-    navLink: "[data-nav] a"
+    navLink: "nav a"
   };
   const _FooterSection = class _FooterSection extends BaseSection {
     constructor(container) {
@@ -11407,7 +11412,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (this.newsletterFormEl) {
         this.newsletterForm = new NewsletterForm(this.newsletterFormEl);
         this.ajaxForm = new AJAXKlaviyoForm(this.newsletterFormEl, {
-          source: this.newsletterFormEl.dataset.source,
           onSubmitStart: () => this.newsletterForm.onSubmitStart(),
           onSubmitFail: (errors) => this.newsletterForm.onSubmitFail(errors),
           onSubscribeSuccess: () => this.newsletterForm.onSubscribeSuccess(),
@@ -11417,6 +11421,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onUnload() {
       this.newsletterForm?.destroy();
+      this.ajaxForm?.destroy();
     }
     onNavigateIn(e) {
       const currentPath = new URL(e.detail.to.finalUrl).pathname;
