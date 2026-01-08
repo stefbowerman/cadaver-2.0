@@ -18,12 +18,6 @@
   video {
     @apply opacity-0;
     transition: var(--lazy-image-transition);
-
-    @media (prefers-reduced-motion: reduce) {
-      & {
-        transition: none !important;
-      }
-    }    
   
     &.is-ready {
       @apply opacity-100;

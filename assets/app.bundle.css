@@ -359,20 +359,23 @@
     }
   }
 
-  :root :focus, :root :focus-visible {
+  :focus, :focus-visible {
     --tw-outline-style: none;
     outline-style: none;
   }
 
-  :root html {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     scroll-padding-top: calc(var(--header-height)  + 20px);
   }
 
-  :root html:not(.is-theme-editor) {
+  html:not(.is-theme-editor) {
     scroll-behavior: smooth;
   }
 
-  :root body {
+  body {
     background-color: var(--color-white);
     font-family: var(--font-sans);
     font-size: var(--text-base);
@@ -385,37 +388,48 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  :root body.ajax-cart-open, :root body.drawer-open {
+  body.ajax-cart-open, body.drawer-open {
     overflow: hidden;
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    :root html.js body {
-      opacity: 0;
-      transition: opacity .5s cubic-bezier(.33, .01, .49, 1.02) .15s;
-    }
-
-    :root html.js body.is-loaded {
-      opacity: 1;
-    }
+  html.js body {
+    opacity: 0;
+    transition: opacity .5s cubic-bezier(.33, .01, .49, 1.02) .15s;
   }
 
-  :root .no-js:not(html) {
+  html.js body.is-loaded {
+    opacity: 1;
+  }
+
+  .no-js:not(html) {
     display: none;
   }
 
-  .no-js :is(:root .no-js:not(html)) {
+  .no-js .no-js:not(html) {
     display: block;
   }
 
-  .no-js :is(:root .js) {
+  .no-js .js {
     display: none;
   }
 
-  :is(:root a, :root button):focus-visible:not(:has([disabled])) {
+  :is(a, button):focus-visible:not(:has([disabled])) {
     outline-style: var(--tw-outline-style);
     outline-width: 1px;
     outline-color: var(--color-blue);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, :before, :after {
+      scroll-behavior: auto !important;
+      transition-duration: .01ms !important;
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+
+    html {
+      scroll-behavior: initial;
+    }
   }
 }
 
@@ -687,14 +701,6 @@
     column-gap: calc(var(--spacing) * 8);
   }
 
-  .gap-x-\[4vw\] {
-    column-gap: 4vw;
-  }
-
-  .gap-x-\[var\(--grid-column-gap\)\] {
-    column-gap: var(--grid-column-gap);
-  }
-
   .gap-y-2 {
     row-gap: calc(var(--spacing) * 2);
   }
@@ -907,10 +913,6 @@
       grid-column: span 6 / span 6;
     }
 
-    .lg\:col-start-1 {
-      grid-column-start: 1;
-    }
-
     .lg\:col-start-2 {
       grid-column-start: 2;
     }
@@ -947,20 +949,8 @@
       grid-template-columns: var(--menu-cols);
     }
 
-    .lg\:grid-cols-\(--menu-count\) {
-      grid-template-columns: var(--menu-count);
-    }
-
     .lg\:grid-cols-2 {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .lg\:grid-cols-\[var\(--menu-cols\)\] {
-      grid-template-columns: var(--menu-cols);
-    }
-
-    .lg\:grid-cols-\[var\(--menu-count\)\] {
-      grid-template-columns: var(--menu-count);
     }
 
     .lg\:gap-y-20 {
@@ -1012,12 +1002,6 @@ img.lazy-image.no-fade {
 
 img.lazy-image.is-loaded {
   opacity: 1;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  img.lazy-image {
-    transition: none !important;
-  }
 }
 
 .no-scrollbar {
@@ -1264,6 +1248,18 @@ label {
 
 input[type="search"]::-webkit-search-cancel-button {
   appearance: none;
+  display: none;
+}
+
+input[type="search"]::-webkit-search-decoration {
+  display: none;
+}
+
+input[type="search"]::-webkit-search-results-button {
+  display: none;
+}
+
+input[type="search"]::-webkit-search-results-decoration {
   display: none;
 }
 
@@ -1719,8 +1715,7 @@ header.header nav a[aria-current="page"] {
 }
 
 .product-detail-form {
-  --pdf-padding-h: clamp(30px, 10px + 3.9vw, 80px);
-  padding: 0 var(--pdf-padding-h);
+  padding: 0 clamp(30px, 10px + 3.9vw, 80px);
 }
 
 .article-content p {
@@ -1803,12 +1798,6 @@ header.header nav a[aria-current="page"] {
   z-index: 2;
   opacity: 0;
   transition: var(--lazy-image-transition);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .graphic-cover video {
-    transition: none !important;
-  }
 }
 
 .graphic-cover video.is-ready {

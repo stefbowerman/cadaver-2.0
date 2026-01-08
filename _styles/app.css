@@ -89,69 +89,85 @@
       --ease-smooth-out: cubic-bezier(.4, 0, 0, 1);
       --ease-smooth-in-out: cubic-bezier(.75, 0, .25, 1);
       --ease-out-gentle: cubic-bezier(.17, 1.38, .35, .96);
-    */
+    */ 
+  }
+
+  :focus,
+  :focus-visible {
+    @apply outline-none; /* Applies outline-width and offset */
+  }
     
-    :focus,
-    :focus-visible {
-      @apply outline-none; /* Applies outline-width and offset */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-padding-top: calc(var(--header-height) + 20px);
+
+    &:not(.is-theme-editor) {
+      scroll-behavior: smooth;
     }
-      
-    html {
-      scroll-padding-top: calc(var(--header-height) + 20px);
-  
-      &:not(.is-theme-editor) {
-        scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans font-normal bg-white text-black text-base;
+
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body.ajax-cart-open,
+  body.drawer-open {
+    @apply overflow-hidden;
+  }    
+
+  html.js {
+    body {
+      opacity: 0;
+      transition: opacity 0.5s cubic-bezier(0.33, 0.01, 0.49, 1.02) 0.15s;
+    
+      &.is-loaded {
+        opacity: 1;
       }
     }
+  }
+
+  /* Only show when JS is not supported */
+  .no-js:not(html) {
+    display: none;
+
+    .no-js & {
+      display: block;
+    }
+  }
+
+  /* Only show when JS is supported */
+  .js {
+    .no-js & {
+      display: none;
+    }
+  }
   
-    body {
-      @apply font-sans font-normal bg-white text-black text-base;
-  
-      text-rendering: optimizeLegibility;
-      -moz-osx-font-smoothing: grayscale;
-      -webkit-font-smoothing: antialiased;
+  a, button {
+    &:focus-visible:not(:has([disabled])) {
+      @apply outline outline-blue;
+    }
+  }
+
+  /* Remove all animations and transitions for people that prefer not to see them */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
     }
 
-    body.ajax-cart-open,
-    body.drawer-open {
-      @apply overflow-hidden;
-    }    
-  
-    html.js {
-      @media (prefers-reduced-motion: no-preference) {
-        body {
-          opacity: 0;
-          transition: opacity 0.5s cubic-bezier(0.33, 0.01, 0.49, 1.02) 0.15s;
-        
-          &.is-loaded {
-            opacity: 1;
-          }
-        }
-      }
+    html {
+      scroll-behavior: initial;
     }
-  
-    /* Only show when JS is not supported */
-    .no-js:not(html) {
-      display: none;
-  
-      .no-js & {
-        display: block;
-      }
-    }
-  
-    /* Only show when JS is supported */
-    .js {
-      .no-js & {
-        display: none;
-      }
-    }
-    
-    a, button {
-      &:focus-visible:not(:has([disabled])) {
-        @apply outline outline-blue;
-      }
-    }    
-  }
+  }  
 }
 
 .image-responsive {
@@ -174,12 +190,6 @@ img.lazy-image {
 
   &.is-loaded {
     opacity: 1;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    & {
-      transition: none !important;
-    }
   }
 }
 
