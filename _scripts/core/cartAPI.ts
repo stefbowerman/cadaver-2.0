@@ -96,14 +96,14 @@ const CartAPI = {
    * Item is specified by line_item key
    * https://shopify.dev/api/ajax/reference/cart#post-locale-cart-change-js
    *
-   * @param id - Cart line item id // https://shopify.dev/docs/api/liquid/objects/line_item#line_item-id
-   * @param qty - New quantity of the variant
+   * @param key - Cart line item key // https://shopify.dev/docs/api/liquid/objects/line_item#line_item-key
+   * @param qty - New quantity of the line item
    */
-  async changeLineItemQuantity(id: number, qty: number): Promise<LiteCart> {
+  async changeLineItemQuantity(key: string, qty: number): Promise<LiteCart> {
     try {
       const body = JSON.stringify({
         quantity: qty,
-        id: id
+        id: key
       })
 
       const response = await fetch(`${this.routes.cart_change_url}.js`, {

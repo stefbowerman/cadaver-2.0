@@ -7,7 +7,7 @@ var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot
 var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 (function() {
   "use strict";
-  var _settings, _isLoading, _state;
+  var _settings, _isLoading, _state, _muteUpdateSync;
   function SelectorSet() {
     if (!(this instanceof SelectorSet)) {
       return new SelectorSet();
@@ -1386,14 +1386,14 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
      * Item is specified by line_item key
      * https://shopify.dev/api/ajax/reference/cart#post-locale-cart-change-js
      *
-     * @param id - Cart line item id // https://shopify.dev/docs/api/liquid/objects/line_item#line_item-id
-     * @param qty - New quantity of the variant
+     * @param key - Cart line item key // https://shopify.dev/docs/api/liquid/objects/line_item#line_item-key
+     * @param qty - New quantity of the line item
      */
-    async changeLineItemQuantity(id, qty) {
+    async changeLineItemQuantity(key, qty) {
       try {
         const body = JSON.stringify({
           quantity: qty,
-          id
+          id: key
         });
         const response = await fetch(`${this.routes.cart_change_url}.js`, {
           method: "POST",
@@ -11956,10 +11956,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     updating: "is-updating"
   };
   const _CartItem = class _CartItem extends BaseComponent {
-    constructor(el, itemData) {
+    constructor(el, itemData, options = {}) {
       super(el);
       __privateAdd(this, _state);
       __privateSet(this, _state, void 0);
+      this.settings = {
+        ...options
+      };
       this.itemData = itemData;
       this.id = this.itemData.id;
       this.remove = this.qs(selectors$4.remove);
@@ -11977,14 +11980,17 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       });
       this.remove.addEventListener("click", this.onRemoveClick.bind(this));
     }
+    get key() {
+      return this.itemData.key;
+    }
     set state(state) {
       switch (state) {
-        case _CartItem.states.REMOVING:
+        case "removing":
           this.remove.disabled = true;
           this.remove.setAttribute("aria-disabled", "true");
           this.el.classList.add(classes$1.removing);
           break;
-        case _CartItem.states.UPDATING:
+        case "updating":
           this.remove.disabled = true;
           this.remove.setAttribute("aria-disabled", "true");
           this.el.classList.add(classes$1.updating);
@@ -12022,42 +12028,18 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.price = newPrice;
       this.itemData = itemData;
     }
-    // @TODO - This is broken if there are multiple items in the cart with the same ID
-    // this can happen if there are multiple of the same variant but the line items have different properties
-    // Changing the quantity adjuster will update all the items with that ID
-    // We need to go off of the index or the key??
     async onQuantityAdjusterChange(q) {
       if (this.state !== void 0) return;
-      try {
-        this.state = q === 0 ? _CartItem.states.REMOVING : _CartItem.states.UPDATING;
-        await CartAPI.changeLineItemQuantity(this.id, q);
-      } catch (error) {
-        this.state = void 0;
-        this.quantityAdjuster.value = this.itemData.quantity;
-        console.error("Error updating item quantity", error);
-      } finally {
-        if (q > 0) {
-          this.state = void 0;
-        }
-      }
+      this.settings.onQuantityAdjusterChange?.(this, q);
     }
     async onRemoveClick(e) {
       e.preventDefault();
-      try {
-        this.state = _CartItem.states.REMOVING;
-        await CartAPI.changeLineItemQuantity(this.id, 0);
-      } catch (error) {
-        console.warn("Error removing item", error);
-        this.state = void 0;
-      }
+      if (this.state !== void 0) return;
+      this.settings.onRemoveClick?.(this);
     }
   };
   _state = new WeakMap();
   _CartItem.TYPE = "cart-item";
-  _CartItem.states = {
-    REMOVING: "removing",
-    UPDATING: "updating"
-  };
   let CartItem = _CartItem;
   const selectors$3 = {
     list: "[data-list]"
@@ -12067,13 +12049,59 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       super(el, {
         watchCartUpdate: true
       });
+      __privateAdd(this, _muteUpdateSync);
+      __privateSet(this, _muteUpdateSync, false);
       this.cartData = cartData;
       this.list = this.qs(selectors$3.list);
-      this.itemInstances = this.qsa(CartItem.SELECTOR).map((el2, i) => new CartItem(el2, this.cartData.items[i]));
+      this.onItemRemoveClick = this.onItemRemoveClick.bind(this);
+      this.onItemQuantityAdjusterChange = this.onItemQuantityAdjusterChange.bind(this);
+      this.itemInstances = this.qsa(CartItem.SELECTOR).map((el2, i) => this.createCartItemInstance(el2, this.cartData.items[i]));
+    }
+    createCartItemInstance(el, itemData) {
+      return new CartItem(el, itemData, {
+        onRemoveClick: this.onItemRemoveClick,
+        onQuantityAdjusterChange: this.onItemQuantityAdjusterChange
+      });
     }
     cleanupItemInstance(item) {
       item.destroy();
       item.el.remove();
+    }
+    performItemInstanceRemoval(removalInstance) {
+      if (!removalInstance) return;
+      this.itemInstances = this.itemInstances.filter((instance2) => instance2 !== removalInstance);
+      slideUp(removalInstance.el, {
+        duration: 0.45,
+        onInterrupt: () => {
+          this.cleanupItemInstance(removalInstance);
+        },
+        onComplete: () => {
+          this.cleanupItemInstance(removalInstance);
+        }
+      });
+    }
+    performItemInstanceUpdate(updateInstance, newItemData) {
+      if (!updateInstance) return;
+      updateInstance.update(newItemData);
+    }
+    performItemInstanceAddition(newItemData, newIndex) {
+      if (!newItemData) return;
+      const newItemEl = getDomFromString(newItemData.item_html).querySelector(CartItem.SELECTOR);
+      const newItemInstance = this.createCartItemInstance(newItemEl, newItemData);
+      this.list.insertBefore(newItemInstance.el, this.itemInstances[newIndex]?.el || null);
+      this.itemInstances.splice(newIndex, 0, newItemInstance);
+    }
+    onItemChangeSuccess(updatedItem, newCartData) {
+      const itemIndex = this.itemInstances.indexOf(updatedItem);
+      const newItemData = newCartData.items[itemIndex];
+      if (newItemData) {
+        this.performItemInstanceUpdate(updatedItem, newItemData);
+      }
+      this.cartData = newCartData;
+    }
+    onItemRemoveSuccess(removedItem, newCartData) {
+      this.performItemInstanceRemoval(removedItem);
+      this.cartData = newCartData;
     }
     /**
      * Synchronizes the cart UI with new cart data received from an update event
@@ -12090,37 +12118,60 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         this.itemInstances.forEach((itemInstance) => {
           if (newItemData.id === itemInstance.id) {
             found = true;
-            itemInstance.update(newItemData);
+            this.performItemInstanceUpdate(itemInstance, newItemData);
           }
         });
         if (!found) {
-          const newItemEl = getDomFromString(newItemData.item_html).querySelector(CartItem.SELECTOR);
-          const newItemInstance = new CartItem(newItemEl, newItemData);
-          this.list.insertBefore(newItemInstance.el, this.itemInstances[newIndex]?.el || null);
-          this.itemInstances.splice(newIndex, 0, newItemInstance);
+          this.performItemInstanceAddition(newItemData, newIndex);
         }
       });
       this.itemInstances.forEach((itemInstance) => {
         const stillExists = newCartData.items.some((newItemData) => newItemData.id === itemInstance.id);
         if (!stillExists) {
-          this.itemInstances = this.itemInstances.filter(({ id }) => id !== itemInstance.id);
-          slideUp(itemInstance.el, {
-            duration: 0.45,
-            onInterrupt: () => {
-              this.cleanupItemInstance(itemInstance);
-            },
-            onComplete: () => {
-              this.cleanupItemInstance(itemInstance);
-            }
-          });
+          this.performItemInstanceRemoval(itemInstance);
         }
       });
       this.cartData = newCartData;
     }
     onCartUpdate(e) {
+      if (__privateGet(this, _muteUpdateSync)) return;
       this.syncCart(e);
     }
+    async onItemRemoveClick(item) {
+      item.state = "removing";
+      try {
+        __privateSet(this, _muteUpdateSync, true);
+        const cart = await CartAPI.changeLineItemQuantity(item.key, 0);
+        this.onItemRemoveSuccess(item, cart);
+      } catch (error) {
+        console.error("Error removing item", error);
+      } finally {
+        __privateSet(this, _muteUpdateSync, false);
+      }
+    }
+    async onItemQuantityAdjusterChange(item, q) {
+      item.state = q === 0 ? "removing" : "updating";
+      try {
+        __privateSet(this, _muteUpdateSync, true);
+        const cart = await CartAPI.changeLineItemQuantity(item.key, q);
+        if (q === 0) {
+          this.onItemRemoveSuccess(item, cart);
+        } else {
+          this.onItemChangeSuccess(item, cart);
+        }
+      } catch (error) {
+        item.state = void 0;
+        item.quantityAdjuster.value = item.itemData.quantity;
+        console.error("Error updating item quantity", error);
+      } finally {
+        if (q > 0) {
+          item.state = void 0;
+        }
+        __privateSet(this, _muteUpdateSync, false);
+      }
+    }
   };
+  _muteUpdateSync = new WeakMap();
   _CartBody.TYPE = "cart-body";
   let CartBody = _CartBody;
   const selectors$2 = {
