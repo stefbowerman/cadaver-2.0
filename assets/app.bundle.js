@@ -10626,7 +10626,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     slide: ".swiper-slide"
   };
   const classes$6 = {
-    isActive: "is-active",
     slideshowDisabled: "is-disabled"
   };
   const _ProductDetailGallery = class _ProductDetailGallery extends BaseComponent {
@@ -10636,7 +10635,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.slideshow = this.qs(selectors$e.slideshow);
       this.slideCount = this.qsa(selectors$e.slide).length;
       this.color = this.dataset.color;
-      this.isActive = this.el.classList.contains(classes$6.isActive);
+      this.isActive = this.el.getAttribute("aria-current") === "true";
       this.swiper = new Swiper(this.slideshow, {
         init: false,
         loop: this.slideCount > 1,
@@ -10655,12 +10654,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     activate() {
       if (this.isActive) return;
-      this.el.classList.add(classes$6.isActive);
+      this.el.setAttribute("aria-current", "true");
       this.images.forEach((img) => img.setAttribute("loading", "eager"));
       this.isActive = true;
     }
     deactivate() {
-      this.el.classList.remove(classes$6.isActive);
+      this.el.removeAttribute("aria-current");
       this.isActive = false;
     }
   };

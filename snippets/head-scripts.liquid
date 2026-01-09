@@ -1,18 +1,14 @@
-{% comment %}
-  @TODO - Translate strings.
-{% endcomment %}
-
 <script>
   document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
   
   window.app = {
     strings: {
-      addToCart: 'Add To Cart',
-      soldOut: 'Sold Out',
-      unavailable: 'Unavailable',
-      adding: 'Adding...',
-      added: 'Added!',
-      error: 'Whoops!'
+      addToCart: {{ 'app.add_to_cart' | t | json }},
+      soldOut: {{ 'app.sold_out' | t | json }},
+      unavailable: {{ 'app.unavailable' | t | json }},
+      adding: {{ 'app.adding' | t | json }},
+      added: {{ 'app.added' | t | json }},
+      error: {{ 'app.error' | t | json }}
     },
     routes: {
       root_url: {{ routes.root_url | json }},

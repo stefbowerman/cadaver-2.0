@@ -1,4 +1,12 @@
 {
+  "app": {
+    "add_to_cart": "Add to Cart",
+    "sold_out": "Sold Out",
+    "unavailable": "Unavailable",
+    "adding": "Adding...",
+    "added": "Added!",
+    "error": "Whoops!"
+  },
   "general": {
     "meta": {
       "tags": "Tagged \"{{ tags }}\"",
@@ -50,7 +58,8 @@
       "mobile_placeholder": "Tap to search",
       "submit": "Search",
       "search": "Search"
-    }
+    },
+
   },
   "accessibility": {
     "skip_to_content": "Skip to content",

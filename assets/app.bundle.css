@@ -1694,7 +1694,7 @@ header.header nav a[aria-current="page"] {
   display: none;
 }
 
-.product-detail-gallery.is-active {
+.product-detail-gallery[aria-current="true"] {
   display: block;
 }
 

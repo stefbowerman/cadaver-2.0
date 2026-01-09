@@ -7,7 +7,6 @@ const selectors = {
 }
 
 const classes = {
-  isActive: 'is-active',
   slideshowDisabled: 'is-disabled'
 }
 
@@ -30,7 +29,7 @@ export default class ProductDetailGallery extends BaseComponent {
 
     this.slideCount = this.qsa(selectors.slide).length // Swiper can't give you the total count without duplicates.. Also don't set this to a variable since it changes as soon as swiper is initialized
     this.color = this.dataset.color
-    this.isActive = this.el.classList.contains(classes.isActive)
+    this.isActive = this.el.getAttribute('aria-current') === 'true'
 
     this.swiper = new Swiper(this.slideshow, {     
       init: false,
@@ -55,13 +54,13 @@ export default class ProductDetailGallery extends BaseComponent {
   activate() {
     if (this.isActive) return
 
-    this.el.classList.add(classes.isActive)
+    this.el.setAttribute('aria-current', 'true')
     this.images.forEach(img => img.setAttribute('loading', 'eager'))
     this.isActive = true
   }
 
   deactivate() {
-    this.el.classList.remove(classes.isActive)
+    this.el.removeAttribute('aria-current')
     this.isActive = false
   }  
 }

@@ -3,7 +3,7 @@
 
   display: none;
 
-  &.is-active {
+  &[aria-current="true"] {
     display: block;
   }
 

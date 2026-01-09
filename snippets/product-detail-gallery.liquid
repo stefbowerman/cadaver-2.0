@@ -82,9 +82,11 @@
           endfor
         -%}
         
-        {% comment %} @TODO - Convert 'is-active' to aria-selected ? {% endcomment %}
         <div
-          class="product-detail-gallery{% if is_active %} is-active{% endif %}"
+          class="product-detail-gallery"
+          {% if is_active %}
+            aria-current="true"
+          {% endif %}
           data-component="product-detail-gallery"
           data-color="{{ color }}"
         >
@@ -127,7 +129,8 @@
   -%}
 
   <div
-    class="product-detail-gallery is-active"
+    class="product-detail-gallery"
+    aria-current="true"
     data-component="product-detail-gallery"
   >
     <div class="swiper-container" data-slideshow>
