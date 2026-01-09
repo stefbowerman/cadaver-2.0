@@ -50,10 +50,12 @@
       --header-logo-width: 140px;
     }
 
-    --layout-vertical-padding: 60px;
+    --layout-padding-top: 60px;
+    --layout-padding-bottom: 60px;
 
     @media (min-width: 768px) {
-      --layout-vertical-padding: 100px;
+      --layout-padding-top: 100px;
+      --layout-padding-bottom: 100px;
     }      
 
     /* Uncomment as needed */
@@ -236,3 +238,4 @@ img.lazy-image {
 @import './components/_newsletter-form.css';
 @import './components/_ajax-cart.css';
 @import './components/_drawer.css';
+@import './components/_policy.css';

@@ -3,10 +3,12 @@
    Page Layout
    -------------------------
 
-   Use this as the only direct child of main#MainContent on pages where you don't want the content flush to the header and footer
+   Use this .layout-content-wrapper as the only direct child of main#MainContent on pages where you don't want the content flush to the header and footer
    Or use the modifier classes to get flush on top or bottom
 */
 .layout-content-wrapper,
-.shopify-challenge__container {
-  padding: var(--layout-vertical-padding) 0;
+.shopify-challenge__container,
+.shopify-policy__container {
+  padding-top: var(--layout-padding-top);
+  padding-bottom: var(--layout-padding-bottom);
 }

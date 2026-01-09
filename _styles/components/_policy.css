@@ -1,0 +1,40 @@
+/*
+
+  Default Shopify policy styles - policy.css
+
+  .shopify-policy__container {
+    max-width: 560px;
+    max-width: 65ch;
+    margin: 0 auto;
+    padding-left: 20px;
+    padding-right: 20px
+  }
+
+  .shopify-policy__title {
+    text-align: center
+  }
+
+*/
+
+/* Add parent selector to override default policy styling */
+#view-container {
+  .shopify-policy__container {
+    padding-left: var(--spacing-container);
+    padding-right: var(--spacing-container);
+    max-width: none;
+  }
+  
+  .shopify-policy__title {
+    text-transform: capitalize;
+
+    /* h1 {
+      
+    } */
+  }
+  
+  .shopify-policy__body {
+    max-width: 45em;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
