@@ -1391,12 +1391,17 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
      */
     async changeLineItemQuantity(id, qty) {
       try {
+        const body = JSON.stringify({
+          quantity: qty,
+          id
+        });
         const response = await fetch(`${this.routes.cart_change_url}.js`, {
           method: "POST",
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
+            "Content-Type": "application/json",
+            "Accept": "application/json"
           },
-          body: `quantity=${qty}&id=${id}`
+          body
         });
         if (!response.ok) {
           throw new Error("Something went wrong.");
@@ -11955,8 +11960,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       super(el);
       __privateAdd(this, _state);
       __privateSet(this, _state, void 0);
-      this.id = parseInt(this.el.dataset.id, 10);
       this.itemData = itemData;
+      this.id = this.itemData.id;
       this.remove = this.qs(selectors$4.remove);
       this.price = this.qs(selectors$4.price);
       this.debouncedOnQuantityAdjusterChange = debounce(this.onQuantityAdjusterChange.bind(this), isTouch() ? 500 : 250);
@@ -12010,9 +12015,17 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (itemData.quantity !== void 0) {
         this.quantityAdjuster.value = itemData.quantity;
       }
-      this.price.innerHTML = itemData.item_price_html;
+      const temp = document.createElement("div");
+      temp.innerHTML = itemData.item_price_html;
+      const newPrice = temp.firstElementChild;
+      this.price.replaceWith(newPrice);
+      this.price = newPrice;
       this.itemData = itemData;
     }
+    // @TODO - This is broken if there are multiple items in the cart with the same ID
+    // this can happen if there are multiple of the same variant but the line items have different properties
+    // Changing the quantity adjuster will update all the items with that ID
+    // We need to go off of the index or the key??
     async onQuantityAdjusterChange(q) {
       if (this.state !== void 0) return;
       try {
@@ -12135,9 +12148,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   _CartFooter.TYPE = "cart-footer";
   let CartFooter = _CartFooter;
   const selectors$1 = {
-    close: "[data-ajax-cart-close]",
-    toggle: "[data-ajax-cart-toggle][aria-controls]"
-    // Not scoped to the component
+    close: "[data-ajax-cart-close]"
   };
   const classes = {
     open: "is-open",
@@ -12159,8 +12170,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         returnFocus: false,
         preventScroll: true
       });
-      this.backdrop = Backdrop.generate(document.body);
-      this.backdrop.el.addEventListener("click", this.close.bind(this));
+      this.backdrop = Backdrop.generate(document.body, {
+        ariaControls: this.el.id,
+        ariaExpanded: false
+      });
       this.onBodyClick = this.onBodyClick.bind(this);
       document.body.addEventListener("click", this.onBodyClick);
       this.setEmpty(cartData.item_count === 0);
@@ -12211,8 +12224,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       const target = e.target;
       if (target?.closest(selectors$1.close)) {
         return this.onCloseClick(e);
-      } else if (target?.closest(selectors$1.toggle)?.getAttribute("aria-controls") === this.el.id) {
-        return this.onToggleClick(e);
+      } else if (this.ariaControlElements.some(
+        (el) => el.isSameNode(target) || el.contains(target)
+      )) {
+        e.preventDefault();
+        this.toggle();
       }
     }
     onToggleClick(e) {

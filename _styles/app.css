@@ -30,8 +30,8 @@
 
 @layer base {
   :root {
-    --transition-drawer-in: transform 600ms cubic-bezier(0.34, 0.38, 0, 1);
-    --transition-drawer-out: transform 450ms cubic-bezier(0.51, 0.22, 0.12, 1);
+    --transition-drawer-in: translate 600ms cubic-bezier(0.34, 0.38, 0, 1);
+    --transition-drawer-out: translate 450ms cubic-bezier(0.51, 0.22, 0.12, 1);
     --transition-backdrop-in: opacity 450ms cubic-bezier(0.48, 0.19, 0.15, 0.8);
     --transition-backdrop-out: opacity 400ms cubic-bezier(0.42, 0, 0.51, 0.79);
 

@@ -77,6 +77,7 @@ export interface LiteCart {
 export interface LiteLineItem {
   id: number
   key: string
+  index: number
   title: string
   price: number
   final_line_price: number

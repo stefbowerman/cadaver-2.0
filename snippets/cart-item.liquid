@@ -13,49 +13,52 @@
   <div
     class="ajax-cart__item"
     data-component="cart-item"
-    data-id="{{ item.id }}"
   >
     <div class="ajax-cart__item-inner">
-      <div class="ajax-cart__item-image">
-        <div class="ajax-cart__item-image">
-          {%- if item.image -%}
-            <img
-              src="{{ item.image | image_url: width: 150 }}"
-              alt="{{ item.image.alt | escape }}"
-              loading="lazy"
-              width="150"
-              height="{{ 150 | divided_by: item.image.aspect_ratio | ceil }}"
-              class="lazy-image"
-            >
-          {% endif %}
-        </div>
-      </div>
+      {%- if item.image -%}
+        <img
+          src="{{ item.image | image_url: width: 150 }}"
+          alt="{{ item.image.alt | escape }}"
+          loading="lazy"
+          width="150"
+          height="{{ 150 | divided_by: item.image.aspect_ratio | ceil }}"
+          class="lazy-image"
+        >
+      {% endif %}
 
-      <div class="ajax-cart__item-info">
+      <div class="flex-1 flex flex-col justify-between gap-y-4 pt-0.5">
         <div>
-          <div class="ajax-cart__item-header">
-            <div class="ajax-cart__item-title">
-              <a href="{{ item.product.url }}">{{- item.product.title | escape -}}</a>
+          <div class="flex justify-between">
+            <div>
+              <a href="{{ item.product.url }}">
+                {{- item.product.title | escape -}}
+              </a>
             </div>
-            <button class="ajax-cart__item-remove" type="button" aria-label="Remove {{ item.product.title | escape }} from cart" data-remove>Remove</button>
+            
+            <button
+              class="uppercase underline"
+              type="button"
+              aria-label="Remove {{ item.product.title | escape }} from cart"
+              data-remove
+            >Remove</button>
           </div>
 
           {% capture item_details %}
             {% for option in item.options_with_values -%}
-              <div class="ajax-cart__item-detail">{{ option.name }}: {{ option.value }}</div>
+              <li>{{ option.name }}: {{ option.value }}</li>
             {%- endfor %}
             
             {% for property in item.properties %}
               {% comment %} https://shopify.dev/docs/api/ajax/reference/cart#private-properties-and-attributes {% endcomment %}
               {% assign first_characater = property.first | slice: 0 %}
               {% unless first_characater == '_' %}
-                <div class="ajax-cart__item-detail">{{ property.first }}: {{ property.last }}</div>
+                <li>{{ property.first }}: {{ property.last }}</li>
               {% endunless %}
             {% endfor %}
           {% endcapture %}
 
           {%- if item_details != blank %}
-            <div>{{ item_details }}</div>
+            <ul>{{ item_details }}</ul>
           {% endif %}          
         </div>
 

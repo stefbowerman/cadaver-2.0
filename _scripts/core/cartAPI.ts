@@ -101,12 +101,18 @@ const CartAPI = {
    */
   async changeLineItemQuantity(id: number, qty: number): Promise<LiteCart> {
     try {
+      const body = JSON.stringify({
+        quantity: qty,
+        id: id
+      })
+
       const response = await fetch(`${this.routes.cart_change_url}.js`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `quantity=${qty}&id=${id}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },        
+        body
       })
 
       if (!response.ok) {

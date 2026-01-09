@@ -25,7 +25,7 @@ export default class CartItem extends BaseComponent {
     UPDATING: 'updating'
   }
 
-  #state: string | undefined
+  #state: string | undefined // @TODO - Should "string" be one of the states?
   id: number
   itemData: LiteLineItem
   remove: HTMLButtonElement
@@ -38,8 +38,9 @@ export default class CartItem extends BaseComponent {
 
     this.#state = undefined
 
-    this.id = parseInt(this.el.dataset.id, 10)
     this.itemData = itemData
+    this.id = this.itemData.id
+    
 
     this.remove = this.qs(selectors.remove) as HTMLButtonElement
     this.price = this.qs(selectors.price)
@@ -105,11 +106,21 @@ export default class CartItem extends BaseComponent {
       this.quantityAdjuster.value = itemData.quantity // Make sure the quantity adjuster has the correct value
     }
 
-    this.price.innerHTML = itemData.item_price_html
+    // Update the price
+    const temp = document.createElement('div')
+          temp.innerHTML = itemData.item_price_html
+    const newPrice = temp.firstElementChild as HTMLElement
+
+    this.price.replaceWith(newPrice)
+    this.price = newPrice
 
     this.itemData = itemData
   }
 
+  // @TODO - This is broken if there are multiple items in the cart with the same ID
+  // this can happen if there are multiple of the same variant but the line items have different properties
+  // Changing the quantity adjuster will update all the items with that ID
+  // We need to go off of the index or the key??
   async onQuantityAdjusterChange(q: number) {
     if (this.state !== undefined) return
 

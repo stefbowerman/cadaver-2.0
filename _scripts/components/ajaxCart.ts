@@ -19,6 +19,8 @@ const classes = {
   bodyCartOpen: 'ajax-cart-open'
 }
 
+// NOTE: This component takes a lot of inspiration from the drawer component but is purposely built separately so that it can easily be modified to work differently/independently
+
 export default class AJAXCart extends BaseComponent {
   static TYPE = 'ajax-cart'
 
@@ -48,8 +50,10 @@ export default class AJAXCart extends BaseComponent {
       preventScroll: true
     })
 
-    this.backdrop = Backdrop.generate(document.body)
-    this.backdrop.el.addEventListener('click', this.close.bind(this))  // Do this until ajax cart uses aria-controls elements
+    this.backdrop = Backdrop.generate(document.body, {
+      ariaControls: this.el.id,
+      ariaExpanded: false
+    })
 
     this.onBodyClick = this.onBodyClick.bind(this)
 
@@ -130,9 +134,12 @@ export default class AJAXCart extends BaseComponent {
     if (target?.closest(selectors.close)) {
       return this.onCloseClick(e)
     }
-    else if (target?.closest(selectors.toggle)?.getAttribute('aria-controls') === this.el.id) {
-      return this.onToggleClick(e)
-    }
+    else if (this.ariaControlElements.some(el => 
+      el.isSameNode(target) || el.contains(target)
+    )) {
+      e.preventDefault()
+      this.toggle()
+    } 
   }
 
   onToggleClick(e: MouseEvent) {

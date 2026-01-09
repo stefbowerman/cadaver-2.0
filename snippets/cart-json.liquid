@@ -32,8 +32,9 @@
       -%}
 
       {
-        "id": {{ item.variant_id }},
+        "id": {{ item.id | json }},
         "key": {{ item.key | json }},
+        "index": {{ item.index | json }}, {% comment %} NOTE: This is not a documented property {% endcomment %}
         "title": {{ item.title | json }},
         "price": {{ item.price }},
         "final_line_price": {{ item.final_line_price }},

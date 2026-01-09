@@ -16,7 +16,7 @@
 {% enddoc %}
 
 {% if item != empty %}
-  <div class="ajax-cart__item-price" data-price>
+  <div data-price>
     {% if item.variant.compare_at_price and item.variant.compare_at_price > item.final_price %}
       <span>
         <span class="sr-only">
