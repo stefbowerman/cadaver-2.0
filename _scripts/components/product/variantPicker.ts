@@ -25,7 +25,6 @@ export default class VariantPicker extends BaseComponent {
 
     this.settings = {
       product: null,
-      onVariantChange: (e: VariantChangeEvent) => {},
       ...options
     }
 
@@ -73,7 +72,7 @@ export default class VariantPicker extends BaseComponent {
   onVariantChange(e: VariantChangeEvent) {
     this.updateOptionValues(e.selectedOptions)
 
-    this.settings.onVariantChange(e)
+    this.settings.onVariantChange?.(e)
   }
 
   onVariantPickerOptionChange() {   

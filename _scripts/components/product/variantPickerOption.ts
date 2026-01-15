@@ -17,7 +17,6 @@ export default class VariantPickerOption extends BaseComponent {
     super(el)
 
     this.settings = {
-      onChange: () => {},
       ...options
     }
 
@@ -72,6 +71,6 @@ export default class VariantPickerOption extends BaseComponent {
   }
 
   onChange() {
-    this.settings.onChange()
+    this.settings.onChange?.()
   }
 }

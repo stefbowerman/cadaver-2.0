@@ -23,8 +23,6 @@ export default class SearchInline extends BaseComponent {
     super(el)
 
     this.settings = {
-      onSubmit: (e, url) => {},
-      onKeyup: e => {},
       ...options
     }
 
@@ -65,7 +63,7 @@ export default class SearchInline extends BaseComponent {
 
     const url = `${this.action}?${params.toString()}`
 
-    if (this.settings.onSubmit(e, url) === false) {
+    if (this.settings.onSubmit?.(e, url) === false) {
       return
     }
 
@@ -82,6 +80,6 @@ export default class SearchInline extends BaseComponent {
 
 
   onKeyup(e: KeyboardEvent) {
-    this.settings.onKeyup(e)
+    this.settings.onKeyup?.(e)
   }
 }

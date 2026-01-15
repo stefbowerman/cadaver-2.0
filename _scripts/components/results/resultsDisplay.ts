@@ -31,9 +31,6 @@ export default class ResultsDisplay extends BaseComponent {
     super(el)
 
     this.settings = {
-      onMoreIntersection: () => {},
-      onReplaceStart: () => {},
-      onReplaceComplete: () => {},
       ...options
     }
 
@@ -109,7 +106,7 @@ export default class ResultsDisplay extends BaseComponent {
       opacity: 0,
       ease: 'power2.out',
       onStart: () => {
-        this.settings.onReplaceStart(this)
+        this.settings.onReplaceStart?.(this)
       },
       onComplete: () => {
         this.teardown()
@@ -118,7 +115,7 @@ export default class ResultsDisplay extends BaseComponent {
 
         gsap.set(this.el, { clearProps: true })
 
-        this.settings.onReplaceComplete(this)
+        this.settings.onReplaceComplete?.(this)
       }
     })
 

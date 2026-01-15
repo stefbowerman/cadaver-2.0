@@ -22,7 +22,6 @@ export default class FocusTrap {
       autofocus: true,
       returnFocus: true,
       preventScroll: false,
-      onFocusin: () => {},
       ...options
     }
 
@@ -107,7 +106,7 @@ export default class FocusTrap {
       })
     }
 
-    this.settings.onFocusin(focusEl as HTMLElement)
+    this.settings.onFocusin?.(focusEl as HTMLElement)
   }
 
   onKeydown(event: KeyboardEvent) {

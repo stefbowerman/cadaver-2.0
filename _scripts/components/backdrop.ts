@@ -22,7 +22,6 @@ export default class Backdrop extends BaseComponent {
     const settings = {
       title: 'Close',
       ariaLabel: 'Close',
-      ariaControls: null,
       ariaExpanded: false,
       ...options
     }

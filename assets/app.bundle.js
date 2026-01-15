@@ -6577,12 +6577,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     constructor(el, options = {}) {
       super(el);
       this.settings = {
-        onMoreIntersection: () => {
-        },
-        onReplaceStart: () => {
-        },
-        onReplaceComplete: () => {
-        },
         ...options
       };
       this.productCards = [];
@@ -6637,14 +6631,14 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         opacity: 0,
         ease: "power2.out",
         onStart: () => {
-          this.settings.onReplaceStart(this);
+          this.settings.onReplaceStart?.(this);
         },
         onComplete: () => {
           this.teardown();
           this.el.innerHTML = dom.innerHTML;
           this.setup();
           gsapWithCSS.set(this.el, { clearProps: true });
-          this.settings.onReplaceComplete(this);
+          this.settings.onReplaceComplete?.(this);
         }
       });
       this.replacementTl.to(this.el, {
@@ -6837,8 +6831,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     constructor(el, options = {}) {
       super(el);
       this.settings = {
-        onChange: () => {
-        },
         ...options
       };
       this.name = this.dataset.name;
@@ -6878,7 +6870,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
     }
     onChange() {
-      this.settings.onChange();
+      this.settings.onChange?.();
     }
   };
   _VariantPickerOption.TYPE = "variant-picker-option";
@@ -6888,8 +6880,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       super(el);
       this.settings = {
         product: null,
-        onVariantChange: (e) => {
-        },
         ...options
       };
       this.product = this.settings.product;
@@ -6922,7 +6912,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onVariantChange(e) {
       this.updateOptionValues(e.selectedOptions);
-      this.settings.onVariantChange(e);
+      this.settings.onVariantChange?.(e);
     }
     onVariantPickerOptionChange() {
       const selectedOptions = this.pickerOptions.map((pO) => pO.selectedOption).filter(Boolean);
@@ -6952,8 +6942,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     constructor(el, options = {}) {
       super(el);
       this.settings = {
-        onVariantChange: (e) => {
-        },
         enableHistoryState: true,
         ...options
       };
@@ -6989,7 +6977,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (variant) {
         this.a11yStatus.text = `Variant changed to ${variant.title}`;
       }
-      this.settings.onVariantChange(e);
+      this.settings.onVariantChange?.(e);
     }
     onFormSubmit(e) {
       e.preventDefault();
@@ -10786,10 +10774,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     constructor(el, options = {}) {
       super(el);
       this.settings = {
-        onSubmit: (e, url) => {
-        },
-        onKeyup: (e) => {
-        },
         ...options
       };
       if (this.el.tagName !== "FORM") {
@@ -10819,7 +10803,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         q: encodeURIComponent(q)
       });
       const url = `${this.action}?${params.toString()}`;
-      if (this.settings.onSubmit(e, url) === false) {
+      if (this.settings.onSubmit?.(e, url) === false) {
         return;
       }
       if (!window.app.taxi) {
@@ -10830,7 +10814,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       return false;
     }
     onKeyup(e) {
-      this.settings.onKeyup(e);
+      this.settings.onKeyup?.(e);
     }
   };
   _SearchInline.TYPE = "search-inline";
@@ -11444,7 +11428,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       const settings = {
         title: "Close",
         ariaLabel: "Close",
-        ariaControls: null,
         ariaExpanded: false,
         ...options
       };
@@ -11486,8 +11469,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         autofocus: true,
         returnFocus: true,
         preventScroll: false,
-        onFocusin: () => {
-        },
         ...options
       };
       if (!el || !(el instanceof Element)) {
@@ -11548,7 +11529,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
           preventScroll: this.settings.preventScroll
         });
       }
-      this.settings.onFocusin(focusEl);
+      this.settings.onFocusin?.(focusEl);
     }
     onKeydown(event) {
       if (event.key !== "Tab") {
@@ -11841,8 +11822,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     constructor(el, options = {}) {
       super(el);
       this.settings = {
-        onChange: (value) => {
-        },
         ...options
       };
       this.changeEvent = new Event("change", { bubbles: true });
@@ -11919,7 +11898,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         this.value = clamp$1(v, this.min, this.max);
       }
       this.validate();
-      this.settings.onChange(this.value);
+      this.settings.onChange?.(this.value);
     }
     onStepClick(e) {
       const previousValue = this.value;

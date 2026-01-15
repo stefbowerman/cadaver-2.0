@@ -45,7 +45,6 @@ export default class ProductDetailForm extends BaseComponent {
     super(el)
 
     this.settings = {
-      onVariantChange: (e: VariantChangeEvent) => {},
       enableHistoryState: true,
       ...options
     }
@@ -97,7 +96,7 @@ export default class ProductDetailForm extends BaseComponent {
       this.a11yStatus.text = `Variant changed to ${variant.title}`
     }    
 
-    this.settings.onVariantChange(e)
+    this.settings.onVariantChange?.(e)
   }
 
 

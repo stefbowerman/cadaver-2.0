@@ -28,7 +28,6 @@ export default class QuantityAdjuster extends BaseComponent {
     super(el)
 
     this.settings = {
-      onChange: (value: number) => {},
       ...options
     }
 
@@ -134,7 +133,7 @@ export default class QuantityAdjuster extends BaseComponent {
     
     this.validate()
 
-    this.settings.onChange(this.value)
+    this.settings.onChange?.(this.value)
   }
 
   onStepClick(e: MouseEvent) {
