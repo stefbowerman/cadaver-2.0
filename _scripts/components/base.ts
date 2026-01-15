@@ -7,16 +7,19 @@ export interface BaseComponentSettings {
   watchBreakpoint?: boolean;
   watchScroll?: boolean;
   watchCartUpdate?: boolean;
+  watchIntersection?: boolean;
+  intersectionOptions?: IntersectionObserverInit;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any; // Allow additional properties from subclasses
 }
 
 export default class BaseComponent {
   #settings: BaseComponentSettings;
+  #resizeObserver: ResizeObserver | null;
+  #intersectionObserver: IntersectionObserver | null;
 
   el: HTMLElement;
   type: string;
-  resizeObserver: ResizeObserver | null;
 
   static TYPE: string = 'base'
 
@@ -30,8 +33,17 @@ export default class BaseComponent {
       watchBreakpoint: false,
       watchScroll: false,
       watchCartUpdate: false,
+      watchIntersection: false,
+      intersectionOptions: {
+        rootMargin: '0px',
+        threshold: 0.01,        
+      },
+
       ...options
     }
+
+    this.#resizeObserver = null
+    this.#intersectionObserver = null    
     
     this.el = el
     this.type = (this.constructor as typeof BaseComponent).TYPE
@@ -42,16 +54,21 @@ export default class BaseComponent {
       console.warn('BaseComponent should not be used directly')
     }
 
-    this.resizeObserver = null
     this.onResize = this.onResize.bind(this)
+    this.onIntersection = this.onIntersection.bind(this)
     this.onBreakpointChange = this.onBreakpointChange.bind(this)
     this.onScroll = this.onScroll.bind(this)
     this.onCartUpdate = this.onCartUpdate.bind(this)
 
     if (this.#settings.watchResize) {
-      this.resizeObserver = new ResizeObserver((entries) => this.onResize(entries))
-      this.resizeObserver.observe(this.el)
+      this.#resizeObserver = new ResizeObserver((entries) => this.onResize(entries))
+      this.#resizeObserver.observe(this.el)
     }
+
+    if (this.#settings.watchIntersection) {
+      this.#intersectionObserver = new IntersectionObserver(this.onIntersection, this.#settings.intersectionOptions)
+      this.#intersectionObserver.observe(this.el)
+    }    
 
     if (this.#settings.watchBreakpoint) {
       window.addEventListener(BreakpointsController.EVENTS.CHANGE, this.onBreakpointChange)
@@ -67,9 +84,14 @@ export default class BaseComponent {
   }
 
   destroy() {
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect()
-      this.resizeObserver = null
+    if (this.#resizeObserver) {
+      this.#resizeObserver.disconnect()
+      this.#resizeObserver = null
+    }
+
+    if (this.#intersectionObserver) {
+      this.#intersectionObserver.disconnect()
+      this.#intersectionObserver = null
     }
 
     if (this.#settings.watchBreakpoint) {
@@ -147,9 +169,14 @@ export default class BaseComponent {
     // override in subclass
   }
 
-  onBreakpointChange(e: BreakpointChangeEvent) {
-    const { detail: { breakpoint, fromBreakpoint, direction } } = e
+  onIntersection(entries: IntersectionObserverEntry[]) {
     // override in subclass
+  }  
+
+  onBreakpointChange(e: BreakpointChangeEvent) {
+    // override in subclass
+
+    // const { detail: { breakpoint, fromBreakpoint, direction } } = e
   }
 
   onScroll() {

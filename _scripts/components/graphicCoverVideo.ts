@@ -11,10 +11,11 @@ export default class GraphicCoverVideo extends BaseComponent {
   autoPlayEnabled: boolean
   video: HTMLVideoElement | null
   inView: boolean
-  observer: IntersectionObserver
 
   constructor(el: HTMLElement) {
-    super(el)
+    super(el, {
+      watchIntersection: true
+    })
 
     this.autoPlayEnabled = prefersReducedMotion() ? false : true
 
@@ -31,15 +32,6 @@ export default class GraphicCoverVideo extends BaseComponent {
     this.video.addEventListener('playing', this.onPlay.bind(this))
     this.video.addEventListener('pause', this.onPause.bind(this))
     this.video.addEventListener('error', this.onError.bind(this))
-
-    this.observer = new IntersectionObserver(this.onIntersection.bind(this))
-    this.observer.observe(this.el)
-  }
-
-  destroy() {
-    this.observer?.disconnect()
-
-    super.destroy()
   }
 
   get isPlaying() {

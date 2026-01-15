@@ -1,8 +1,9 @@
 import { fetchDom } from '@/core/utils/dom'
-import type { ThemeEditorSectionUnloadEvent } from '@/types/shopify'
 
 import BaseSection from '@/sections/base'
 import ProductCard from '@/components/product/productCard'
+
+// See: https://shopify.dev/docs/storefronts/themes/product-merchandising/recommendations/related-products#implementing-product-recommendations
 
 const selectors = {
   contentTarget: '[data-content-target]',
@@ -16,10 +17,14 @@ export default class ProductRelatedSection extends BaseSection {
   contentTarget: HTMLElement
   content: HTMLElement
   recommendationsUrl: string
-  observer: IntersectionObserver
 
   constructor(container: HTMLElement) {
-    super(container)
+    super(container, {
+      watchIntersection: true,
+      intersectionOptions: {
+        rootMargin: '0px 0px 1000px 0px'
+      }
+    })
 
     this.productCards = []
 
@@ -27,26 +32,12 @@ export default class ProductRelatedSection extends BaseSection {
     this.content = this.qs(selectors.content)
 
     this.recommendationsUrl = this.dataset.url
-
-    // If more than one section needs intersection observer, move this to BaseSection class
-    // See: https://shopify.dev/docs/storefronts/themes/product-merchandising/recommendations/related-products#implementing-product-recommendations
-    this.observer = new IntersectionObserver(this.onIntersection.bind(this), {
-      rootMargin: '0px 0px 1000px 0px'
-    })
-
-    this.observer.observe(this.container)
-  }
-
-  onUnload(e: ThemeEditorSectionUnloadEvent) {
-    this.observer.disconnect()
-
-    super.onUnload(e)
   }
 
   onIntersection(entries: IntersectionObserverEntry[]) {
     if (!entries[0].isIntersecting) return
 
-    this.observer.disconnect() // We only want to check for intersection *once*
+    this.stopIntersectionObserver() // We only want to check for intersection *once*
 
     this.getRecommendations()
   }  

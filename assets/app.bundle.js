@@ -7,7 +7,7 @@ var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot
 var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 (function() {
   "use strict";
-  var _settings, _isLoading, _state, _muteUpdateSync;
+  var _settings, _resizeObserver, _intersectionObserver, _isLoading, _state, _muteUpdateSync;
   function SelectorSet() {
     if (!(this instanceof SelectorSet)) {
       return new SelectorSet();
@@ -1419,27 +1419,40 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _BaseComponent = class _BaseComponent {
     constructor(el, options = {}) {
       __privateAdd(this, _settings);
+      __privateAdd(this, _resizeObserver);
+      __privateAdd(this, _intersectionObserver);
       __privateSet(this, _settings, {
         watchResize: false,
         watchBreakpoint: false,
         watchScroll: false,
         watchCartUpdate: false,
+        watchIntersection: false,
+        intersectionOptions: {
+          rootMargin: "0px",
+          threshold: 0.01
+        },
         ...options
       });
+      __privateSet(this, _resizeObserver, null);
+      __privateSet(this, _intersectionObserver, null);
       this.el = el;
       this.type = this.constructor.TYPE;
       this.validateDom(this.el);
       if (this.type === "base") {
         console.warn("BaseComponent should not be used directly");
       }
-      this.resizeObserver = null;
       this.onResize = this.onResize.bind(this);
+      this.onIntersection = this.onIntersection.bind(this);
       this.onBreakpointChange = this.onBreakpointChange.bind(this);
       this.onScroll = this.onScroll.bind(this);
       this.onCartUpdate = this.onCartUpdate.bind(this);
       if (__privateGet(this, _settings).watchResize) {
-        this.resizeObserver = new ResizeObserver((entries) => this.onResize(entries));
-        this.resizeObserver.observe(this.el);
+        __privateSet(this, _resizeObserver, new ResizeObserver((entries) => this.onResize(entries)));
+        __privateGet(this, _resizeObserver).observe(this.el);
+      }
+      if (__privateGet(this, _settings).watchIntersection) {
+        __privateSet(this, _intersectionObserver, new IntersectionObserver(this.onIntersection, __privateGet(this, _settings).intersectionOptions));
+        __privateGet(this, _intersectionObserver).observe(this.el);
       }
       if (__privateGet(this, _settings).watchBreakpoint) {
         window.addEventListener(BreakpointsController.EVENTS.CHANGE, this.onBreakpointChange);
@@ -1455,9 +1468,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       return `[data-component="${this.TYPE}"]`;
     }
     destroy() {
-      if (this.resizeObserver) {
-        this.resizeObserver.disconnect();
-        this.resizeObserver = null;
+      if (__privateGet(this, _resizeObserver)) {
+        __privateGet(this, _resizeObserver).disconnect();
+        __privateSet(this, _resizeObserver, null);
+      }
+      if (__privateGet(this, _intersectionObserver)) {
+        __privateGet(this, _intersectionObserver).disconnect();
+        __privateSet(this, _intersectionObserver, null);
       }
       if (__privateGet(this, _settings).watchBreakpoint) {
         window.removeEventListener(BreakpointsController.EVENTS.CHANGE, this.onBreakpointChange);
@@ -1520,8 +1537,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onResize(entries) {
     }
+    onIntersection(entries) {
+    }
     onBreakpointChange(e) {
-      const { detail: { breakpoint, fromBreakpoint, direction } } = e;
     }
     onScroll() {
     }
@@ -1529,6 +1547,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
   };
   _settings = new WeakMap();
+  _resizeObserver = new WeakMap();
+  _intersectionObserver = new WeakMap();
   _BaseComponent.TYPE = "base";
   let BaseComponent = _BaseComponent;
   const doComponentCleanup = (instance2) => {
@@ -1575,7 +1595,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   const _GraphicCoverVideo = class _GraphicCoverVideo extends BaseComponent {
     constructor(el) {
-      super(el);
+      super(el, {
+        watchIntersection: true
+      });
       this.autoPlayEnabled = prefersReducedMotion() ? false : true;
       this.video = this.qs("video");
       this.inView = false;
@@ -1588,12 +1610,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.video.addEventListener("playing", this.onPlay.bind(this));
       this.video.addEventListener("pause", this.onPause.bind(this));
       this.video.addEventListener("error", this.onError.bind(this));
-      this.observer = new IntersectionObserver(this.onIntersection.bind(this));
-      this.observer.observe(this.el);
-    }
-    destroy() {
-      this.observer?.disconnect();
-      super.destroy();
     }
     get isPlaying() {
       return this.video && !this.video.paused;
@@ -1651,7 +1667,18 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   _GraphicCoverVideo.TYPE = "graphic-cover-video";
   let GraphicCoverVideo = _GraphicCoverVideo;
   class BaseSection {
-    constructor(container) {
+    #settings;
+    #intersectionObserver;
+    constructor(container, options = {}) {
+      this.#settings = {
+        watchIntersection: false,
+        intersectionOptions: {
+          rootMargin: "0px",
+          threshold: 0.01
+        },
+        ...options
+      };
+      this.#intersectionObserver = null;
       this.container = container;
       this.id = this.dataset.sectionId;
       this.type = this.constructor.TYPE;
@@ -1663,9 +1690,14 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.onNavigateOut = this.onNavigateOut.bind(this);
       this.onNavigateIn = this.onNavigateIn.bind(this);
       this.onNavigateEnd = this.onNavigateEnd.bind(this);
+      this.onIntersection = this.onIntersection.bind(this);
       window.addEventListener("taxi.navigateOut", this.onNavigateOut);
       window.addEventListener("taxi.navigateIn", this.onNavigateIn);
       window.addEventListener("taxi.navigateEnd", this.onNavigateEnd);
+      if (this.#settings.watchIntersection) {
+        this.#intersectionObserver = new IntersectionObserver(this.onIntersection, this.#settings.intersectionOptions);
+        this.#intersectionObserver.observe(this.container);
+      }
       this.lazyImageController = new LazyImageController(this.container);
       this.graphicCoverVideos = this.qsa(GraphicCoverVideo.SELECTOR).map((el) => {
         return new GraphicCoverVideo(el);
@@ -1698,6 +1730,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         return !closest || closest.isSameNode(el);
       });
     }
+    onIntersection(entries) {
+    }
+    stopIntersectionObserver() {
+      this.#intersectionObserver?.disconnect();
+      this.#intersectionObserver = null;
+    }
     /**
      * Called before the page transition begins to allow sections to run their own exit animations.
      * This method is awaited by the page transition system, so any async animations or cleanup
@@ -1716,6 +1754,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       window.removeEventListener("taxi.navigateIn", this.onNavigateIn);
       window.removeEventListener("taxi.navigateEnd", this.onNavigateEnd);
       this.lazyImageController.destroy();
+      this.#intersectionObserver?.disconnect();
       doComponentCleanup(this);
     }
     onSectionSelect(e) {
@@ -10701,23 +10740,20 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   const _ProductRelatedSection = class _ProductRelatedSection extends BaseSection {
     constructor(container) {
-      super(container);
+      super(container, {
+        watchIntersection: true,
+        intersectionOptions: {
+          rootMargin: "0px 0px 1000px 0px"
+        }
+      });
       this.productCards = [];
       this.contentTarget = this.qs(selectors$d.contentTarget);
       this.content = this.qs(selectors$d.content);
       this.recommendationsUrl = this.dataset.url;
-      this.observer = new IntersectionObserver(this.onIntersection.bind(this), {
-        rootMargin: "0px 0px 1000px 0px"
-      });
-      this.observer.observe(this.container);
-    }
-    onUnload(e) {
-      this.observer.disconnect();
-      super.onUnload(e);
     }
     onIntersection(entries) {
       if (!entries[0].isIntersecting) return;
-      this.observer.disconnect();
+      this.stopIntersectionObserver();
       this.getRecommendations();
     }
     async getRecommendations() {

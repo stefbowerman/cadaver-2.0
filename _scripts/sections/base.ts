@@ -19,8 +19,16 @@ import { doComponentCleanup } from '@/components/base'
 // Standard components
 import GraphicCoverVideo from '@/components/graphicCoverVideo'
 
+export interface BaseSectionSettings {
+  watchIntersection?: boolean;
+  intersectionOptions?: IntersectionObserverInit;
+}
+
 export default class BaseSection {
   static TYPE: string
+
+  #settings: BaseSectionSettings;
+  #intersectionObserver: IntersectionObserver | null;
 
   container: HTMLElement
   id: string
@@ -30,7 +38,18 @@ export default class BaseSection {
   lazyImageController: LazyImageController
   graphicCoverVideos: GraphicCoverVideo[]
 
-  constructor(container: HTMLElement) {
+  constructor(container: HTMLElement, options: BaseSectionSettings = {}) {
+    this.#settings = {
+      watchIntersection: false,
+      intersectionOptions: {
+        rootMargin: '0px',
+        threshold: 0.01,        
+      },
+      ...options
+    }
+
+    this.#intersectionObserver = null
+
     this.container = container
     this.id = this.dataset.sectionId
     this.type = (this.constructor as typeof BaseSection).TYPE
@@ -44,10 +63,16 @@ export default class BaseSection {
     this.onNavigateOut = this.onNavigateOut.bind(this)
     this.onNavigateIn  = this.onNavigateIn.bind(this)
     this.onNavigateEnd = this.onNavigateEnd.bind(this)
+    this.onIntersection = this.onIntersection.bind(this)
 
     window.addEventListener('taxi.navigateOut', this.onNavigateOut)
     window.addEventListener('taxi.navigateIn', this.onNavigateIn)
     window.addEventListener('taxi.navigateEnd', this.onNavigateEnd)
+
+    if (this.#settings.watchIntersection) {
+      this.#intersectionObserver = new IntersectionObserver(this.onIntersection, this.#settings.intersectionOptions)
+      this.#intersectionObserver.observe(this.container)
+    }      
 
     this.lazyImageController = new LazyImageController(this.container)
 
@@ -95,6 +120,15 @@ export default class BaseSection {
     }) as HTMLElement[]
   }
 
+  onIntersection(entries: IntersectionObserverEntry[]) {
+    // override in subclass
+  }
+
+  stopIntersectionObserver() {
+    this.#intersectionObserver?.disconnect()
+    this.#intersectionObserver = null
+  }
+
   /**
    * Called before the page transition begins to allow sections to run their own exit animations.
    * This method is awaited by the page transition system, so any async animations or cleanup
@@ -116,6 +150,7 @@ export default class BaseSection {
     window.removeEventListener('taxi.navigateEnd', this.onNavigateEnd)
 
     this.lazyImageController.destroy()
+    this.#intersectionObserver?.disconnect()
 
     doComponentCleanup(this) // This automatically calls this.destroy() up all components recursively
   }
