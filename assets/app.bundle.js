@@ -7,7 +7,7 @@ var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot
 var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 (function() {
   "use strict";
-  var _settings, _resizeObserver, _intersectionObserver, _isLoading, _state, _muteUpdateSync;
+  var _settings, _resizeObserver, _intersectionObserver, _onBlockSelect, _onBlockDeselect, _isLoading, _state, _muteUpdateSync;
   function SelectorSet() {
     if (!(this instanceof SelectorSet)) {
       return new SelectorSet();
@@ -1416,11 +1416,22 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
     }
   };
+  const THEME_EDITOR_BLOCK_ATTR = "data-shopify-editor-block";
   const _BaseComponent = class _BaseComponent {
     constructor(el, options = {}) {
       __privateAdd(this, _settings);
       __privateAdd(this, _resizeObserver);
       __privateAdd(this, _intersectionObserver);
+      __privateAdd(this, _onBlockSelect, (e) => {
+        if (e.target === this.el) {
+          this.onSelfBlockSelect(e);
+        }
+      });
+      __privateAdd(this, _onBlockDeselect, (e) => {
+        if (e.target === this.el) {
+          this.onSelfBlockDeselect(e);
+        }
+      });
       __privateSet(this, _settings, {
         watchResize: false,
         watchBreakpoint: false,
@@ -1446,6 +1457,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.onBreakpointChange = this.onBreakpointChange.bind(this);
       this.onScroll = this.onScroll.bind(this);
       this.onCartUpdate = this.onCartUpdate.bind(this);
+      this.onSelfBlockSelect = this.onSelfBlockSelect.bind(this);
+      this.onSelfBlockDeselect = this.onSelfBlockDeselect.bind(this);
       if (__privateGet(this, _settings).watchResize) {
         __privateSet(this, _resizeObserver, new ResizeObserver((entries) => this.onResize(entries)));
         __privateGet(this, _resizeObserver).observe(this.el);
@@ -1462,6 +1475,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
       if (__privateGet(this, _settings).watchCartUpdate) {
         window.addEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate);
+      }
+      if (this.el.hasAttribute(THEME_EDITOR_BLOCK_ATTR)) {
+        window.addEventListener("shopify:block:select", __privateGet(this, _onBlockSelect));
+        window.addEventListener("shopify:block:deselect", __privateGet(this, _onBlockDeselect));
       }
     }
     static get SELECTOR() {
@@ -1484,6 +1501,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
       if (__privateGet(this, _settings).watchCartUpdate) {
         window.removeEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate);
+      }
+      if (this.el.hasAttribute(THEME_EDITOR_BLOCK_ATTR)) {
+        window.removeEventListener("shopify:block:select", __privateGet(this, _onBlockSelect));
+        window.removeEventListener("shopify:block:deselect", __privateGet(this, _onBlockDeselect));
       }
       doComponentCleanup(this);
     }
@@ -1545,10 +1566,24 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onCartUpdate(e) {
     }
+    /**
+     * Called if this component's block is selected in the theme editor
+     * @param e - The event object
+     */
+    onSelfBlockSelect(e) {
+    }
+    /**
+     * Called if this component's block is deselected in the theme editor
+     * @param e - The event object
+     */
+    onSelfBlockDeselect(e) {
+    }
   };
   _settings = new WeakMap();
   _resizeObserver = new WeakMap();
   _intersectionObserver = new WeakMap();
+  _onBlockSelect = new WeakMap();
+  _onBlockDeselect = new WeakMap();
   _BaseComponent.TYPE = "base";
   let BaseComponent = _BaseComponent;
   const doComponentCleanup = (instance2) => {
@@ -1917,7 +1952,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _FeaturedProductsSection.TYPE = "featured-products";
   let FeaturedProductsSection = _FeaturedProductsSection;
-  const selectors$j = {
+  const selectors$h = {
     toggleNew: "[data-toggle-new]",
     newForm: "[data-new]",
     toggleForm: "[data-toggle-form]",
@@ -1933,20 +1968,20 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _AddressesSection = class _AddressesSection extends BaseSection {
     constructor(container) {
       super(container);
-      this.newForm = this.qs(selectors$j.newForm);
+      this.newForm = this.qs(selectors$h.newForm);
       this.container.addEventListener("click", (e) => {
         const target = e.target;
-        if (target.matches(selectors$j.toggleNew)) {
+        if (target.matches(selectors$h.toggleNew)) {
           e.preventDefault();
           toggle(this.newForm);
           return;
         }
-        if (target.matches(selectors$j.toggleForm)) {
+        if (target.matches(selectors$h.toggleForm)) {
           e.preventDefault();
           toggle(this.qs(`#edit-address-${target.dataset.id}`));
           return;
         }
-        if (target.matches(selectors$j.deleteAddress)) {
+        if (target.matches(selectors$h.deleteAddress)) {
           e.preventDefault();
           const id = target.dataset.id;
           if (confirm("Are you sure you wish to delete this address?")) {
@@ -6608,7 +6643,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _A11yStatus.TYPE = "a11y-status";
   let A11yStatus = _A11yStatus;
-  const selectors$i = {
+  const selectors$g = {
     list: "ul",
     more: "a[data-more]"
   };
@@ -6629,8 +6664,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     setup() {
       this.productCards = this.qsa(ProductCard.SELECTOR).map((el) => new ProductCard(el));
-      this.list = this.qs(selectors$i.list);
-      this.more = this.qs(selectors$i.more);
+      this.list = this.qs(selectors$g.list);
+      this.more = this.qs(selectors$g.more);
       if (this.more) {
         const rootMargin = window.innerWidth < BREAKPOINTS.md ? "1000px" : `${Math.max(window.innerHeight * 2, 1500)}px`;
         this.moreObserver = new IntersectionObserver(this.onMoreIntersection, {
@@ -6690,7 +6725,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     add(dom) {
       if (!this.validateDom(dom)) return;
-      const newList = dom.querySelector(selectors$i.list);
+      const newList = dom.querySelector(selectors$g.list);
       const newItems = newList ? [...newList.children] : [];
       if (newItems.length) {
         const fragment = document.createDocumentFragment();
@@ -6703,7 +6738,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         });
         this.list.append(fragment);
         this.a11yStatus.text = `${newItems.length} items loaded`;
-        const newMore = dom.querySelector(selectors$i.more);
+        const newMore = dom.querySelector(selectors$g.more);
         if (this.more && newMore) {
           this.more.href = newMore.href;
         } else {
@@ -6773,7 +6808,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _CollectionSection.TYPE = "collection";
   let CollectionSection = _CollectionSection;
-  const selectors$h = {
+  const selectors$f = {
     price: "[data-price]",
     compare: "[data-compare]",
     comparePrice: "[data-compare-price]"
@@ -6781,9 +6816,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _ProductPrice = class _ProductPrice extends BaseComponent {
     constructor(el) {
       super(el);
-      this.price = this.qs(selectors$h.price);
-      this.compare = this.qs(selectors$h.compare);
-      this.comparePrice = this.qs(selectors$h.comparePrice);
+      this.price = this.qs(selectors$f.price);
+      this.compare = this.qs(selectors$f.compare);
+      this.comparePrice = this.qs(selectors$f.comparePrice);
     }
     /**
      * Updates the product price display based on the given variant.
@@ -6812,7 +6847,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _ProductPrice.TYPE = "product-price";
   let ProductPrice = _ProductPrice;
-  const selectors$g = {
+  const selectors$e = {
     label: "[data-label]"
   };
   const _ATCButton = class _ATCButton extends BaseComponent {
@@ -6820,7 +6855,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       super(el);
       this.tempText = null;
       this.successTimeoutId = null;
-      this.label = this.qs(selectors$g.label);
+      this.label = this.qs(selectors$e.label);
       if (!this.label) {
         console.warn("No label found");
       }
@@ -6963,7 +6998,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _VariantPicker.TYPE = "variant-picker";
   let VariantPicker = _VariantPicker;
-  const selectors$f = {
+  const selectors$d = {
     form: 'form[action*="/cart/add"]',
     submit: '[type="submit"]',
     productJSON: "[data-product-json]",
@@ -6985,9 +7020,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         ...options
       };
       this.submitInProgress = false;
-      this.form = this.qs(selectors$f.form);
-      this.masterSelect = this.qs(selectors$f.masterSelect);
-      this.product = JSON.parse(this.qs(selectors$f.productJSON).textContent);
+      this.form = this.qs(selectors$d.form);
+      this.masterSelect = this.qs(selectors$d.masterSelect);
+      this.product = JSON.parse(this.qs(selectors$d.productJSON).textContent);
       this.price = new ProductPrice(this.qs(ProductPrice.SELECTOR));
       this.atcButton = new ATCButton(this.qs(ATCButton.SELECTOR));
       this.variantPicker = new VariantPicker(this.qs(VariantPicker.SELECTOR), {
@@ -7021,7 +7056,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onFormSubmit(e) {
       e.preventDefault();
       if (this.submitInProgress) return;
-      const submit = this.form.querySelector(selectors$f.submit);
+      const submit = this.form.querySelector(selectors$d.submit);
       submit.disabled = true;
       this.submitInProgress = true;
       this.onAddStart();
@@ -10648,7 +10683,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     });
   });
   Swiper.use([Resize, Observer]);
-  const selectors$e = {
+  const selectors$c = {
     slideshow: "[data-slideshow]",
     slide: ".swiper-slide"
   };
@@ -10659,8 +10694,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     constructor(el) {
       super(el);
       this.images = this.qsa("img");
-      this.slideshow = this.qs(selectors$e.slideshow);
-      this.slideCount = this.qsa(selectors$e.slide).length;
+      this.slideshow = this.qs(selectors$c.slideshow);
+      this.slideCount = this.qsa(selectors$c.slide).length;
       this.color = this.dataset.color;
       this.isActive = this.el.getAttribute("aria-current") === "true";
       this.swiper = new Swiper(this.slideshow, {
@@ -10734,7 +10769,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _ProductSection.TYPE = "product";
   let ProductSection = _ProductSection;
-  const selectors$d = {
+  const selectors$b = {
     contentTarget: "[data-content-target]",
     content: "[data-content]"
   };
@@ -10747,8 +10782,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         }
       });
       this.productCards = [];
-      this.contentTarget = this.qs(selectors$d.contentTarget);
-      this.content = this.qs(selectors$d.content);
+      this.contentTarget = this.qs(selectors$b.contentTarget);
+      this.content = this.qs(selectors$b.content);
       this.recommendationsUrl = this.dataset.url;
     }
     onIntersection(entries) {
@@ -10759,7 +10794,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     async getRecommendations() {
       try {
         const dom = await fetchDom(this.recommendationsUrl);
-        const content = dom.querySelector(selectors$d.content);
+        const content = dom.querySelector(selectors$b.content);
         this.contentTarget.replaceChildren(content);
         this.productCards = this.qsa(ProductCard.SELECTOR, this.contentTarget).map((el) => new ProductCard(el));
       } catch (e) {
@@ -10771,7 +10806,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _ProductRelatedSection.TYPE = "product-related";
   let ProductRelatedSection = _ProductRelatedSection;
-  const selectors$c = {
+  const selectors$a = {
     loginForm: "#customer-login-form",
     recoverForm: "#recover-password-form",
     toggleRecover: "[data-toggle-recover]"
@@ -10779,15 +10814,15 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _LoginSection = class _LoginSection extends BaseSection {
     constructor(container) {
       super(container);
-      this.loginForm = this.qs(selectors$c.loginForm);
-      this.recoverForm = this.qs(selectors$c.recoverForm);
+      this.loginForm = this.qs(selectors$a.loginForm);
+      this.recoverForm = this.qs(selectors$a.recoverForm);
       this.container.addEventListener("click", this.onClick.bind(this));
       if (window.location.hash == "#recover") {
         this.showRecoverForm();
       }
     }
     onClick(e) {
-      if (e.target.closest(selectors$c.toggleRecover)) {
+      if (e.target.closest(selectors$a.toggleRecover)) {
         e.target.dataset.toggleRecover === "true" ? this.showRecoverForm() : this.hideRecoverForm();
       }
     }
@@ -10802,7 +10837,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _LoginSection.TYPE = "login";
   let LoginSection = _LoginSection;
-  const selectors$b = {
+  const selectors$9 = {
     input: 'input[name="q"]',
     icon: "[data-icon]"
   };
@@ -10816,8 +10851,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         console.warn("SearchInline: Form element required");
         return;
       }
-      this.input = this.el.querySelector(selectors$b.input);
-      this.icon = this.el.querySelector(selectors$b.icon);
+      this.input = this.el.querySelector(selectors$9.input);
+      this.icon = this.el.querySelector(selectors$9.icon);
       this.action = this.el.getAttribute("action");
       this.onSubmit = this.onSubmit.bind(this);
       this.onKeyup = this.onKeyup.bind(this);
@@ -11106,7 +11141,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     AFTER_LEAVE: "afterLeave.transition"
   };
   let PageTransition = _PageTransition;
-  const selectors$a = {
+  const selectors$8 = {
     count: "[data-count]"
   };
   const classes$5 = {
@@ -11117,7 +11152,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       super(el, {
         watchCartUpdate: true
       });
-      this.count = this.qs(selectors$a.count);
+      this.count = this.qs(selectors$8.count);
     }
     onCartUpdate(e) {
       const { cart } = e.detail;
@@ -11127,19 +11162,15 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _HeaderCartControl.TYPE = "header-cart-control";
   let HeaderCartControl = _HeaderCartControl;
-  const selectors$9 = {
-    primaryNav: "[data-primary-nav]"
-  };
   const _HeaderSection = class _HeaderSection extends BaseSection {
     constructor(container) {
       super(container);
-      this.primaryNav = this.qs(selectors$9.primaryNav);
-      this.primaryNavLinks = this.primaryNav.querySelectorAll("a");
       this.headerCartControl = new HeaderCartControl(this.qs(HeaderCartControl.SELECTOR));
     }
     onNavigateIn(e) {
       const currentPath = new URL(e.detail.to.finalUrl).pathname;
-      this.primaryNavLinks.forEach((link) => setAriaCurrent(link, currentPath));
+      const links = this.container.querySelectorAll("nav a");
+      links.forEach((link) => setAriaCurrent(link, currentPath));
     }
   };
   _HeaderSection.TYPE = "header";
@@ -11340,7 +11371,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       return false;
     }
   }
-  const selectors$8 = {
+  const selectors$7 = {
     form: "form",
     formContents: "[data-form-contents]",
     formMessage: "[data-form-message]"
@@ -11357,14 +11388,14 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     constructor(el) {
       super(el);
       this.timeoutId = null;
-      this.form = this.el.tagName === "FORM" ? this.el : this.qs(selectors$8.form);
+      this.form = this.el.tagName === "FORM" ? this.el : this.qs(selectors$7.form);
       if (!this.form) {
         console.warn(`[${this.type}] - Form element required to initialize`);
         return;
       }
       this.formInput = this.form.querySelector('input[type="email"]');
-      this.formContents = this.form.querySelector(selectors$8.formContents);
-      this.formMessage = this.form.querySelector(selectors$8.formMessage);
+      this.formContents = this.form.querySelector(selectors$7.formContents);
+      this.formMessage = this.form.querySelector(selectors$7.formMessage);
     }
     destroy() {
       window.clearTimeout(this.timeoutId);
@@ -11423,13 +11454,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _NewsletterForm.TYPE = "newsletter-form";
   let NewsletterForm = _NewsletterForm;
-  const selectors$7 = {
-    navLink: "nav a"
-  };
   const _FooterSection = class _FooterSection extends BaseSection {
     constructor(container) {
       super(container);
-      this.navLinks = this.qsa(selectors$7.navLink);
       this.newsletterFormEl = this.qs(NewsletterForm.SELECTOR);
       this.newsletterForm = null;
       this.ajaxForm = null;
@@ -11443,13 +11470,15 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         });
       }
     }
-    onUnload() {
+    onUnload(e) {
       this.newsletterForm?.destroy();
       this.ajaxForm?.destroy();
+      super.onUnload(e);
     }
     onNavigateIn(e) {
       const currentPath = new URL(e.detail.to.finalUrl).pathname;
-      this.navLinks.forEach((link) => setAriaCurrent(link, currentPath));
+      const links = this.container.querySelectorAll("a");
+      links.forEach((link) => setAriaCurrent(link, currentPath));
     }
   };
   _FooterSection.TYPE = "footer";

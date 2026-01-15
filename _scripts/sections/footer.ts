@@ -1,5 +1,6 @@
 import { setAriaCurrent } from '@/core/utils/a11y'
 import type { TaxiNavigateInEvent } from '@/types/taxi'
+import { ThemeEditorSectionUnloadEvent } from '@/types/shopify'
 import AJAXKlaviyoForm from '@/core/ajaxKlaviyoForm'
 
 import BaseSection from '@/sections/base'
@@ -7,21 +8,18 @@ import BaseSection from '@/sections/base'
 import NewsletterForm from '@/components/newsletterForm'
 
 const selectors = {
-  navLink: 'nav a'
+  // 
 }
 
 export default class FooterSection extends BaseSection {
   static TYPE = 'footer'
 
-  navLinks: HTMLAnchorElement[]
   newsletterFormEl: HTMLElement
   newsletterForm: NewsletterForm | null
   ajaxForm: AJAXKlaviyoForm | null
 
   constructor(container: HTMLElement) {
     super(container)
-
-    this.navLinks = this.qsa(selectors.navLink) as HTMLAnchorElement[]
 
     this.newsletterFormEl = this.qs(NewsletterForm.SELECTOR)
     this.newsletterForm = null
@@ -39,14 +37,17 @@ export default class FooterSection extends BaseSection {
     }
   }
 
-  onUnload() {
+  onUnload(e: ThemeEditorSectionUnloadEvent) {
     this.newsletterForm?.destroy()
     this.ajaxForm?.destroy()
+
+    super.onUnload(e)
   }
 
   onNavigateIn(e: TaxiNavigateInEvent) {
     const currentPath = new URL(e.detail.to.finalUrl).pathname
+    const links = this.container.querySelectorAll<HTMLAnchorElement>('a')
 
-    this.navLinks.forEach(link => setAriaCurrent(link, currentPath))
+    links.forEach(link => setAriaCurrent(link, currentPath))
   }  
 }

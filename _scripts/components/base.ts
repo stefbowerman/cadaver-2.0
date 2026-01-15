@@ -1,6 +1,9 @@
 import BreakpointsController, { type BreakpointChangeEvent } from '@/core/breakpointsController'
 import CartAPI, { type CartAPIEvent } from '@/core/cartAPI'
 import { isObject } from '@/core/utils'
+import { ThemeEditorBlockDeselectEvent, ThemeEditorBlockSelectEvent } from '@/types/shopify';
+
+const THEME_EDITOR_BLOCK_ATTR = 'data-shopify-editor-block'
 
 export interface BaseComponentSettings {
   watchResize?: boolean;
@@ -59,6 +62,8 @@ export default class BaseComponent {
     this.onBreakpointChange = this.onBreakpointChange.bind(this)
     this.onScroll = this.onScroll.bind(this)
     this.onCartUpdate = this.onCartUpdate.bind(this)
+    this.onSelfBlockSelect = this.onSelfBlockSelect.bind(this)
+    this.onSelfBlockDeselect = this.onSelfBlockDeselect.bind(this)
 
     if (this.#settings.watchResize) {
       this.#resizeObserver = new ResizeObserver((entries) => this.onResize(entries))
@@ -80,6 +85,11 @@ export default class BaseComponent {
 
     if (this.#settings.watchCartUpdate) {
       window.addEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate)
+    }
+
+    if (this.el.hasAttribute(THEME_EDITOR_BLOCK_ATTR)) {
+      window.addEventListener('shopify:block:select', this.#onBlockSelect)
+      window.addEventListener('shopify:block:deselect', this.#onBlockDeselect)
     }
   }
 
@@ -106,7 +116,24 @@ export default class BaseComponent {
       window.removeEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate)
     }
 
+    if (this.el.hasAttribute(THEME_EDITOR_BLOCK_ATTR)) {
+      window.removeEventListener('shopify:block:select', this.#onBlockSelect)
+      window.removeEventListener('shopify:block:deselect', this.#onBlockDeselect)
+    }
+
     doComponentCleanup(this)
+  }
+
+  #onBlockSelect = (e: ThemeEditorBlockSelectEvent) => {
+    if (e.target === this.el) {
+      this.onSelfBlockSelect(e)
+    }
+  }
+
+  #onBlockDeselect = (e: ThemeEditorBlockDeselectEvent) => {
+    if (e.target === this.el) {
+      this.onSelfBlockDeselect(e)
+    }
   }
 
   get dataset(): DOMStringMap {
@@ -184,6 +211,23 @@ export default class BaseComponent {
   }
 
   onCartUpdate(e: CartAPIEvent) {
+    // override in subclass
+  }
+
+  /**
+   * Called if this component's block is selected in the theme editor
+   * @param e - The event object
+   */
+  onSelfBlockSelect(e: ThemeEditorBlockSelectEvent) {
+    // override in subclass
+
+  }
+
+  /**
+   * Called if this component's block is deselected in the theme editor
+   * @param e - The event object
+   */
+  onSelfBlockDeselect(e: ThemeEditorBlockDeselectEvent) {
     // override in subclass
   }
 }

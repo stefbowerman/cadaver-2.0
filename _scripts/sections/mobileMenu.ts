@@ -27,7 +27,7 @@ export default class MobileMenuSection extends BaseSection {
     const currentPath = new URL(e.detail.to.finalUrl).pathname
     const links = this.drawer.el.querySelectorAll<HTMLAnchorElement>('nav a')
 
-    links.forEach((link: HTMLAnchorElement) => setAriaCurrent(link, currentPath))
+    links.forEach(link => setAriaCurrent(link, currentPath))
   }
 
   onNavigateOut() {
