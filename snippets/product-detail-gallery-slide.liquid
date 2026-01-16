@@ -1,26 +1,28 @@
-{%- comment %}
-
+{% doc %}
   Product Detail Gallery Slide
-  ------------------------------------------------------------------------------
+  ====================================
 
-  Usage:
+  @param {image} image - The image to display - required
+  @param {string} [loading] - The loading attribute value - optional, defaults to 'lazy'
 
-  {% render 'product-detail-gallery-slide',
-             image: { image } - required
-  %}
-
-{% endcomment -%}
+  @example
+    {% render 'product-detail-gallery-slide', image: product.images[0], loading: 'eager' %}
+{% enddoc %}
 
 {% if image != blank %}
   {%- liquid
-    assign loading = 'lazy'
+    assign loading = loading | default: 'lazy'
     
     capture main_image_widths
       render 'image-widths', max_width: 1100
     endcapture
   -%}
   
-  <div class="relative aspect-square swiper-slide">
+  <div
+    class="relative aspect-square embla__slide"
+    role="group"
+    aria-roledescription="slide"
+  >
     {{
       image
       | image_url: width: 720

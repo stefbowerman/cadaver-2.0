@@ -227,6 +227,7 @@ img.lazy-image {
 @import './core/_buttons.css';
 @import './core/_swatches.css';
 @import './core/_forms.css';
+@import './core/_embla.css';
 
 @import './components/_header.css';
 @import './components/_footer.css';

@@ -1,19 +1,16 @@
-{%- comment %}
-
+{% doc %}
   Product Detail Gallery
-  ------------------------------------------------------------------------------
+  ====================================
 
-  {% include 'product-detail-gallery',
-              product: { product } - required,
-              current_variant: { variant } - optional
-  %}
+  @param {object} product - The product to display - required
+  @param {object} [current_variant] - The current variant to display - optional
 
-{% endcomment -%}
+  @example
+    {% render 'product-detail-gallery', product: product, current_variant: product.variants[1] %}
+{% enddoc %}
 
 {%- liquid
-  if current_variant == blank
-    assign current_variant = product.selected_or_first_available_variant
-  endif
+  assign current_variant = current_variant | default: product.selected_or_first_available_variant
 
   comment
     This block of logic loops through all product images and checks if we have at least 1 with valid alt text for *each* color option.
@@ -58,6 +55,7 @@
           assign color_upcase = color | upcase
           assign list_items = ''
           assign slides = ''
+          assign slides_count = 0
           assign is_active = false
           
           if current_variant[option_position_label] == color
@@ -66,18 +64,24 @@
 
           for image in product.images
             assign image_alt_upcase = image.alt | upcase
+            assign loading = 'lazy'
 
             if image_alt_upcase contains color_upcase
+              if slides_count == 0 and is_active
+                assign loading = 'eager'
+              endif
+
               capture list_item
                 render 'product-detail-gallery-item', image: image
               endcapture
 
               capture slide
-                render 'product-detail-gallery-slide', image: image
+                render 'product-detail-gallery-slide', image: image, loading: loading
               endcapture
 
               assign list_items = list_items | append: list_item
-              assign slides = slides | append: slide              
+              assign slides = slides | append: slide  
+              assign slides_count = slides_count | plus: 1
             endif
           endfor
         -%}
@@ -88,13 +92,10 @@
             aria-current="true"
           {% endif %}
           data-component="product-detail-gallery"
+          data-product-title="{{ product.title | escape }}"
           data-color="{{ color }}"
         >
-          <div class="swiper-container" data-slideshow>
-            <div class="swiper-wrapper">
-              {{ slides }}
-            </div>
-          </div>
+          {% render 'product-gallery-slideshow', slides: slides, slides_count: slides_count %}
 
           <div class="product-detail-gallery__list">
             {{ list_items }}
@@ -111,20 +112,26 @@
 
     assign list_items = ''
     assign slides = ''
+    assign slides_count = 0
 
     for image in product.images
-      assign image_alt_upcase = image.alt | upcase
+      assign loading = 'lazy'
+
+      if forloop.first
+        assign loading = 'eager'
+      endif
 
       capture list_item
         render 'product-detail-gallery-item', image: image
       endcapture
 
       capture slide
-        render 'product-detail-gallery-slide', image: image
+        render 'product-detail-gallery-slide', image: image, loading: loading
       endcapture
 
       assign list_items = list_items | append: list_item
-      assign slides = slides | append: slide              
+      assign slides = slides | append: slide   
+      assign slides_count = slides_count | plus: 1
     endfor
   -%}
 
@@ -132,12 +139,9 @@
     class="product-detail-gallery"
     aria-current="true"
     data-component="product-detail-gallery"
+    data-product-title="{{ product.title | escape }}"
   >
-    <div class="swiper-container" data-slideshow>
-      <div class="swiper-wrapper">
-        {{ slides }}
-      </div>
-    </div>
+    {% render 'product-gallery-slideshow', slides: slides, slides_count: slides_count %}
 
     <div class="product-detail-gallery__list">
       {{ list_items }}

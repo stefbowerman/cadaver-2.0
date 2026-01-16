@@ -28,9 +28,9 @@
     "@tailwindcss/vite": "^4.1.17",
     "@unseenco/taxi": "^1.8.0",
     "animated-scroll-to": "^2.3.0",
+    "embla-carousel": "^8.6.0",
     "gsap": "^3.12.7",
     "lodash.debounce": "^4.0.8",
-    "swiper": "^9.4.1",
     "tailwindcss": "^4.1.17"
   }
 }

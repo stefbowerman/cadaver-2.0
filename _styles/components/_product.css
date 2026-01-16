@@ -5,15 +5,25 @@
 
   &[aria-current="true"] {
     display: block;
-  }
-
-  .swiper-container {
-    @apply relative w-full overflow-hidden lg:hidden;
-  }  
+  } 
 
   .product-detail-gallery__list {
     @apply hidden flex-col gap-y-3 lg:flex;
   }
+
+
+  /* Slideshow on mobile */
+  .product-detail-gallery__slideshow {
+    @apply lg:hidden;
+  }
+
+  .embla {
+    
+  }
+
+  .embla__viewport {
+    @apply relative w-full overflow-hidden;
+  }   
 }
 
 .product-detail-form {
