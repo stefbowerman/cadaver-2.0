@@ -107,7 +107,8 @@ export default class ProductDetailGallery extends BaseComponent {
     items?.forEach((item, index) => {
       if (index === activeIndex) {
         item.setAttribute('aria-current', 'true')
-      } else {
+      }
+      else {
         item.removeAttribute('aria-current')
       }
     })
