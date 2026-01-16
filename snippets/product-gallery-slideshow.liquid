@@ -1,0 +1,29 @@
+{% doc %}
+  Product Gallery Slideshow
+  ====================================
+
+  @param {string} slides - The slides to display - required
+  @param {number} slides_count - The total number of slides - required
+
+  @example
+    {% render 'product-gallery-slideshow', slides: slides, slides_count: slides_count %}
+{% enddoc %}
+
+<div class="product-detail-gallery__slideshow">
+  <div class="embla">
+    <div class="embla__viewport">
+      <div class="embla__container">
+        {{ slides }}
+      </div>
+    </div>
+    
+    <div class="text-center" data-pagination></div>
+
+    {% if slides_count > 1 %}
+      <div class="flex justify-between items-center">
+        <button class="btn" type="button" aria-label="Previous Image" data-previous>Back</button>
+        <button class="btn" type="button" aria-label="Next image" data-next>Forward</button>
+      </div>
+    {% endif %}
+  </div>
+</div>

@@ -1,19 +1,18 @@
-{%- comment %}
-
+{% doc %}
   Product Detail Gallery Item
-  ------------------------------------------------------------------------------
+  ====================================
 
-  Usage:
+  @param {image} image - The image to display - required
+  @param {string} [loading] - The loading attribute value - optional, defaults to 'lazy'
 
-  {% render 'product-detail-gallery-item',
-             image: { image } - required
-  %}
+  @example
+    {% render 'product-detail-gallery-item', image: product.images[0] %}
+{% enddoc %}
 
-{% endcomment -%}
 
 {% if image != blank %}
   {%- liquid
-    assign loading = 'lazy'
+    assign loading = loading | default: 'lazy'
 
     capture main_image_widths
       render 'image-widths', max_width: 900
