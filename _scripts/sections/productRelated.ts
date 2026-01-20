@@ -1,3 +1,4 @@
+import type { ThemeEditorSectionUnloadEvent } from '@/types/shopify'
 import { fetchDom } from '@/core/utils/dom'
 
 import BaseSection from '@/sections/base'
@@ -13,6 +14,7 @@ const selectors = {
 export default class ProductRelatedSection extends BaseSection {
   static TYPE = 'product-related'
 
+  #abortController: AbortController | null
   productCards: ProductCard[]
   contentTarget: HTMLElement
   content: HTMLElement
@@ -26,12 +28,20 @@ export default class ProductRelatedSection extends BaseSection {
       }
     })
 
+    this.#abortController = null
     this.productCards = []
 
     this.contentTarget = this.qs(selectors.contentTarget)
     this.content = this.qs(selectors.content)
 
     this.recommendationsUrl = this.dataset.url
+  }
+
+  onUnload(e: ThemeEditorSectionUnloadEvent) {
+    this.#abortController?.abort();
+    this.#abortController = null
+
+    super.onUnload(e)
   }
 
   onIntersection(entries: IntersectionObserverEntry[]) {
@@ -44,8 +54,18 @@ export default class ProductRelatedSection extends BaseSection {
 
   async getRecommendations() {
     try {
-      const dom = await fetchDom(this.recommendationsUrl)
+      this.#abortController?.abort();
+      this.#abortController = new AbortController();
+
+      const dom = await fetchDom(this.recommendationsUrl, this.#abortController.signal)
+
+      if (this.#abortController.signal.aborted) return
+
+      if (!dom) throw new Error('Failed to load recommendations')
+
       const content = dom.querySelector(selectors.content)
+
+      if (!content) throw new Error('Recommendations content not found')      
 
       this.contentTarget.replaceChildren(content)
 
