@@ -7,7 +7,7 @@ var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot
 var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 (function() {
   "use strict";
-  var _settings, _resizeObserver, _intersectionObserver, _onBlockSelect, _onBlockDeselect, _isLoading, _state, _muteUpdateSync;
+  var _settings, _resizeObserver, _intersectionObserver, _onBlockSelect, _onBlockDeselect, _abortController, _isLoading, _state, _muteUpdateSync;
   function SelectorSet() {
     if (!(this instanceof SelectorSet)) {
       return new SelectorSet();
@@ -1938,9 +1938,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
   }
   const _ProductCard = class _ProductCard extends BaseComponent {
-    constructor(el) {
-      super(el);
-    }
   };
   _ProductCard.TYPE = "product-card";
   let ProductCard = _ProductCard;
@@ -2004,16 +2001,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   _AddressesSection.TYPE = "addresses";
   let AddressesSection = _AddressesSection;
   const _ArticleSection = class _ArticleSection extends BaseSection {
-    constructor(container) {
-      super(container);
-    }
   };
   _ArticleSection.TYPE = "article";
   let ArticleSection = _ArticleSection;
   const _BlogSection = class _BlogSection extends BaseSection {
-    constructor(container) {
-      super(container);
-    }
   };
   _BlogSection.TYPE = "blog";
   let BlogSection = _BlogSection;
@@ -2072,14 +2063,18 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const getDomFromString = (string) => {
     return new DOMParser().parseFromString(string, "text/html");
   };
-  const fetchDom = async (url) => {
+  const fetchDom = async (url, signal) => {
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, { signal });
       if (!response.ok) throw new Error("Network response was not ok");
       const responseText = await response.text();
       const dom = getDomFromString(responseText);
       return dom;
     } catch (e) {
+      if (e.name === "AbortError") {
+        console.log("Fetch aborted by user");
+        return void 0;
+      }
       console.warn("something went wrong...", e);
       return void 0;
     }
@@ -6634,9 +6629,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       parent.appendChild(el);
       return new _A11yStatus(el);
     }
-    constructor(el) {
-      super(el);
-    }
     set text(text) {
       this.el.textContent = text;
     }
@@ -6802,9 +6794,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   _ResultsSection.TYPE = "results";
   let ResultsSection = _ResultsSection;
   const _CollectionSection = class _CollectionSection extends ResultsSection {
-    constructor(container) {
-      super(container);
-    }
   };
   _CollectionSection.TYPE = "collection";
   let CollectionSection = _CollectionSection;
@@ -8858,10 +8847,17 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
           rootMargin: "0px 0px 1000px 0px"
         }
       });
+      __privateAdd(this, _abortController);
+      __privateSet(this, _abortController, null);
       this.productCards = [];
       this.contentTarget = this.qs(selectors$b.contentTarget);
       this.content = this.qs(selectors$b.content);
       this.recommendationsUrl = this.dataset.url;
+    }
+    onUnload(e) {
+      __privateGet(this, _abortController)?.abort();
+      __privateSet(this, _abortController, null);
+      super.onUnload(e);
     }
     onIntersection(entries) {
       if (!entries[0].isIntersecting) return;
@@ -8870,8 +8866,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     async getRecommendations() {
       try {
-        const dom = await fetchDom(this.recommendationsUrl);
+        __privateGet(this, _abortController)?.abort();
+        __privateSet(this, _abortController, new AbortController());
+        const dom = await fetchDom(this.recommendationsUrl, __privateGet(this, _abortController).signal);
+        if (__privateGet(this, _abortController).signal.aborted) return;
+        if (!dom) throw new Error("Failed to load recommendations");
         const content = dom.querySelector(selectors$b.content);
+        if (!content) throw new Error("Recommendations content not found");
         this.contentTarget.replaceChildren(content);
         this.productCards = this.qsa(ProductCard.SELECTOR, this.contentTarget).map((el) => new ProductCard(el));
       } catch (e) {
@@ -8881,6 +8882,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
     }
   };
+  _abortController = new WeakMap();
   _ProductRelatedSection.TYPE = "product-related";
   let ProductRelatedSection = _ProductRelatedSection;
   const selectors$a = {
@@ -9000,9 +9002,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   _SearchSection.TYPE = "search";
   let SearchSection = _SearchSection;
   const _PageHeroSection = class _PageHeroSection extends BaseSection {
-    constructor(container) {
-      super(container);
-    }
   };
   _PageHeroSection.TYPE = "page-hero";
   let PageHeroSection = _PageHeroSection;
@@ -9586,9 +9585,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       const appendTo = parent || document.body;
       appendTo.appendChild(el);
       return new _Backdrop(el);
-    }
-    constructor(el) {
-      super(el);
     }
     destroy() {
       this.el.remove();

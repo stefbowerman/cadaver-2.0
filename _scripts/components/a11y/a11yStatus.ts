@@ -22,10 +22,6 @@ export default class A11yStatus extends BaseComponent {
     return new A11yStatus(el)
   }
 
-  constructor(el: HTMLElement) {
-    super(el)
-  }
-
   set text(text: string) {
     this.el.textContent = text
   }

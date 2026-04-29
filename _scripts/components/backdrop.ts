@@ -45,10 +45,6 @@ export default class Backdrop extends BaseComponent {
     return new Backdrop(el)
   }
 
-  constructor(el: HTMLElement) {
-    super(el)
-  }
-
   destroy() {
     this.el.remove()
 
