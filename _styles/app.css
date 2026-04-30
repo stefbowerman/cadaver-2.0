@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @source not '../assets/app.bundle.css';
 @source not '../assets/app.bundle.js';
+@source not '../.cursor/rules/**/*.liquid';
 
 @theme {
   --color-red: #F00;
