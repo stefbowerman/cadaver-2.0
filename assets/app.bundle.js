@@ -1631,7 +1631,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _GraphicCoverVideo = class _GraphicCoverVideo extends BaseComponent {
     constructor(el) {
       super(el, {
-        watchIntersection: true
+        watchIntersection: true,
+        intersectionOptions: {
+          rootMargin: "50px 0px 50px 0px"
+        }
       });
       this.autoPlayEnabled = prefersReducedMotion() ? false : true;
       this.video = this.qs("video");
@@ -1696,6 +1699,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
     }
     onIntersection(entries) {
+      console.log("onIntersection", entries[0].isIntersecting);
       this.onVisibilityChange(entries[0].isIntersecting);
     }
   };
