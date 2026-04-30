@@ -1622,8 +1622,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       link.removeAttribute("aria-current");
     }
   }
-  function toAriaBoolean(value) {
-    return value ? "true" : "false";
+  function setAriaFlag(el, attr, value) {
+    value ? el.setAttribute(attr, "true") : el.removeAttribute(attr);
+  }
+  function setAriaState(el, attr, value) {
+    el.setAttribute(attr, value ? "true" : "false");
   }
   const classes$6 = {
     isReady: "is-ready"
@@ -6627,7 +6630,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       el.setAttribute("role", "status");
       el.setAttribute("aria-live", "polite");
       el.setAttribute("aria-atomic", "true");
-      el.setAttribute("aria-hidden", "true");
+      setAriaFlag(el, "aria-hidden", true);
       el.setAttribute("data-component", _A11yStatus.TYPE);
       el.classList.add("sr-only");
       parent.appendChild(el);
@@ -7064,17 +7067,17 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onAddStart() {
       this.a11yStatus.text = "Adding item to cart";
-      this.form.setAttribute("aria-busy", toAriaBoolean(true));
+      setAriaFlag(this.form, "aria-busy", true);
       this.atcButton.onAddStart();
     }
     onAddSuccess() {
       this.a11yStatus.text = "Item added to cart";
-      this.form.removeAttribute("aria-busy");
+      setAriaFlag(this.form, "aria-busy", false);
       this.atcButton.onAddSuccess();
     }
     onAddFail(e) {
       this.a11yStatus.text = e.message || "Error adding to cart";
-      this.form.removeAttribute("aria-busy");
+      setAriaFlag(this.form, "aria-busy", false);
       this.atcButton.onAddFail(e);
     }
   };
@@ -9428,7 +9431,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
       try {
         this.isSubmitting = true;
-        this.submit.setAttribute("disabled", "true");
+        this.submit.disabled = true;
         this.settings.onSubmitStart?.();
         const success = await KlaviyoAPI.createClientSubscription({
           email,
@@ -9563,48 +9566,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _FooterSection.TYPE = "footer";
   let FooterSection = _FooterSection;
-  const classes$3 = {
-    backdrop: "backdrop",
-    open: "is-open"
-  };
-  const _Backdrop = class _Backdrop extends BaseComponent {
-    static generate(parent, options = {}) {
-      const el = document.createElement("button");
-      const settings = {
-        title: "Close",
-        ariaLabel: "Close",
-        ariaExpanded: false,
-        ...options
-      };
-      el.classList.add(classes$3.backdrop);
-      el.setAttribute("type", "button");
-      el.setAttribute("title", settings.title);
-      el.setAttribute("aria-label", settings.ariaLabel || settings.title);
-      el.setAttribute("aria-expanded", toAriaBoolean(!!settings.ariaExpanded));
-      el.setAttribute("aria-hidden", toAriaBoolean(!settings.ariaExpanded));
-      if (settings.ariaControls) {
-        el.setAttribute("aria-controls", settings.ariaControls);
-      }
-      el.setAttribute("data-component", _Backdrop.TYPE);
-      const appendTo = parent || document.body;
-      appendTo.appendChild(el);
-      return new _Backdrop(el);
-    }
-    destroy() {
-      this.el.remove();
-      super.destroy();
-    }
-    show() {
-      this.el.classList.add(classes$3.open);
-      this.el.setAttribute("aria-hidden", toAriaBoolean(false));
-    }
-    hide() {
-      this.el.classList.remove(classes$3.open);
-      this.el.setAttribute("aria-hidden", toAriaBoolean(true));
-    }
-  };
-  _Backdrop.TYPE = "backdrop";
-  let Backdrop = _Backdrop;
   class FocusTrap {
     constructor(el, options = {}) {
       this.settings = {
@@ -9680,23 +9641,65 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.lastTabNavDirection = event.shiftKey ? "backward" : "forward";
     }
   }
+  const classes$3 = {
+    backdrop: "backdrop"
+  };
+  const _Backdrop = class _Backdrop extends BaseComponent {
+    static generate(parent, options = {}) {
+      const el = document.createElement("button");
+      el.classList.add(classes$3.backdrop);
+      el.setAttribute("type", "button");
+      el.setAttribute("tabindex", "-1");
+      setAriaFlag(el, "aria-hidden", true);
+      el.setAttribute("data-component", _Backdrop.TYPE);
+      const appendTo = parent || document.body;
+      appendTo.appendChild(el);
+      return new _Backdrop(el, options);
+    }
+    constructor(el, options = {}) {
+      super(el);
+      this.settings = {
+        title: "Close",
+        ariaLabel: "Close",
+        ...options
+      };
+      el.setAttribute("title", this.settings.title);
+      el.setAttribute("aria-label", this.settings.ariaLabel || this.settings.title);
+      if (this.settings.ariaControls) {
+        el.setAttribute("aria-controls", this.settings.ariaControls);
+      }
+    }
+    destroy() {
+      this.el.remove();
+      super.destroy();
+    }
+    show() {
+      setAriaFlag(this.el, "aria-hidden", false);
+    }
+    hide() {
+      setAriaFlag(this.el, "aria-hidden", true);
+    }
+  };
+  _Backdrop.TYPE = "backdrop";
+  let Backdrop = _Backdrop;
   const selectors$6 = {
     scroller: "[data-scroller]",
     close: "[data-close]"
   };
   const classes$2 = {
-    isOpen: "is-open",
     bodyIsOpen: "drawer-open"
   };
   const _Drawer = class _Drawer extends BaseComponent {
     constructor(el, options = {}) {
       super(el, {
-        watchBreakpoint: options.maxBreakpoint ? true : false,
+        watchBreakpoint: typeof options.minBreakpoint === "number" || typeof options.maxBreakpoint === "number" ? true : false,
         ...options
       });
       this.settings = {
+        minBreakpoint: null,
         maxBreakpoint: null,
         backdrop: true,
+        backdropOptions: {},
         ...options
       };
       this.role = this.el.getAttribute("role");
@@ -9709,12 +9712,14 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.backdrop = null;
       this.onClick = this.onClick.bind(this);
       this.onBodyClick = this.onBodyClick.bind(this);
+      this.onTransitionEnd = this.onTransitionEnd.bind(this);
       this.el.addEventListener("click", this.onClick);
+      this.el.addEventListener("transitionend", this.onTransitionEnd);
       document.body.addEventListener("click", this.onBodyClick);
       if (this.settings.backdrop) {
         this.backdrop = Backdrop.generate(document.body, {
-          ariaControls: this.el.id,
-          ariaExpanded: false
+          ...this.settings.backdropOptions,
+          ariaControls: this.el.id
         });
       }
       if (this.role) {
@@ -9732,34 +9737,42 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     open() {
       if (this.isOpen) return;
-      this.el.classList.add(classes$2.isOpen);
-      this.el.setAttribute("aria-hidden", toAriaBoolean(false));
-      this.el.setAttribute("aria-modal", toAriaBoolean(true));
+      setAriaFlag(this.el, "aria-hidden", false);
+      setAriaFlag(this.el, "aria-modal", true);
       document.body.classList.add(classes$2.bodyIsOpen);
-      this.ariaControlElements.forEach((el) => el.setAttribute("aria-expanded", toAriaBoolean(true)));
+      this.ariaControlElements.forEach((el) => setAriaState(el, "aria-expanded", true));
       this.backdrop?.show();
-      this.el.removeAttribute("inert");
-      this.focusTrap.activate();
+      this.el.inert = false;
       if (this.scroller) this.scroller.scrollTop = 0;
     }
     close() {
       if (!this.isOpen) return;
-      this.el.classList.remove(classes$2.isOpen);
-      this.el.setAttribute("aria-hidden", toAriaBoolean(true));
-      this.el.setAttribute("aria-modal", toAriaBoolean(false));
+      setAriaFlag(this.el, "aria-hidden", true);
+      setAriaFlag(this.el, "aria-modal", false);
       this.backdrop?.hide();
       document.body.classList.remove(classes$2.bodyIsOpen);
-      this.ariaControlElements.forEach((el) => el.setAttribute("aria-expanded", toAriaBoolean(false)));
-      this.el.setAttribute("inert", toAriaBoolean(true));
+      this.ariaControlElements.forEach((el) => setAriaState(el, "aria-expanded", false));
+      this.el.inert = true;
       this.focusTrap.deactivate();
     }
     toggle() {
       this.isOpen ? this.close() : this.open();
     }
+    onOpenComplete() {
+      this.focusTrap.activate();
+      this.settings.onOpenComplete?.();
+    }
+    onCloseComplete() {
+      this.settings.onCloseComplete?.();
+    }
+    onTransitionEnd(e) {
+      if (e.target !== this.el) return;
+      this.isOpen ? this.onOpenComplete() : this.onCloseComplete();
+    }
     onBreakpointChange(e) {
+      if (!this.isOpen) return;
       const { detail: { breakpoint } } = e;
-      if (!this.isOpen || !this.settings.maxBreakpoint) return;
-      if (breakpoint > this.settings.maxBreakpoint) {
+      if (this.settings.maxBreakpoint && breakpoint >= this.settings.maxBreakpoint || this.settings.minBreakpoint && breakpoint < this.settings.minBreakpoint) {
         this.close();
       }
     }
@@ -9785,7 +9798,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _MobileMenuDrawer = class _MobileMenuDrawer extends Drawer {
     constructor(el) {
       super(el, {
-        maxBreakpoint: BREAKPOINTS.md
+        maxBreakpoint: BREAKPOINTS.md,
+        backdropOptions: {
+          title: "Close mobile menu"
+        }
       });
       this.searchInline = new SearchInline(this.qs(SearchInline.SELECTOR));
     }
@@ -10107,18 +10123,18 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       switch (state) {
         case "removing":
           this.remove.disabled = true;
-          this.remove.setAttribute("aria-disabled", "true");
+          setAriaFlag(this.remove, "aria-disabled", true);
           this.el.classList.add(classes$1.removing);
           break;
         case "updating":
           this.remove.disabled = true;
-          this.remove.setAttribute("aria-disabled", "true");
+          setAriaFlag(this.remove, "aria-disabled", true);
           this.el.classList.add(classes$1.updating);
           break;
         case void 0:
         default:
           this.remove.disabled = false;
-          this.remove.removeAttribute("aria-disabled");
+          setAriaFlag(this.remove, "aria-disabled", false);
           this.el.classList.remove(classes$1.removing, classes$1.updating);
           break;
       }
@@ -10310,9 +10326,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       const { cart } = e.detail;
       this.subtotalPrice.textContent = cart.items_subtotal_price_formatted;
       if (cart.items.length === 0) {
-        this.submit.setAttribute("disabled", "true");
+        this.submit.disabled = true;
       } else {
-        this.submit.removeAttribute("disabled");
+        this.submit.disabled = false;
       }
     }
   };
@@ -10343,7 +10359,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       });
       this.backdrop = Backdrop.generate(document.body, {
         ariaControls: this.el.id,
-        ariaExpanded: false
+        title: "Close cart"
       });
       this.onBodyClick = this.onBodyClick.bind(this);
       document.body.addEventListener("click", this.onBodyClick);
@@ -10367,10 +10383,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     open() {
       if (this.isOpen) return;
       this.el.classList.add(classes.open);
-      this.el.setAttribute("aria-hidden", toAriaBoolean(false));
-      this.el.removeAttribute("inert");
+      this.el.inert = false;
+      setAriaFlag(this.el, "aria-hidden", false);
       this.backdrop.show();
-      this.ariaControlElements.forEach((el) => el.setAttribute("aria-expanded", toAriaBoolean(true)));
+      this.ariaControlElements.forEach((el) => setAriaState(el, "aria-expanded", true));
       document.body.classList.add(classes.bodyCartOpen);
       this.focusTrap.activate();
       this.isOpen = true;
@@ -10378,10 +10394,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     close() {
       if (!this.isOpen) return;
       this.el.classList.remove(classes.open);
-      this.el.setAttribute("aria-hidden", toAriaBoolean(true));
-      this.el.setAttribute("inert", toAriaBoolean(true));
+      this.el.inert = true;
+      setAriaFlag(this.el, "aria-hidden", true);
       this.backdrop.hide();
-      this.ariaControlElements.forEach((el) => el.setAttribute("aria-expanded", toAriaBoolean(false)));
+      this.ariaControlElements.forEach((el) => setAriaState(el, "aria-expanded", false));
       document.body.classList.remove(classes.bodyCartOpen);
       this.focusTrap.deactivate();
       this.isOpen = false;

@@ -127,7 +127,7 @@ export default class AJAXKlaviyoForm {
     try {
       this.isSubmitting = true;
 
-      this.submit.setAttribute('disabled', 'true')
+      this.submit.disabled = true
       this.settings.onSubmitStart?.()
 
       const success = await KlaviyoAPI.createClientSubscription({

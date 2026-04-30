@@ -37,16 +37,17 @@ export function setAriaCurrent(link: HTMLAnchorElement, currentPath: string): vo
   }  
 }
 
-/**
- * Converts a boolean value to its string representation ('true' or 'false').
- * Used for ARIA attributes that require string values of 'true' or 'false'
- * rather than boolean values (e.g., aria-expanded, aria-hidden, aria-selected).
- * 
- * @param {boolean} value - The boolean value to convert
- * @returns {string} The string representation ('true' or 'false') for use in ARIA attributes
- * @example
- * element.setAttribute('aria-expanded', booleanAsString(isExpanded));
- */
-export function toAriaBoolean(value: boolean): string {
-  return value ? 'true' : 'false'
+const AriaFlagAttributes = ['aria-hidden', 'aria-modal', 'aria-disabled', 'aria-busy'] as const
+type AriaFlagAttribute = typeof AriaFlagAttributes[number]
+                                                               
+export function setAriaFlag(el: HTMLElement, attr: AriaFlagAttribute, value: boolean): void {
+  value ? el.setAttribute(attr, 'true') : el.removeAttribute(attr)
+}                                                                          
+
+// For attributes where absent = "doesn't apply" — always sets "true" or "false"                                    
+const AriaStateAttributes = ['aria-expanded', 'aria-selected', 'aria-checked', 'aria-pressed', 'aria-invalid'] as const
+type AriaStateAttribute = typeof AriaStateAttributes[number]
+
+export function setAriaState(el: HTMLElement, attr: AriaStateAttribute, value: boolean): void {
+  el.setAttribute(attr, value ? 'true' : 'false')
 }

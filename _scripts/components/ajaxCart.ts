@@ -1,4 +1,4 @@
-import { toAriaBoolean } from '@/core/utils/a11y'
+import { setAriaFlag, setAriaState } from '@/core/utils/a11y'
 import FocusTrap from '@/core/focusTrap'
 import type { LiteCart } from '@/types/shopify'
 import type { CartAPIEvent } from '@/core/cartAPI'
@@ -52,7 +52,7 @@ export default class AJAXCart extends BaseComponent {
 
     this.backdrop = Backdrop.generate(document.body, {
       ariaControls: this.el.id,
-      ariaExpanded: false
+      title: 'Close cart'
     })
 
     this.onBodyClick = this.onBodyClick.bind(this)
@@ -88,12 +88,12 @@ export default class AJAXCart extends BaseComponent {
     if (this.isOpen) return
 
     this.el.classList.add(classes.open)
-    this.el.setAttribute('aria-hidden', toAriaBoolean(false))
-    this.el.removeAttribute('inert')
+    this.el.inert = false
+    setAriaFlag(this.el, 'aria-hidden', false)
 
     this.backdrop.show()
 
-    this.ariaControlElements.forEach(el => el.setAttribute('aria-expanded', toAriaBoolean(true)))
+    this.ariaControlElements.forEach(el => setAriaState(el, 'aria-expanded', true))
 
     document.body.classList.add(classes.bodyCartOpen)
 
@@ -106,12 +106,12 @@ export default class AJAXCart extends BaseComponent {
     if (!this.isOpen) return
 
     this.el.classList.remove(classes.open)
-    this.el.setAttribute('aria-hidden', toAriaBoolean(true))
-    this.el.setAttribute('inert', toAriaBoolean(true))
+    this.el.inert = true
+    setAriaFlag(this.el, 'aria-hidden', true)
 
     this.backdrop.hide()
 
-    this.ariaControlElements.forEach(el => el.setAttribute('aria-expanded', toAriaBoolean(false)))  
+    this.ariaControlElements.forEach(el => setAriaState(el, 'aria-expanded', false))  
     
     document.body.classList.remove(classes.bodyCartOpen)
 

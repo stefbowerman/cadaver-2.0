@@ -1,5 +1,5 @@
 import CartAPI from '@/core/cartAPI'
-import { toAriaBoolean } from '@/core/utils/a11y'
+import { setAriaFlag } from '@/core/utils/a11y'
 import type { LiteProduct, LiteVariant } from '@/types/shopify'
 
 import BaseComponent from '@/components/base'
@@ -128,19 +128,19 @@ export default class ProductDetailForm extends BaseComponent {
 
   onAddStart() {
     this.a11yStatus.text = 'Adding item to cart'
-    this.form.setAttribute('aria-busy', toAriaBoolean(true))    
+    setAriaFlag(this.form, 'aria-busy', true)    
     this.atcButton.onAddStart()
   }
 
   onAddSuccess() {
     this.a11yStatus.text = 'Item added to cart'
-    this.form.removeAttribute('aria-busy')    
+    setAriaFlag(this.form, 'aria-busy', false)    
     this.atcButton.onAddSuccess()
   }
 
   onAddFail(e: Error) {
     this.a11yStatus.text = e.message || 'Error adding to cart'
-    this.form.removeAttribute('aria-busy')
+    setAriaFlag(this.form, 'aria-busy', false)
     this.atcButton.onAddFail(e)
   }  
 }

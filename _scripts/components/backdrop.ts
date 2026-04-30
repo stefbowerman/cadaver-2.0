@@ -1,48 +1,51 @@
+import { setAriaFlag } from '@/core/utils/a11y'
 import BaseComponent from '@/components/base'
-import { toAriaBoolean } from '@/core/utils/a11y'
 
 const classes = {
-  backdrop: 'backdrop',
-  open: 'is-open'
+  backdrop: 'backdrop'
 }
 
-type BackdropGenerateOptions = {
-  title?: string;
-  ariaLabel?: string;
-  ariaControls?: string | null;
-  ariaExpanded?: boolean;
+export type BackdropOptions = {
+  title?: string
+  ariaLabel?: string
+  ariaControls?: string
 }
 
 export default class Backdrop extends BaseComponent {
   static TYPE = 'backdrop'
 
-  static generate(parent: Element | undefined, options: BackdropGenerateOptions = {}) {
+  settings: BackdropOptions
+
+  static generate(parent: Element | undefined, options: BackdropOptions = {}) {
     const el = document.createElement('button')
-    
-    const settings = {
-      title: 'Close',
-      ariaLabel: 'Close',
-      ariaExpanded: false,
-      ...options
-    }
 
     el.classList.add(classes.backdrop)
     el.setAttribute('type', 'button')
-    el.setAttribute('title', settings.title)
-    el.setAttribute('aria-label', settings.ariaLabel || settings.title)
-    el.setAttribute('aria-expanded', toAriaBoolean(!!settings.ariaExpanded))
-    el.setAttribute('aria-hidden', toAriaBoolean(!settings.ariaExpanded))
-    
-    if (settings.ariaControls) {
-      el.setAttribute('aria-controls', settings.ariaControls)
-    }
-
+    el.setAttribute('tabindex', '-1')
+    setAriaFlag(el, 'aria-hidden', true)
     el.setAttribute('data-component', Backdrop.TYPE)
 
     const appendTo = parent || document.body
     appendTo.appendChild(el)
 
-    return new Backdrop(el)
+    return new Backdrop(el, options)
+  }
+
+  constructor(el: HTMLElement, options: BackdropOptions = {}) {
+    super(el)
+
+    this.settings = {
+      title: 'Close',
+      ariaLabel: 'Close',
+      ...options
+    }
+
+    el.setAttribute('title', this.settings.title!)
+    el.setAttribute('aria-label', this.settings.ariaLabel || this.settings.title!)    
+
+    if (this.settings.ariaControls) {
+      el.setAttribute('aria-controls', this.settings.ariaControls)
+    }
   }
 
   destroy() {
@@ -52,12 +55,10 @@ export default class Backdrop extends BaseComponent {
   }
 
   show() {
-    this.el.classList.add(classes.open)
-    this.el.setAttribute('aria-hidden', toAriaBoolean(false))
+    setAriaFlag(this.el, 'aria-hidden', false)
   }
 
   hide() {
-    this.el.classList.remove(classes.open)
-    this.el.setAttribute('aria-hidden', toAriaBoolean(true))
+    setAriaFlag(this.el, 'aria-hidden', true)
   }
 }

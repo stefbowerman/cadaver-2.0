@@ -1,7 +1,7 @@
 import debounce, { type DebouncedFunc } from 'lodash.debounce'
-
-import { isTouch } from '@/core/utils'
 import type { LiteLineItem } from '@/types/shopify'
+import { isTouch } from '@/core/utils'
+import { setAriaFlag } from '@/core/utils/a11y'
 
 import BaseComponent from '@/components/base'
 import QuantityAdjuster from '@/components/quantityAdjuster'
@@ -76,18 +76,18 @@ export default class CartItem extends BaseComponent {
     switch (state) {
       case 'removing':
         this.remove.disabled = true
-        this.remove.setAttribute('aria-disabled', 'true')
+        setAriaFlag(this.remove, 'aria-disabled', true)
         this.el.classList.add(classes.removing)
         break
       case 'updating':
         this.remove.disabled = true
-        this.remove.setAttribute('aria-disabled', 'true')
+        setAriaFlag(this.remove, 'aria-disabled', true)
         this.el.classList.add(classes.updating)
         break
       case undefined:
       default:
         this.remove.disabled = false
-        this.remove.removeAttribute('aria-disabled')
+        setAriaFlag(this.remove, 'aria-disabled', false)
         this.el.classList.remove(classes.removing, classes.updating)
         break
     }

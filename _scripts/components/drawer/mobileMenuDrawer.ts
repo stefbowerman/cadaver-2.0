@@ -9,7 +9,10 @@ export default class MobileMenuDrawer extends Drawer {
 
   constructor(el: HTMLElement) {
     super(el, {
-      maxBreakpoint: BREAKPOINTS.md
+      maxBreakpoint: BREAKPOINTS.md,
+      backdropOptions: {
+        title: 'Close mobile menu'
+      }
     })
 
     this.searchInline = new SearchInline(this.qs(SearchInline.SELECTOR) as HTMLFormElement)

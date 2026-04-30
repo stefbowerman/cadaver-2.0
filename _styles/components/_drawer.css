@@ -4,7 +4,7 @@
 
   transition: var(--transition-drawer-out);
 
-  &.is-open {
+  &:not([aria-hidden="true"]) {
     @apply translate-x-0;
     transition: var(--transition-drawer-in);
   }
@@ -17,7 +17,7 @@
   opacity: 0;
   transition: var(--transition-backdrop-out);
 
-  &.is-open {
+  &:not([aria-hidden="true"]) {
     @apply pointer-events-auto;
 
     opacity: var(--backdrop-opacity);
