@@ -1,0 +1,18 @@
+{% doc %}
+  Price Formatted
+
+  @param {number} price - The price to format
+
+  @example
+    {% render 'price-formatted', price: product.price %}
+{% enddoc %}
+
+{%- liquid
+  assign price_string = price | money | strip
+
+  if price == 0
+    assign price_string = 'Free'
+  endif
+
+  echo price_string
+%}

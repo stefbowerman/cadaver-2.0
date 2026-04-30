@@ -20,7 +20,9 @@
 >
   <div class="ajax-cart__footer-row text-right">
     <span style="padding-right: 20px;">Sub-Total</span>
-    <span class="ajax-cart__total-price" data-subtotal-price>{{ cart.items_subtotal_price | money }}</span>
+    <span class="ajax-cart__total-price" data-subtotal-price>
+      {% render 'price-formatted', price: cart.items_subtotal_price %}
+=    </span>
   </div>
   <div class="ajax-cart__footer-row">
     <button type="submit" name="checkout" class="btn btn-block">

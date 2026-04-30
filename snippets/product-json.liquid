@@ -22,6 +22,11 @@
 {% if product %}
   
   {% capture product_json %}
+    {% liquid
+      capture price_formatted
+        render 'price-formatted', price: product.price
+      endcapture
+    %}
 
     {
       "id": {{ product.id }},
@@ -38,7 +43,7 @@
         {% endfor %}
       ],
       "price": {{ product.price | json }},
-      "price_formatted": {{ product.price | money_without_trailing_zeros | json }},
+      "price_formatted": {{ price_formatted | json }},
       "price_max": {{ product.price_max | json }},
       "price_min": {{ product.price_min | json }},
       "available": {{ product.available }},
@@ -50,6 +55,12 @@
       "has_only_default_variant": {{ product.has_only_default_variant }},
       "variants": [
         {% for variant in product.variants %}
+          {% liquid
+            capture price_formatted
+              render 'price-formatted', price: variant.price
+            endcapture
+          %}
+
           {
             "available": {{ variant.available }},
             "barcode": {{ variant.barcode | json }},
@@ -77,7 +88,7 @@
             "option2": {{ variant.option2 | json }},
             "option3": {{ variant.option3 | json }},
             "price": {{ variant.price | json }},
-            "price_formatted": {{ variant.price | money_without_trailing_zeros | json }},
+            "price_formatted": {{ price_formatted | json }},
             "requires_shipping": {{ variant.requires_shipping }},
             "sku": {{ variant.sku | json }},
             "taxable": {{ variant.taxable | json }},

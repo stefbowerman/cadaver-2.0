@@ -13,10 +13,20 @@
       "available": {{ product.available }},
       "variants": [
         {% for variant in product.variants %}
+          {%- liquid
+            capture compare_at_price_formatted
+              render 'price-formatted', price: variant.compare_at_price
+            endcapture
+
+            capture price_formatted
+              render 'price-formatted', price: variant.price
+            endcapture
+          -%}
+
           {
             "available": {{ variant.available }},
             "compare_at_price": {{ variant.compare_at_price | json }},
-            "compare_at_price_formatted": {{ variant.compare_at_price | money_without_trailing_zeros | json }},
+            "compare_at_price_formatted": {{ compare_at_price_formatted | json }},
             "id": {{ variant.id }},
             "options": [
               {% for option in variant.options %}
@@ -25,7 +35,7 @@
               {% endfor %}
             ],            
             "price": {{ variant.price | json }},
-            "price_formatted": {{ variant.price | money_without_trailing_zeros | json }},
+            "price_formatted": {{ price_formatted | json }},
             "title": {{ variant.title | json }}   
           }      
           {% unless forloop.last %},{% endunless %}

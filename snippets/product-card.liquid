@@ -79,7 +79,7 @@
           <div class="font-bold">{{ product.title }}</div>
           <div>
             {% if product.available %}
-              {{ product.selected_or_first_available_variant.price | money_without_trailing_zeros }}
+              {% render 'price-formatted', price: product.selected_or_first_available_variant.price %}
             {% else %}
               Sold Out
             {% endif %}
