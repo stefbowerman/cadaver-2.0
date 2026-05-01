@@ -1620,7 +1620,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   function prefersReducedMotion() {
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
-  function setAriaCurrent(link, currentPath) {
+  function setLinkAriaCurrent(link, currentPath) {
     if (!(link instanceof HTMLAnchorElement)) {
       console.warn("Invalid link element provided.");
       return;
@@ -1630,8 +1630,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       return;
     }
     if (!link.href) return;
-    const isExactMatch = link.pathname === currentPath;
-    if (isExactMatch) {
+    if (link.pathname === currentPath) {
       link.setAttribute("aria-current", "page");
     } else {
       link.removeAttribute("aria-current");
@@ -8739,7 +8738,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       super(el);
       this.color = this.dataset.color;
       this.productTitle = this.dataset.productTitle;
-      this.isActive = this.el.getAttribute("aria-current") === "true";
       this.emblaNode = this.qs(".embla");
       this.emblaViewport = this.qs(".embla__viewport");
       this.emblaPaginationNode = this.qs(".embla__pagination");
@@ -8766,6 +8764,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.emblaApi.on("select", setCurrentStatus);
       this.buttonNext?.addEventListener("click", this.onButtonNextClick.bind(this));
       this.buttonPrevious?.addEventListener("click", this.onButtonPreviousClick.bind(this));
+    }
+    get isActive() {
+      return this.el.getAttribute("aria-current") === "true";
+    }
+    set isActive(value) {
+      value ? this.el.setAttribute("aria-current", "true") : this.el.removeAttribute("aria-current");
     }
     get activeIndex() {
       return this.emblaApi?.selectedScrollSnap() ?? 0;
@@ -9268,7 +9272,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onNavigateIn(e) {
       const currentPath = new URL(e.detail.to.finalUrl).pathname;
       const links = this.container.querySelectorAll("nav a");
-      links.forEach((link) => setAriaCurrent(link, currentPath));
+      links.forEach((link) => setLinkAriaCurrent(link, currentPath));
     }
   };
   _HeaderSection.TYPE = "header";
@@ -9576,7 +9580,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onNavigateIn(e) {
       const currentPath = new URL(e.detail.to.finalUrl).pathname;
       const links = this.container.querySelectorAll("a");
-      links.forEach((link) => setAriaCurrent(link, currentPath));
+      links.forEach((link) => setLinkAriaCurrent(link, currentPath));
     }
   };
   _FooterSection.TYPE = "footer";
@@ -9837,7 +9841,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onNavigateIn(e) {
       const currentPath = new URL(e.detail.to.finalUrl).pathname;
       const links = this.drawer.el.querySelectorAll("nav a");
-      links.forEach((link) => setAriaCurrent(link, currentPath));
+      links.forEach((link) => setLinkAriaCurrent(link, currentPath));
     }
     onNavigateOut() {
       this.drawer.close();

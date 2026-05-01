@@ -14,7 +14,7 @@ export function prefersReducedMotion(): boolean {
  * @param {string} currentPath - The current path to compare against the link's pathname.
  * @return {void} 
  */
-export function setAriaCurrent(link: HTMLAnchorElement, currentPath: string): void {
+export function setLinkAriaCurrent(link: HTMLAnchorElement, currentPath: string): void {
   if (!(link instanceof HTMLAnchorElement)) {
     console.warn('Invalid link element provided.')
     return
@@ -27,9 +27,7 @@ export function setAriaCurrent(link: HTMLAnchorElement, currentPath: string): vo
 
   if (!link.href) return
 
-  const isExactMatch = link.pathname === currentPath
-
-  if (isExactMatch) {
+  if (link.pathname === currentPath) {
     link.setAttribute('aria-current', 'page')
   }
   else {

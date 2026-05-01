@@ -1,4 +1,4 @@
-import { setAriaCurrent } from '@/core/utils/a11y'
+import { setLinkAriaCurrent } from '@/core/utils/a11y'
 import type { TaxiNavigateInEvent } from '@/types/taxi'
 
 import BaseSection from '@/sections/base'
@@ -27,7 +27,7 @@ export default class MobileMenuSection extends BaseSection {
     const currentPath = new URL(e.detail.to.finalUrl).pathname
     const links = this.drawer.el.querySelectorAll<HTMLAnchorElement>('nav a')
 
-    links.forEach(link => setAriaCurrent(link, currentPath))
+    links.forEach(link => setLinkAriaCurrent(link, currentPath))
   }
 
   onNavigateOut() {

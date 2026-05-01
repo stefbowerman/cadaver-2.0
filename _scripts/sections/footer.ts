@@ -1,4 +1,4 @@
-import { setAriaCurrent } from '@/core/utils/a11y'
+import { setLinkAriaCurrent } from '@/core/utils/a11y'
 import type { TaxiNavigateInEvent } from '@/types/taxi'
 import { ThemeEditorSectionUnloadEvent } from '@/types/shopify'
 import AJAXKlaviyoForm from '@/core/ajaxKlaviyoForm'
@@ -48,6 +48,6 @@ export default class FooterSection extends BaseSection {
     const currentPath = new URL(e.detail.to.finalUrl).pathname
     const links = this.container.querySelectorAll<HTMLAnchorElement>('a')
 
-    links.forEach(link => setAriaCurrent(link, currentPath))
+    links.forEach(link => setLinkAriaCurrent(link, currentPath))
   }  
 }

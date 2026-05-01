@@ -1,4 +1,4 @@
-import { setAriaCurrent } from '@/core/utils/a11y'
+import { setLinkAriaCurrent } from '@/core/utils/a11y'
 import type { TaxiNavigateInEvent } from '@/types/taxi'
 
 import BaseSection from '@/sections/base'
@@ -23,6 +23,6 @@ export default class HeaderSection extends BaseSection {
     const currentPath = new URL(e.detail.to.finalUrl).pathname
     const links = this.container.querySelectorAll<HTMLAnchorElement>('nav a')
 
-    links.forEach(link => setAriaCurrent(link, currentPath))
+    links.forEach(link => setLinkAriaCurrent(link, currentPath))
   }  
 }

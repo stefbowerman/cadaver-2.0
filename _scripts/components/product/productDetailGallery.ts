@@ -13,7 +13,6 @@ export default class ProductDetailGallery extends BaseComponent {
 
   color: string
   productTitle: string
-  isActive: boolean
   emblaNode: HTMLElement | undefined
   emblaViewport: HTMLElement | undefined
   emblaPaginationNode: HTMLElement | undefined
@@ -30,7 +29,6 @@ export default class ProductDetailGallery extends BaseComponent {
 
     this.color = this.dataset.color
     this.productTitle = this.dataset.productTitle
-    this.isActive = this.el.getAttribute('aria-current') === 'true'
 
     this.emblaNode = this.qs('.embla')
     this.emblaViewport = this.qs('.embla__viewport')
@@ -66,6 +64,14 @@ export default class ProductDetailGallery extends BaseComponent {
 
     this.buttonNext?.addEventListener('click', this.onButtonNextClick.bind(this))
     this.buttonPrevious?.addEventListener('click', this.onButtonPreviousClick.bind(this))
+  }
+
+  get isActive() {
+    return this.el.getAttribute('aria-current') === 'true'
+  }
+
+  set isActive(value: boolean) {
+    value ? this.el.setAttribute('aria-current', 'true') : this.el.removeAttribute('aria-current')
   }
 
   get activeIndex() {
