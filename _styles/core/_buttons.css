@@ -25,10 +25,6 @@ button[disabled] {
     @apply active:bg-black active:border-black;
   }
 
-  &:focus-visible {
-    @apply outline outline-blue;
-  }
-
   /* Alternative styles go here... */
   /* &--primary {
 

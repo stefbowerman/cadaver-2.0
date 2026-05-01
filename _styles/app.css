@@ -20,6 +20,8 @@
   --z-ajax-cart: 200;
   --z-drawer: 200;
   --z-skip: 10000;
+
+  --aspect-product: 0.8;
 }
 
 @utility container {
@@ -149,15 +151,17 @@
       display: none;
     }
   }
-  
-  a, button {
-    &:focus-visible:not(:has([disabled])) {
-      @apply outline outline-blue;
-    }
-  }
 
   address {
     font-style: normal;
+  }
+
+  ::selection {
+    /* Set the background and text color for selected text */
+  }
+  
+  *:focus-visible:not([disabled]) {
+    @apply outline outline-solid outline-black outline-offset-3;
   }  
 
   /* Remove all animations and transitions for people that prefer not to see them */
@@ -165,9 +169,9 @@
     *,
     *::before,
     *::after {
+      transition-duration: 0.01ms !important;
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
 
@@ -245,3 +249,4 @@ img.lazy-image {
 @import './components/_ajax-cart.css';
 @import './components/_drawer.css';
 @import './components/_policy.css';
+@import './components/_product-card.css';

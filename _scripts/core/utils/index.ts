@@ -252,6 +252,18 @@ export const isTouch = (): boolean => {
 }
 
 /**
+ * Returns true if the primary input can hover (show cursor).
+ * 
+ * @function
+ * @returns {boolean} 
+ */
+export const prefersPointer = (): boolean => {
+  if (typeof window === 'undefined') return false
+
+  return window.matchMedia('(hover: hover)').matches
+}
+
+/**
  * Detects if the current device supports WebGL.
  * 
  * @function

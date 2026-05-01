@@ -100,8 +100,7 @@ export default class BaseComponent {
     }
 
     if (this.#intersectionObserver) {
-      this.#intersectionObserver.disconnect()
-      this.#intersectionObserver = null
+      this.killIntersectionObserver()
     }
 
     if (this.#settings.watchBreakpoint) {
@@ -199,6 +198,13 @@ export default class BaseComponent {
   onIntersection(entries: IntersectionObserverEntry[]) {
     // override in subclass
   }  
+
+  killIntersectionObserver() {
+    // Only call this externally if you know what you're doing
+    // e.g. you want to stop observing an element and don't need to re-observe it later
+    this.#intersectionObserver?.disconnect()
+    this.#intersectionObserver = null
+  }
 
   onBreakpointChange(e: BreakpointChangeEvent) {
     // override in subclass

@@ -1249,6 +1249,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     return "ontouchstart" in window || navigator.maxTouchPoints > 0;
   };
+  const prefersPointer = () => {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(hover: hover)").matches;
+  };
   const debounce = (func, wait = 200) => {
     let timeout;
     function executedFunction(...args) {
@@ -1505,8 +1509,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         __privateSet(this, _resizeObserver, null);
       }
       if (__privateGet(this, _intersectionObserver)) {
-        __privateGet(this, _intersectionObserver).disconnect();
-        __privateSet(this, _intersectionObserver, null);
+        this.killIntersectionObserver();
       }
       if (__privateGet(this, _settings).watchBreakpoint) {
         window.removeEventListener(BreakpointsController.EVENTS.CHANGE, this.onBreakpointChange);
@@ -1575,6 +1578,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onIntersection(entries) {
     }
+    killIntersectionObserver() {
+      __privateGet(this, _intersectionObserver)?.disconnect();
+      __privateSet(this, _intersectionObserver, null);
+    }
     onBreakpointChange(e) {
     }
     onScroll() {
@@ -1642,7 +1649,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   function setAriaState(el, attr, value) {
     el.setAttribute(attr, value ? "true" : "false");
   }
-  const classes$6 = {
+  const classes$7 = {
     isReady: "is-ready"
   };
   const _GraphicCoverVideo = class _GraphicCoverVideo extends BaseComponent {
@@ -1696,7 +1703,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
     }
     onPlay() {
-      this.video.classList.add(classes$6.isReady);
+      this.video.classList.add(classes$7.isReady);
     }
     onPause() {
     }
@@ -1958,7 +1965,34 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.onGenericEvent(e, "onBlockDeselect");
     }
   }
+  const selectors$i = {
+    mediaSecondary: "[data-media-secondary]"
+  };
+  const classes$6 = {
+    mediaSecondaryReady: "is-ready"
+  };
   const _ProductCard = class _ProductCard extends BaseComponent {
+    constructor(el) {
+      super(el, {
+        watchIntersection: true
+      });
+      this.mediaSecondary = this.qs(selectors$i.mediaSecondary);
+    }
+    onIntersection(entries) {
+      if (entries[0].isIntersecting) {
+        if (this.mediaSecondary instanceof HTMLElement && prefersPointer()) {
+          const img = this.mediaSecondary.querySelector("img");
+          if (img instanceof HTMLImageElement) {
+            img.onload = () => this.mediaSecondary.classList.add(classes$6.mediaSecondaryReady);
+            if (img.dataset.src) img.src = img.dataset.src;
+            if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+            img.removeAttribute("data-src");
+            img.removeAttribute("data-srcset");
+          }
+        }
+        this.killIntersectionObserver();
+      }
+    }
   };
   _ProductCard.TYPE = "product-card";
   let ProductCard = _ProductCard;
