@@ -8815,11 +8815,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         return new ProductDetailGallery(el);
       });
     }
-    onUnload(e) {
-      this.productDetailForm.destroy();
-      this.galleries.forEach((g) => g.destroy());
-      super.onUnload(e);
-    }
     /**
      * Look for a gallery matching one of the selected variant's options and switch to that gallery
      * If a matching gallery doesn't exist, look for the variant's featured image in the main gallery and switch to that
