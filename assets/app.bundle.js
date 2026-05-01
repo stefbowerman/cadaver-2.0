@@ -6586,6 +6586,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   });
   const slideUp = (el, options = {}) => {
     const duration = options.duration || 0.5;
+    gsapWithCSS.killTweensOf(el);
     const tl = gsapWithCSS.timeline({
       onStart: () => {
         options.onStart?.();
@@ -6598,7 +6599,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         options.onComplete?.();
       }
     });
-    gsapWithCSS.killTweensOf(el);
     if (!isVisible(el)) {
       return tl;
     }

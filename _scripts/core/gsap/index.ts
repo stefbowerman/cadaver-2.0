@@ -72,8 +72,6 @@ export const slideDown = (el: HTMLElement, options: SlideOptions = {}): gsap.cor
     }
   })
 
-  gsap.killTweensOf(el)
-
   // If it's already visible, don't run the animation
   if (isVisible(el)) {
     return tl
@@ -107,6 +105,8 @@ export const slideDown = (el: HTMLElement, options: SlideOptions = {}): gsap.cor
 
 export const slideUp = (el: HTMLElement, options: SlideOptions = {}): gsap.core.Timeline => {
   const duration = options.duration || 0.5
+
+  gsap.killTweensOf(el)
   
   const tl = gsap.timeline({
     onStart: () => {
@@ -120,8 +120,6 @@ export const slideUp = (el: HTMLElement, options: SlideOptions = {}): gsap.core.
       options.onComplete?.()
     }
   })
-
-  gsap.killTweensOf(el)
 
   if (!isVisible(el)) {
     return tl
