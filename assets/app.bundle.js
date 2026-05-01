@@ -6805,14 +6805,18 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   _CollectionSection.TYPE = "collection";
   let CollectionSection = _CollectionSection;
   const selectors$f = {
-    price: "[data-price]",
+    priceValue: "[data-price-value]",
+    priceLabel: "[data-price-label]",
     compare: "[data-compare]",
     comparePrice: "[data-compare-price]"
   };
   const _ProductPrice = class _ProductPrice extends BaseComponent {
     constructor(el) {
       super(el);
-      this.price = this.qs(selectors$f.price);
+      this.labelPrice = this.el.dataset.labelPrice || getAppString("productPrice") || "Price";
+      this.labelSalePrice = this.el.dataset.labelSalePrice || getAppString("productSalePrice") || "Sale Price";
+      this.priceValue = this.qs(selectors$f.priceValue);
+      this.priceLabel = this.qs(selectors$f.priceLabel);
       this.compare = this.qs(selectors$f.compare);
       this.comparePrice = this.qs(selectors$f.comparePrice);
     }
@@ -6828,17 +6832,18 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     update(variant) {
       if (variant) {
         const onSale = variant.compare_at_price > variant.price;
-        if (this.price) {
-          this.price.textContent = variant.price_formatted;
+        if (this.priceValue) {
+          this.priceValue.textContent = variant.price_formatted;
         }
-        if (this.compare) {
+        if (this.priceLabel) {
+          this.priceLabel.textContent = onSale ? this.labelSalePrice : this.labelPrice;
+        }
+        if (this.compare && this.comparePrice) {
           this.comparePrice.textContent = onSale ? variant.compare_at_price_formatted : "";
-          this.comparePrice.style.display = onSale ? "" : "none";
+          this.compare.hidden = !onSale;
         }
-        this.el.style.display = "";
-      } else {
-        this.el.style.display = "none";
       }
+      this.el.hidden = !variant;
     }
   };
   _ProductPrice.TYPE = "product-price";

@@ -40,7 +40,15 @@
     assign product_url = product.url
     if collection and collection.handle != 'all'
       assign product_url = product.url | within: collection
-    endif    
+    endif
+
+    assign selected_variant = product.selected_or_first_available_variant
+    assign is_on_sale = false
+    
+    assign compare_at_price = selected_variant.compare_at_price
+    if compare_at_price > product.price
+      assign is_on_sale = true
+    endif
   -%}
 
   {%- capture alt_text %}
@@ -79,9 +87,17 @@
           <div class="font-bold">{{ product.title }}</div>
           <div>
             {% if product.available %}
-              {% render 'price-formatted', price: product.selected_or_first_available_variant.price %}
+              {% if is_on_sale %}
+                <span class="sr-only">{{ 'products.product.price.regular_price' | t }}</span>
+                <s>{% render 'price-formatted', price: compare_at_price %}</s>
+                <span class="sr-only">{{ 'products.product.price.sale_price' | t }}</span>
+                {% render 'price-formatted', price: selected_variant.price %}
+              {%  else %}
+                <span class="sr-only">{{ 'products.product.price.price' | t }}</span>
+                {% render 'price-formatted', price: selected_variant.price %}
+              {%  endif %}
             {% else %}
-              Sold Out
+              {{ 'products.product.sold_out' | t }}
             {% endif %}
           </div>
         </div>

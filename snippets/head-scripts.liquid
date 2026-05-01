@@ -8,7 +8,9 @@
       unavailable: {{ 'app.unavailable' | t | json }},
       adding: {{ 'app.adding' | t | json }},
       added: {{ 'app.added' | t | json }},
-      error: {{ 'app.error' | t | json }}
+      error: {{ 'app.error' | t | json }},
+      productPrice: {{ 'products.product.price.price' | t | json }},
+      productSalePrice: {{ 'products.product.price.sale_price' | t | json }}
     },
     routes: {
       root_url: {{ routes.root_url | json }},

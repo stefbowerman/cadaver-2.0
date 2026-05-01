@@ -28,27 +28,42 @@
 
   if current_variant.compare_at_price > current_variant.price
     assign current_variant_on_sale = true
-  endif  
+  endif
+
+  assign label_price = 'products.product.price.price' | t
+  assign label_sale_price = 'products.product.price.sale_price' | t
 %}
 
 <div
   data-component="product-price"
   role="status"
+  aria-atomic="true"
+  data-label-price="{{ label_price | escape }}"
+  data-label-sale-price="{{ label_sale_price | escape }}"
 >
-  <span data-price>
-    {% render 'price-formatted', price: current_variant.price %}
+  <span>
+    <span class="sr-only" data-price-label>                                                                                                  
+      {% if current_variant_on_sale %}
+        {{ label_sale_price }}
+      {% else %}
+        {{ label_price }}
+      {% endif %}
+    </span>     
+    <span data-price-value>
+      {% render 'price-formatted', price: current_variant.price %}
+    </span>
   </span>
 
   {% if has_compare %}
-    <span data-compare>
+    <span
+      data-compare
+      {% if current_variant_on_sale != true %}hidden{% endif %}
+    >
       <span class="sr-only">
         {{ 'products.product.regular_price' | t }}
       </span>
       
-      <s
-        {% if current_variant_on_sale != true %}style="display: none"{% endif %}
-        data-compare-price
-      >
+      <s data-compare-price>
         {% if current_variant_on_sale %}
           {% render 'price-formatted', price: current_variant.compare_at_price %}
         {% endif %}
