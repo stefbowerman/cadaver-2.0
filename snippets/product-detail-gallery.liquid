@@ -65,18 +65,20 @@
           for image in product.images
             assign image_alt_upcase = image.alt | upcase
             assign loading = 'lazy'
+            assign fetchpriority = 'auto'
 
             if image_alt_upcase contains color_upcase
               if slides_count == 0 and is_active
                 assign loading = 'eager'
+                assign fetchpriority = 'high'
               endif
 
               capture list_item
-                render 'product-detail-gallery-item', image: image
+                render 'product-detail-gallery-item', image: image, loading: loading, fetchpriority: fetchpriority
               endcapture
 
               capture slide
-                render 'product-detail-gallery-slide', image: image, loading: loading
+                render 'product-detail-gallery-slide', image: image, loading: loading, fetchpriority: fetchpriority
               endcapture
 
               assign list_items = list_items | append: list_item
@@ -116,17 +118,19 @@
 
     for image in product.images
       assign loading = 'lazy'
+      assign fetchpriority = 'auto'
 
       if forloop.first
         assign loading = 'eager'
+        assign fetchpriority = 'high'
       endif
 
       capture list_item
-        render 'product-detail-gallery-item', image: image
+        render 'product-detail-gallery-item', image: image, loading: loading, fetchpriority: fetchpriority
       endcapture
 
       capture slide
-        render 'product-detail-gallery-slide', image: image, loading: loading
+        render 'product-detail-gallery-slide', image: image, loading: loading, fetchpriority: fetchpriority
       endcapture
 
       assign list_items = list_items | append: list_item
