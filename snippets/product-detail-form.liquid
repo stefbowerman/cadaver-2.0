@@ -114,11 +114,11 @@
                   </span>
                 </button>  
 
-                <div>
+                {% if product.available %}
                   <div>
                     {{ form | payment_terms }}
                   </div>
-                </div>
+                {% endif %}
 
               {% if product.description != blank %}
                 <div>
