@@ -1795,7 +1795,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onIntersection(entries) {
     }
-    stopIntersectionObserver() {
+    killIntersectionObserver() {
       this.#intersectionObserver?.disconnect();
       this.#intersectionObserver = null;
     }
@@ -1817,7 +1817,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       window.removeEventListener("taxi.navigateIn", this.onNavigateIn);
       window.removeEventListener("taxi.navigateEnd", this.onNavigateEnd);
       this.lazyImageController.destroy();
-      this.#intersectionObserver?.disconnect();
+      this.killIntersectionObserver();
       doComponentCleanup(this);
     }
     onSectionSelect(e) {
@@ -8921,7 +8921,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onIntersection(entries) {
       if (!entries[0].isIntersecting) return;
-      this.stopIntersectionObserver();
+      this.killIntersectionObserver();
       this.getRecommendations();
     }
     async getRecommendations() {

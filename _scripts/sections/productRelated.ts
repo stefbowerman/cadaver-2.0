@@ -47,7 +47,7 @@ export default class ProductRelatedSection extends BaseSection {
   onIntersection(entries: IntersectionObserverEntry[]) {
     if (!entries[0].isIntersecting) return
 
-    this.stopIntersectionObserver() // We only want to check for intersection *once*
+    this.killIntersectionObserver() // We only want to check for intersection *once*
 
     this.getRecommendations()
   }  

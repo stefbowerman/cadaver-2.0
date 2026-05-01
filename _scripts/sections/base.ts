@@ -124,7 +124,7 @@ export default class BaseSection {
     // override in subclass
   }
 
-  stopIntersectionObserver() {
+  killIntersectionObserver() {
     this.#intersectionObserver?.disconnect()
     this.#intersectionObserver = null
   }
@@ -150,7 +150,7 @@ export default class BaseSection {
     window.removeEventListener('taxi.navigateEnd', this.onNavigateEnd)
 
     this.lazyImageController.destroy()
-    this.#intersectionObserver?.disconnect()
+    this.killIntersectionObserver()
 
     doComponentCleanup(this) // This automatically calls this.destroy() up all components recursively
   }
