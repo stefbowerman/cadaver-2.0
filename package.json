@@ -30,7 +30,6 @@
     "animated-scroll-to": "^2.3.0",
     "embla-carousel": "^8.6.0",
     "gsap": "^3.12.7",
-    "lodash.debounce": "^4.0.8",
     "tailwindcss": "^4.1.17"
   }
 }

@@ -1249,6 +1249,21 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     return "ontouchstart" in window || navigator.maxTouchPoints > 0;
   };
+  const debounce = (func, wait = 200) => {
+    let timeout;
+    function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    }
+    executedFunction.cancel = function() {
+      clearTimeout(timeout);
+    };
+    return executedFunction;
+  };
   const SELECTOR = "img.lazy-image";
   const LOADED_CLASS = "is-loaded";
   const CACHED_CLASS = "is-cached";
@@ -2086,11 +2101,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       return void 0;
     }
   };
-  function _assertThisInitialized(self2) {
-    if (self2 === void 0) {
+  function _assertThisInitialized(self) {
+    if (self === void 0) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
     }
-    return self2;
+    return self;
   }
   function _inheritsLoose(subClass, superClass) {
     subClass.prototype = Object.create(superClass.prototype);
@@ -3345,19 +3360,19 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       return vars[type];
     };
     _proto.then = function then(onFulfilled) {
-      var self2 = this;
+      var self = this;
       return new Promise(function(resolve) {
         var f = _isFunction(onFulfilled) ? onFulfilled : _passThrough, _resolve = function _resolve2() {
-          var _then = self2.then;
-          self2.then = null;
-          _isFunction(f) && (f = f(self2)) && (f.then || f === self2) && (self2.then = _then);
+          var _then = self.then;
+          self.then = null;
+          _isFunction(f) && (f = f(self)) && (f.then || f === self) && (self.then = _then);
           resolve(f);
-          self2.then = _then;
+          self.then = _then;
         };
-        if (self2._initted && self2.totalProgress() === 1 && self2._ts >= 0 || !self2._tTime && self2._ts < 0) {
+        if (self._initted && self.totalProgress() === 1 && self._ts >= 0 || !self._tTime && self._ts < 0) {
           _resolve();
         } else {
-          self2._prom = _resolve;
+          self._prom = _resolve;
         }
       });
     };
@@ -3813,39 +3828,39 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       return _uncache(this);
     };
     _proto2.totalDuration = function totalDuration(value) {
-      var max = 0, self2 = this, child = self2._last, prevStart = _bigNum$2, prev, start, parent;
+      var max = 0, self = this, child = self._last, prevStart = _bigNum$2, prev, start, parent;
       if (arguments.length) {
-        return self2.timeScale((self2._repeat < 0 ? self2.duration() : self2.totalDuration()) / (self2.reversed() ? -value : value));
+        return self.timeScale((self._repeat < 0 ? self.duration() : self.totalDuration()) / (self.reversed() ? -value : value));
       }
-      if (self2._dirty) {
-        parent = self2.parent;
+      if (self._dirty) {
+        parent = self.parent;
         while (child) {
           prev = child._prev;
           child._dirty && child.totalDuration();
           start = child._start;
-          if (start > prevStart && self2._sort && child._ts && !self2._lock) {
-            self2._lock = 1;
-            _addToTimeline(self2, child, start - child._delay, 1)._lock = 0;
+          if (start > prevStart && self._sort && child._ts && !self._lock) {
+            self._lock = 1;
+            _addToTimeline(self, child, start - child._delay, 1)._lock = 0;
           } else {
             prevStart = start;
           }
           if (start < 0 && child._ts) {
             max -= start;
-            if (!parent && !self2._dp || parent && parent.smoothChildTiming) {
-              self2._start += start / self2._ts;
-              self2._time -= start;
-              self2._tTime -= start;
+            if (!parent && !self._dp || parent && parent.smoothChildTiming) {
+              self._start += start / self._ts;
+              self._time -= start;
+              self._tTime -= start;
             }
-            self2.shiftChildren(-start, false, -Infinity);
+            self.shiftChildren(-start, false, -Infinity);
             prevStart = 0;
           }
           child._end > max && child._ts && (max = child._end);
           child = prev;
         }
-        _setDuration(self2, self2 === _globalTimeline && self2._time > max ? self2._time : max, 1, 1);
-        self2._dirty = 0;
+        _setDuration(self, self === _globalTimeline && self._time > max ? self._time : max, 1, 1);
+        self._dirty = 0;
       }
-      return self2._tDur;
+      return self._tDur;
     };
     Timeline2.updateRoot = function updateRoot(time) {
       if (_globalTimeline._ts) {
@@ -4644,22 +4659,22 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         func = name;
         name = _isFunction;
       }
-      var self2 = this, f = function f2() {
-        var prev = _context, prevSelector = self2.selector, result;
-        prev && prev !== self2 && prev.data.push(self2);
-        scope && (self2.selector = selector(scope));
-        _context = self2;
-        result = func.apply(self2, arguments);
-        _isFunction(result) && self2._r.push(result);
+      var self = this, f = function f2() {
+        var prev = _context, prevSelector = self.selector, result;
+        prev && prev !== self && prev.data.push(self);
+        scope && (self.selector = selector(scope));
+        _context = self;
+        result = func.apply(self, arguments);
+        _isFunction(result) && self._r.push(result);
         _context = prev;
-        self2.selector = prevSelector;
-        self2.isReverted = false;
+        self.selector = prevSelector;
+        self.isReverted = false;
         return result;
       };
-      self2.last = f;
-      return name === _isFunction ? f(self2, function(func2) {
-        return self2.add(null, func2);
-      }) : name ? self2[name] = f : f;
+      self.last = f;
+      return name === _isFunction ? f(self, function(func2) {
+        return self.add(null, func2);
+      }) : name ? self[name] = f : f;
     };
     _proto5.ignore = function ignore(func) {
       var prev = _context;
@@ -7169,10 +7184,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (isString(align)) return predefined[align](n);
       return align(viewSize, n, index);
     }
-    const self2 = {
+    const self = {
       measure
     };
-    return self2;
+    return self;
   }
   function EventStore() {
     let listeners2 = [];
@@ -7189,16 +7204,16 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         removeListener = () => legacyMediaQueryList.removeListener(handler);
       }
       listeners2.push(removeListener);
-      return self2;
+      return self;
     }
     function clear() {
       listeners2 = listeners2.filter((remove) => remove());
     }
-    const self2 = {
+    const self = {
       add,
       clear
     };
-    return self2;
+    return self;
   }
   function Animations(ownerDocument, ownerWindow, update, render) {
     const documentVisibleHandler = EventStore();
@@ -7249,7 +7264,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       lastTimeStamp = null;
       accumulatedTime = 0;
     }
-    const self2 = {
+    const self = {
       init: init2,
       destroy,
       start,
@@ -7257,7 +7272,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       update,
       render
     };
-    return self2;
+    return self;
   }
   function Axis(axis, contentDirection) {
     const isRightToLeft = contentDirection === "rtl";
@@ -7285,7 +7300,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     function direction(n) {
       return n * sign;
     }
-    const self2 = {
+    const self = {
       scroll,
       cross,
       startEdge,
@@ -7293,7 +7308,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       measureSize,
       direction
     };
-    return self2;
+    return self;
   }
   function Limit(min = 0, max = 0) {
     const length = mathAbs(min - max);
@@ -7314,7 +7329,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (!length) return n;
       return n - length * Math.ceil((n - max) / length);
     }
-    const self2 = {
+    const self = {
       length,
       max,
       min,
@@ -7324,7 +7339,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       reachedMin,
       removeOffset
     };
-    return self2;
+    return self;
   }
   function Counter(max, start, loop) {
     const {
@@ -7340,7 +7355,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     function set(n) {
       counter = withinLimit(n);
-      return self2;
+      return self;
     }
     function add(n) {
       return clone2().set(get() + n);
@@ -7348,13 +7363,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     function clone2() {
       return Counter(max, get(), loop);
     }
-    const self2 = {
+    const self = {
       get,
       set,
       add,
       clone: clone2
     };
-    return self2;
+    return self;
   }
   function DragHandler(axis, rootNode, ownerDocument, ownerWindow, target, dragTracker, location2, animation, scrollTo, scrollBody, scrollTarget, index, eventHandler, percentOfView, dragFree, dragThreshold, skipSnaps, baseFriction, watchDrag) {
     const {
@@ -7477,12 +7492,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     function pointerDown() {
       return pointerIsDown;
     }
-    const self2 = {
+    const self = {
       init: init2,
       destroy,
       pointerDown
     };
-    return self2;
+    return self;
   }
   function DragTracker(axis, ownerWindow) {
     const logInterval = 170;
@@ -7517,13 +7532,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       const isFlick = diffTime && !expired && mathAbs(force) > 0.1;
       return isFlick ? force : 0;
     }
-    const self2 = {
+    const self = {
       pointerDown,
       pointerMove,
       pointerUp,
       readPoint
     };
-    return self2;
+    return self;
   }
   function NodeRects() {
     function measure(node) {
@@ -7543,19 +7558,19 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       };
       return offset;
     }
-    const self2 = {
+    const self = {
       measure
     };
-    return self2;
+    return self;
   }
   function PercentOfView(viewSize) {
     function measure(n) {
       return viewSize * (n / 100);
     }
-    const self2 = {
+    const self = {
       measure
     };
-    return self2;
+    return self;
   }
   function ResizeHandler(container, eventHandler, ownerWindow, slides, axis, watchResize, nodeRects) {
     const observeNodes = [container].concat(slides);
@@ -7598,11 +7613,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       destroyed = true;
       if (resizeObserver) resizeObserver.disconnect();
     }
-    const self2 = {
+    const self = {
       init: init2,
       destroy
     };
-    return self2;
+    return self;
   }
   function ScrollBody(location2, offsetLocation, previousLocation, target, baseDuration, baseFriction) {
     let scrollVelocity = 0;
@@ -7630,7 +7645,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
       scrollDirection = mathSign(scrollDistance);
       rawLocationPrevious = rawLocation;
-      return self2;
+      return self;
     }
     function settled() {
       const diff = target.get() - offsetLocation.get();
@@ -7653,13 +7668,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     function useDuration(n) {
       scrollDuration = n;
-      return self2;
+      return self;
     }
     function useFriction(n) {
       scrollFriction = n;
-      return self2;
+      return self;
     }
-    const self2 = {
+    const self = {
       direction,
       duration,
       velocity,
@@ -7670,7 +7685,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       useFriction,
       useDuration
     };
-    return self2;
+    return self;
   }
   function ScrollBounds(limit, location2, target, scrollBody, percentOfView) {
     const pullBackThreshold = percentOfView.measure(10);
@@ -7698,12 +7713,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     function toggleActive(active) {
       disabled = !active;
     }
-    const self2 = {
+    const self = {
       shouldConstrain,
       constrain,
       toggleActive
     };
-    return self2;
+    return self;
   }
   function ScrollContain(viewSize, contentSize, snapsAligned, containScroll, pixelTolerance) {
     const scrollBounds = Limit(-contentSize + viewSize, 0);
@@ -7745,20 +7760,20 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       } = scrollContainLimit;
       return snapsBounded.slice(min, max);
     }
-    const self2 = {
+    const self = {
       snapsContained,
       scrollContainLimit
     };
-    return self2;
+    return self;
   }
   function ScrollLimit(contentSize, scrollSnaps, loop) {
     const max = scrollSnaps[0];
     const min = loop ? max - contentSize : arrayLast(scrollSnaps);
     const limit = Limit(min, max);
-    const self2 = {
+    const self = {
       limit
     };
-    return self2;
+    return self;
   }
   function ScrollLooper(contentSize, limit, location2, vectors) {
     const jointSafety = 0.1;
@@ -7778,10 +7793,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       const loopDistance = contentSize * (direction * -1);
       vectors.forEach((v) => v.add(loopDistance));
     }
-    const self2 = {
+    const self = {
       loop
     };
-    return self2;
+    return self;
   }
   function ScrollProgress(limit) {
     const {
@@ -7792,10 +7807,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       const currentLocation = n - max;
       return length ? currentLocation / -length : 0;
     }
-    const self2 = {
+    const self = {
       get
     };
-    return self2;
+    return self;
   }
   function ScrollSnaps(axis, alignment, containerRect, slideRects, slidesToScroll) {
     const {
@@ -7817,11 +7832,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     function measureAligned() {
       return groupSlides(snaps).map((g) => g[0]).map((snap2, index) => snap2 + alignments[index]);
     }
-    const self2 = {
+    const self = {
       snaps,
       snapsAligned
     };
-    return self2;
+    return self;
   }
   function SlideRegistry(containSnaps, containScroll, scrollSnaps, scrollContainLimit, slidesToScroll, slideIndexes) {
     const {
@@ -7851,10 +7866,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         return group;
       });
     }
-    const self2 = {
+    const self = {
       slideRegistry
     };
-    return self2;
+    return self;
   }
   function ScrollTarget(loop, scrollSnaps, contentSize, limit, targetVector) {
     const {
@@ -7913,12 +7928,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         distance: snapDistance
       };
     }
-    const self2 = {
+    const self = {
       byDistance,
       byIndex,
       shortcut
     };
-    return self2;
+    return self;
   }
   function ScrollTo(animation, indexCurrent, indexPrevious, scrollBody, scrollTarget, targetVector, eventHandler) {
     function scrollTo(target) {
@@ -7949,11 +7964,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       const target = scrollTarget.byIndex(targetIndex.get(), direction);
       scrollTo(target);
     }
-    const self2 = {
+    const self = {
       distance,
       index
     };
-    return self2;
+    return self;
   }
   function SlideFocus(root, slides, slideRegistry, scrollTo, scrollBody, eventStore, eventHandler, watchFocus) {
     const focusListenerOptions = {
@@ -7987,10 +8002,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     function registerTabPress(event) {
       if (event.code === "Tab") lastTabPressTime = (/* @__PURE__ */ new Date()).getTime();
     }
-    const self2 = {
+    const self = {
       init: init2
     };
-    return self2;
+    return self;
   }
   function Vector1D(initialValue) {
     let value = initialValue;
@@ -8009,13 +8024,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     function normalizeInput(n) {
       return isNumber(n) ? n : n.get();
     }
-    const self2 = {
+    const self = {
       get,
       set,
       add,
       subtract
     };
-    return self2;
+    return self;
   }
   function Translate(axis, container) {
     const translate = axis.scroll === "x" ? x : y;
@@ -8043,12 +8058,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       containerStyle.transform = "";
       if (!container.getAttribute("style")) container.removeAttribute("style");
     }
-    const self2 = {
+    const self = {
       clear,
       to,
       toggleActive
     };
-    return self2;
+    return self;
   }
   function SlideLooper(axis, viewSize, contentSize, slideSizes, slideSizesWithGaps, snaps, scrollSnaps, location2, slides) {
     const roundingSafety = 0.5;
@@ -8122,13 +8137,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     function clear() {
       loopPoints.forEach((loopPoint) => loopPoint.translate.clear());
     }
-    const self2 = {
+    const self = {
       canLoop,
       clear,
       loop,
       loopPoints
     };
-    return self2;
+    return self;
   }
   function SlidesHandler(container, eventHandler, watchSlides) {
     let mutationObserver;
@@ -8158,11 +8173,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (mutationObserver) mutationObserver.disconnect();
       destroyed = true;
     }
-    const self2 = {
+    const self = {
       init: init2,
       destroy
     };
-    return self2;
+    return self;
   }
   function SlidesInView(container, slides, eventHandler, threshold) {
     const intersectionEntryMap = {};
@@ -8210,12 +8225,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (!inView) notInViewCache = slideIndexes;
       return slideIndexes;
     }
-    const self2 = {
+    const self = {
       init: init2,
       destroy,
       get
     };
-    return self2;
+    return self;
   }
   function SlideSizes(axis, containerRect, slideRects, slides, readEdgeGap, ownerWindow) {
     const {
@@ -8247,13 +8262,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         return rects[index + 1][startEdge] - rect[startEdge];
       }).map(mathAbs);
     }
-    const self2 = {
+    const self = {
       slideSizes,
       slideSizesWithGaps,
       startGap,
       endGap
     };
-    return self2;
+    return self;
   }
   function SlidesToScroll(axis, viewSize, slidesToScroll, loop, containerRect, slideRects, startGap, endGap, pixelTolerance) {
     const {
@@ -8287,10 +8302,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     function groupSlides(array) {
       return groupByNumber ? byNumber(array, slidesToScroll) : bySize(array);
     }
-    const self2 = {
+    const self = {
       groupSlides
     };
-    return self2;
+    return self;
   }
   function Engine(root, container, slides, ownerDocument, ownerWindow, options, eventHandler) {
     const {
@@ -8453,27 +8468,27 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     function emit(evt) {
       getListeners(evt).forEach((e) => e(api, evt));
-      return self2;
+      return self;
     }
     function on(evt, cb) {
       listeners2[evt] = getListeners(evt).concat([cb]);
-      return self2;
+      return self;
     }
     function off(evt, cb) {
       listeners2[evt] = getListeners(evt).filter((e) => e !== cb);
-      return self2;
+      return self;
     }
     function clear() {
       listeners2 = {};
     }
-    const self2 = {
+    const self = {
       init: init2,
       emit,
       off,
       on,
       clear
     };
-    return self2;
+    return self;
   }
   const defaultOptions = {
     align: "center",
@@ -8509,12 +8524,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     function optionsMediaQueries(optionsList) {
       return optionsList.map((options) => objectKeys(options.breakpoints || {})).reduce((acc, mediaQueries) => acc.concat(mediaQueries), []).map(ownerWindow.matchMedia);
     }
-    const self2 = {
+    const self = {
       mergeOptions,
       optionsAtMedia,
       optionsMediaQueries
     };
-    return self2;
+    return self;
   }
   function PluginsHandler(optionsHandler) {
     let activePlugins = [];
@@ -8530,11 +8545,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     function destroy() {
       activePlugins = activePlugins.filter((plugin) => plugin.destroy());
     }
-    const self2 = {
+    const self = {
       init: init2,
       destroy
     };
-    return self2;
+    return self;
   }
   function EmblaCarousel(root, userOptions, userPlugins) {
     const ownerDocument = root.ownerDocument;
@@ -8596,13 +8611,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       engine.translate.to(engine.location.get());
       engine.animation.init();
       engine.slidesInView.init();
-      engine.slideFocus.init(self2);
-      engine.eventHandler.init(self2);
-      engine.resizeHandler.init(self2);
-      engine.slidesHandler.init(self2);
+      engine.slideFocus.init(self);
+      engine.eventHandler.init(self);
+      engine.resizeHandler.init(self);
+      engine.slidesHandler.init(self);
       if (engine.options.loop) engine.slideLooper.loop();
-      if (container.offsetParent && slides.length) engine.dragHandler.init(self2);
-      pluginApis = pluginsHandler.init(self2, pluginList);
+      if (container.offsetParent && slides.length) engine.dragHandler.init(self);
+      pluginApis = pluginsHandler.init(self, pluginList);
     }
     function reActivate(withOptions, withPlugins) {
       const startIndex = selectedScrollSnap();
@@ -8686,7 +8701,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     function slideNodes() {
       return slides;
     }
-    const self2 = {
+    const self = {
       canScrollNext,
       canScrollPrev,
       containerNode,
@@ -8711,7 +8726,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     };
     activate(userOptions, userPlugins);
     setTimeout(() => eventHandler.emit("init"), 0);
-    return self2;
+    return self;
   }
   EmblaCarousel.globalOptions = void 0;
   const selectors$c = {
@@ -9830,145 +9845,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _MobileMenuSection.TYPE = "mobile-menu";
   let MobileMenuSection = _MobileMenuSection;
-  var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
-  function getDefaultExportFromCjs(x) {
-    return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x["default"] : x;
-  }
-  var lodash_debounce;
-  var hasRequiredLodash_debounce;
-  function requireLodash_debounce() {
-    if (hasRequiredLodash_debounce) return lodash_debounce;
-    hasRequiredLodash_debounce = 1;
-    var FUNC_ERROR_TEXT = "Expected a function";
-    var NAN = 0 / 0;
-    var symbolTag = "[object Symbol]";
-    var reTrim = /^\s+|\s+$/g;
-    var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
-    var reIsBinary = /^0b[01]+$/i;
-    var reIsOctal = /^0o[0-7]+$/i;
-    var freeParseInt = parseInt;
-    var freeGlobal = typeof commonjsGlobal == "object" && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
-    var freeSelf = typeof self == "object" && self && self.Object === Object && self;
-    var root = freeGlobal || freeSelf || Function("return this")();
-    var objectProto = Object.prototype;
-    var objectToString = objectProto.toString;
-    var nativeMax = Math.max, nativeMin = Math.min;
-    var now = function() {
-      return root.Date.now();
-    };
-    function debounce2(func, wait, options) {
-      var lastArgs, lastThis, maxWait, result, timerId, lastCallTime, lastInvokeTime = 0, leading = false, maxing = false, trailing = true;
-      if (typeof func != "function") {
-        throw new TypeError(FUNC_ERROR_TEXT);
-      }
-      wait = toNumber(wait) || 0;
-      if (isObject2(options)) {
-        leading = !!options.leading;
-        maxing = "maxWait" in options;
-        maxWait = maxing ? nativeMax(toNumber(options.maxWait) || 0, wait) : maxWait;
-        trailing = "trailing" in options ? !!options.trailing : trailing;
-      }
-      function invokeFunc(time) {
-        var args = lastArgs, thisArg = lastThis;
-        lastArgs = lastThis = void 0;
-        lastInvokeTime = time;
-        result = func.apply(thisArg, args);
-        return result;
-      }
-      function leadingEdge(time) {
-        lastInvokeTime = time;
-        timerId = setTimeout(timerExpired, wait);
-        return leading ? invokeFunc(time) : result;
-      }
-      function remainingWait(time) {
-        var timeSinceLastCall = time - lastCallTime, timeSinceLastInvoke = time - lastInvokeTime, result2 = wait - timeSinceLastCall;
-        return maxing ? nativeMin(result2, maxWait - timeSinceLastInvoke) : result2;
-      }
-      function shouldInvoke(time) {
-        var timeSinceLastCall = time - lastCallTime, timeSinceLastInvoke = time - lastInvokeTime;
-        return lastCallTime === void 0 || timeSinceLastCall >= wait || timeSinceLastCall < 0 || maxing && timeSinceLastInvoke >= maxWait;
-      }
-      function timerExpired() {
-        var time = now();
-        if (shouldInvoke(time)) {
-          return trailingEdge(time);
-        }
-        timerId = setTimeout(timerExpired, remainingWait(time));
-      }
-      function trailingEdge(time) {
-        timerId = void 0;
-        if (trailing && lastArgs) {
-          return invokeFunc(time);
-        }
-        lastArgs = lastThis = void 0;
-        return result;
-      }
-      function cancel() {
-        if (timerId !== void 0) {
-          clearTimeout(timerId);
-        }
-        lastInvokeTime = 0;
-        lastArgs = lastCallTime = lastThis = timerId = void 0;
-      }
-      function flush() {
-        return timerId === void 0 ? result : trailingEdge(now());
-      }
-      function debounced() {
-        var time = now(), isInvoking = shouldInvoke(time);
-        lastArgs = arguments;
-        lastThis = this;
-        lastCallTime = time;
-        if (isInvoking) {
-          if (timerId === void 0) {
-            return leadingEdge(lastCallTime);
-          }
-          if (maxing) {
-            timerId = setTimeout(timerExpired, wait);
-            return invokeFunc(lastCallTime);
-          }
-        }
-        if (timerId === void 0) {
-          timerId = setTimeout(timerExpired, wait);
-        }
-        return result;
-      }
-      debounced.cancel = cancel;
-      debounced.flush = flush;
-      return debounced;
-    }
-    function isObject2(value) {
-      var type = typeof value;
-      return !!value && (type == "object" || type == "function");
-    }
-    function isObjectLike(value) {
-      return !!value && typeof value == "object";
-    }
-    function isSymbol(value) {
-      return typeof value == "symbol" || isObjectLike(value) && objectToString.call(value) == symbolTag;
-    }
-    function toNumber(value) {
-      if (typeof value == "number") {
-        return value;
-      }
-      if (isSymbol(value)) {
-        return NAN;
-      }
-      if (isObject2(value)) {
-        var other = typeof value.valueOf == "function" ? value.valueOf() : value;
-        value = isObject2(other) ? other + "" : other;
-      }
-      if (typeof value != "string") {
-        return value === 0 ? value : +value;
-      }
-      value = value.replace(reTrim, "");
-      var isBinary = reIsBinary.test(value);
-      return isBinary || reIsOctal.test(value) ? freeParseInt(value.slice(2), isBinary ? 2 : 8) : reIsBadHex.test(value) ? NAN : +value;
-    }
-    lodash_debounce = debounce2;
-    return lodash_debounce;
-  }
-  var lodash_debounceExports = requireLodash_debounce();
-  const debounce = /* @__PURE__ */ getDefaultExportFromCjs(lodash_debounceExports);
   const selectors$5 = {
     increment: "button[data-increment]",
     decrement: "button[data-decrement]"

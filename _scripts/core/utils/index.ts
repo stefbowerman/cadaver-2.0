@@ -265,3 +265,27 @@ export const hasWebGLSupport = (): boolean => {
 
   return gl && gl instanceof WebGLRenderingContext
 }
+
+/**
+ * Debounces a function, ensuring it is only called after a specified wait time has elapsed
+ * since the last time it was invoked.
+ * 
+ * @param func - The function to debounce.
+ * @param wait - The number of milliseconds to delay (default: 200).
+ * @returns A debounced version of the function with a `.cancel()` method to clear any pending execution.
+ */
+export const debounce = <T extends (...args: unknown[]) => void>(func: T, wait = 200) => {
+  let timeout: ReturnType<typeof setTimeout> | undefined; // for the setTimeout function and so it can be cleared
+  function executedFunction(...args: Parameters<T>) { // the function returned from debounce
+      const later = () => { // this is the delayed function
+          clearTimeout(timeout); // clears the timeout when the function is called
+          func(...args); // calls the function
+      };
+      clearTimeout(timeout); // this clears the timeout each time the function is run again preventing later from running until we stop calling the function
+      timeout = setTimeout(later, wait); // this sets the time out to run after the wait period
+  };
+  executedFunction.cancel = function() { // so can be cancelled
+      clearTimeout(timeout); // clears the timeout
+  };
+  return executedFunction;
+};

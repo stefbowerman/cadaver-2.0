@@ -1,6 +1,5 @@
-import debounce, { type DebouncedFunc } from 'lodash.debounce'
 import type { LiteLineItem } from '@/types/shopify'
-import { isTouch } from '@/core/utils'
+import { isTouch, debounce } from '@/core/utils'
 import { setAriaFlag } from '@/core/utils/a11y'
 
 import BaseComponent from '@/components/base'
@@ -32,7 +31,7 @@ export default class CartItem extends BaseComponent {
   itemData: LiteLineItem
   remove: HTMLButtonElement
   price: HTMLElement
-  debouncedOnQuantityAdjusterChange: DebouncedFunc<(qty: number) => void>
+  debouncedOnQuantityAdjusterChange: ReturnType<typeof debounce<(qty: number) => void>>
   quantityAdjuster: QuantityAdjuster
 
   constructor(el: HTMLElement, itemData: LiteLineItem, options: CartItemSettings = {}) {
