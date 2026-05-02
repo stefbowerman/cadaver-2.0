@@ -1627,6 +1627,18 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   function prefersReducedMotion() {
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   }
+  function setOrRemoveAttr(el, attr, value) {
+    value !== void 0 ? el.setAttribute(attr, value) : el.removeAttribute(attr);
+  }
+  function setAriaFlag(el, attr, value) {
+    setOrRemoveAttr(el, attr, value ? "true" : void 0);
+  }
+  function setAriaState(el, attr, value) {
+    el.setAttribute(attr, value ? "true" : "false");
+  }
+  function setAriaCurrent(el, value) {
+    setOrRemoveAttr(el, "aria-current", value);
+  }
   function setLinkAriaCurrent(link, currentPath) {
     if (!(link instanceof HTMLAnchorElement)) {
       console.warn("Invalid link element provided.");
@@ -1637,17 +1649,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       return;
     }
     if (!link.href) return;
-    if (link.pathname === currentPath) {
-      link.setAttribute("aria-current", "page");
-    } else {
-      link.removeAttribute("aria-current");
-    }
-  }
-  function setAriaFlag(el, attr, value) {
-    value ? el.setAttribute(attr, "true") : el.removeAttribute(attr);
-  }
-  function setAriaState(el, attr, value) {
-    el.setAttribute(attr, value ? "true" : "false");
+    setAriaCurrent(link, link.pathname === currentPath ? "page" : void 0);
   }
   const classes$7 = {
     isReady: "is-ready"
