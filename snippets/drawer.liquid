@@ -1,15 +1,24 @@
 {% doc %}
-  @param id [String]
-  @param title [String]
-  @param content [String]
-  @param component [String]
+  Drawer
+
+  @param {string} [id] - The ID of the drawer
+  @param {string} [title] - The title of the drawer
+  @param {string} [content] - The content of the drawer body
+  @param {string} [component] - The component of the drawer
+  @param {string} [origin] - The side of the screen the drawer opens from - defaults to 'left'
 {% enddoc %}
+
+{%- liquid
+  unless origin == 'left' or origin == 'right'
+    assign origin = 'left'
+  endunless
+-%}
 
 <div
   {% if id %}
     id="{{ id }}"
   {% endif %}
-  class="drawer"
+  class="drawer drawer--{{ origin }}"
   data-component="{{ component | default: 'drawer' }}"
   aria-hidden="true"
   role="dialog"

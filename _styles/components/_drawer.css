@@ -1,8 +1,16 @@
 .drawer {
-  @apply fixed z-(--z-drawer) top-0 left-0 h-[100dvh] w-full max-w-[min(90vw,500px)] -translate-x-full;
+  @apply fixed z-(--z-drawer) top-0 h-[100dvh] w-full max-w-[min(90vw,500px)];
   @apply bg-white;
 
   transition: var(--transition-drawer-out);
+
+  &.drawer--left {
+    @apply left-0 -translate-x-full;
+  }
+
+  &.drawer--right {
+    @apply right-0 translate-x-full;
+  }  
 
   &:not([aria-hidden="true"]) {
     @apply translate-x-0;

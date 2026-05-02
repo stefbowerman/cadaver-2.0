@@ -1989,16 +1989,25 @@ header.header nav a[aria-current="page"] {
 
 .drawer {
   top: calc(var(--spacing) * 0);
-  left: calc(var(--spacing) * 0);
   z-index: var(--z-drawer);
-  --tw-translate-x: -100%;
+  background-color: var(--color-white);
   width: 100%;
   max-width: min(90vw, 500px);
   height: 100dvh;
-  translate: var(--tw-translate-x) var(--tw-translate-y);
-  background-color: var(--color-white);
   transition: var(--transition-drawer-out);
   position: fixed;
+}
+
+.drawer.drawer--left {
+  left: calc(var(--spacing) * 0);
+  --tw-translate-x: -100%;
+  translate: var(--tw-translate-x) var(--tw-translate-y);
+}
+
+.drawer.drawer--right {
+  right: calc(var(--spacing) * 0);
+  --tw-translate-x: 100%;
+  translate: var(--tw-translate-x) var(--tw-translate-y);
 }
 
 .drawer:not([aria-hidden="true"]) {
