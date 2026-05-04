@@ -6633,7 +6633,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   });
   const slideUp = (el, options = {}) => {
     const duration = options.duration || 0.5;
-    gsapWithCSS.killTweensOf(el);
+    const opacityTarget = options.opacityTarget || el;
+    gsapWithCSS.killTweensOf(el, "height");
+    gsapWithCSS.killTweensOf(opacityTarget, "opacity");
     const tl = gsapWithCSS.timeline({
       onStart: () => {
         options.onStart?.();
@@ -6649,7 +6651,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     if (!isVisible(el)) {
       return tl;
     }
-    tl.to(el, {
+    tl.to(opacityTarget, {
       opacity: 0,
       ease: "power2.out",
       duration: duration * 0.85
