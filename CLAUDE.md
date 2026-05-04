@@ -55,7 +55,6 @@ All sections extend `BaseSection`. Key points:
 - Listens to `taxi.navigateOut`, `taxi.navigateIn`, `taxi.navigateEnd` window events — override these methods for navigation-aware behavior
 - `onRendererLeaveStart(transitionDuration)` — override to hook into the page leave animation
 - `onUnload()` — called on destroy; calls `doComponentCleanup(this)` which recursively destroys all `BaseComponent` instances stored as properties or in arrays
-- `this.lazyImageController` is initialized automatically for all images with `.lazy-image` inside the section
 - `GraphicCoverVideo` components are also initialized automatically from `BaseSection`
 
 **Section constructor settings:**
@@ -125,9 +124,9 @@ const classes = {
 
 ### Core Utilities
 
-- `@/core/utils` — general helpers (`isThemeEditor`, `debounce`, `clamp`, `getQueryParams`, etc.)
+- `@/core/utils` — general helpers (`isThemeEditor`, `debounce`, `clamp`, `getQueryParams`, `prefersPointer`, `isTouch`, etc.)
 - `@/core/utils/event` — `dispatch(eventName, detail)` for firing window `CustomEvent`s
-- `@/core/utils/a11y` — `setAriaFlag`, `setAriaState`, `setAriaCurrent`, `prefersReducedMotion`
+- `@/core/utils/a11y` — `setAriaFlag` (removes attr when false — for flags like `aria-hidden`), `setAriaState` (always writes `'true'`/`'false'` — for states like `aria-expanded`), `setAriaCurrent`, `prefersReducedMotion`
 - `@/core/utils/dom`, `string`, `currency`, `image` — domain-specific helpers
 - `@/core/breakpointsController` — fires `change.breakpointsController` events on breakpoint change; breakpoints match Tailwind defaults (xs/sm/md/lg/xl/xxl)
 - `@/core/cartAPI` — Shopify AJAX cart API; fires `cartAPI.update`, `cartAPI.add`, `cartAPI.change`, `cartAPI.remove` window events
@@ -140,6 +139,7 @@ const classes = {
 Typed in `_scripts/types/window.d.ts`:
 - `window.app.taxi` — Taxi.js Core instance
 - `window.app.breakpointsController` — global breakpoints controller
+- `window.app.lazyImageController` - global lazy image controller (lazy loads images matching the selector `img.lazy-image`)
 - `window.app.routes` — Shopify route URLs (cart, search, account, etc.)
 - `window.app.strings` — localized UI strings (addToCart, soldOut, etc.)
 - `window.app.klaviyo` — Klaviyo config (companyId, listId)
@@ -149,6 +149,10 @@ Typed in `_scripts/types/window.d.ts`:
 `PageTransition` fires window events that sections can listen to:
 - `enter.transition` / `afterEnter.transition`
 - `leave.transition` / `afterLeave.transition`
+
+### Liquid Snippets
+
+**`snippets/drawer.liquid`** — renders a drawer element. Accepts an `origin` parameter (`'left'` or `'right'`, defaults to `'left'`) which controls slide-in direction via the `drawer--left` / `drawer--right` CSS modifier class.
 
 ### Theme Editor Integration
 

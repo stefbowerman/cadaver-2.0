@@ -1,5 +1,6 @@
 import type { Core as TaxiCore } from '@unseenco/taxi'
 import type BreakpointsController from '@/core/breakpointsController'
+import type LazyImageController from '@/core/lazyImageController'
 
 declare global {
   interface Window {
@@ -32,6 +33,7 @@ declare global {
         listId: string
       };
       breakpointsController?: BreakpointsController;
+      lazyImageController?: LazyImageController;
     };
   }
 }

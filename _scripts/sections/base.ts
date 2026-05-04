@@ -13,7 +13,6 @@ import type {
   TaxiNavigateEndEvent,
 } from '@/types/taxi'
 
-import LazyImageController from '@/core/lazyImageController'
 import { doComponentCleanup } from '@/components/base'
 
 // Standard components
@@ -35,7 +34,6 @@ export default class BaseSection {
   type: string
   parent: HTMLElement
   parentId: string
-  lazyImageController: LazyImageController
   graphicCoverVideos: GraphicCoverVideo[]
 
   constructor(container: HTMLElement, options: BaseSectionSettings = {}) {
@@ -73,8 +71,6 @@ export default class BaseSection {
       this.#intersectionObserver = new IntersectionObserver(this.onIntersection, this.#settings.intersectionOptions)
       this.#intersectionObserver.observe(this.container)
     }      
-
-    this.lazyImageController = new LazyImageController(this.container)
 
     // Below are standard components that can be initialized at the base section level (until there's a reason for them to get pushed down somewhere more specific)
     this.graphicCoverVideos = this.qsa(GraphicCoverVideo.SELECTOR).map(el => {
@@ -149,7 +145,6 @@ export default class BaseSection {
     window.removeEventListener('taxi.navigateIn', this.onNavigateIn)
     window.removeEventListener('taxi.navigateEnd', this.onNavigateEnd)
 
-    this.lazyImageController.destroy()
     this.killIntersectionObserver()
 
     doComponentCleanup(this) // This automatically calls this.destroy() up all components recursively

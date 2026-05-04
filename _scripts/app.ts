@@ -8,6 +8,7 @@ import type {
 } from '@/types/taxi'
 
 import BreakpointsController from '@/core/breakpointsController'
+import LazyImageController from '@/core/lazyImageController'
 
 import {
   isThemeEditor,
@@ -38,6 +39,7 @@ function init() {
 
   // Initialize all global controllers before starting Taxi and registering sections
   window.app.breakpointsController = new BreakpointsController()
+  window.app.lazyImageController = new LazyImageController(document.body)
 
   const sectionManager = new SectionManager()
 

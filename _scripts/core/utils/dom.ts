@@ -123,7 +123,7 @@ export const fetchDom = async (url: string | URL, signal?: AbortSignal): Promise
   }
   catch (e) {
     if (e.name === 'AbortError') {
-      console.log('Fetch aborted by user')
+      console.log('Fetch aborted by user') // eslint-disable-line no-console
       return undefined
     }
 

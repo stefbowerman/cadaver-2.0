@@ -1191,6 +1191,81 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     CHANGE: "change.breakpointsController"
   };
   let BreakpointsController = _BreakpointsController;
+  const SELECTOR = "img.lazy-image";
+  const LOADED_CLASS = "is-loaded";
+  const CACHED_CLASS = "is-cached";
+  class LazyImageController {
+    /**
+     * @param el - Element containing all images
+     */
+    constructor(el) {
+      this.el = el;
+      this.observedElements = /* @__PURE__ */ new WeakSet();
+      this.imageObserver = new IntersectionObserver(this.onIntersection.bind(this), {
+        rootMargin: "0px 0px 50% 0px"
+      });
+      this.mutationObserver = new MutationObserver(this.onMutation.bind(this));
+      this.mutationObserver.observe(this.el, { childList: true, subtree: true });
+      this.el.querySelectorAll(SELECTOR).forEach((img) => this.observeImage(img));
+    }
+    destroy() {
+      this.imageObserver.disconnect();
+      this.mutationObserver.disconnect();
+    }
+    unobserveImage(img) {
+      if (!this.observedElements.has(img)) {
+        return;
+      }
+      this.imageObserver.unobserve(img);
+      this.observedElements.delete(img);
+    }
+    observeImage(img) {
+      if (this.observedElements.has(img)) {
+        return;
+      }
+      this.imageObserver.observe(img);
+      this.observedElements.add(img);
+    }
+    onImageLoad(img) {
+      img.classList.add(LOADED_CLASS);
+    }
+    onIntersection(entries, observer) {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          const loadHandler = () => {
+            this.onImageLoad(img);
+            img.removeEventListener("load", loadHandler);
+          };
+          if (img.complete) {
+            loadHandler();
+            img.classList.add(CACHED_CLASS);
+          } else {
+            img.addEventListener("load", loadHandler);
+          }
+          observer.unobserve(img);
+        }
+      });
+    }
+    onMutation(mutationsList) {
+      const processNodes = (nodes, handler) => {
+        nodes.forEach((node) => {
+          if (!(node instanceof HTMLElement)) return;
+          if (node.matches && node.matches(SELECTOR)) {
+            handler(node);
+          } else {
+            node.querySelectorAll(SELECTOR).forEach((img) => handler(img));
+          }
+        });
+      };
+      mutationsList.forEach((mutation) => {
+        if (mutation.type === "childList") {
+          processNodes(mutation.removedNodes, this.unobserveImage.bind(this));
+          processNodes(mutation.addedNodes, this.observeImage.bind(this));
+        }
+      });
+    }
+  }
   function startCase(str) {
     if (!str || typeof str !== "string") return "";
     return str.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[^a-zA-Z0-9]+/g, " ").split(" ").filter((word) => word.length > 0).map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
@@ -1268,81 +1343,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     };
     return executedFunction;
   };
-  const SELECTOR = "img.lazy-image";
-  const LOADED_CLASS = "is-loaded";
-  const CACHED_CLASS = "is-cached";
-  class LazyImageController {
-    /**
-     * @param el - Element containing all images
-     */
-    constructor(el) {
-      this.el = el;
-      this.observedElements = /* @__PURE__ */ new WeakSet();
-      this.imageObserver = new IntersectionObserver(this.onIntersection.bind(this), {
-        rootMargin: "0px 0px 50% 0px"
-      });
-      this.mutationObserver = new MutationObserver(this.onMutation.bind(this));
-      this.mutationObserver.observe(this.el, { childList: true, subtree: true });
-      this.el.querySelectorAll(SELECTOR).forEach((img) => this.observeImage(img));
-    }
-    destroy() {
-      this.imageObserver.disconnect();
-      this.mutationObserver.disconnect();
-    }
-    unobserveImage(img) {
-      if (!this.observedElements.has(img)) {
-        return;
-      }
-      this.imageObserver.unobserve(img);
-      this.observedElements.delete(img);
-    }
-    observeImage(img) {
-      if (this.observedElements.has(img)) {
-        return;
-      }
-      this.imageObserver.observe(img);
-      this.observedElements.add(img);
-    }
-    onImageLoad(img) {
-      img.classList.add(LOADED_CLASS);
-    }
-    onIntersection(entries, observer) {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const img = entry.target;
-          const loadHandler = () => {
-            this.onImageLoad(img);
-            img.removeEventListener("load", loadHandler);
-          };
-          if (img.complete) {
-            loadHandler();
-            img.classList.add(CACHED_CLASS);
-          } else {
-            img.addEventListener("load", loadHandler);
-          }
-          observer.unobserve(img);
-        }
-      });
-    }
-    onMutation(mutationsList) {
-      const processNodes = (nodes, handler) => {
-        nodes.forEach((node) => {
-          if (!(node instanceof HTMLElement)) return;
-          if (node.matches && node.matches(SELECTOR)) {
-            handler(node);
-          } else {
-            node.querySelectorAll(SELECTOR).forEach((img) => handler(img));
-          }
-        });
-      };
-      mutationsList.forEach((mutation) => {
-        if (mutation.type === "childList") {
-          processNodes(mutation.removedNodes, this.unobserveImage.bind(this));
-          processNodes(mutation.addedNodes, this.observeImage.bind(this));
-        }
-      });
-    }
-  }
   const CartAPI = {
     EVENTS: {
       UPDATE: "cartAPI.update",
@@ -1725,7 +1725,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
     }
     onIntersection(entries) {
-      console.log("onIntersection", entries[0].isIntersecting);
       this.onVisibilityChange(entries[0].isIntersecting);
     }
   };
@@ -1763,7 +1762,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         this.#intersectionObserver = new IntersectionObserver(this.onIntersection, this.#settings.intersectionOptions);
         this.#intersectionObserver.observe(this.container);
       }
-      this.lazyImageController = new LazyImageController(this.container);
       this.graphicCoverVideos = this.qsa(GraphicCoverVideo.SELECTOR).map((el) => {
         return new GraphicCoverVideo(el);
       });
@@ -1818,7 +1816,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       window.removeEventListener("taxi.navigateOut", this.onNavigateOut);
       window.removeEventListener("taxi.navigateIn", this.onNavigateIn);
       window.removeEventListener("taxi.navigateEnd", this.onNavigateEnd);
-      this.lazyImageController.destroy();
       this.killIntersectionObserver();
       doComponentCleanup(this);
     }
@@ -10392,6 +10389,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     const viewContainer = document.querySelector("main#view-container");
     const TEMPLATE_REGEX = /\btemplate-\w*/;
     window.app.breakpointsController = new BreakpointsController();
+    window.app.lazyImageController = new LazyImageController(document.body);
     const sectionManager = new SectionManager();
     sectionManager.register(HeaderSection);
     sectionManager.register(FooterSection);

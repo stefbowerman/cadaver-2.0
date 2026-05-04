@@ -105,7 +105,6 @@ export default class GraphicCoverVideo extends BaseComponent {
   }
 
   onIntersection(entries: IntersectionObserverEntry[]) {
-    console.log('onIntersection', entries[0].isIntersecting)
     this.onVisibilityChange(entries[0].isIntersecting)
   }
 }
