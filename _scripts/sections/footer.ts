@@ -14,14 +14,14 @@ const selectors = {
 export default class FooterSection extends BaseSection {
   static TYPE = 'footer'
 
-  newsletterFormEl: HTMLElement
+  newsletterFormEl: HTMLElement | null
   newsletterForm: NewsletterForm | null
   ajaxForm: AJAXKlaviyoForm | null
 
   constructor(container: HTMLElement) {
     super(container)
 
-    this.newsletterFormEl = this.qs(NewsletterForm.SELECTOR)
+    this.newsletterFormEl = this.qs(NewsletterForm.SELECTOR) ?? null
     this.newsletterForm = null
     this.ajaxForm = null
 

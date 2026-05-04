@@ -1444,11 +1444,15 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       __privateAdd(this, _onBlockSelect, (e) => {
         if (e.target === this.el) {
           this.onSelfBlockSelect(e);
+        } else if (this.el.contains(e.target)) {
+          this.onChildBlockSelect(e);
         }
       });
       __privateAdd(this, _onBlockDeselect, (e) => {
         if (e.target === this.el) {
           this.onSelfBlockDeselect(e);
+        } else if (this.el.contains(e.target)) {
+          this.onChildBlockDeselect(e);
         }
       });
       __privateSet(this, _settings, {
@@ -1495,7 +1499,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (__privateGet(this, _settings).watchCartUpdate) {
         window.addEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate);
       }
-      if (this.el.hasAttribute(THEME_EDITOR_BLOCK_ATTR)) {
+      if (this.attachBlockEventListeners) {
         window.addEventListener("shopify:block:select", __privateGet(this, _onBlockSelect));
         window.addEventListener("shopify:block:deselect", __privateGet(this, _onBlockDeselect));
       }
@@ -1520,10 +1524,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (__privateGet(this, _settings).watchCartUpdate) {
         window.removeEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate);
       }
-      if (this.el.hasAttribute(THEME_EDITOR_BLOCK_ATTR)) {
-        window.removeEventListener("shopify:block:select", __privateGet(this, _onBlockSelect));
-        window.removeEventListener("shopify:block:deselect", __privateGet(this, _onBlockDeselect));
-      }
+      window.removeEventListener("shopify:block:select", __privateGet(this, _onBlockSelect));
+      window.removeEventListener("shopify:block:deselect", __privateGet(this, _onBlockDeselect));
       doComponentCleanup(this);
     }
     get dataset() {
@@ -1534,6 +1536,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     get ariaControlElements() {
       return [...document.querySelectorAll(`[aria-controls="${this.el.id}"]`)];
+    }
+    get attachBlockEventListeners() {
+      return isThemeEditor() && (this.el.hasAttribute(THEME_EDITOR_BLOCK_ATTR) || this.el.querySelectorAll(`[${THEME_EDITOR_BLOCK_ATTR}]`).length > 0);
     }
     /**
      * Queries for the first element matching the given selector within the component's element,
@@ -1599,6 +1604,18 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
      * @param e - The event object
      */
     onSelfBlockDeselect(e) {
+    }
+    /**
+     * Called if this component contains a block that is selected in the theme editor
+     * @param e - The event object
+     */
+    onChildBlockSelect(e) {
+    }
+    /**
+     * Called if this component contains a block that is deselected in the theme editor
+     * @param e - The event object
+     */
+    onChildBlockDeselect(e) {
     }
   };
   _settings = new WeakMap();
@@ -9594,7 +9611,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _FooterSection = class _FooterSection extends BaseSection {
     constructor(container) {
       super(container);
-      this.newsletterFormEl = this.qs(NewsletterForm.SELECTOR);
+      this.newsletterFormEl = this.qs(NewsletterForm.SELECTOR) ?? null;
       this.newsletterForm = null;
       this.ajaxForm = null;
       if (this.newsletterFormEl) {
