@@ -1,19 +1,14 @@
-{%- comment %}
-
+{% doc %}
   Graphic Cover
-  ------------------------------------------------------------------------------
-
-  Usage:
-
-  {% render 'graphic-cover',
-             image: { image } - optional
-             image_mobile: { image } - optional
-             video: { video } - optional
-             loading: { string } - optional
-             fetch_priority: { boolean } - optional
-             image_sizes: { string } - optional             
-  %}
-{% endcomment -%}
+  ====================================
+  
+  @param {image} [image] - The image to display
+  @param {image} [image_mobile] - The mobile image to display
+  @param {video} [video] - The video to display
+  @param {string} [loading] - The loading attribute value
+  @param {boolean} [fetch_priority] - The fetchpriority attribute value
+  @param {string} [image_sizes] - The sizes attribute value
+{% enddoc %}
 
 <div class="graphic-cover">
   {% if video != nil %}

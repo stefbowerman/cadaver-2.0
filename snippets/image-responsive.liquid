@@ -1,42 +1,25 @@
-{%- comment %}
-
+{% doc %}
   Image Responsive
-  ------------------------------------------------------------------------------
+  ====================================
 
-  Usage:
-
-  {% render 'image-responsive',
-             image: { image } - optional
-             image_mobile: { image } - optional
-             loading: { string } - optional - default: 'eager'
-             fetch_priority: { boolean } - optional - defaults to false
-             alt_text: { string } - optional - defaults to image.alt
-             sizes: { string } - optional - defaults to nil             
-  %}
-
-{% endcomment -%}
+  @param {image} image - The image to display - required
+  @param {image} [image_mobile] - The mobile image to display - optional
+  @param {string} [loading] - The loading attribute value - optional - default: 'lazy'
+  @param {boolean} [fetch_priority] - The fetchpriority attribute value - optional - defaults to false
+  @param {string} [alt_text] - The alt text for the image - optional - defaults to image.alt
+  @param {string} [sizes] - The sizes attribute value - optional - defaults to nil
+{% enddoc %}
 
 
-{% if image != blank %}
+{% if image %}
   {%- liquid
-    assign mobile = image_mobile
     assign desktop = image
-
-    if mobile == blank
-      assign mobile = desktop
-    endif 
-
-    if loading == blank
-      assign loading = 'lazy'
-    endif
-
-    if fetch_priority == blank
-      assign fetch_priority = nil
-    endif
-
-    if sizes == blank
-      assign sizes = nil
-    endif
+    assign mobile = image_mobile | default: image
+    assign loading = loading | default: 'lazy'
+    assign fetch_priority = fetch_priority | default: nil
+    assign sizes = sizes | default: nil
+    assign alt = alt_text | default: image.alt
+    assign alt = alt | escape
 
     capture style
       if desktop.presentation.focal_point
@@ -47,10 +30,7 @@
       endif
     endcapture
 
-    assign style = style | strip
-
-    assign alt = alt_text | default: desktop.alt
-    assign alt = alt | escape    
+    assign style = style | strip   
   %}
 
   <picture>
@@ -63,16 +43,17 @@
         {{ mobile | image_url: width: 900 }} 900w,
         {{ mobile | image_url: width: 1100 }} 1100w
       "
-      media="(max-width: 1023.99px)"
+      media="(max-width: 63.99rem)"
     >
       
     <source
       srcset="
+        {{ desktop | image_url: width: 1200 }} 1200w,
         {{ desktop | image_url: width: 1400 }} 1400w,
         {{ desktop | image_url: width: 1600 }} 1600w,
         {{ desktop | image_url: width: 1800 }} 1800w
       "
-      media="(min-width: 1024px)"
+      media="(min-width: 64rem)"
     >
 
     {{
