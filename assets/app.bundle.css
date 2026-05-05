@@ -894,6 +894,10 @@
     overflow: visible;
   }
 
+  .focus\:fixed\!:focus {
+    position: fixed !important;
+  }
+
   @media (min-width: 64rem) {
     .lg\:sticky {
       position: sticky;
