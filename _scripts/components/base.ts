@@ -87,7 +87,7 @@ export default class BaseComponent {
       window.addEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate)
     }
 
-    if (this.attachBlockEventListeners) {
+    if (isThemeEditor()) {
       window.addEventListener('shopify:block:select', this.#onBlockSelect)
       window.addEventListener('shopify:block:deselect', this.#onBlockDeselect)
     }
@@ -115,9 +115,10 @@ export default class BaseComponent {
       window.removeEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate)
     }
 
-    // No need to do an if check here..
-    window.removeEventListener('shopify:block:select', this.#onBlockSelect)
-    window.removeEventListener('shopify:block:deselect', this.#onBlockDeselect)
+    if (isThemeEditor()) {
+      window.removeEventListener('shopify:block:select', this.#onBlockSelect)
+      window.removeEventListener('shopify:block:deselect', this.#onBlockDeselect)
+    }
 
     doComponentCleanup(this)
   }
@@ -133,12 +134,6 @@ export default class BaseComponent {
   get ariaControlElements(): HTMLElement[] {
     return [...document.querySelectorAll(`[aria-controls="${this.el.id}"]`)] as HTMLElement[]
   }
-
-  get attachBlockEventListeners(): boolean {
-    // Only attach block event listeners if we're in the theme editor and the element *is* a shopify block or it contains a shopify block in one of it's children
-    // Don't use qsa here because this has nothing to do with the component's scope
-    return isThemeEditor() && (this.el.hasAttribute(THEME_EDITOR_BLOCK_ATTR) || this.el.querySelectorAll(`[${THEME_EDITOR_BLOCK_ATTR}]`).length > 0)
-  }  
 
   #onBlockSelect = (e: ThemeEditorBlockSelectEvent) => {
     if (e.target === this.el) {

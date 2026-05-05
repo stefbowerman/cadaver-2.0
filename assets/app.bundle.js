@@ -1435,7 +1435,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
     }
   };
-  const THEME_EDITOR_BLOCK_ATTR = "data-shopify-editor-block";
   const _BaseComponent = class _BaseComponent {
     constructor(el, options = {}) {
       __privateAdd(this, _settings);
@@ -1499,7 +1498,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (__privateGet(this, _settings).watchCartUpdate) {
         window.addEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate);
       }
-      if (this.attachBlockEventListeners) {
+      if (isThemeEditor()) {
         window.addEventListener("shopify:block:select", __privateGet(this, _onBlockSelect));
         window.addEventListener("shopify:block:deselect", __privateGet(this, _onBlockDeselect));
       }
@@ -1524,8 +1523,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (__privateGet(this, _settings).watchCartUpdate) {
         window.removeEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate);
       }
-      window.removeEventListener("shopify:block:select", __privateGet(this, _onBlockSelect));
-      window.removeEventListener("shopify:block:deselect", __privateGet(this, _onBlockDeselect));
+      if (isThemeEditor()) {
+        window.removeEventListener("shopify:block:select", __privateGet(this, _onBlockSelect));
+        window.removeEventListener("shopify:block:deselect", __privateGet(this, _onBlockDeselect));
+      }
       doComponentCleanup(this);
     }
     get dataset() {
@@ -1536,9 +1537,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     get ariaControlElements() {
       return [...document.querySelectorAll(`[aria-controls="${this.el.id}"]`)];
-    }
-    get attachBlockEventListeners() {
-      return isThemeEditor() && (this.el.hasAttribute(THEME_EDITOR_BLOCK_ATTR) || this.el.querySelectorAll(`[${THEME_EDITOR_BLOCK_ATTR}]`).length > 0);
     }
     /**
      * Queries for the first element matching the given selector within the component's element,
