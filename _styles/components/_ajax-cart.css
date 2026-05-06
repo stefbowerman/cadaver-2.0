@@ -13,7 +13,7 @@
 
   pointer-events: none;
 
-  &.is-open {
+  &:not([aria-hidden="true"]) {
     @apply translate-x-0;
     transition: var(--transition-drawer-in);
     pointer-events: auto;

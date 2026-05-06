@@ -1884,7 +1884,7 @@ header.header nav a[aria-current="page"] {
   position: fixed;
 }
 
-.ajax-cart.is-open {
+.ajax-cart:not([aria-hidden="true"]) {
   --tw-translate-x: calc(var(--spacing) * 0);
   translate: var(--tw-translate-x) var(--tw-translate-y);
   transition: var(--transition-drawer-in);

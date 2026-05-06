@@ -10283,17 +10283,17 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     close: "[data-ajax-cart-close]"
   };
   const classes = {
-    open: "is-open",
     empty: "is-empty",
     bodyCartOpen: "ajax-cart-open"
   };
   const _AJAXCart = class _AJAXCart extends BaseComponent {
-    constructor(el, cartData) {
+    constructor(el, cartData, options = {}) {
       super(el, {
         watchCartUpdate: true
       });
-      this.isOpen = false;
-      this.requestInProgress = false;
+      this.settings = {
+        ...options
+      };
       this.role = this.el.getAttribute("role");
       this.cartBody = new CartBody(this.qs(CartBody.SELECTOR), cartData);
       this.cartFooter = new CartFooter(this.qs(CartFooter.SELECTOR));
@@ -10307,7 +10307,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         title: "Close cart"
       });
       this.onBodyClick = this.onBodyClick.bind(this);
+      this.onTransitionEnd = this.onTransitionEnd.bind(this);
       document.body.addEventListener("click", this.onBodyClick);
+      this.el.addEventListener("transitionend", this.onTransitionEnd);
       this.setEmpty(cartData.item_count === 0);
       if (this.role) {
         this.ariaControlElements.forEach((el2) => el2.setAttribute("aria-haspopup", this.role));
@@ -10315,9 +10317,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     destroy() {
       this.focusTrap.destroy();
+      this.el.removeEventListener("transitionend", this.onTransitionEnd);
       document.body.classList.remove(classes.bodyCartOpen);
       document.body.removeEventListener("click", this.onBodyClick);
       super.destroy();
+    }
+    get isOpen() {
+      return !this.isAriaHidden;
     }
     setEmpty(isEmpty) {
       this.el.classList.toggle(classes.empty, isEmpty);
@@ -10327,25 +10333,33 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     open() {
       if (this.isOpen) return;
-      this.el.classList.add(classes.open);
-      this.el.inert = false;
       setAriaFlag(this.el, "aria-hidden", false);
+      setAriaFlag(this.el, "aria-modal", true);
+      this.el.inert = false;
       this.backdrop.show();
       this.ariaControlElements.forEach((el) => setAriaState(el, "aria-expanded", true));
       document.body.classList.add(classes.bodyCartOpen);
-      this.focusTrap.activate();
-      this.isOpen = true;
     }
     close() {
       if (!this.isOpen) return;
-      this.el.classList.remove(classes.open);
-      this.el.inert = true;
       setAriaFlag(this.el, "aria-hidden", true);
+      setAriaFlag(this.el, "aria-modal", false);
+      this.el.inert = true;
       this.backdrop.hide();
       this.ariaControlElements.forEach((el) => setAriaState(el, "aria-expanded", false));
-      document.body.classList.remove(classes.bodyCartOpen);
       this.focusTrap.deactivate();
-      this.isOpen = false;
+      document.body.classList.remove(classes.bodyCartOpen);
+    }
+    onOpenComplete() {
+      this.focusTrap.activate();
+      this.settings.onOpenComplete?.();
+    }
+    onCloseComplete() {
+      this.settings.onCloseComplete?.();
+    }
+    onTransitionEnd(e) {
+      if (e.target !== this.el) return;
+      this.isOpen ? this.onOpenComplete() : this.onCloseComplete();
     }
     onCartUpdate(e) {
       const { cart } = e.detail;
