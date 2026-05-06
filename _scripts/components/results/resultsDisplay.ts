@@ -51,7 +51,7 @@ export default class ResultsDisplay extends BaseComponent {
     this.productCards = this.qsa(ProductCard.SELECTOR).map(el => new ProductCard(el))
 
     this.list = this.qs(selectors.list) as HTMLUListElement | null
-    this.more = this.qs(selectors.more) as HTMLAnchorElement | undefined
+    this.more = this.qs(selectors.more) as HTMLAnchorElement | null
 
     if (this.more) {
       const rootMargin = window.innerWidth < BREAKPOINTS.md ? '1000px' : `${Math.max(window.innerHeight*2, 1500)}px`
@@ -81,8 +81,8 @@ export default class ResultsDisplay extends BaseComponent {
     this.moreObserver?.disconnect()
     this.moreObserver = null
 
-    this.a11yStatus.el?.remove()
-    this.a11yStatus.destroy()
+    this.a11yStatus?.el?.remove()
+    this.a11yStatus?.destroy()
     this.a11yStatus = null
   }
 
@@ -112,6 +112,8 @@ export default class ResultsDisplay extends BaseComponent {
         this.teardown()
         this.el.innerHTML = dom.innerHTML
         this.setup()
+
+        this.a11yStatus.text = 'Results updated'
 
         gsap.set(this.el, { clearProps: true })
 

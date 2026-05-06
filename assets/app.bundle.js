@@ -6749,8 +6749,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.more = null;
       this.moreObserver?.disconnect();
       this.moreObserver = null;
-      this.a11yStatus.el?.remove();
-      this.a11yStatus.destroy();
+      this.a11yStatus?.el?.remove();
+      this.a11yStatus?.destroy();
       this.a11yStatus = null;
     }
     destroy() {
@@ -6774,6 +6774,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
           this.teardown();
           this.el.innerHTML = dom.innerHTML;
           this.setup();
+          this.a11yStatus.text = "Results updated";
           gsapWithCSS.set(this.el, { clearProps: true });
           this.settings.onReplaceComplete?.(this);
         }
