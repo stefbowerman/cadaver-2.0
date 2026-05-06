@@ -71,8 +71,9 @@ All components extend `BaseComponent`. Key points:
 - Requires `static TYPE: string`; `static SELECTOR` is automatically derived as `[data-component="${TYPE}"]`
 - The DOM element must have `data-component="<TYPE>"` attribute
 - Constructor receives `(el: HTMLElement, options: BaseComponentSettings)`
-- `destroy()` must call `super.destroy()` at the end to clean up observers and event listeners
 - `doComponentCleanup(instance)` — exported helper that calls `destroy()` on all `BaseComponent` instances stored as properties or array properties of a given instance; called automatically by `BaseSection.onUnload()`
+
+**Destroy method:** Only define `destroy()` in a subclass when the component has properties that aren't automatically cleaned up by `BaseComponent.destroy()`. Examples of things that require manual cleanup: event listeners attached to elements outside the component's `el` property, intersection/resize observers, GSAP timelines, timeouts, or any other resources that could cause memory leaks or delayed effects. If you do define `destroy()`, you **must always call `super.destroy()` at the bottom of the method**. Note that `destroy()` is called right before the component element is removed from the DOM, so event listeners attached to that element or its children are automatically garbage collected and do not need to be explicitly removed. See `_scripts/components/ajaxCart.ts` for a good example.
 
 **Component constructor settings (avoid reimplementing these manually):**
 ```ts
@@ -110,7 +111,7 @@ const classes = {
 }
 ```
 
-**CSS state management:** Prefer HTML attributes (especially ARIA attributes) as CSS hooks over creating new state classes. Use selectors like `[aria-hidden="false"]`, `[aria-expanded="true"]`, `[aria-current="page"]` instead of `.is-open`, `.is-active`, etc. This keeps state management centralized in the DOM and reduces duplication between JavaScript and CSS. Only create new classes for non-state styling purposes.
+**CSS state management:** Prefer HTML attributes (especially ARIA attributes) as CSS hooks over creating new state classes. Use selectors like `[aria-hidden="false"]`, `:not([aria-expanded="true"])`, `:has([aria-current="page"])` instead of `.is-open`, `.is-active`, etc. This keeps state management centralized in the DOM and reduces duplication between JavaScript and CSS. Only create new classes for non-state styling purposes.
 
 ### `_scripts` Directory Structure
 

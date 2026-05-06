@@ -63,8 +63,8 @@ export default class AJAXCart extends BaseComponent {
     this.onBodyClick = this.onBodyClick.bind(this)
     this.onTransitionEnd = this.onTransitionEnd.bind(this)
 
-    document.body.addEventListener('click', this.onBodyClick)
     this.el.addEventListener('transitionend', this.onTransitionEnd)
+    document.body.addEventListener('click', this.onBodyClick)
 
     // Set empty state based on initial cart data
     this.setEmpty(cartData.item_count === 0)
@@ -76,7 +76,6 @@ export default class AJAXCart extends BaseComponent {
 
   destroy() {
     this.focusTrap.destroy()
-    this.el.removeEventListener('transitionend', this.onTransitionEnd)
 
     document.body.classList.remove(classes.bodyCartOpen)
     document.body.removeEventListener('click', this.onBodyClick)

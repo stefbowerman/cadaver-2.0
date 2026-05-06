@@ -9812,6 +9812,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     destroy() {
       this.focusTrap.destroy();
+      document.body.classList.remove(classes$2.bodyIsOpen);
       document.body.removeEventListener("click", this.onBodyClick);
       this.ariaControlElements.forEach((el) => el.removeAttribute("aria-haspopup"));
       super.destroy();
@@ -10308,8 +10309,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       });
       this.onBodyClick = this.onBodyClick.bind(this);
       this.onTransitionEnd = this.onTransitionEnd.bind(this);
-      document.body.addEventListener("click", this.onBodyClick);
       this.el.addEventListener("transitionend", this.onTransitionEnd);
+      document.body.addEventListener("click", this.onBodyClick);
       this.setEmpty(cartData.item_count === 0);
       if (this.role) {
         this.ariaControlElements.forEach((el2) => el2.setAttribute("aria-haspopup", this.role));
@@ -10317,7 +10318,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     destroy() {
       this.focusTrap.destroy();
-      this.el.removeEventListener("transitionend", this.onTransitionEnd);
       document.body.classList.remove(classes.bodyCartOpen);
       document.body.removeEventListener("click", this.onBodyClick);
       super.destroy();

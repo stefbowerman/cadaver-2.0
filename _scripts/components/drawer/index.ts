@@ -79,6 +79,8 @@ export default class Drawer extends BaseComponent {
 
   destroy() {
     this.focusTrap.destroy()
+
+    document.body.classList.remove(classes.bodyIsOpen)
     document.body.removeEventListener('click', this.onBodyClick)
 
     this.ariaControlElements.forEach(el => el.removeAttribute('aria-haspopup'))
