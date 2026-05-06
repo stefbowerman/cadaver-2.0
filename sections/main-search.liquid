@@ -1,6 +1,6 @@
 {%- capture actions -%}
   <div style="max-width: 625px; margin: 0 auto 40px">
-    {% render 'search-inline', id: 'main-search-inline', include_terms: true %}
+    {% render 'search-inline', id_prefix: section.id, include_terms: true %}
   </div>   
 {%- endcapture -%}
 

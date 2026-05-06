@@ -1,17 +1,18 @@
-{%- comment %}
-  
+{% doc %}
   Search Inline
   ------------------------------------------------------------------------------
+  @param {string} id_prefix - The prefix to use for generating IDs
+  @param {boolean} [include_terms] - Whether to include the search terms - optional - default false
+  @param {string} [input_placeholder] - The placeholder for the search input
+  @param {string} [input_attributes] - The attributes for the search input - optional
+  @param {boolean} [clear_button] - Whether to include a clear button - optional - default false
+{% enddoc %}
 
-  Usage:
-
-  {% render 'search-inline',
-            id: { text } - required
-            include_terms: { boolean } - optional
-  %}
-
-{% endcomment -%}
-
+{%- liquid
+  assign input_id = id_prefix | append: '-search-inline-input'
+  assign input_placeholder_default = 'general.search.search' | t
+  assign input_placeholder = input_placeholder | default: input_placeholder_default
+-%}
 
 <form
   data-component="search-inline"
@@ -20,26 +21,39 @@
   role="search"
 >
   <div class="form-group">
-    <label for="{{ id }}-search" class="sr-only">{{ 'general.search.search' | t }}</label>
+    <label for="{{ input_id }}" class="sr-only">{{ 'general.search.search' | t }}</label>
     
-    <div class="form-control form-control--reverse">
+    <div class="form-control">
       <input
-        id="{{ id }}-search"
+        id="{{ input_id }}"
         type="search"
         name="q"
         value="{% if include_terms %}{{ search.terms | escape }}{% endif %}"
-        placeholder="{{ 'general.search.search' | t }}"
+        placeholder="{{ input_placeholder }}"
         autocorrect="off"
         autocomplete="off"
         autocapitalize="off"
         spellcheck="false"
+        {{ input_attributes }}
       />
+
+      {% if clear_button %}
+        <button
+          type="button"
+          aria-label="{{ 'general.search.clear' | t }}"
+          data-clear
+          {% unless include_terms and search.terms %}
+            hidden
+          {% endunless %}          
+        >
+          &times;
+        </button>
+      {% endif %}
 
       <span class="form-control__affix">
         <button
           type="submit"
           aria-label="{{ 'general.search.search' | t }}"
-          data-icon
         >
           {{- 'icon-search.svg' | inline_asset_content -}}
         </button>     

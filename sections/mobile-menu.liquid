@@ -40,11 +40,7 @@
 
 
   <div class="w-full max-w-[260px] my-16">
-    {%- liquid
-      assign id = section.id | append: '-search'
-
-      render 'search-inline', id: id
-    -%}
+    {% render 'search-inline', id_prefix: section.id, clear_button: true %}
   </div>
 
 

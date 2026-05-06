@@ -57,7 +57,8 @@
       "placeholder": "Search",
       "mobile_placeholder": "Tap to search",
       "submit": "Search",
-      "search": "Search"
+      "search": "Search",
+      "clear": "Clear"
     },
 
   },

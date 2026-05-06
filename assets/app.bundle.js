@@ -8994,7 +8994,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   let LoginSection = _LoginSection;
   const selectors$9 = {
     input: 'input[name="q"]',
-    icon: "[data-icon]"
+    clearButton: "button[data-clear]"
   };
   const _SearchInline = class _SearchInline extends BaseComponent {
     constructor(el, options = {}) {
@@ -9006,16 +9006,26 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         console.warn("SearchInline: Form element required");
         return;
       }
-      this.input = this.el.querySelector(selectors$9.input);
-      this.icon = this.el.querySelector(selectors$9.icon);
+      this.input = this.qs(selectors$9.input);
+      this.clearButton = this.qs(selectors$9.clearButton);
       this.action = this.el.getAttribute("action");
       this.onSubmit = this.onSubmit.bind(this);
       this.onKeyup = this.onKeyup.bind(this);
+      this.onInput = this.onInput.bind(this);
+      this.onClearButtonClick = this.onClearButtonClick.bind(this);
       this.el.addEventListener("submit", this.onSubmit);
       this.input.addEventListener("keyup", this.onKeyup);
+      this.input.addEventListener("input", this.onInput);
+      this.clearButton?.addEventListener("click", this.onClearButtonClick);
+    }
+    checkClearButton() {
+      if (this.clearButton) {
+        this.clearButton.hidden = !this.input.value;
+      }
     }
     reset() {
       this.input.value = "";
+      this.checkClearButton();
     }
     onSubmit(e) {
       const data = new FormData(this.el);
@@ -9024,11 +9034,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (!q) {
         return;
       }
-      const params = new URLSearchParams({
-        type,
-        q: encodeURIComponent(q)
-      });
-      const url = `${this.action}?${params.toString()}`;
+      const url = `${this.action}?type=${encodeURIComponent(type)}&q=${encodeURIComponent(q)}`;
       if (this.settings.onSubmit?.(e, url) === false) {
         return;
       }
@@ -9040,7 +9046,15 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       return false;
     }
     onKeyup(e) {
+      this.checkClearButton();
       this.settings.onKeyup?.(e);
+    }
+    onInput(e) {
+      this.checkClearButton();
+      this.settings.onInput?.(e);
+    }
+    onClearButtonClick() {
+      this.reset();
     }
   };
   _SearchInline.TYPE = "search-inline";
