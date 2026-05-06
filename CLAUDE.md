@@ -110,6 +110,8 @@ const classes = {
 }
 ```
 
+**CSS state management:** Prefer HTML attributes (especially ARIA attributes) as CSS hooks over creating new state classes. Use selectors like `[aria-hidden="false"]`, `[aria-expanded="true"]`, `[aria-current="page"]` instead of `.is-open`, `.is-active`, etc. This keeps state management centralized in the DOM and reduces duplication between JavaScript and CSS. Only create new classes for non-state styling purposes.
+
 ### `_scripts` Directory Structure
 
 | Directory | Purpose |
