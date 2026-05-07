@@ -7,7 +7,7 @@ var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot
 var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 (function() {
   "use strict";
-  var _settings, _resizeObserver, _intersectionObserver, _onBlockSelect, _onBlockDeselect, _abortController, _isLoading, _state, _muteUpdateSync;
+  var _settings, _resizeObserver, _intersectionObserver, _onBlockSelect, _onBlockDeselect, _moreObserver, _replacementTl, _abortController, _isLoading, _state, _muteUpdateSync;
   function SelectorSet() {
     if (!(this instanceof SelectorSet)) {
       return new SelectorSet();
@@ -6724,6 +6724,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _ResultsDisplay = class _ResultsDisplay extends BaseComponent {
     constructor(el, options = {}) {
       super(el);
+      __privateAdd(this, _moreObserver);
+      __privateAdd(this, _replacementTl);
       this.settings = {
         ...options
       };
@@ -6731,8 +6733,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.list = null;
       this.a11yStatus = null;
       this.more = null;
-      this.moreObserver = null;
-      this.replacementTl = null;
+      __privateSet(this, _moreObserver, null);
+      __privateSet(this, _replacementTl, null);
       this.onMoreIntersection = this.onMoreIntersection.bind(this);
       this.setup();
     }
@@ -6742,13 +6744,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.more = this.qs(selectors$g.more);
       if (this.more) {
         const rootMargin = window.innerWidth < BREAKPOINTS.md ? "1000px" : `${Math.max(window.innerHeight * 2, 1500)}px`;
-        this.moreObserver = new IntersectionObserver(this.onMoreIntersection, {
+        __privateSet(this, _moreObserver, new IntersectionObserver(this.onMoreIntersection, {
           root: null,
           rootMargin,
           threshold: 0.1
-        });
+        }));
         requestAnimationFrame(() => {
-          this.moreObserver.observe(this.more);
+          __privateGet(this, _moreObserver).observe(this.more);
         });
       }
       this.a11yStatus = A11yStatus.generate(this.el);
@@ -6758,23 +6760,23 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.productCards = [];
       this.list = null;
       this.more = null;
-      this.moreObserver?.disconnect();
-      this.moreObserver = null;
+      __privateGet(this, _moreObserver)?.disconnect();
+      __privateSet(this, _moreObserver, null);
       this.a11yStatus?.el?.remove();
       this.a11yStatus?.destroy();
       this.a11yStatus = null;
     }
     destroy() {
-      this.replacementTl?.kill();
-      this.replacementTl = null;
+      __privateGet(this, _replacementTl)?.kill();
+      __privateSet(this, _replacementTl, null);
       this.teardown();
       super.destroy();
     }
     // Replace the entire contents of the results display
     replace(dom) {
       if (!this.validateDom(dom)) return;
-      this.replacementTl = gsapWithCSS.timeline({ paused: true });
-      this.replacementTl.to(this.el, {
+      __privateSet(this, _replacementTl, gsapWithCSS.timeline({ paused: true }));
+      __privateGet(this, _replacementTl).to(this.el, {
         duration: 0.4,
         opacity: 0,
         ease: "power2.out",
@@ -6790,13 +6792,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
           this.settings.onReplaceComplete?.(this);
         }
       });
-      this.replacementTl.to(this.el, {
+      __privateGet(this, _replacementTl).to(this.el, {
         duration: 1,
         delay: 0.25,
         opacity: 1,
         ease: "power2.in"
       });
-      this.replacementTl.play();
+      __privateGet(this, _replacementTl).play();
     }
     add(dom) {
       if (!this.validateDom(dom)) return;
@@ -6824,14 +6826,16 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onNoMoreResults() {
       this.more.remove();
       this.more = null;
-      this.moreObserver?.disconnect();
-      this.moreObserver = null;
+      __privateGet(this, _moreObserver)?.disconnect();
+      __privateSet(this, _moreObserver, null);
     }
     onMoreIntersection(entries) {
       if (!this.more) return;
       this.settings.onMoreIntersection?.(entries);
     }
   };
+  _moreObserver = new WeakMap();
+  _replacementTl = new WeakMap();
   _ResultsDisplay.TYPE = "results-display";
   let ResultsDisplay = _ResultsDisplay;
   const _ResultsSection = class _ResultsSection extends BaseSection {

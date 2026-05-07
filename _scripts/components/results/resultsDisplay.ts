@@ -19,13 +19,14 @@ interface ResultsDisplaySettings {
 export default class ResultsDisplay extends BaseComponent {
   static TYPE = 'results-display'
 
+  #moreObserver: IntersectionObserver | null
+  #replacementTl: gsap.core.Timeline | null
+
   settings: ResultsDisplaySettings
   productCards: ProductCard[]
   list: HTMLUListElement | null
   a11yStatus: A11yStatus | null
   more: HTMLAnchorElement | undefined
-  moreObserver: IntersectionObserver | null
-  replacementTl: gsap.core.Timeline | null
 
   constructor(el: HTMLElement, options: ResultsDisplaySettings = {}) {
     super(el)
@@ -39,8 +40,8 @@ export default class ResultsDisplay extends BaseComponent {
     this.list = null
     this.a11yStatus = null
     this.more = null
-    this.moreObserver = null
-    this.replacementTl = null
+    this.#moreObserver = null
+    this.#replacementTl = null
 
     this.onMoreIntersection = this.onMoreIntersection.bind(this)
 
@@ -56,7 +57,7 @@ export default class ResultsDisplay extends BaseComponent {
     if (this.more) {
       const rootMargin = window.innerWidth < BREAKPOINTS.md ? '1000px' : `${Math.max(window.innerHeight*2, 1500)}px`
 
-      this.moreObserver = new IntersectionObserver(this.onMoreIntersection, {
+      this.#moreObserver = new IntersectionObserver(this.onMoreIntersection, {
         root: null,
         rootMargin,
         threshold: 0.1
@@ -64,7 +65,7 @@ export default class ResultsDisplay extends BaseComponent {
 
       // Prevent immediate triggering
       requestAnimationFrame(() => {
-        this.moreObserver.observe(this.more)
+        this.#moreObserver.observe(this.more)
       })
     }
 
@@ -78,8 +79,8 @@ export default class ResultsDisplay extends BaseComponent {
     this.list = null
     this.more = null
 
-    this.moreObserver?.disconnect()
-    this.moreObserver = null
+    this.#moreObserver?.disconnect()
+    this.#moreObserver = null
 
     this.a11yStatus?.el?.remove()
     this.a11yStatus?.destroy()
@@ -87,8 +88,8 @@ export default class ResultsDisplay extends BaseComponent {
   }
 
   destroy() {
-    this.replacementTl?.kill()
-    this.replacementTl = null
+    this.#replacementTl?.kill()
+    this.#replacementTl = null
 
     this.teardown()
 
@@ -99,9 +100,9 @@ export default class ResultsDisplay extends BaseComponent {
   replace(dom: HTMLElement | undefined) {
     if (!this.validateDom(dom)) return
 
-    this.replacementTl = gsap.timeline({ paused: true })
+    this.#replacementTl = gsap.timeline({ paused: true })
 
-    this.replacementTl.to(this.el, {
+    this.#replacementTl.to(this.el, {
       duration: 0.4,
       opacity: 0,
       ease: 'power2.out',
@@ -121,14 +122,14 @@ export default class ResultsDisplay extends BaseComponent {
       }
     })
 
-    this.replacementTl.to(this.el, {
+    this.#replacementTl.to(this.el, {
       duration: 1,
       delay: 0.25,
       opacity: 1,
       ease: 'power2.in'
     })
 
-    this.replacementTl.play()
+    this.#replacementTl.play()
   }
 
   add(dom: HTMLElement | undefined) {
@@ -170,8 +171,8 @@ export default class ResultsDisplay extends BaseComponent {
     this.more.remove()
     this.more = null
 
-    this.moreObserver?.disconnect()
-    this.moreObserver = null
+    this.#moreObserver?.disconnect()
+    this.#moreObserver = null
   }  
 
   onMoreIntersection(entries: IntersectionObserverEntry[]) {
