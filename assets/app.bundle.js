@@ -1343,6 +1343,16 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     };
     return executedFunction;
   };
+  const formatTable = (table) => {
+    if (!table || !(table instanceof HTMLTableElement)) return;
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("rte-table-wrapper");
+    const parent = table.parentNode;
+    if (parent) {
+      parent.insertBefore(wrapper, table);
+      wrapper.appendChild(table);
+    }
+  };
   const CartAPI = {
     EVENTS: {
       UPDATE: "cartAPI.update",
@@ -1780,6 +1790,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.graphicCoverVideos = this.qsa(GraphicCoverVideo.SELECTOR).map((el) => {
         return new GraphicCoverVideo(el);
       });
+      Array.from(container.querySelectorAll(".rte table")).forEach(formatTable);
     }
     get dataset() {
       return this.container.dataset;
@@ -6869,6 +6880,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _CollectionSection.TYPE = "collection";
   let CollectionSection = _CollectionSection;
+  const _PageSection = class _PageSection extends BaseSection {
+  };
+  _PageSection.TYPE = "page";
+  let PageSection = _PageSection;
   const selectors$f = {
     priceValue: "[data-price-value]",
     priceLabel: "[data-price-label]",
@@ -9116,6 +9131,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         ArticleSection,
         BlogSection,
         CollectionSection,
+        PageSection,
         ProductSection,
         ProductRelatedSection,
         LoginSection,

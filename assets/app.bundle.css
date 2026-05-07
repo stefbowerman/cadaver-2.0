@@ -1090,6 +1090,21 @@ img.lazy-image.is-loaded {
   list-style-type: decimal;
 }
 
+.rte-table-wrapper {
+  margin-bottom: calc(var(--spacing) * 4);
+  border-style: var(--tw-border-style);
+  border-width: 1px;
+  overflow-x: auto;
+}
+
+.rte-table-wrapper table {
+  margin-bottom: 0;
+}
+
+.rte-table-wrapper th {
+  white-space: nowrap;
+}
+
 table {
   --tw-border-spacing-x: calc(var(--spacing) * 0);
   --tw-border-spacing-y: calc(var(--spacing) * 0);

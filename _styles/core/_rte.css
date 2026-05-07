@@ -31,3 +31,15 @@
 
   /* table */
 }
+
+.rte-table-wrapper {
+  @apply border overflow-x-auto mb-4;
+
+  table {
+    margin-bottom: 0;
+  }
+
+  th {
+    white-space: nowrap;
+  }
+}

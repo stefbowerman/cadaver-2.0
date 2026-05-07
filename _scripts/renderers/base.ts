@@ -8,6 +8,7 @@ import Addresses from '@/sections/addresses'
 import Article from '@/sections/article'
 import Blog from '@/sections/blog'
 import Collection from '@/sections/collection'
+import Page from '@/sections/page'
 import Product from '@/sections/product'
 import ProductRelated from '@/sections/productRelated'
 import Login from '@/sections/login'
@@ -45,6 +46,7 @@ export default class BaseRenderer extends Renderer {
       Article,
       Blog,
       Collection,
+      Page,
       Product,
       ProductRelated,
       Login,

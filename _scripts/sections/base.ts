@@ -13,6 +13,8 @@ import type {
   TaxiNavigateEndEvent,
 } from '@/types/taxi'
 
+import { formatTable } from '@/core/rte'
+
 import { doComponentCleanup } from '@/components/base'
 
 // Standard components
@@ -76,6 +78,9 @@ export default class BaseSection {
     this.graphicCoverVideos = this.qsa(GraphicCoverVideo.SELECTOR).map(el => {
       return new GraphicCoverVideo(el)
     })
+
+    // Format tables in RTE
+    Array.from(container.querySelectorAll('.rte table')).forEach(formatTable)    
 
     // Good for testing...
     // Array.from(container.querySelectorAll('img')).forEach(el => {
