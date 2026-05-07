@@ -12,6 +12,7 @@ import LazyImageController from '@/core/lazyImageController'
 
 import {
   isThemeEditor,
+  prefersPointer,
   targetBlankExternalLinks
 } from '@/core/utils'
 import { dispatch } from '@/core/utils/event'
@@ -120,11 +121,16 @@ function init() {
     window.history.scrollRestoration = 'manual'
   }
 
-  document.body.classList.add('is-loaded')
+  // Use these root classes as styling hooks for different application states
+  if (!prefersPointer()) {
+    document.documentElement.classList.add('no-hover')
+  }
 
   if (isThemeEditor()) {
     document.documentElement.classList.add('is-theme-editor')
-  }  
+  }
+  
+  document.body.classList.add('is-loaded')  
 }
 
 document.addEventListener('DOMContentLoaded', init)

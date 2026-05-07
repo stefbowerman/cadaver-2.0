@@ -10506,10 +10506,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     if (window.history && window.history.scrollRestoration) {
       window.history.scrollRestoration = "manual";
     }
-    document.body.classList.add("is-loaded");
+    if (!prefersPointer()) {
+      document.documentElement.classList.add("no-hover");
+    }
     if (isThemeEditor()) {
       document.documentElement.classList.add("is-theme-editor");
     }
+    document.body.classList.add("is-loaded");
   }
   document.addEventListener("DOMContentLoaded", init);
 })();
