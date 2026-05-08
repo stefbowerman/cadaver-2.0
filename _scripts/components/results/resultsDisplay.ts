@@ -1,5 +1,5 @@
 import { BREAKPOINTS } from '@/core/breakpointsController'
-import gsap from '@/core/gsap'
+import { swap } from '@/core/gsap'
 
 import BaseComponent from '@/components/base'
 import ProductCard from '@/components/product/productCard'
@@ -19,8 +19,8 @@ interface ResultsDisplaySettings {
 export default class ResultsDisplay extends BaseComponent {
   static TYPE = 'results-display'
 
+  #swapTl: gsap.core.Timeline | null
   #moreObserver: IntersectionObserver | null
-  #replacementTl: gsap.core.Timeline | null
 
   settings: ResultsDisplaySettings
   productCards: ProductCard[]
@@ -35,13 +35,13 @@ export default class ResultsDisplay extends BaseComponent {
       ...options
     }
 
+    this.#swapTl = null
+    this.#moreObserver = null
     this.productCards = []
-
     this.list = null
     this.a11yStatus = null
     this.more = null
-    this.#moreObserver = null
-    this.#replacementTl = null
+
 
     this.onMoreIntersection = this.onMoreIntersection.bind(this)
 
@@ -88,8 +88,8 @@ export default class ResultsDisplay extends BaseComponent {
   }
 
   destroy() {
-    this.#replacementTl?.kill()
-    this.#replacementTl = null
+    this.#swapTl?.kill()
+    this.#swapTl = null
 
     this.teardown()
 
@@ -100,36 +100,21 @@ export default class ResultsDisplay extends BaseComponent {
   replace(dom: HTMLElement | undefined) {
     if (!this.validateDom(dom)) return
 
-    this.#replacementTl = gsap.timeline({ paused: true })
-
-    this.#replacementTl.to(this.el, {
-      duration: 0.4,
-      opacity: 0,
-      ease: 'power2.out',
-      onStart: () => {
+    this.#swapTl?.kill()
+    this.#swapTl = swap(this.el, {
+      onExitStart: () => {
         this.settings.onReplaceStart?.(this)
       },
-      onComplete: () => {
+      onExitComplete: () => {
         this.teardown()
         this.el.innerHTML = dom.innerHTML
         this.setup()
 
         this.a11yStatus.text = 'Results updated'
 
-        gsap.set(this.el, { clearProps: true })
-
         this.settings.onReplaceComplete?.(this)
       }
     })
-
-    this.#replacementTl.to(this.el, {
-      duration: 1,
-      delay: 0.25,
-      opacity: 1,
-      ease: 'power2.in'
-    })
-
-    this.#replacementTl.play()
   }
 
   add(dom: HTMLElement | undefined) {

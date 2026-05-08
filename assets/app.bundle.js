@@ -7,7 +7,7 @@ var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot
 var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 (function() {
   "use strict";
-  var _settings, _resizeObserver, _intersectionObserver, _onBlockSelect, _onBlockDeselect, _moreObserver, _replacementTl, _abortController, _isLoading, _state, _muteUpdateSync;
+  var _settings, _resizeObserver, _intersectionObserver, _onBlockSelect, _onBlockDeselect, _swapTl, _moreObserver, _abortController, _isLoading, _state, _muteUpdateSync;
   function SelectorSet() {
     if (!(this instanceof SelectorSet)) {
       return new SelectorSet();
@@ -6658,7 +6658,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     duration: DURATION
   });
   const slideUp = (el, options = {}) => {
-    const duration = options.duration || 0.5;
+    const duration = prefersReducedMotion() ? 0.01 : options.duration || 0.5;
     const opacityTarget = options.opacityTarget || el;
     gsapWithCSS.killTweensOf(el, "height");
     gsapWithCSS.killTweensOf(opacityTarget, "opacity");
@@ -6695,6 +6695,46 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }, "<");
     return tl;
   };
+  const swap = (el, options = {}) => {
+    const {
+      disableAnimation = false,
+      durationExit = 0.2,
+      durationEnter = 0.5,
+      delayEnter = 0.1,
+      clearProps = true
+    } = options;
+    const _disableAnimation = disableAnimation || prefersReducedMotion();
+    const _durationExit = _disableAnimation ? 0.01 : durationExit;
+    const _durationEnter = _disableAnimation ? 0.01 : durationEnter;
+    gsapWithCSS.killTweensOf(el);
+    const tl = gsapWithCSS.timeline({ paused: true });
+    tl.to(el, {
+      duration: _durationExit,
+      opacity: 0,
+      ease: "power1.inOut",
+      onStart: () => {
+        options.onExitStart?.();
+      },
+      onComplete: () => {
+        options.onExitComplete?.();
+      }
+    }).to(el, {
+      duration: _durationEnter,
+      delay: delayEnter,
+      opacity: 1,
+      ease: "power1.out",
+      onStart: () => {
+        options.onEnterStart?.();
+      },
+      onComplete: () => {
+        if (clearProps) {
+          gsapWithCSS.set(el, { clearProps: "opacity" });
+        }
+        options.onEnterComplete?.();
+      }
+    });
+    return tl.play();
+  };
   const _A11yStatus = class _A11yStatus extends BaseComponent {
     static generate(parent) {
       if (!parent) {
@@ -6724,17 +6764,17 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _ResultsDisplay = class _ResultsDisplay extends BaseComponent {
     constructor(el, options = {}) {
       super(el);
+      __privateAdd(this, _swapTl);
       __privateAdd(this, _moreObserver);
-      __privateAdd(this, _replacementTl);
       this.settings = {
         ...options
       };
+      __privateSet(this, _swapTl, null);
+      __privateSet(this, _moreObserver, null);
       this.productCards = [];
       this.list = null;
       this.a11yStatus = null;
       this.more = null;
-      __privateSet(this, _moreObserver, null);
-      __privateSet(this, _replacementTl, null);
       this.onMoreIntersection = this.onMoreIntersection.bind(this);
       this.setup();
     }
@@ -6767,38 +6807,27 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.a11yStatus = null;
     }
     destroy() {
-      __privateGet(this, _replacementTl)?.kill();
-      __privateSet(this, _replacementTl, null);
+      __privateGet(this, _swapTl)?.kill();
+      __privateSet(this, _swapTl, null);
       this.teardown();
       super.destroy();
     }
     // Replace the entire contents of the results display
     replace(dom) {
       if (!this.validateDom(dom)) return;
-      __privateSet(this, _replacementTl, gsapWithCSS.timeline({ paused: true }));
-      __privateGet(this, _replacementTl).to(this.el, {
-        duration: 0.4,
-        opacity: 0,
-        ease: "power2.out",
-        onStart: () => {
+      __privateGet(this, _swapTl)?.kill();
+      __privateSet(this, _swapTl, swap(this.el, {
+        onExitStart: () => {
           this.settings.onReplaceStart?.(this);
         },
-        onComplete: () => {
+        onExitComplete: () => {
           this.teardown();
           this.el.innerHTML = dom.innerHTML;
           this.setup();
           this.a11yStatus.text = "Results updated";
-          gsapWithCSS.set(this.el, { clearProps: true });
           this.settings.onReplaceComplete?.(this);
         }
-      });
-      __privateGet(this, _replacementTl).to(this.el, {
-        duration: 1,
-        delay: 0.25,
-        opacity: 1,
-        ease: "power2.in"
-      });
-      __privateGet(this, _replacementTl).play();
+      }));
     }
     add(dom) {
       if (!this.validateDom(dom)) return;
@@ -6834,8 +6863,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.settings.onMoreIntersection?.(entries);
     }
   };
+  _swapTl = new WeakMap();
   _moreObserver = new WeakMap();
-  _replacementTl = new WeakMap();
   _ResultsDisplay.TYPE = "results-display";
   let ResultsDisplay = _ResultsDisplay;
   const _ResultsSection = class _ResultsSection extends BaseSection {
