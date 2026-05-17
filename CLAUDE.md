@@ -113,6 +113,8 @@ const classes = {
 
 **CSS state management:** Prefer HTML attributes (especially ARIA attributes) as CSS hooks over creating new state classes. Use selectors like `[aria-hidden="false"]`, `:not([aria-expanded="true"])`, `:has([aria-current="page"])` instead of `.is-open`, `.is-active`, etc. This keeps state management centralized in the DOM and reduces duplication between JavaScript and CSS. Only create new classes for non-state styling purposes.
 
+**ARIA attributes:** When adding code that sets aria- attributes, always review and use the pre-existing helper functions in `@/core/utils/a11y.ts` — `setAriaFlag()`, `setAriaState()`, `setAriaCurrent()`, and `setLinkAriaCurrent()`. These handle the correct behavior for different aria attribute types (flags vs. states vs. `aria-current`). Do not set aria attributes directly; use these functions instead.
+
 ### `_scripts` Directory Structure
 
 | Directory | Purpose |

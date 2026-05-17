@@ -1,3 +1,15 @@
+/**
+ * Accessible drawer/panel component with focus trap, backdrop, and breakpoint-aware auto-close.
+ *
+ * @example
+ * {%- render 'drawer', id: 'my-drawer', origin: 'right' -%}
+ *
+ * <!-- Trigger button (anywhere in the DOM) -->
+ * <button aria-controls="my-drawer">Open</button>
+ *
+ * See snippets/drawer.liquid for the full drawer markup.
+ */
+
 import { setAriaFlag, setAriaState } from '@/core/utils/a11y'
 import FocusTrap from '@/core/focusTrap'
 import { BreakpointChangeEvent } from '@/core/breakpointsController'

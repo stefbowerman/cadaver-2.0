@@ -3,23 +3,30 @@
 Cadaver is a custom architected, Shopify Online 2.0 theme boilerplate.
 
 
-__Features:__
+#### Features:
 - Minimal JS framework for working with Shopify sections and DOM components.
 - [Taxi.js](https://taxi.js.org/) with link pre-fetching built-in for fast, SPA like browsing experience
 - [Tailwind V4](https://tailwindcss.com/) for styling
-- Webpack configuration for bundling CSS and JS files
-- 95+ scoring on all lighthouse speed tests.
+- Vite-powered typeScript and CSS bundling with sourcemaps in dev, minified builds in production
+- 95+ scoring on all lighthouse speed tests out of the box.
 - Lazy image loading
+- Automatic section lifecycle management
 - GSAP powered animations and page transitions
-- A11y best practices
+- A11y best practices throughout (ARIA attributes, focus management, reduced-motion support)
+- Pre-built interactive components with animations, keyboard navigation, and ARIA support
 
-__JavaScript Architecture:__
-The frontend application is architected with three primary goals:
-1. SPA-like browsing experience via Taxi.js.
-2. First-class section elements via [BaseSection](_scripts/sections/base.ts) class combined with a [SectionManager](_scripts/core/sectionManager.ts) class to handle all Shopify [theme editor events](https://shopify.dev/docs/storefronts/themes/best-practices/editor/integrate-sections-and-blocks) along with initialization and clean up during the Taxi.js [renderer lifecycle](https://taxi.js.org/renderers/).
-3. Nestable components with auto-cleanup via [BaseComponent](_scripts/components/base.ts) class.
+#### JavaScript Architecture:
 
-> Note: This is a working theme that I use as a boilerplate for all production Shopify projects.  I continutally update it so that I can leverage all of the core e-commerce solutions that I have developed on previous projects.  It is not built as a production-ready theme, but rather a battle-tested foundation for quickly creating new themes.  It contains minimal styling on purpose.
+The frontend application is architected around three core concepts:
+
+1. **Two-tier section system** — Layout level sections persist across page navigations. Template-level sections are torn down and re-initialized on each navigation via the Taxi.js
+ [renderer](_scripts/renderers/base.ts). Both tiers are managed by [SectionManager](_scripts/core/sectionManager.ts) with full [Shopify theme editor
+ event](https://shopify.dev/docs/storefronts/themes/best-practices/editor/integrate-sections-and-blocks) support.
+2. **Nestable components with auto-cleanup** — UI logic lives in [BaseComponent](_scripts/components/base.ts) subclasses. Parent sections automatically destroy all child components on cleanup, preventing memory leaks.
+3. **SPA-like page transitions** — [BaseRenderer](_scripts/renderers/base.ts) coordinates section lifecycle with Taxi.js [PageTransition](_scripts/transitions/page.ts), allowing sections to run exit animations before the page transition begins.
+
+#### Note:
+> This is a working theme that I use as a boilerplate for all production Shopify projects.  I continutally update it so that I can leverage all of the core e-commerce solutions that I have developed on previous projects.  It is not built as a production-ready theme, but rather a battle-tested foundation for quickly creating new themes.  It contains minimal styling on purpose.
 
 > I do not "version" this theme as it is a constant work in progress.  Please note it is liable to change at any time.
 
@@ -27,16 +34,33 @@ The frontend application is architected with three primary goals:
 Production examples of this project in action:
 - [The GitHub Shop](https://thegithubshop.com/)
 - [Fucking Awesome](https://faworldentertainment.com/)
+- [Kartik Research](https://kartikresearch.com)
 - [+44](https://plus44.world/)
 - [SIHA](https://siha.com.au/) - by [@AllanPooley](https://github.com/AllanPooley)
 - [Palantir Store](https://store.palantir.com/) - by [Doubleday & Cartwright
 ](https://www.doubledayandcartwright.com/)
 
+## Pre-built Components
+
+Ready-to-use interactive components that can be dropped into any section.
+
+### Tabs
+Animated tab panels with keyboard navigation, ARIA compliance, and GSAP-powered transitions.
+
+- Source: [`_scripts/components/tabs.ts`](_scripts/components/tabs.ts)
+- Snippets: [`snippets/tabs-tab.liquid`](snippets/tabs-tab.liquid), [`snippets/tabs-tabpanel.liquid`](snippets/tabs-tabpanel.liquid)
+
+### Drawer
+Accessible slide-in drawer with focus trap, optional backdrop, and breakpoint-aware auto-close.
+
+- Source: [`_scripts/components/drawer/index.ts`](_scripts/components/drawer/index.ts)
+- Snippet: [`snippets/drawer.liquid`](snippets/drawer.liquid)
+
 ## Project Structure
 
 ```
-├── _js
-│   └── Working typescript files.  Bundled as `app.bundle.ts`.
+├── _scripts
+│   └── Working typescript files.  Bundled as `app.bundle.js`.
 ├── _styles
 │   └── Working css files.  Bundled as `app.bundle.css`.
 ├── assets
@@ -67,20 +91,15 @@ Production examples of this project in action:
 │   └── search.json
 ```
 
-## NPM Scripts
-
-- Start vite dev process -> `npm run dev`
-- Compile for production -> `npm run build`
-
 ## Development
 
-- Node version - `v22.XX`
 
-```
-$ npm run dev
+```bash
+npm run dev      # Vite watch build (sourcemaps, no minification)
+npm run build    # Production build (minified)
 
-# Start the theme watcher in another terminal
-$ shopify theme dev --store={store_id}
+# Run alongside Shopify CLI in a separate terminal:
+shopify theme dev --store={store_id}
 ```
 
 ## Manual Deployment
