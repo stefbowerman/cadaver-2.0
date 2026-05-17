@@ -61,7 +61,7 @@
   }
 
   img {
-    @apply w-[100px] aspect-square object-contain;
+    @apply w-25 aspect-product object-contain;
 
     &.is-cached {
       transition: none;

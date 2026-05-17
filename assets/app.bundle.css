@@ -1992,9 +1992,9 @@ header.header nav a[aria-current="page"] {
 }
 
 .ajax-cart__item-inner img {
-  aspect-ratio: 1;
+  aspect-ratio: var(--aspect-product);
+  width: calc(var(--spacing) * 25);
   object-fit: contain;
-  width: 100px;
 }
 
 .ajax-cart__item-inner img.is-cached {
@@ -2127,7 +2127,7 @@ header.header nav a[aria-current="page"] {
 }
 
 :is(.product-card__media-primary, .product-card__media-secondary) img {
-  object-fit: cover;
+  object-fit: contain;
   -webkit-user-select: none;
   user-select: none;
   width: 100%;

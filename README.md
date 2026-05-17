@@ -56,6 +56,12 @@ Accessible slide-in drawer with focus trap, optional backdrop, and breakpoint-aw
 - Source: [`_scripts/components/drawer/index.ts`](_scripts/components/drawer/index.ts)
 - Snippet: [`snippets/drawer.liquid`](snippets/drawer.liquid)
 
+### Quantity Adjuster
+Quantity input component with increment/decrement buttons, validation, and configurable min/max bounds.
+
+- Source: [`_scripts/components/quantityAdjuster.ts`](_scripts/components/quantityAdjuster.ts)
+- Snippet: [`snippets/quantity-adjuster.liquid`](snippets/quantity-adjuster.liquid)
+
 ## Project Structure
 
 ```

@@ -7,7 +7,7 @@ var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot
 var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 (function() {
   "use strict";
-  var _settings, _resizeObserver, _intersectionObserver, _onBlockSelect, _onBlockDeselect, _swapTl, _moreObserver, _abortController, _isLoading, _state, _muteUpdateSync;
+  var _settings, _resizeObserver, _intersectionObserver, _onBlockSelect, _onBlockDeselect, _swapTl, _moreObserver, _abortController, _isLoading, _observer, _state, _muteUpdateSync;
   function SelectorSet() {
     if (!(this instanceof SelectorSet)) {
       return new SelectorSet();
@@ -9974,6 +9974,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _QuantityAdjuster = class _QuantityAdjuster extends BaseComponent {
     constructor(el, options = {}) {
       super(el);
+      __privateAdd(this, _observer);
       this.settings = {
         ...options
       };
@@ -9984,19 +9985,19 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.input.addEventListener("change", this.onChange.bind(this));
       this.increment.addEventListener("click", this.onStepClick.bind(this));
       this.decrement.addEventListener("click", this.onStepClick.bind(this));
-      this.observer = new MutationObserver(this.onInputMutation.bind(this));
-      this.observer.observe(this.input, {
+      __privateSet(this, _observer, new MutationObserver(this.onInputMutation.bind(this)));
+      __privateGet(this, _observer).observe(this.input, {
         attributes: true,
         attributeFilter: ["min", "max", "step"]
       });
       this.validate();
     }
     destroy() {
-      this.observer.disconnect();
+      __privateGet(this, _observer).disconnect();
       super.destroy();
     }
     parseAttribute(value, defaultValue) {
-      const parsed = parseInt(value, 10);
+      const parsed = parseFloat(value);
       return isNaN(parsed) ? defaultValue : parsed;
     }
     get min() {
@@ -10056,7 +10057,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onStepClick(e) {
       const previousValue = this.value;
       if (e.currentTarget === this.increment) {
-        if (this.min > this.step && previousValue == 0) {
+        if (this.min > this.step && previousValue === 0) {
           this.value = this.min;
         } else {
           this.input.stepUp();
@@ -10076,6 +10077,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.validate();
     }
   };
+  _observer = new WeakMap();
   _QuantityAdjuster.TYPE = "quantity-adjuster";
   let QuantityAdjuster = _QuantityAdjuster;
   const selectors$4 = {

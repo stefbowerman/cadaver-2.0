@@ -1,3 +1,22 @@
+/**
+ * Quantity adjuster component with increment/decrement buttons, validation, and configurable min/max bounds.
+ *
+ * @example
+ * {% render 'quantity-adjuster',
+ *          value: 1,
+ *          min: 1,
+ *          max: 10,
+ *          product_title: product.title
+ * %}
+ *
+ * Bind to changes:
+ * const adjuster = new QuantityAdjuster(el, {
+ *   onChange: (value) => console.log('Quantity changed to:', value)
+ * })
+ *
+ * See snippets/quantity-adjuster.liquid for the full markup.
+ */
+
 import { isNumber, clamp } from '@/core/utils'
 import BaseComponent from '@/components/base'
 
@@ -17,12 +36,13 @@ interface QuantityAdjusterSettings {
 export default class QuantityAdjuster extends BaseComponent {
   static TYPE = 'quantity-adjuster'
 
+  #observer: MutationObserver
+
   settings: QuantityAdjusterSettings
   changeEvent: Event
   input: HTMLInputElement
   increment: HTMLButtonElement
   decrement: HTMLButtonElement
-  observer: MutationObserver
 
   constructor(el: HTMLElement, options: QuantityAdjusterSettings = {}) {
     super(el)
@@ -41,8 +61,8 @@ export default class QuantityAdjuster extends BaseComponent {
     this.increment.addEventListener('click', this.onStepClick.bind(this))
     this.decrement.addEventListener('click', this.onStepClick.bind(this))
 
-    this.observer = new MutationObserver(this.onInputMutation.bind(this))
-    this.observer.observe(this.input, {
+    this.#observer = new MutationObserver(this.onInputMutation.bind(this))
+    this.#observer.observe(this.input, {
       attributes: true,
       attributeFilter: ['min', 'max', 'step']
     })
@@ -51,13 +71,13 @@ export default class QuantityAdjuster extends BaseComponent {
   }
 
   destroy() {
-    this.observer.disconnect()
+    this.#observer.disconnect()
 
     super.destroy()
   }
 
   parseAttribute(value: string, defaultValue: number): number {
-    const parsed = parseInt(value, 10)
+    const parsed = parseFloat(value)
     
     return isNaN(parsed) ? defaultValue : parsed
   }
@@ -140,7 +160,7 @@ export default class QuantityAdjuster extends BaseComponent {
     const previousValue = this.value
 
     if (e.currentTarget === this.increment) {
-      if (this.min > this.step && previousValue == 0) {
+      if (this.min > this.step && previousValue === 0) {
         this.value = this.min
       }
       else {

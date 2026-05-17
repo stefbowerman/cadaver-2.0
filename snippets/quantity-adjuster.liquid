@@ -1,20 +1,25 @@
-{%- comment %}
-  Quantity Adjuster
-  ------------------------------------------------------------------------------
+{% doc %}
+  @param {number} value - The current quantity value - required
+  @param {string} product_title - Product name for aria-labels - required
+  @param {number} [min] - Minimum quantity allowed
+  @param {number} [max] - Maximum quantity allowed
+  @param {number} [step] - Increment/decrement step - defaults to 1
+  @param {boolean} [increment_disabled] - Whether to disable the increment button
+  @param {boolean} [decrement_disabled] - Whether to disable the decrement button
+  @param {string} [input_name] - Name attribute for the input element - defaults to "quantity"
 
-  Usage:
-
+  @example
   {% render 'quantity-adjuster',
-             value: { number}
-             min: { number }
-             max: { number }
-             step: { number }
-             increment_disabled: { boolean }
-             decrement_disabled: { boolean }
-             input_name: { string }
-             product_title: { string }
+             value: 1,
+             product_title: 'Product Name',
+             min: 1,
+             max: 10,
+             step: 1,
+             increment_disabled: false,
+             decrement_disabled: false,
+             input_name: 'quantity'
   %}
-{% endcomment -%}
+{% enddoc %}
 
 <div
   class="quantity-adjuster"
