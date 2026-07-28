@@ -89,6 +89,8 @@ export default class GraphicCoverVideo extends BaseComponent {
   }
 
   async onVisibilityChange(visible = false) {
+    if (!this.video) return
+
     this.inView = visible
 
     if (this.inView) {

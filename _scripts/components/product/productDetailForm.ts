@@ -105,7 +105,7 @@ export default class ProductDetailForm extends BaseComponent {
 
     if (this.submitInProgress) return
 
-    const submit = this.form.querySelector(selectors.submit) as HTMLButtonElement
+    const submit = this.qs(selectors.submit, this.form) as HTMLButtonElement
 
     // Disable the button so the user knows the form is being submitted
     submit.disabled = true

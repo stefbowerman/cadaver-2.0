@@ -478,16 +478,8 @@
     z-index: 2;
   }
 
-  .col-span-7 {
-    grid-column: span 7 / span 7;
-  }
-
   .col-span-full {
     grid-column: 1 / -1;
-  }
-
-  .col-start-2 {
-    grid-column-start: 2;
   }
 
   .container {
@@ -663,10 +655,6 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .grid-cols-8 {
-    grid-template-columns: repeat(8, minmax(0, 1fr));
-  }
-
   .grid-cols-10 {
     grid-template-columns: repeat(10, minmax(0, 1fr));
   }
@@ -675,20 +663,12 @@
     flex-direction: column;
   }
 
-  .flex-row {
-    flex-direction: row;
-  }
-
   .flex-wrap {
     flex-wrap: wrap;
   }
 
   .items-center {
     align-items: center;
-  }
-
-  .items-start {
-    align-items: flex-start;
   }
 
   .justify-between {
@@ -741,10 +721,6 @@
 
   .gap-y-10 {
     row-gap: calc(var(--spacing) * 10);
-  }
-
-  .gap-y-20 {
-    row-gap: calc(var(--spacing) * 20);
   }
 
   .truncate {
@@ -926,20 +902,6 @@
     position: fixed !important;
   }
 
-  @media (min-width: 48rem) {
-    .md\:col-span-2 {
-      grid-column: span 2 / span 2;
-    }
-
-    .md\:col-span-6 {
-      grid-column: span 6 / span 6;
-    }
-
-    .md\:col-start-1 {
-      grid-column-start: 1;
-    }
-  }
-
   @media (min-width: 64rem) {
     .lg\:sticky {
       position: sticky;
@@ -947,10 +909,6 @@
 
     .lg\:top-0 {
       top: calc(var(--spacing) * 0);
-    }
-
-    .lg\:col-span-1 {
-      grid-column: span 1 / span 1;
     }
 
     .lg\:col-span-2 {

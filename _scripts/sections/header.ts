@@ -4,10 +4,6 @@ import type { TaxiNavigateInEvent } from '@/types/taxi'
 import BaseSection from '@/sections/base'
 import HeaderCartControl from '@/components/header/headerCartControl'
 
-const selectors = {
-  // 
-}
-
 export default class HeaderSection extends BaseSection {
   static TYPE = 'header'
 

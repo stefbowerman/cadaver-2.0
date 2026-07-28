@@ -26,7 +26,7 @@ export default class ResultsDisplay extends BaseComponent {
   productCards: ProductCard[]
   list: HTMLUListElement | null
   a11yStatus: A11yStatus | null
-  more: HTMLAnchorElement | undefined
+  more: HTMLAnchorElement | null
 
   constructor(el: HTMLElement, options: ResultsDisplaySettings = {}) {
     super(el)
@@ -55,6 +55,7 @@ export default class ResultsDisplay extends BaseComponent {
     this.more = this.qs(selectors.more) as HTMLAnchorElement | null
 
     if (this.more) {
+      const more = this.more
       const rootMargin = window.innerWidth < BREAKPOINTS.md ? '1000px' : `${Math.max(window.innerHeight*2, 1500)}px`
 
       this.#moreObserver = new IntersectionObserver(this.onMoreIntersection, {
@@ -63,9 +64,11 @@ export default class ResultsDisplay extends BaseComponent {
         threshold: 0.1
       })
 
+      const moreObserver = this.#moreObserver
+
       // Prevent immediate triggering
       requestAnimationFrame(() => {
-        this.#moreObserver.observe(this.more)
+        moreObserver.observe(more)
       })
     }
 
@@ -110,7 +113,7 @@ export default class ResultsDisplay extends BaseComponent {
         this.el.innerHTML = dom.innerHTML
         this.setup()
 
-        this.a11yStatus.text = 'Results updated'
+        if (this.a11yStatus) this.a11yStatus.text = 'Results updated'
 
         this.settings.onReplaceComplete?.(this)
       }
@@ -119,6 +122,7 @@ export default class ResultsDisplay extends BaseComponent {
 
   add(dom: HTMLElement | undefined) {
     if (!this.validateDom(dom)) return
+    if (!this.list) return
 
     const newList = dom.querySelector(selectors.list)
     const newItems = newList ? [...newList.children] : []
@@ -138,7 +142,7 @@ export default class ResultsDisplay extends BaseComponent {
       })
 
       this.list.append(fragment)
-      this.a11yStatus.text = `${newItems.length} items loaded`
+      if (this.a11yStatus) this.a11yStatus.text = `${newItems.length} items loaded`
 
       // Replace the "more" link if it exists
       const newMore = dom.querySelector(selectors.more) as HTMLAnchorElement | undefined
@@ -153,6 +157,8 @@ export default class ResultsDisplay extends BaseComponent {
   }
 
   onNoMoreResults() {
+    if (!this.more) return
+
     this.more.remove()
     this.more = null
 

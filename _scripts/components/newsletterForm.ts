@@ -2,6 +2,7 @@ import BaseComponent from '@/components/base'
 
 const selectors = {
   form: 'form',
+  formInput: 'input[type="email"]',
   formContents: '[data-form-contents]',
   formMessage: '[data-form-message]' // needs data-success, data-already-subscribed, data-fail
 };
@@ -35,9 +36,9 @@ export default class NewsletterForm extends BaseComponent {
       return
     }
 
-    this.formInput = this.form.querySelector('input[type="email"]')
-    this.formContents = this.form.querySelector(selectors.formContents)
-    this.formMessage = this.form.querySelector(selectors.formMessage)
+    this.formInput = this.qs(selectors.formInput, this.form) as HTMLInputElement
+    this.formContents = this.qs(selectors.formContents, this.form)
+    this.formMessage = this.qs(selectors.formMessage, this.form)
   }
 
   destroy() {

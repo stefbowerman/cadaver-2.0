@@ -54,15 +54,20 @@ export default class CartBody extends BaseComponent {
     this.itemInstances = this.itemInstances.filter(instance => instance !== removalInstance)
     
     // Animate the removal and then clean up the instance
+    // The tween can fire both onInterrupt and onComplete, so guard against destroying the instance twice
+    let cleanedUp = false
+    const cleanup = () => {
+      if (cleanedUp) return
+      cleanedUp = true
+
+      this.cleanupItemInstance(removalInstance)
+    }
+
     slideUp(removalInstance.el, {
       duration: 0.45,
-      onInterrupt: () => {
-        this.cleanupItemInstance(removalInstance)
-      },
-      onComplete: () => {
-        this.cleanupItemInstance(removalInstance)
-      }
-    })    
+      onInterrupt: cleanup,
+      onComplete: cleanup
+    })
   }
 
   performItemInstanceUpdate(updateInstance: CartItem, newItemData: LiteLineItem) {

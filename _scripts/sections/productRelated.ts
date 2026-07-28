@@ -1,5 +1,6 @@
 import type { ThemeEditorSectionUnloadEvent } from '@/types/shopify'
 import { fetchDom } from '@/core/utils/dom'
+import { setAriaFlag } from '@/core/utils/a11y'
 
 import BaseSection from '@/sections/base'
 import ProductCard from '@/components/product/productCard'
@@ -76,7 +77,7 @@ export default class ProductRelatedSection extends BaseSection {
 
       // Hide the container entirely
       this.container.style.display = 'none'
-      this.container.setAttribute('aria-hidden', 'true')      
+      setAriaFlag(this.container, 'aria-hidden', true)
     }
   }  
 }

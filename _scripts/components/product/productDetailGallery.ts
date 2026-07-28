@@ -1,4 +1,5 @@
 import EmblaCarousel, { EmblaCarouselType } from 'embla-carousel'
+import { setAriaCurrent } from '@/core/utils/a11y'
 import BaseComponent from '@/components/base'
 import A11yStatus from '@/components/a11y/a11yStatus'
 
@@ -71,7 +72,7 @@ export default class ProductDetailGallery extends BaseComponent {
   }
 
   set isActive(value: boolean) {
-    value ? this.el.setAttribute('aria-current', 'true') : this.el.removeAttribute('aria-current')
+    setAriaCurrent(this.el, value ? 'true' : undefined)
   }
 
   get activeIndex() {
@@ -93,13 +94,11 @@ export default class ProductDetailGallery extends BaseComponent {
 
     (this.qsa('img') as HTMLImageElement[]).forEach(img => img.setAttribute('loading', 'eager'))
 
-    this.el.setAttribute('aria-current', 'true')
-    this.emblaApi?.reInit()
     this.isActive = true
+    this.emblaApi?.reInit()
   }
 
   deactivate() {
-    this.el.removeAttribute('aria-current')
     this.isActive = false
   }
 
@@ -111,12 +110,7 @@ export default class ProductDetailGallery extends BaseComponent {
 
   updateAriaCurrent(items: HTMLElement[], activeIndex: number) {
     items?.forEach((item, index) => {
-      if (index === activeIndex) {
-        item.setAttribute('aria-current', 'true')
-      }
-      else {
-        item.removeAttribute('aria-current')
-      }
+      setAriaCurrent(item, index === activeIndex ? 'true' : undefined)
     })
   }
 

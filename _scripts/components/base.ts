@@ -182,7 +182,7 @@ export default class BaseComponent {
     return Array.from(dom.querySelectorAll(selector)).filter(el => {
       const closest = el.closest('[data-component]')
 
-      return closest.isSameNode(this.el) || closest.matches(selector)
+      return !closest || closest.isSameNode(this.el) || closest.matches(selector)
     }) as HTMLElement[]
   }
 

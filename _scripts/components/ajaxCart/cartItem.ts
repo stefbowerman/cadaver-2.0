@@ -51,7 +51,7 @@ export default class CartItem extends BaseComponent {
 
     this.debouncedOnQuantityAdjusterChange = debounce(this.onQuantityAdjusterChange.bind(this), (isTouch() ? 500 : 250)) // <- Longer debounce for touch devices since fast touches are taken as a double click which causes page zoom
 
-    this.quantityAdjuster = new QuantityAdjuster(this.el.querySelector(QuantityAdjuster.SELECTOR), {
+    this.quantityAdjuster = new QuantityAdjuster(this.qs(QuantityAdjuster.SELECTOR), {
       onChange: qty => {
         // If the quantity is changed to 0, trigger change callback immediately
         if (qty === 0) {
@@ -65,6 +65,12 @@ export default class CartItem extends BaseComponent {
     })
 
     this.remove.addEventListener('click', this.onRemoveClick.bind(this))
+  }
+
+  destroy() {
+    this.debouncedOnQuantityAdjusterChange.cancel() // Prevent a pending quantity change from firing after the item is removed
+
+    super.destroy()
   }
 
   get key() {

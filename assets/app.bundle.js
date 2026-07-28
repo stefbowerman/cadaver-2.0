@@ -1575,7 +1575,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     qsa(selector2, dom = this.el) {
       return Array.from(dom.querySelectorAll(selector2)).filter((el) => {
         const closest = el.closest("[data-component]");
-        return closest.isSameNode(this.el) || closest.matches(selector2);
+        return !closest || closest.isSameNode(this.el) || closest.matches(selector2);
       });
     }
     // Make sure we're working with a DOM element that matches the component selector
@@ -1739,6 +1739,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.video.style.display = "none";
     }
     async onVisibilityChange(visible = false) {
+      if (!this.video) return;
       this.inView = visible;
       if (this.inView) {
         this.video.preload = "auto";
@@ -2006,7 +2007,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onIntersection(entries) {
       if (entries[0].isIntersecting) {
         if (this.mediaSecondary instanceof HTMLElement && prefersPointer()) {
-          const img = this.mediaSecondary.querySelector("img");
+          const img = this.qs("img", this.mediaSecondary);
           if (img instanceof HTMLImageElement) {
             img.onload = () => this.mediaSecondary.classList.add(classes$6.mediaSecondaryReady);
             if (img.dataset.src) img.src = img.dataset.src;
@@ -6783,14 +6784,16 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.list = this.qs(selectors$g.list);
       this.more = this.qs(selectors$g.more);
       if (this.more) {
+        const more = this.more;
         const rootMargin = window.innerWidth < BREAKPOINTS.md ? "1000px" : `${Math.max(window.innerHeight * 2, 1500)}px`;
         __privateSet(this, _moreObserver, new IntersectionObserver(this.onMoreIntersection, {
           root: null,
           rootMargin,
           threshold: 0.1
         }));
+        const moreObserver = __privateGet(this, _moreObserver);
         requestAnimationFrame(() => {
-          __privateGet(this, _moreObserver).observe(this.more);
+          moreObserver.observe(more);
         });
       }
       this.a11yStatus = A11yStatus.generate(this.el);
@@ -6824,13 +6827,14 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
           this.teardown();
           this.el.innerHTML = dom.innerHTML;
           this.setup();
-          this.a11yStatus.text = "Results updated";
+          if (this.a11yStatus) this.a11yStatus.text = "Results updated";
           this.settings.onReplaceComplete?.(this);
         }
       }));
     }
     add(dom) {
       if (!this.validateDom(dom)) return;
+      if (!this.list) return;
       const newList = dom.querySelector(selectors$g.list);
       const newItems = newList ? [...newList.children] : [];
       if (newItems.length) {
@@ -6843,7 +6847,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
           }
         });
         this.list.append(fragment);
-        this.a11yStatus.text = `${newItems.length} items loaded`;
+        if (this.a11yStatus) this.a11yStatus.text = `${newItems.length} items loaded`;
         const newMore = dom.querySelector(selectors$g.more);
         if (this.more && newMore) {
           this.more.href = newMore.href;
@@ -6853,6 +6857,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
     }
     onNoMoreResults() {
+      if (!this.more) return;
       this.more.remove();
       this.more = null;
       __privateGet(this, _moreObserver)?.disconnect();
@@ -7170,7 +7175,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onFormSubmit(e) {
       e.preventDefault();
       if (this.submitInProgress) return;
-      const submit = this.form.querySelector(selectors$d.submit);
+      const submit = this.qs(selectors$d.submit, this.form);
       submit.disabled = true;
       this.submitInProgress = true;
       this.onAddStart();
@@ -8868,7 +8873,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       return this.el.getAttribute("aria-current") === "true";
     }
     set isActive(value) {
-      value ? this.el.setAttribute("aria-current", "true") : this.el.removeAttribute("aria-current");
+      setAriaCurrent(this.el, value ? "true" : void 0);
     }
     get activeIndex() {
       return this.emblaApi?.selectedScrollSnap() ?? 0;
@@ -8883,12 +8888,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     activate() {
       if (this.isActive) return;
       this.qsa("img").forEach((img) => img.setAttribute("loading", "eager"));
-      this.el.setAttribute("aria-current", "true");
-      this.emblaApi?.reInit();
       this.isActive = true;
+      this.emblaApi?.reInit();
     }
     deactivate() {
-      this.el.removeAttribute("aria-current");
       this.isActive = false;
     }
     updatePagination() {
@@ -8897,11 +8900,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     updateAriaCurrent(items, activeIndex) {
       items?.forEach((item, index) => {
-        if (index === activeIndex) {
-          item.setAttribute("aria-current", "true");
-        } else {
-          item.removeAttribute("aria-current");
-        }
+        setAriaCurrent(item, index === activeIndex ? "true" : void 0);
       });
     }
     updateCurrentStatus() {
@@ -9003,7 +9002,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       } catch (e) {
         console.warn(e);
         this.container.style.display = "none";
-        this.container.setAttribute("aria-hidden", "true");
+        setAriaFlag(this.container, "aria-hidden", true);
       }
     }
   };
@@ -9589,6 +9588,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   }
   const selectors$7 = {
     form: "form",
+    formInput: 'input[type="email"]',
     formContents: "[data-form-contents]",
     formMessage: "[data-form-message]"
     // needs data-success, data-already-subscribed, data-fail
@@ -9609,9 +9609,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         console.warn(`[${this.type}] - Form element required to initialize`);
         return;
       }
-      this.formInput = this.form.querySelector('input[type="email"]');
-      this.formContents = this.form.querySelector(selectors$7.formContents);
-      this.formMessage = this.form.querySelector(selectors$7.formMessage);
+      this.formInput = this.qs(selectors$7.formInput, this.form);
+      this.formContents = this.qs(selectors$7.formContents, this.form);
+      this.formMessage = this.qs(selectors$7.formMessage, this.form);
     }
     destroy() {
       window.clearTimeout(this.timeoutId);
@@ -9679,15 +9679,14 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (this.newsletterFormEl) {
         this.newsletterForm = new NewsletterForm(this.newsletterFormEl);
         this.ajaxForm = new AJAXKlaviyoForm(this.newsletterFormEl, {
-          onSubmitStart: () => this.newsletterForm.onSubmitStart(),
-          onSubmitFail: (errors) => this.newsletterForm.onSubmitFail(errors),
-          onSubscribeSuccess: () => this.newsletterForm.onSubscribeSuccess(),
-          onSubscribeFail: () => this.newsletterForm.onSubscribeFail()
+          onSubmitStart: () => this.newsletterForm?.onSubmitStart(),
+          onSubmitFail: (errors) => this.newsletterForm?.onSubmitFail(errors),
+          onSubscribeSuccess: () => this.newsletterForm?.onSubscribeSuccess(),
+          onSubscribeFail: () => this.newsletterForm?.onSubscribeFail()
         });
       }
     }
     onUnload(e) {
-      this.newsletterForm?.destroy();
       this.ajaxForm?.destroy();
       super.onUnload(e);
     }
@@ -9856,7 +9855,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         });
       }
       if (this.role) {
-        this.ariaControlElements.forEach((el2) => el2.setAttribute("aria-haspopup", this.role));
+        const role = this.role;
+        this.ariaControlElements.forEach((el2) => el2.setAttribute("aria-haspopup", role));
       }
     }
     destroy() {
@@ -9965,6 +9965,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   _MobileMenuSection.TYPE = "mobile-menu";
   let MobileMenuSection = _MobileMenuSection;
   const selectors$5 = {
+    input: 'input[type="number"]',
     increment: "button[data-increment]",
     decrement: "button[data-decrement]"
   };
@@ -9979,9 +9980,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         ...options
       };
       this.changeEvent = new Event("change", { bubbles: true });
-      this.input = this.el.querySelector('input[type="number"]');
-      this.increment = this.el.querySelector(selectors$5.increment);
-      this.decrement = this.el.querySelector(selectors$5.decrement);
+      this.input = this.qs(selectors$5.input);
+      this.increment = this.qs(selectors$5.increment);
+      this.decrement = this.qs(selectors$5.decrement);
       this.input.addEventListener("change", this.onChange.bind(this));
       this.increment.addEventListener("click", this.onStepClick.bind(this));
       this.decrement.addEventListener("click", this.onStepClick.bind(this));
@@ -10101,7 +10102,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.remove = this.qs(selectors$4.remove);
       this.price = this.qs(selectors$4.price);
       this.debouncedOnQuantityAdjusterChange = debounce(this.onQuantityAdjusterChange.bind(this), isTouch() ? 500 : 250);
-      this.quantityAdjuster = new QuantityAdjuster(this.el.querySelector(QuantityAdjuster.SELECTOR), {
+      this.quantityAdjuster = new QuantityAdjuster(this.qs(QuantityAdjuster.SELECTOR), {
         onChange: (qty) => {
           if (qty === 0) {
             this.debouncedOnQuantityAdjusterChange?.cancel();
@@ -10112,6 +10113,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         }
       });
       this.remove.addEventListener("click", this.onRemoveClick.bind(this));
+    }
+    destroy() {
+      this.debouncedOnQuantityAdjusterChange.cancel();
+      super.destroy();
     }
     get key() {
       return this.itemData.key;
@@ -10203,14 +10208,16 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     performItemInstanceRemoval(removalInstance) {
       if (!removalInstance) return;
       this.itemInstances = this.itemInstances.filter((instance2) => instance2 !== removalInstance);
+      let cleanedUp = false;
+      const cleanup = () => {
+        if (cleanedUp) return;
+        cleanedUp = true;
+        this.cleanupItemInstance(removalInstance);
+      };
       slideUp(removalInstance.el, {
         duration: 0.45,
-        onInterrupt: () => {
-          this.cleanupItemInstance(removalInstance);
-        },
-        onComplete: () => {
-          this.cleanupItemInstance(removalInstance);
-        }
+        onInterrupt: cleanup,
+        onComplete: cleanup
       });
     }
     performItemInstanceUpdate(updateInstance, newItemData) {
@@ -10371,6 +10378,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.focusTrap.destroy();
       document.body.classList.remove(classes.bodyCartOpen);
       document.body.removeEventListener("click", this.onBodyClick);
+      this.ariaControlElements.forEach((el) => el.removeAttribute("aria-haspopup"));
       super.destroy();
     }
     get isOpen() {
@@ -10427,10 +10435,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         e.preventDefault();
         this.toggle();
       }
-    }
-    onToggleClick(e) {
-      e.preventDefault();
-      this.toggle();
     }
     onCloseClick(e) {
       e.preventDefault();

@@ -21,6 +21,7 @@ import { isNumber, clamp } from '@/core/utils'
 import BaseComponent from '@/components/base'
 
 const selectors = {
+  input: 'input[type="number"]',
   increment: 'button[data-increment]',
   decrement: 'button[data-decrement]'
 }
@@ -53,9 +54,9 @@ export default class QuantityAdjuster extends BaseComponent {
 
     this.changeEvent = new Event('change', { bubbles: true }) // stepUp / stepDown doesn't trigger input change
 
-    this.input = this.el.querySelector('input[type="number"]')!
-    this.increment = this.el.querySelector(selectors.increment)!
-    this.decrement = this.el.querySelector(selectors.decrement)!
+    this.input = this.qs(selectors.input) as HTMLInputElement
+    this.increment = this.qs(selectors.increment) as HTMLButtonElement
+    this.decrement = this.qs(selectors.decrement) as HTMLButtonElement
 
     this.input.addEventListener('change', this.onChange.bind(this))
     this.increment.addEventListener('click', this.onStepClick.bind(this))

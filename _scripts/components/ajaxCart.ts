@@ -9,8 +9,7 @@ import CartBody from '@/components/ajaxCart/cartBody'
 import CartFooter from '@/components/ajaxCart/cartFooter'
 
 const selectors = {
-  close: '[data-ajax-cart-close]',
-  toggle: '[data-ajax-cart-toggle][aria-controls]' // Not scoped to the component
+  close: '[data-ajax-cart-close]'
 }
 
 const classes = {
@@ -79,6 +78,8 @@ export default class AJAXCart extends BaseComponent {
 
     document.body.classList.remove(classes.bodyCartOpen)
     document.body.removeEventListener('click', this.onBodyClick)
+
+    this.ariaControlElements.forEach(el => el.removeAttribute('aria-haspopup'))
 
     super.destroy()
   }
@@ -155,12 +156,6 @@ export default class AJAXCart extends BaseComponent {
       e.preventDefault()
       this.toggle()
     } 
-  }
-
-  onToggleClick(e: MouseEvent) {
-    e.preventDefault()
-
-    this.toggle()
   }
 
   onCloseClick(e: MouseEvent) {

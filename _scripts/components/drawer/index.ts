@@ -85,8 +85,9 @@ export default class Drawer extends BaseComponent {
     }    
 
     if (this.role) {
-      this.ariaControlElements.forEach(el => el.setAttribute('aria-haspopup', this.role))
-    }     
+      const role = this.role
+      this.ariaControlElements.forEach(el => el.setAttribute('aria-haspopup', role))
+    }
   }
 
   destroy() {

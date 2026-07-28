@@ -21,7 +21,7 @@ export function setAriaState(el: HTMLElement, attr: AriaStateAttribute, value: b
   el.setAttribute(attr, value ? 'true' : 'false')
 }
 
-const AriaCurrentValues = ['page', 'step', 'location', 'date', 'time'] as const
+const AriaCurrentValues = ['page', 'step', 'location', 'date', 'time', 'true'] as const
 type AriaCurrentValue = typeof AriaCurrentValues[number]
 
 export function setAriaCurrent(el: HTMLElement, value?: AriaCurrentValue): void {
