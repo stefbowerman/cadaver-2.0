@@ -13,13 +13,13 @@ export default class ATCButton extends BaseComponent {
 
   tempText: string | null
   label: HTMLElement
-  successTimeoutId: ReturnType<typeof setTimeout> | null
+  successTimeoutId: ReturnType<typeof setTimeout> | undefined
 
   constructor(el: HTMLButtonElement) {
     super(el)
 
     this.tempText = null
-    this.successTimeoutId = null
+    this.successTimeoutId = undefined
 
     this.label = this.qsRequired(selectors.label)
   }

@@ -15,7 +15,7 @@ const classes = {
 export default class NewsletterForm extends BaseComponent {
   static TYPE = 'newsletter-form'
 
-  timeoutId: ReturnType<typeof setTimeout> | null
+  timeoutId: ReturnType<typeof setTimeout> | undefined
   form: HTMLFormElement
   formInput: HTMLInputElement
   formContents: HTMLElement
@@ -27,7 +27,7 @@ export default class NewsletterForm extends BaseComponent {
   constructor(el: HTMLElement) {
     super(el)
 
-    this.timeoutId = null
+    this.timeoutId = undefined
 
     this.form = this.el.tagName === 'FORM' ? this.el as HTMLFormElement : this.qsRequired<HTMLFormElement>(selectors.form)
     this.formInput = this.qsRequired<HTMLInputElement>(selectors.formInput, this.form)

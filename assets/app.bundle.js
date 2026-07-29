@@ -7004,7 +7004,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     constructor(el) {
       super(el);
       this.tempText = null;
-      this.successTimeoutId = null;
+      this.successTimeoutId = void 0;
       this.label = this.qsRequired(selectors$e.label);
     }
     destroy() {
@@ -9247,7 +9247,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.toHeight = 0;
       this.autoScrollCompleteFlag = false;
       this.autoScrollCleanup = null;
-      this.autoScrollTimeoutId = null;
+      this.autoScrollTimeoutId = void 0;
     }
     /**
      * Sets or removes height style on wrapper element
@@ -9628,7 +9628,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
      */
     constructor(el) {
       super(el);
-      this.timeoutId = null;
+      this.timeoutId = void 0;
       this.form = this.el.tagName === "FORM" ? this.el : this.qsRequired(selectors$7.form);
       this.formInput = this.qsRequired(selectors$7.formInput, this.form);
       this.formContents = this.qsRequired(selectors$7.formContents, this.form);
