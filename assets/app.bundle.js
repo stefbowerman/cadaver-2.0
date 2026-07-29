@@ -1788,14 +1788,18 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         ...options
       };
       this.#intersectionObserver = null;
-      this.container = container;
-      this.id = this.dataset.sectionId;
       this.type = this.constructor.TYPE;
-      this.parent = this.container.parentElement;
-      this.parentId = this.parent.id;
+      this.container = container;
+      this.id = this.dataset.sectionId ?? "";
       if (!this.id) {
         console.warn("Section ID not found", this);
       }
+      const parent = this.container.parentElement;
+      if (!parent) {
+        throw new Error(`[${this.type}] Section container has no parent element`);
+      }
+      this.parent = parent;
+      this.parentId = this.parent.id;
       this.onNavigateOut = this.onNavigateOut.bind(this);
       this.onNavigateIn = this.onNavigateIn.bind(this);
       this.onNavigateEnd = this.onNavigateEnd.bind(this);

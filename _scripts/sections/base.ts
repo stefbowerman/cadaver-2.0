@@ -31,9 +31,9 @@ export default class BaseSection {
   #settings: BaseSectionSettings;
   #intersectionObserver: IntersectionObserver | null;
 
+  type: string
   container: HTMLElement
   id: string
-  type: string
   parent: HTMLElement
   parentId: string
   graphicCoverVideos: GraphicCoverVideo[]
@@ -49,16 +49,23 @@ export default class BaseSection {
     }
 
     this.#intersectionObserver = null
+    this.type = (this.constructor as typeof BaseSection).TYPE
 
     this.container = container
-    this.id = this.dataset.sectionId
-    this.type = (this.constructor as typeof BaseSection).TYPE
-    this.parent = this.container.parentElement // Automatically generated wrapper element
-    this.parentId = this.parent.id
+    this.id = this.dataset.sectionId ?? ''
 
     if (!this.id) {
       console.warn('Section ID not found', this)
+    }    
+
+    const parent = this.container.parentElement
+
+    if (!parent) { 
+      throw new Error(`[${this.type}] Section container has no parent element`)
     }
+
+    this.parent = parent
+    this.parentId = this.parent.id
 
     this.onNavigateOut = this.onNavigateOut.bind(this)
     this.onNavigateIn  = this.onNavigateIn.bind(this)
@@ -80,7 +87,7 @@ export default class BaseSection {
     })
 
     // Format tables in RTE
-    Array.from(container.querySelectorAll('.rte table')).forEach(formatTable)    
+    Array.from(container.querySelectorAll('.rte table') as NodeListOf<HTMLTableElement>).forEach(formatTable)    
 
     // Good for testing...
     // Array.from(container.querySelectorAll('img')).forEach(el => {

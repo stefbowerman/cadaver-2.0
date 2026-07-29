@@ -27,7 +27,7 @@ export type BreakpointChangeEvent = CustomEvent<{
 export default class BreakpointsController {
   static EVENTS = {
     CHANGE: 'change.breakpointsController'
-  }
+  } as const
 
   currentKey: string
   mediaQueries: Map<string, MediaQuery>

@@ -11,7 +11,7 @@ const CartAPI = {
     ADD: 'cartAPI.add',
     CHANGE: 'cartAPI.change', // WHen a single item quantity is changed (not removed)
     REMOVE: 'cartAPI.remove'
-  },
+  } as const,
 
   routes: window.app.routes,
 
