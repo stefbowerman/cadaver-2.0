@@ -10538,7 +10538,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         default: PageTransition
       },
       reloadJsFilter: (element) => {
-        return element.dataset.taxiReload !== void 0 || viewContainer.contains(element);
+        return element.dataset.taxiReload !== void 0 || (viewContainer?.contains(element) ?? false);
       },
       allowInterruption: true,
       enablePrefetch: true

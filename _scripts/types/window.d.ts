@@ -51,7 +51,7 @@ declare global {
         account_addresses_url: string
         account_url: string
       };
-      taxi?: TaxiCore;
+      taxi?: TaxiCore | null;
       klaviyo?: {
         companyId: string
         listId: string

@@ -64,7 +64,7 @@ function init() {
     },
     reloadJsFilter: (element) => {
       // Whitelist any scripts here that need to be reloaded on page change
-      return element.dataset.taxiReload !== undefined || viewContainer.contains(element)
+      return element.dataset.taxiReload !== undefined || (viewContainer?.contains(element) ?? false)
     },
     allowInterruption: true,
     enablePrefetch: true

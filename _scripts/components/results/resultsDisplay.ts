@@ -100,7 +100,7 @@ export default class ResultsDisplay extends BaseComponent {
   }
 
   // Replace the entire contents of the results display
-  replace(dom: HTMLElement | undefined) {
+  replace(dom: HTMLElement | null) {
     if (!dom || !this.validateDom(dom)) return
 
     this.#swapTl?.kill()
