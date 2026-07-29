@@ -55,7 +55,7 @@ export default class VariantPickerOption extends BaseComponent {
 
   updateValueAvailability(value: string, available: boolean) {
     if (this.select) {
-      [...this.select.children].forEach((option: HTMLOptionElement) => {
+      [...this.select.options].forEach(option => {
         if (option.value === value) {
           option.disabled = !available
         }

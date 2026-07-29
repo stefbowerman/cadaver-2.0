@@ -9006,7 +9006,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       __privateSet(this, _abortController, null);
       this.productCards = [];
       this.contentTarget = this.qsRequired(selectors$b.contentTarget);
-      this.recommendationsUrl = this.dataset.url;
+      const url = this.dataset.url;
+      if (!url) {
+        throw new Error("ProductRelatedSection: Recommendations URL not found");
+      }
+      this.recommendationsUrl = url;
     }
     onUnload(e) {
       __privateGet(this, _abortController)?.abort();

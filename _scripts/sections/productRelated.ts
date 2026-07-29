@@ -33,7 +33,13 @@ export default class ProductRelatedSection extends BaseSection {
 
     this.contentTarget = this.qsRequired(selectors.contentTarget)
 
-    this.recommendationsUrl = this.dataset.url
+    const url = this.dataset.url
+
+    if (!url) {
+      throw new Error('ProductRelatedSection: Recommendations URL not found')
+    }
+
+    this.recommendationsUrl = url
   }
 
   onUnload(e: ThemeEditorSectionUnloadEvent) {

@@ -286,7 +286,7 @@ export const hasWebGLSupport = (): boolean => {
  * @param wait - The number of milliseconds to delay (default: 200).
  * @returns A debounced version of the function with a `.cancel()` method to clear any pending execution.
  */
-export const debounce = <T extends (...args: unknown[]) => void>(func: T, wait = 200) => {
+export const debounce = <T extends (...args: any[]) => void>(func: T, wait = 200) => {
   let timeout: ReturnType<typeof setTimeout> | undefined; // for the setTimeout function and so it can be cleared
   function executedFunction(...args: Parameters<T>) { // the function returned from debounce
       const later = () => { // this is the delayed function
