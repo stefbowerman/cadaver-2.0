@@ -30,7 +30,7 @@ const DEFAULT_MIN = 0
 const DEFAULT_MAX = 999
 const DEFAULT_STEP = 1
 
-interface QuantityAdjusterSettings {
+interface QuantityAdjusterOptions {
   onChange?: (value: number) => void
 }
 
@@ -39,13 +39,13 @@ export default class QuantityAdjuster extends BaseComponent {
 
   #observer: MutationObserver
 
-  settings: QuantityAdjusterSettings
+  settings: QuantityAdjusterOptions
   changeEvent: Event
   input: HTMLInputElement
   increment: HTMLButtonElement
   decrement: HTMLButtonElement
 
-  constructor(el: HTMLElement, options: QuantityAdjusterSettings = {}) {
+  constructor(el: HTMLElement, options: QuantityAdjusterOptions = {}) {
     super(el)
 
     this.settings = {

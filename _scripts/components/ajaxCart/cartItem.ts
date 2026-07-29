@@ -15,7 +15,7 @@ const classes = {
   updating: 'is-updating'
 }
 
-interface CartItemSettings {
+interface CartItemOptions {
   onRemoveClick?: (item: CartItem) => void,
   onQuantityAdjusterChange?: (item: CartItem, qty: number) => void
 }
@@ -26,7 +26,7 @@ export default class CartItem extends BaseComponent {
   static TYPE = 'cart-item'
 
   #state: CartItemAllowedState
-  settings: CartItemSettings
+  settings: CartItemOptions
   id: number
   itemData: LiteLineItem
   remove: HTMLButtonElement
@@ -34,7 +34,7 @@ export default class CartItem extends BaseComponent {
   debouncedOnQuantityAdjusterChange: ReturnType<typeof debounce<(qty: number) => void>>
   quantityAdjuster: QuantityAdjuster
 
-  constructor(el: HTMLElement, itemData: LiteLineItem, options: CartItemSettings = {}) {
+  constructor(el: HTMLElement, itemData: LiteLineItem, options: CartItemOptions = {}) {
     super(el)
 
     this.#state = undefined

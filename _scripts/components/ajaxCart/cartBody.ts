@@ -83,7 +83,12 @@ export default class CartBody extends BaseComponent {
   performItemInstanceAddition(newItemData: LiteLineItem, newIndex: number) {
     if (!newItemData) return
 
-    const newItemEl = getDomFromString(newItemData.item_html).querySelector(CartItem.SELECTOR) as HTMLElement
+    const newItemEl = getDomFromString(newItemData.item_html).querySelector<HTMLElement>(CartItem.SELECTOR)
+
+    if (!newItemEl) {
+      throw new Error(`[${this.type}] Required element not found: "${CartItem.SELECTOR}"`)
+    }
+
     const newItemInstance = this.createCartItemInstance(newItemEl, newItemData)
     
     // Insert to list DOM

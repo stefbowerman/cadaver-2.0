@@ -15,9 +15,13 @@ const selectors = {
   masterSelect: 'select[name="id"]'
 }
 
-interface ProductDetailFormSettings {
+interface ProductDetailFormOptions {
   onVariantChange?: (e: VariantChangeEvent) => void
   enableHistoryState?: boolean
+}
+
+interface ProductDetailFormSettings extends ProductDetailFormOptions {
+  enableHistoryState: boolean
 }
 
 export default class ProductDetailForm extends BaseComponent {
@@ -41,7 +45,7 @@ export default class ProductDetailForm extends BaseComponent {
    * @param options.onVariantChange -  Called when a new variant has been selected from the form,
    * @param options.enableHistoryState - If set to "true", turns on URL updating when switching variant
    */  
-  constructor(el: HTMLElement, options: ProductDetailFormSettings = {}) {
+  constructor(el: HTMLElement, options: ProductDetailFormOptions = {}) {
     super(el)
 
     this.settings = {

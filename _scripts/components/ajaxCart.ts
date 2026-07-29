@@ -19,7 +19,7 @@ const classes = {
 
 // NOTE: This component takes a lot of inspiration from the drawer component but is purposely built separately so that it can easily be modified to work differently/independently
 
-interface AJAXCartSettings {
+interface AJAXCartOptions {
   onOpenComplete?: () => void
   onCloseComplete?: () => void
 }
@@ -27,14 +27,14 @@ interface AJAXCartSettings {
 export default class AJAXCart extends BaseComponent {
   static TYPE = 'ajax-cart'
 
-  settings: AJAXCartSettings
+  settings: AJAXCartOptions
   role: string | null
   focusTrap: FocusTrap
   cartBody: CartBody
   cartFooter: CartFooter
   backdrop: Backdrop
 
-  constructor(el: HTMLElement, cartData: LiteCart, options: AJAXCartSettings = {}) {
+  constructor(el: HTMLElement, cartData: LiteCart, options: AJAXCartOptions = {}) {
     super(el, {
       watchCartUpdate: true
     })

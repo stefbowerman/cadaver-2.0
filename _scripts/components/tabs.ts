@@ -38,15 +38,17 @@ const selectors = {
 
 // @NOTE - Maybe change this to "speed" so that we can calculate durations and clamp them to reasonable values?
 interface TabsOptions {
-  leaveDuration: number
-  enterDuration: number
+  leaveDuration?: number
+  enterDuration?: number
 }
+
+type TabsSettings = Required<TabsOptions>
 
 export default class Tabs extends BaseComponent {
   static TYPE = 'tabs'
 
   #transitionTl: gsap.core.Timeline | null
-  settings: TabsOptions
+  settings: TabsSettings
   tablist: HTMLElement
   tabs: HTMLElement[]
   tabpanelsWrapper: HTMLElement
@@ -54,7 +56,7 @@ export default class Tabs extends BaseComponent {
   currentTab: HTMLElement
   orientationVertical: boolean
 
-  constructor(el: HTMLElement, options: Partial<TabsOptions> = {}) {
+  constructor(el: HTMLElement, options: TabsOptions = {}) {
     super(el)
 
     this.settings = {
@@ -70,14 +72,14 @@ export default class Tabs extends BaseComponent {
     this.tabpanelsWrapper = this.qsRequired(selectors.tabpanelsWrapper)
     this.tabpanels = this.qsa(selectors.tabpanels)
 
+    if (this.tabs.length === 0) {
+      throw new Error('No tabs found')
+    }
+
     const selectedTab = this.tabs.find(tab => tab.getAttribute('aria-selected') === 'true')
 
     this.currentTab = selectedTab ?? this.tabs[0]
     this.orientationVertical = this.tablist.getAttribute('aria-orientation') === 'vertical'
-
-    if (this.tabs.length === 0) {
-      throw new Error('No tabs found')
-    }
 
     this.onTabClick = this.onTabClick.bind(this)
     this.onTablistKeyDown = this.onTablistKeyDown.bind(this)

@@ -22,7 +22,7 @@ export default class GraphicCoverVideo extends BaseComponent {
 
     this.autoPlayEnabled = prefersReducedMotion() ? false : true
 
-    this.video = this.qs('video') as HTMLVideoElement | null
+    this.video = this.qs<HTMLVideoElement>('video')
     this.inView = false
 
     if (!this.video) {

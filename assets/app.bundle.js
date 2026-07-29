@@ -1550,10 +1550,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     /**
      * Queries for the first element matching the given selector within the component's element,
      * excluding elements that belong to nested components.
-     * 
+     *
      * @param selector - The CSS selector to query for an element.
      * @param dom - The DOM element to query within.  Defaults to the component's element.
-     * @returns The first matching Element object within the component's scope, or null if no match is found.
+     * @returns The first matching element within the component's scope, narrowed to T, or null if no match is found.
      */
     qs(selector2, dom = this.el) {
       return this.qsa(selector2, dom)[0] ?? null;
@@ -1576,11 +1576,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     /**
      * Queries for all elements matching the given selector within the component's element,
      * excluding elements that belong to nested components.
-     * 
+     *
      * @param selector - The CSS selector to query for elements
      * @param dom - The DOM element to query within. Defaults to the component's element
-     * @returns An array of matching Element objects within the component's scope
-     * 
+     * @returns An array of matching elements within the component's scope, narrowed to T
+     *
      * @description
      * This method filters out elements that belong to nested components by checking if the
      * closest parent component is either the querying component itself or matches the
@@ -1822,7 +1822,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
      * Query selector helper that returns the first matching element within the section container
      * @param {string} selector - CSS selector string
      * @param {HTMLElement} [dom=this.container] - Parent element to query within (defaults to section container)
-     * @returns {HTMLElement|null} First matching element or null if none found
+     * @returns {T|null} First matching element, narrowed to T, or null if none found
      */
     qs(selector2, dom = this.container) {
       return this.qsa(selector2, dom)[0] ?? null;
@@ -1844,10 +1844,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     /**
      * Query selector all helper that returns an array of matching elements within the section container,
      * filtering out nested components that match the selector.
-     * 
+     *
      * @param {string} selector - CSS selector string to match elements
      * @param {HTMLElement} [dom=this.container] - Parent element to query within (defaults to section container)
-     * @returns {HTMLElement[]} Array of matching elements, excluding nested component matches
+     * @returns {T[]} Array of matching elements, narrowed to T, excluding nested component matches
      *
      */
     qsa(selector2, dom = this.container) {
@@ -2049,7 +2049,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (entries[0].isIntersecting) {
         if (this.mediaSecondary instanceof HTMLElement && prefersPointer()) {
           const img = this.qs("img", this.mediaSecondary);
-          if (img instanceof HTMLImageElement) {
+          if (img) {
             img.onload = () => this.mediaSecondary?.classList.add(classes$6.mediaSecondaryReady);
             if (img.dataset.src) img.src = img.dataset.src;
             if (img.dataset.srcset) img.srcset = img.dataset.srcset;
@@ -8903,27 +8903,27 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       setAriaCurrent(this.el, value ? "true" : void 0);
     }
     get activeIndex() {
-      return this.emblaApi?.selectedScrollSnap() ?? 0;
+      return this.emblaApi.selectedScrollSnap() ?? 0;
     }
     get slideCount() {
       return this.slides?.length ?? 0;
     }
     destroy() {
-      this.emblaApi?.destroy();
+      this.emblaApi.destroy();
       super.destroy();
     }
     activate() {
       if (this.isActive) return;
       this.qsa("img").forEach((img) => img.setAttribute("loading", "eager"));
       this.isActive = true;
-      this.emblaApi?.reInit();
+      this.emblaApi.reInit();
     }
     deactivate() {
       this.isActive = false;
     }
     updatePagination() {
       if (!this.pagination || !this.emblaApi) return;
-      this.pagination.innerHTML = `${this.emblaApi?.selectedScrollSnap() + 1} / ${this.emblaApi?.scrollSnapList().length}`;
+      this.pagination.innerHTML = `${this.emblaApi.selectedScrollSnap() + 1} / ${this.emblaApi.scrollSnapList().length}`;
     }
     updateAriaCurrent(items, activeIndex) {
       items?.forEach((item, index) => {
@@ -8943,11 +8943,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onButtonNextClick(e) {
       e.preventDefault();
-      this.emblaApi?.scrollNext();
+      this.emblaApi.scrollNext();
     }
     onButtonPreviousClick(e) {
       e.preventDefault();
-      this.emblaApi?.scrollPrev();
+      this.emblaApi.scrollPrev();
     }
   };
   _ProductDetailGallery.TYPE = "product-detail-gallery";
@@ -9819,7 +9819,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       super(el);
       this.settings = {
         title: "Close",
-        ariaLabel: "Close",
         ...options
       };
       el.setAttribute("title", this.settings.title);
@@ -9855,8 +9854,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         ...options
       });
       this.settings = {
-        minBreakpoint: null,
-        maxBreakpoint: null,
         backdrop: true,
         backdropOptions: {},
         ...options
@@ -10255,6 +10252,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     performItemInstanceAddition(newItemData, newIndex) {
       if (!newItemData) return;
       const newItemEl = getDomFromString(newItemData.item_html).querySelector(CartItem.SELECTOR);
+      if (!newItemEl) {
+        throw new Error(`[${this.type}] Required element not found: "${CartItem.SELECTOR}"`);
+      }
       const newItemInstance = this.createCartItemInstance(newItemEl, newItemData);
       this.list.insertBefore(newItemInstance.el, this.itemInstances[newIndex]?.el || null);
       this.itemInstances.splice(newIndex, 0, newItemInstance);
@@ -10478,7 +10478,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   _AJAXCart.TYPE = "ajax-cart";
   let AJAXCart = _AJAXCart;
   const selectors = {
-    cartJson: "[data-cart-json]"
+    cartJson: "script[data-cart-json]"
   };
   const _AJAXCartSection = class _AJAXCartSection extends BaseSection {
     constructor(container) {
