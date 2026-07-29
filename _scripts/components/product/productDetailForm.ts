@@ -68,7 +68,7 @@ export default class ProductDetailForm extends BaseComponent {
     this.form.addEventListener('submit', this.onFormSubmit.bind(this))
   }
 
-  updateHistoryState(variant: LiteVariant) {
+  updateHistoryState(variant?: LiteVariant) {
     if (!this.settings.enableHistoryState) return
 
     const newurl = new URL(window.location.href)

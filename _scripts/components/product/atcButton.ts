@@ -35,7 +35,7 @@ export default class ATCButton extends BaseComponent {
    *
    * @param variant - LiteVariant object
    */
-  update(variant: LiteVariant) {
+  update(variant?: LiteVariant) {
     let isDisabled = true
     let labelText = getAppString('unavailable', 'Unavailable')
 

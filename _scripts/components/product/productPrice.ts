@@ -42,7 +42,7 @@ export default class ProductPrice extends BaseComponent {
    * @param variant.compare_at_price - The compare at price of the variant.
    * @param variant.compare_at_price_formatted - The formatted compare at price of the variant.
    */  
-  update(variant: LiteVariant) {
+  update(variant?: LiteVariant) {
     if (variant) {
       const onSale = variant.compare_at_price && variant.compare_at_price > variant.price
       
