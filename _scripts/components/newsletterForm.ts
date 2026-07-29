@@ -21,9 +21,6 @@ export default class NewsletterForm extends BaseComponent {
   formContents: HTMLElement
   formMessage: HTMLElement
 
-  /**
-   * NewsletterForm constructor
-   */  
   constructor(el: HTMLElement) {
     super(el)
 
@@ -53,13 +50,13 @@ export default class NewsletterForm extends BaseComponent {
 
     window.clearTimeout(this.timeoutId);
 
-    this.timeoutId = setTimeout(function() {
+    this.timeoutId = setTimeout(() => {
       if (reset) {
         this.reset();
       } 
 
       this.formContents.classList.remove(classes.showMessage)
-    }.bind(this), 3000);    
+    }, 3000);    
   }
 
   showFormContents() {
@@ -99,7 +96,7 @@ export default class NewsletterForm extends BaseComponent {
     
     // this.showMessageWithTimeout(this.formMessage.dataset[msgKey], reset);
 
-    this.showMessageWithTimeout(this.formMessage.dataset.success, true);
+    this.showMessageWithTimeout(this.formMessage.dataset.success ?? 'Thank you for subscribing!', true);
   }
 
   onSubmitStart() {
@@ -112,6 +109,6 @@ export default class NewsletterForm extends BaseComponent {
   }
 
   onSubscribeFail() {
-    this.showMessageWithTimeout(this.formMessage.dataset.fail, false);
+    this.showMessageWithTimeout(this.formMessage.dataset.fail ?? 'Something went wrong', false);
   }
 }

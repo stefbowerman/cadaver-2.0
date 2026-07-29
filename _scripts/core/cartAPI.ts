@@ -75,7 +75,7 @@ const CartAPI = {
       return cart
     }
     catch (error) {
-      throw new Error(error.message || 'An error occurred while adding the item to the cart.');
+      throw new Error((error instanceof Error ? error.message : 'An error occurred while adding the item to the cart.'));
 
       /*
         @TODO - Add fail event - something like this:
@@ -129,7 +129,7 @@ const CartAPI = {
       return cart
     }
     catch (error) {
-      return Promise.reject({ message: error.message })
+      return Promise.reject({ message: error instanceof Error ? error.message : 'An error occurred while changing the item quantity.' });
     }
   }
 }

@@ -9,7 +9,7 @@ export default class MobileMenuDrawer extends Drawer {
 
   constructor(el: HTMLElement) {
     super(el, {
-      maxBreakpoint: BREAKPOINTS.md,
+      maxBreakpoint: BREAKPOINTS.lg,
       backdropOptions: {
         title: 'Close mobile menu'
       }

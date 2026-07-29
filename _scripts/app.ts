@@ -30,8 +30,7 @@ import FooterSection from '@/sections/footer'
 import MobileMenuSection from '@/sections/mobileMenu'
 import AJAXCartSection from '@/sections/ajaxCart'
 
-// Use this to expose anything needed throughout the rest of the app
-window.app = window.app || {};
+// window.app is always set by the inline script in snippets/head-scripts.liquid before this bundle runs
 window.app.taxi = null;
 
 function init() {

@@ -33,14 +33,8 @@ declare global {
       CountryProvinceSelector: any
     }
     app: {
-      strings?: {
-        addToCart: string
-        soldOut: string
-        unavailable: string
-        adding: string
-        added: string
-      };
-      routes?: {
+      strings?: Record<string, string>;
+      routes: {
         root_url: string
         predictive_search_url: string
         cart_add_url: string

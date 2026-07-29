@@ -169,7 +169,7 @@ export default class BaseSection {
 
   }
 
-  onUnload(e: ThemeEditorSectionUnloadEvent) {
+  onUnload(e?: ThemeEditorSectionUnloadEvent) {
     window.removeEventListener('taxi.navigateOut', this.onNavigateOut)
     window.removeEventListener('taxi.navigateIn', this.onNavigateIn)
     window.removeEventListener('taxi.navigateEnd', this.onNavigateEnd)

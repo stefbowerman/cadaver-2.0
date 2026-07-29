@@ -26,6 +26,8 @@ export default class BaseRenderer extends Renderer {
 
   constructor(properties: RendererProps) {
     super(properties)
+
+    this.sectionManager = null
   }
 
   // NOTE: If initialLoad is defined, "onEnter" will not be called for sections that exist on page load
@@ -53,7 +55,7 @@ export default class BaseRenderer extends Renderer {
       Search,
       PageHero
     ].forEach(section => {
-      this.sectionManager.register(section)
+      this.sectionManager?.register(section)
     })    
   }
 

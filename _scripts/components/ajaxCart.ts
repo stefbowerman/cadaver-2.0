@@ -68,8 +68,9 @@ export default class AJAXCart extends BaseComponent {
     // Set empty state based on initial cart data
     this.setEmpty(cartData.item_count === 0)
 
-    if (this.role) {
-      this.ariaControlElements.forEach(el => el.setAttribute('aria-haspopup', this.role))
+    const role = this.role
+    if (role) {
+      this.ariaControlElements.forEach(el => el.setAttribute('aria-haspopup', role))
     }
   }
 

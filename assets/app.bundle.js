@@ -1139,17 +1139,17 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const BREAKPOINTS_MAP = new Map(Object.entries(BREAKPOINTS).sort((a, b) => a[1] - b[1]));
   const _BreakpointsController = class _BreakpointsController {
     constructor() {
-      this.currentKey = this.getKeyForWidth(window.innerWidth);
-      this.mediaQueries = /* @__PURE__ */ new Map();
+      this.currentKey = this.getKeyForWidth(window.innerWidth) ?? "";
+      this.mediaQueries = [];
       this.onChange = this.onChange.bind(this);
-      BREAKPOINTS_MAP.forEach((minWidth, key) => {
+      BREAKPOINTS_MAP.forEach((minWidth) => {
         const query = window.matchMedia(`(min-width: ${minWidth}px)`);
         query.addEventListener("change", this.onChange);
-        this.mediaQueries.set(key, { minWidth, query });
+        this.mediaQueries.push(query);
       });
     }
     destroy() {
-      this.mediaQueries.forEach(({ query }) => {
+      this.mediaQueries.forEach((query) => {
         query.removeEventListener("change", this.onChange);
       });
     }
@@ -1174,17 +1174,16 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onChange() {
       const oldKey = this.currentKey;
       const newKey = this.getKeyForWidth(window.innerWidth);
-      if (oldKey !== newKey) {
-        const breakpoint = this.mediaQueries.get(newKey).minWidth;
-        const fromBreakpoint = this.mediaQueries.get(oldKey).minWidth;
-        const direction = window.innerWidth > this.mediaQueries.get(oldKey).minWidth ? 1 : -1;
-        dispatch(_BreakpointsController.EVENTS.CHANGE, {
-          breakpoint,
-          fromBreakpoint,
-          direction
-        });
-        this.currentKey = newKey;
-      }
+      if (!newKey || newKey === oldKey) return;
+      const breakpoint = BREAKPOINTS_MAP.get(newKey);
+      const fromBreakpoint = BREAKPOINTS_MAP.get(oldKey);
+      const direction = breakpoint > fromBreakpoint ? 1 : -1;
+      dispatch(_BreakpointsController.EVENTS.CHANGE, {
+        breakpoint,
+        fromBreakpoint,
+        direction
+      });
+      this.currentKey = newKey;
     }
   };
   _BreakpointsController.EVENTS = {
@@ -1407,7 +1406,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         this.dispatch(CartAPI.EVENTS.ADD, cart);
         return cart;
       } catch (error) {
-        throw new Error(error.message || "An error occurred while adding the item to the cart.");
+        throw new Error(error instanceof Error ? error.message : "An error occurred while adding the item to the cart.");
       }
     },
     /**
@@ -1441,7 +1440,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         this.dispatch(CartAPI.EVENTS.UPDATE, cart);
         return cart;
       } catch (error) {
-        return Promise.reject({ message: error.message });
+        return Promise.reject({ message: error instanceof Error ? error.message : "An error occurred while changing the item quantity." });
       }
     }
   };
@@ -1923,8 +1922,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.instances = [];
       THEME_EDITOR_EVENTS.forEach((ev) => {
         const handlerName = getEventHandlerName(ev);
-        if (this[handlerName]) {
-          this[handlerName] = this[handlerName].bind(this);
+        const handler = this[handlerName];
+        if (typeof handler === "function") {
+          this[handlerName] = handler.bind(this);
         }
       });
       this.attachEvents();
@@ -1937,16 +1937,18 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     attachEvents() {
       if (!isThemeEditor()) return;
       THEME_EDITOR_EVENTS.forEach((ev) => {
-        const handler = this[getEventHandlerName(ev)];
-        if (handler) {
-          window.document.addEventListener(ev, handler.bind(this));
+        const handlerName = getEventHandlerName(ev);
+        const handler = this[handlerName];
+        if (typeof handler === "function") {
+          window.document.addEventListener(ev, handler);
         }
       });
     }
     removeEvents() {
       THEME_EDITOR_EVENTS.forEach((ev) => {
-        const handler = this[getEventHandlerName(ev)];
-        if (handler) {
+        const handlerName = getEventHandlerName(ev);
+        const handler = this[handlerName];
+        if (typeof handler === "function") {
           window.document.removeEventListener(ev, handler);
         }
       });
@@ -1959,7 +1961,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     load(container, constructor) {
       const type = container.getAttribute(SECTION_TYPE_ATTR);
-      const Konstructor = constructor || this.constructors[type];
+      const Konstructor = constructor || this.constructors[type ?? ""];
       if (typeof Konstructor === "undefined") {
         return;
       }
@@ -1994,8 +1996,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     // Simply triggers the appropriate instance method if available
     onGenericEvent(e, func) {
       const instance2 = this.getInstanceById(e.detail.sectionId);
-      if (instance2 && typeof instance2[func] === "function") {
-        instance2[func].call(instance2, e);
+      if (!instance2) return;
+      const handler = instance2[func];
+      if (typeof handler === "function") {
+        handler.call(instance2, e);
       }
     }
     onSectionLoad(e) {
@@ -2046,7 +2050,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         if (this.mediaSecondary instanceof HTMLElement && prefersPointer()) {
           const img = this.qs("img", this.mediaSecondary);
           if (img instanceof HTMLImageElement) {
-            img.onload = () => this.mediaSecondary.classList.add(classes$6.mediaSecondaryReady);
+            img.onload = () => this.mediaSecondary?.classList.add(classes$6.mediaSecondaryReady);
             if (img.dataset.src) img.src = img.dataset.src;
             if (img.dataset.srcset) img.srcset = img.dataset.srcset;
             img.removeAttribute("data-src");
@@ -2189,7 +2193,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       const dom = getDomFromString(responseText);
       return dom;
     } catch (e) {
-      if (e.name === "AbortError") {
+      if (e instanceof Error && e.name === "AbortError") {
         console.log("Fetch aborted by user");
         return void 0;
       }
@@ -6922,7 +6926,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         fetchUrl.searchParams.set("t", Date.now().toString());
         fetchUrl.searchParams.set("section_id", this.id);
         const dom = await fetchDom(fetchUrl);
-        return dom.getElementById(this.parentId)?.querySelector(ResultsDisplay.SELECTOR) ?? null;
+        return dom?.getElementById(this.parentId)?.querySelector(ResultsDisplay.SELECTOR) ?? null;
       } catch (e) {
         console.warn("something went wrong...", e);
         return null;
@@ -7083,7 +7087,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     updateValueAvailability(value, available) {
       if (this.select) {
-        [...this.select.children].forEach((option) => {
+        [...this.select.options].forEach((option) => {
           if (option.value === value) {
             option.disabled = !available;
           }
@@ -7101,16 +7105,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   _VariantPickerOption.TYPE = "variant-picker-option";
   let VariantPickerOption = _VariantPickerOption;
   const _VariantPicker = class _VariantPicker extends BaseComponent {
-    constructor(el, options = {}) {
+    constructor(el, options) {
       super(el);
-      this.settings = {
-        product: null,
-        ...options
-      };
-      this.product = this.settings.product;
+      this.settings = options;
+      this.product = options.product;
       if (!this.product) {
-        console.warn("Product required");
-        return;
+        throw new Error("VariantPicker: Product required");
       }
       this.availableVariants = this.product.variants.filter((v) => v.available);
       this.onVariantPickerOptionChange = this.onVariantPickerOptionChange.bind(this);
@@ -7140,7 +7140,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.settings.onVariantChange?.(e);
     }
     onVariantPickerOptionChange() {
-      const selectedOptions = this.pickerOptions.map((pO) => pO.selectedOption).filter(Boolean);
+      const selectedOptions = this.pickerOptions.map((pO) => pO.selectedOption).filter((o) => Boolean(o));
       const variant = this.product.variants.find((variant2) => {
         return variant2.options.every((value, index) => value === selectedOptions[index]?.value);
       });
@@ -8874,13 +8874,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       super(el);
       this.color = this.dataset.color;
       this.productTitle = this.dataset.productTitle;
-      this.emblaNode = this.qs(".embla");
-      this.emblaViewport = this.qs(".embla__viewport");
+      this.emblaNode = this.qsRequired(".embla");
+      this.emblaViewport = this.qsRequired(".embla__viewport");
       this.slides = this.qsa(".embla__slide");
-      if (!this.emblaNode) {
-        console.warn("ProductDetailGallery: Embla node not found");
-        return;
-      }
       this.pagination = this.qs(selectors$c.pagination);
       this.buttonNext = this.qs(selectors$c.buttonNext);
       this.buttonPrevious = this.qs(selectors$c.buttonPrevious);
@@ -8926,7 +8922,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.isActive = false;
     }
     updatePagination() {
-      if (!this.pagination) return;
+      if (!this.pagination || !this.emblaApi) return;
       this.pagination.innerHTML = `${this.emblaApi?.selectedScrollSnap() + 1} / ${this.emblaApi?.scrollSnapList().length}`;
     }
     updateAriaCurrent(items, activeIndex) {
@@ -8935,7 +8931,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       });
     }
     updateCurrentStatus() {
-      let msg = `Image ${this.activeIndex + 1} of ${this.slideCount} for ${this.productTitle}`;
+      let msg = `Image ${this.activeIndex + 1} of ${this.slideCount}`;
+      if (this.productTitle) {
+        msg = `${msg} for ${this.productTitle}`;
+      }
       if (this.color) {
         msg = `${msg} in ${this.color}`;
       }
@@ -9184,6 +9183,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   class BaseRenderer extends Renderer {
     constructor(properties) {
       super(properties);
+      this.sectionManager = null;
     }
     // NOTE: If initialLoad is defined, "onEnter" will not be called for sections that exist on page load
     // initialLoad() {
@@ -9203,7 +9203,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         SearchSection,
         PageHeroSection
       ].forEach((section) => {
-        this.sectionManager.register(section);
+        this.sectionManager?.register(section);
       });
     }
     onEnterCompleted() {
@@ -9529,20 +9529,21 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         ...options
       };
       this.el = el;
-      this.form = this.el.tagName === "FORM" ? this.el : this.el.querySelector("form");
-      if (!this.form) {
-        console.warn(`[${this.name}] - Form element required to initialize`);
-        return;
+      this.isSubmitting = false;
+      const form = this.el.tagName === "FORM" ? this.el : this.el.querySelector("form");
+      if (!form) {
+        throw new Error(`[${this.name}] - Form element required to initialize`);
       }
+      this.form = form;
+      const input = this.form.querySelector('input[type="email"]');
+      const submit = this.form.querySelector('[type="submit"]');
+      if (!(input && submit)) {
+        throw new Error(`[${this.name}] - Email input and submit button required to initialize`);
+      }
+      this.input = input;
+      this.submit = submit;
       if (this.form.dataset.source) {
         this.setSource(this.form.dataset.source);
-      }
-      this.input = this.form.querySelector('input[type="email"]');
-      this.submit = this.form.querySelector('[type="submit"]');
-      this.isSubmitting = false;
-      if (!this.input) {
-        console.warn(`[${this.name}] - Email input missing`);
-        return;
       }
       this.onFormSubmit = this.onFormSubmit.bind(this);
       this.form.addEventListener("submit", this.onFormSubmit);
@@ -9631,9 +9632,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     showMessage: "show-message"
   };
   const _NewsletterForm = class _NewsletterForm extends BaseComponent {
-    /**
-     * NewsletterForm constructor
-     */
     constructor(el) {
       super(el);
       this.timeoutId = void 0;
@@ -9656,12 +9654,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.formMessage.innerHTML = message;
       this.formContents.classList.add(classes$4.showMessage);
       window.clearTimeout(this.timeoutId);
-      this.timeoutId = setTimeout((function() {
+      this.timeoutId = setTimeout(() => {
         if (reset) {
           this.reset();
         }
         this.formContents.classList.remove(classes$4.showMessage);
-      }).bind(this), 3e3);
+      }, 3e3);
     }
     showFormContents() {
       this.form.classList.add(classes$4.showContents);
@@ -9684,7 +9682,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.formInput.dispatchEvent(new Event("change"));
     }
     onSubscribeSuccess() {
-      this.showMessageWithTimeout(this.formMessage.dataset.success, true);
+      this.showMessageWithTimeout(this.formMessage.dataset.success ?? "Thank you for subscribing!", true);
     }
     onSubmitStart() {
       this.showMessageWithTimeout("Submitting...", false);
@@ -9694,7 +9692,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.showMessageWithTimeout(msg, false);
     }
     onSubscribeFail() {
-      this.showMessageWithTimeout(this.formMessage.dataset.fail, false);
+      this.showMessageWithTimeout(this.formMessage.dataset.fail ?? "Something went wrong", false);
     }
   };
   _NewsletterForm.TYPE = "newsletter-form";
@@ -9961,7 +9959,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _MobileMenuDrawer = class _MobileMenuDrawer extends Drawer {
     constructor(el) {
       super(el, {
-        maxBreakpoint: BREAKPOINTS.md,
+        maxBreakpoint: BREAKPOINTS.lg,
         backdropOptions: {
           title: "Close mobile menu"
         }
@@ -10405,8 +10403,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.el.addEventListener("transitionend", this.onTransitionEnd);
       document.body.addEventListener("click", this.onBodyClick);
       this.setEmpty(cartData.item_count === 0);
-      if (this.role) {
-        this.ariaControlElements.forEach((el2) => el2.setAttribute("aria-haspopup", this.role));
+      const role = this.role;
+      if (role) {
+        this.ariaControlElements.forEach((el2) => el2.setAttribute("aria-haspopup", role));
       }
     }
     destroy() {
@@ -10519,7 +10518,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _AJAXCartSection.TYPE = "ajax-cart";
   let AJAXCartSection = _AJAXCartSection;
-  window.app = window.app || {};
   window.app.taxi = null;
   function init() {
     const viewContainer = document.querySelector("main#view-container");

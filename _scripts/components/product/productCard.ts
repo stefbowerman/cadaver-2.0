@@ -28,7 +28,7 @@ export default class ProductCard extends BaseComponent {
         const img = this.qs('img', this.mediaSecondary)
 
         if (img instanceof HTMLImageElement) {
-          img.onload = () => this.mediaSecondary.classList.add(classes.mediaSecondaryReady)
+          img.onload = () => this.mediaSecondary?.classList.add(classes.mediaSecondaryReady)
 
           if (img.dataset.src) img.src = img.dataset.src;
           if (img.dataset.srcset) img.srcset = img.dataset.srcset;
