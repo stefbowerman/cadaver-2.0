@@ -156,13 +156,13 @@ export default class BaseComponent {
   /**
    * Queries for the first element matching the given selector within the component's element,
    * excluding elements that belong to nested components.
-   * 
+   *
    * @param selector - The CSS selector to query for an element.
    * @param dom - The DOM element to query within.  Defaults to the component's element.
-   * @returns The first matching Element object within the component's scope, or null if no match is found.
+   * @returns The first matching element within the component's scope, narrowed to T, or null if no match is found.
    */
-  qs(selector: string, dom: HTMLElement = this.el): HTMLElement | null {
-    return this.qsa(selector, dom)[0] ?? null
+  qs<T extends HTMLElement = HTMLElement>(selector: string, dom: HTMLElement = this.el): T | null {
+    return this.qsa<T>(selector, dom)[0] ?? null
   }
 
   /**
@@ -174,34 +174,34 @@ export default class BaseComponent {
    * @returns The first matching element, narrowed to T.
    */
   qsRequired<T extends HTMLElement = HTMLElement>(selector: string, dom: HTMLElement = this.el): T {
-    const el = this.qs(selector, dom)
+    const el = this.qs<T>(selector, dom)
 
     if (!el) {
       throw new Error(`[${this.type}] Required element not found: "${selector}"`)
     }
 
-    return el as T
+    return el
   }
 
   /**
    * Queries for all elements matching the given selector within the component's element,
    * excluding elements that belong to nested components.
-   * 
+   *
    * @param selector - The CSS selector to query for elements
    * @param dom - The DOM element to query within. Defaults to the component's element
-   * @returns An array of matching Element objects within the component's scope
-   * 
+   * @returns An array of matching elements within the component's scope, narrowed to T
+   *
    * @description
    * This method filters out elements that belong to nested components by checking if the
    * closest parent component is either the querying component itself or matches the
    * selector (which would make it a target of the query rather than a container to exclude).
    */
-  qsa(selector: string, dom: HTMLElement = this.el): HTMLElement[] {
-    return Array.from(dom.querySelectorAll(selector)).filter(el => {
+  qsa<T extends HTMLElement = HTMLElement>(selector: string, dom: HTMLElement = this.el): T[] {
+    return Array.from(dom.querySelectorAll<T>(selector)).filter(el => {
       const closest = el.closest('[data-component]')
 
       return !closest || closest.isSameNode(this.el) || closest.matches(selector)
-    }) as HTMLElement[]
+    })
   }
 
   // Make sure we're working with a DOM element that matches the component selector

@@ -72,14 +72,14 @@ export default class Tabs extends BaseComponent {
     this.tabpanelsWrapper = this.qsRequired(selectors.tabpanelsWrapper)
     this.tabpanels = this.qsa(selectors.tabpanels)
 
+    if (this.tabs.length === 0) {
+      throw new Error('No tabs found')
+    }
+
     const selectedTab = this.tabs.find(tab => tab.getAttribute('aria-selected') === 'true')
 
     this.currentTab = selectedTab ?? this.tabs[0]
     this.orientationVertical = this.tablist.getAttribute('aria-orientation') === 'vertical'
-
-    if (this.tabs.length === 0) {
-      throw new Error('No tabs found')
-    }
 
     this.onTabClick = this.onTabClick.bind(this)
     this.onTablistKeyDown = this.onTablistKeyDown.bind(this)

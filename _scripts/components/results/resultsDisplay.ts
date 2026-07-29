@@ -42,7 +42,6 @@ export default class ResultsDisplay extends BaseComponent {
     this.a11yStatus = null
     this.more = null
 
-
     this.onMoreIntersection = this.onMoreIntersection.bind(this)
 
     this.setup()
@@ -51,8 +50,8 @@ export default class ResultsDisplay extends BaseComponent {
   setup() {
     this.productCards = this.qsa(ProductCard.SELECTOR).map(el => new ProductCard(el))
 
-    this.list = this.qs(selectors.list) as HTMLUListElement | null
-    this.more = this.qs(selectors.more) as HTMLAnchorElement | null
+    this.list = this.qs<HTMLUListElement>(selectors.list)
+    this.more = this.qs<HTMLAnchorElement>(selectors.more)
 
     if (this.more) {
       const more = this.more
@@ -134,7 +133,7 @@ export default class ResultsDisplay extends BaseComponent {
       newItems.forEach(el => {      
         fragment.append(el) // el === <li>
         
-        const card = el.querySelector(ProductCard.SELECTOR) as HTMLElement
+        const card = el.querySelector<HTMLElement>(ProductCard.SELECTOR)
 
         if (card) {
           this.productCards.push(new ProductCard(card))
@@ -145,7 +144,7 @@ export default class ResultsDisplay extends BaseComponent {
       if (this.a11yStatus) this.a11yStatus.text = `${newItems.length} items loaded`
 
       // Replace the "more" link if it exists
-      const newMore = dom.querySelector(selectors.more) as HTMLAnchorElement | undefined
+      const newMore = dom.querySelector<HTMLAnchorElement>(selectors.more)
 
       if (this.more && newMore) {
         this.more.href = newMore.href

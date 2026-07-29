@@ -25,9 +25,9 @@ export default class ProductCard extends BaseComponent {
   onIntersection(entries: IntersectionObserverEntry[]) {
     if (entries[0].isIntersecting) {
       if (this.mediaSecondary instanceof HTMLElement && prefersPointer()) {
-        const img = this.qs('img', this.mediaSecondary)
+        const img = this.qs<HTMLImageElement>('img', this.mediaSecondary)
 
-        if (img instanceof HTMLImageElement) {
+        if (img) {
           img.onload = () => this.mediaSecondary?.classList.add(classes.mediaSecondaryReady)
 
           if (img.dataset.src) img.src = img.dataset.src;

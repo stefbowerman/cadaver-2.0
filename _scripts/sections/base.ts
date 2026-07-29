@@ -20,10 +20,12 @@ import { doComponentCleanup } from '@/components/base'
 // Standard components
 import GraphicCoverVideo from '@/components/graphicCoverVideo'
 
-export interface BaseSectionSettings {
+export interface BaseSectionOptions {
   watchIntersection?: boolean;
   intersectionOptions?: IntersectionObserverInit;
 }
+
+type BaseSectionSettings = Required<BaseSectionOptions>
 
 export default class BaseSection {
   static TYPE: string
@@ -38,7 +40,7 @@ export default class BaseSection {
   parentId: string
   graphicCoverVideos: GraphicCoverVideo[]
 
-  constructor(container: HTMLElement, options: BaseSectionSettings = {}) {
+  constructor(container: HTMLElement, options: BaseSectionOptions = {}) {
     this.#settings = {
       watchIntersection: false,
       intersectionOptions: {
@@ -105,10 +107,10 @@ export default class BaseSection {
    * Query selector helper that returns the first matching element within the section container
    * @param {string} selector - CSS selector string
    * @param {HTMLElement} [dom=this.container] - Parent element to query within (defaults to section container)
-   * @returns {HTMLElement|null} First matching element or null if none found
+   * @returns {T|null} First matching element, narrowed to T, or null if none found
    */
-  qs(selector: string, dom: HTMLElement = this.container): HTMLElement | null {
-    return this.qsa(selector, dom)[0] ?? null
+  qs<T extends HTMLElement = HTMLElement>(selector: string, dom: HTMLElement = this.container): T | null {
+    return this.qsa<T>(selector, dom)[0] ?? null
   }
 
   /**
@@ -119,30 +121,30 @@ export default class BaseSection {
    * @returns {T} The first matching element, narrowed to T
    */
   qsRequired<T extends HTMLElement = HTMLElement>(selector: string, dom: HTMLElement = this.container): T {
-    const el = this.qs(selector, dom)
+    const el = this.qs<T>(selector, dom)
 
     if (!el) {
       throw new Error(`[${this.type}] Required element not found: "${selector}"`)
     }
 
-    return el as T
+    return el
   }
 
   /**
    * Query selector all helper that returns an array of matching elements within the section container,
    * filtering out nested components that match the selector.
-   * 
+   *
    * @param {string} selector - CSS selector string to match elements
    * @param {HTMLElement} [dom=this.container] - Parent element to query within (defaults to section container)
-   * @returns {HTMLElement[]} Array of matching elements, excluding nested component matches
+   * @returns {T[]} Array of matching elements, narrowed to T, excluding nested component matches
    *
    */
-  qsa(selector: string, dom: HTMLElement = this.container): HTMLElement[] {
-    return Array.from(dom.querySelectorAll(selector)).filter(el => {
+  qsa<T extends HTMLElement = HTMLElement>(selector: string, dom: HTMLElement = this.container): T[] {
+    return Array.from(dom.querySelectorAll<T>(selector)).filter(el => {
       const closest = el.closest('[data-component]')
 
       return !closest || closest.isSameNode(el)
-    }) as HTMLElement[]
+    })
   }
 
   onIntersection(entries: IntersectionObserverEntry[]) {

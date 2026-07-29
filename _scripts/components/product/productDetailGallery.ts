@@ -18,11 +18,11 @@ export default class ProductDetailGallery extends BaseComponent {
   emblaViewport: HTMLElement
   slides: HTMLElement[]
   pagination: HTMLElement | null
-  buttonNext: HTMLElement | null
-  buttonPrevious: HTMLElement | null
+  buttonNext: HTMLButtonElement | null
+  buttonPrevious: HTMLButtonElement | null
   slideshowDisabled: boolean
   emblaA11yStatus: A11yStatus
-  emblaApi: EmblaCarouselType | undefined
+  emblaApi: EmblaCarouselType
 
   constructor(el: HTMLElement) {
     super(el)
@@ -35,8 +35,8 @@ export default class ProductDetailGallery extends BaseComponent {
     this.slides = this.qsa('.embla__slide')
 
     this.pagination = this.qs(selectors.pagination)
-    this.buttonNext = this.qs(selectors.buttonNext)
-    this.buttonPrevious = this.qs(selectors.buttonPrevious)
+    this.buttonNext = this.qs<HTMLButtonElement>(selectors.buttonNext)
+    this.buttonPrevious = this.qs<HTMLButtonElement>(selectors.buttonPrevious)
 
     this.slideshowDisabled = this.slideCount <= 1
 
@@ -69,7 +69,7 @@ export default class ProductDetailGallery extends BaseComponent {
   }
 
   get activeIndex() {
-    return this.emblaApi?.selectedScrollSnap() ?? 0
+    return this.emblaApi.selectedScrollSnap() ?? 0
   }
 
   get slideCount() {
@@ -77,7 +77,7 @@ export default class ProductDetailGallery extends BaseComponent {
   }
 
   destroy() {
-    this.emblaApi?.destroy()
+    this.emblaApi.destroy()
 
     super.destroy()
   }
@@ -85,10 +85,10 @@ export default class ProductDetailGallery extends BaseComponent {
   activate() {
     if (this.isActive) return
 
-    (this.qsa('img') as HTMLImageElement[]).forEach(img => img.setAttribute('loading', 'eager'))
+    (this.qsa<HTMLImageElement>('img')).forEach(img => img.setAttribute('loading', 'eager'))
 
     this.isActive = true
-    this.emblaApi?.reInit()
+    this.emblaApi.reInit()
   }
 
   deactivate() {
@@ -98,7 +98,7 @@ export default class ProductDetailGallery extends BaseComponent {
   updatePagination() {
     if (!this.pagination || !this.emblaApi) return
     
-    this.pagination.innerHTML = `${this.emblaApi?.selectedScrollSnap() + 1} / ${this.emblaApi?.scrollSnapList().length}`
+    this.pagination.innerHTML = `${this.emblaApi.selectedScrollSnap() + 1} / ${this.emblaApi.scrollSnapList().length}`
   }
 
   updateAriaCurrent(items: HTMLElement[], activeIndex: number) {
@@ -124,11 +124,11 @@ export default class ProductDetailGallery extends BaseComponent {
 
   onButtonNextClick(e: MouseEvent) {
     e.preventDefault()
-    this.emblaApi?.scrollNext()
+    this.emblaApi.scrollNext()
   }
 
   onButtonPreviousClick(e: MouseEvent) {
     e.preventDefault()
-    this.emblaApi?.scrollPrev()
+    this.emblaApi.scrollPrev()
   }
 }

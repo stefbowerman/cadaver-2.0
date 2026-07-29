@@ -33,7 +33,7 @@ export default class SearchInline extends BaseComponent {
     }
 
     this.input = this.qsRequired<HTMLInputElement>(selectors.input)
-    this.clearButton = this.qs(selectors.clearButton) as HTMLButtonElement | null
+    this.clearButton = this.qs<HTMLButtonElement>(selectors.clearButton)
     this.action = this.el.action
 
     this.onSubmit = this.onSubmit.bind(this)

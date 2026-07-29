@@ -27,8 +27,8 @@ export default class VariantPickerOption extends BaseComponent {
     }
     
     // Picker options are either <select> tags or a series of <input> tags
-    this.select = this.qs('select') as HTMLSelectElement | null
-    this.inputs = this.qsa('input') as HTMLInputElement[]
+    this.select = this.qs<HTMLSelectElement>('select')
+    this.inputs = this.qsa<HTMLInputElement>('input')
 
     this.el.addEventListener('change', this.onChange.bind(this))
   }

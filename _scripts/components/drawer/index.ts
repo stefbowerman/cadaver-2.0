@@ -27,17 +27,15 @@ const classes = {
 }
 
 interface DrawerOptions extends BaseComponentOptions {
-  minBreakpoint?: number | null
-  maxBreakpoint?: number | null
+  minBreakpoint?: number
+  maxBreakpoint?: number
   backdrop?: boolean
   backdropOptions?: BackdropOptions
   onOpenComplete?: () => void
-  onCloseComplete?: () => void  
+  onCloseComplete?: () => void
 }
 
 interface DrawerSettings extends DrawerOptions {
-  minBreakpoint: number | null
-  maxBreakpoint: number | null
   backdrop: boolean
   backdropOptions: BackdropOptions
 }
@@ -58,8 +56,6 @@ export default class Drawer extends BaseComponent {
     })
 
     this.settings = {
-      minBreakpoint: null,
-      maxBreakpoint: null,
       backdrop: true,
       backdropOptions: {},
       ...options

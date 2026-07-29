@@ -89,11 +89,25 @@ All components extend `BaseComponent`. Key points:
 
 Components with `data-shopify-editor-block` automatically receive `onSelfBlockSelect` / `onSelfBlockDeselect` callbacks.
 
-### Scoped DOM Queries (`qs` / `qsa`)
+### Options/Settings Typing Convention
 
-Both `BaseSection` and `BaseComponent` provide `qs(selector)` and `qsa(selector)` helpers that filter results to the current section/component scope — they do not traverse into nested `[data-component]` elements. This means two sibling components can both contain `[data-title]` without conflict.
+Components and sections that take constructor config follow the `XOptions` (caller-facing, all optional) → `settings` (internal, defaulted) pattern used by `BaseComponent`/`BaseSection`. Rules:
+
+- **`?:` is the only optionality marker for config fields.** Never type an `Options` field as `T | null` — omission already means `undefined`; there's no reason to make callers pass `null` explicitly.
+- **Reserve `| null` for mutable instance state**, not config — e.g. `#resizeObserver: ResizeObserver | null` or `backdrop: Backdrop | null` in `_scripts/components/drawer/index.ts`. These start `null` and get explicitly (re)assigned later (including back to `null` on `destroy()`), so `null` carries real meaning there.
+- **Picking how to derive the internal settings type** — three patterns are all valid, pick based on how many fields get defaults:
+  1. Every field gets a default → `type XSettings = Required<XOptions>` (see `base.ts`, `tabs.ts`).
+  2. Some fields get defaults, others (typically `onX?: () => void` callbacks) never do → hand-write `XSettings extends XOptions` and only redeclare the defaulted fields as required (see `backdrop.ts`, `drawer/index.ts`, `productDetailForm.ts`). Do not use `Required<>` here — it would wrongly force never-defaulted callback props to be non-optional.
+  3. No field ever gets a default (e.g. an all-callbacks options bag) → skip the separate Settings type entirely; type `settings` directly as `XOptions` and assign `{ ...options }` (see `ajaxCart.ts`, `quantityAdjuster.ts`, `resultsDisplay.ts`, `searchInline.ts`).
+- **Don't add a per-section Options/Settings type speculatively.** Most sections take no constructor options at all; only add one when a section actually needs to pass non-default settings to `super()` (see `_scripts/sections/productRelated.ts` for the one section that does).
+
+### Scoped DOM Queries (`qs` / `qsa` / `qsRequired`)
+
+Both `BaseSection` and `BaseComponent` provide `qs<T>(selector)`, `qsa<T>(selector)`, and `qsRequired<T>(selector)` helpers that filter results to the current section/component scope — they do not traverse into nested `[data-component]` elements. This means two sibling components can both contain `[data-title]` without conflict.
 
 Use these instead of `document.querySelector` / `this.el.querySelectorAll` to maintain proper isolation.
+
+All three take an optional generic `T extends HTMLElement` (defaulting to `HTMLElement`) to narrow the return type, e.g. `this.qs<HTMLInputElement>('[data-input]')`. `qsRequired<T>` additionally throws if no match is found — use it for elements the section/component's own template requires to function, instead of a `qs()` call followed by a manual null check.
 
 ### Selectors and CSS Classes Convention
 

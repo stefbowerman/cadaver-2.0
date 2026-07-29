@@ -13,7 +13,6 @@ export interface BackdropOptions {
 
 interface BackdropSettings extends BackdropOptions {
   title: string
-  ariaLabel: string
 }
 
 export default class Backdrop extends BaseComponent {
@@ -41,7 +40,6 @@ export default class Backdrop extends BaseComponent {
 
     this.settings = {
       title: 'Close',
-      ariaLabel: 'Close',
       ...options
     }
 

@@ -6,6 +6,7 @@
     "moduleResolution": "nodenext",
     "paths": {
       "@/*": ["./_scripts/*"]
-    }
+    },
+    "strict": true,
   }
 }
