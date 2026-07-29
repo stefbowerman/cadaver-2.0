@@ -32,7 +32,7 @@ export default class PageTransition extends Transition {
   toHeight: number
   autoScrollCompleteFlag: boolean
   autoScrollCleanup: (() => void) | null
-  autoScrollTimeoutId: ReturnType<typeof setTimeout> | null
+  autoScrollTimeoutId: ReturnType<typeof setTimeout> | undefined
 
 	constructor(args: TransitionProps) {
 		super(args)
@@ -42,7 +42,7 @@ export default class PageTransition extends Transition {
 
     this.autoScrollCompleteFlag = false
     this.autoScrollCleanup = null
-    this.autoScrollTimeoutId = null
+    this.autoScrollTimeoutId = undefined
 	}
 
   /**

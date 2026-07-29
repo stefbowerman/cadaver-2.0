@@ -7,39 +7,34 @@ export interface VariantChangeEvent {
   selectedOptions: SelectedOption[]
 }
 
-interface VariantPickerSettings {
-  product?: LiteProduct
+interface VariantPickerOptions {
+  product: LiteProduct
   onVariantChange?: (e: VariantChangeEvent) => void
 }
 
 export default class VariantPicker extends BaseComponent {
   static TYPE = 'variant-picker'
 
-  settings: VariantPickerSettings
-  product: LiteProduct | null
+  settings: VariantPickerOptions
+  product: LiteProduct
   availableVariants: LiteVariant[]
   pickerOptions: VariantPickerOption[]
 
-  constructor(el: HTMLElement, options: VariantPickerSettings = {}) {
+  constructor(el: HTMLElement, options: VariantPickerOptions) {
     super(el)
 
-    this.settings = {
-      product: null,
-      ...options
-    }
-
-    this.product = this.settings.product
+    this.settings = options
+    this.product = options.product
 
     if (!this.product) {
-      console.warn('Product required')
-      return
+      throw new Error('VariantPicker: Product required')
     }
 
     this.availableVariants = this.product.variants.filter(v => v.available)
     this.onVariantPickerOptionChange = this.onVariantPickerOptionChange.bind(this)
 
     this.pickerOptions = this.qsa(VariantPickerOption.SELECTOR).map(el => {
-      return new VariantPickerOption(el as HTMLElement, {
+      return new VariantPickerOption(el, {
         onChange: this.onVariantPickerOptionChange
       })
     })
@@ -76,7 +71,9 @@ export default class VariantPicker extends BaseComponent {
   }
 
   onVariantPickerOptionChange() {   
-    const selectedOptions = this.pickerOptions.map(pO => pO.selectedOption).filter(Boolean)
+    const selectedOptions = this.pickerOptions
+      .map(pO => pO.selectedOption)
+      .filter((o): o is SelectedOption => Boolean(o))
 
     // Find the variant that matches the selected options
     const variant = this.product.variants.find(variant => {

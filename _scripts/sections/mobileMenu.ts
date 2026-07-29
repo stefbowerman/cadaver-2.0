@@ -12,7 +12,7 @@ export default class MobileMenuSection extends BaseSection {
   constructor(container: HTMLElement) {
     super(container)
 
-    this.drawer = new MobileMenuDrawer(this.qs(MobileMenuDrawer.SELECTOR))
+    this.drawer = new MobileMenuDrawer(this.qsRequired(MobileMenuDrawer.SELECTOR))
   }
 
   onSectionSelect() {

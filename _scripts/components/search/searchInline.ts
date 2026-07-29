@@ -18,7 +18,7 @@ export default class SearchInline extends BaseComponent {
 
   settings: SearchInlineOptions
   input: HTMLInputElement
-  clearButton?: HTMLButtonElement
+  clearButton: HTMLButtonElement | null
   action: string
 
   constructor(el: HTMLFormElement, options: SearchInlineOptions = {}) {
@@ -29,13 +29,12 @@ export default class SearchInline extends BaseComponent {
     }
 
     if (this.el.tagName !== 'FORM') {
-      console.warn('SearchInline: Form element required')
-      return
+      throw new Error('SearchInline: Form element required')
     }
 
-    this.input = this.qs(selectors.input) as HTMLInputElement
-    this.clearButton = this.qs(selectors.clearButton) as HTMLButtonElement | undefined
-    this.action = this.el.getAttribute('action')
+    this.input = this.qsRequired<HTMLInputElement>(selectors.input)
+    this.clearButton = this.qs(selectors.clearButton) as HTMLButtonElement | null
+    this.action = this.el.action
 
     this.onSubmit = this.onSubmit.bind(this)
     this.onKeyup = this.onKeyup.bind(this)
@@ -44,7 +43,7 @@ export default class SearchInline extends BaseComponent {
 
     this.el.addEventListener('submit', this.onSubmit)
     this.input.addEventListener('keyup', this.onKeyup)
-    this.input.addEventListener('input', this.onInput)
+    this.input.addEventListener('input', this.onInput as (e: Event) => void)
     this.clearButton?.addEventListener('click', this.onClearButtonClick)
   }
 

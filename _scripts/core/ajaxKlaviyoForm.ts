@@ -35,26 +35,30 @@ export default class AJAXKlaviyoForm {
     }
 
     this.el = el
-    this.form = this.el.tagName === 'FORM' ? this.el as HTMLFormElement : this.el.querySelector('form')
+    this.isSubmitting = false
 
-    if (!this.form) {
-      console.warn(`[${this.name}] - Form element required to initialize`)
-      return;
+    const form = this.el.tagName === 'FORM' ? this.el as HTMLFormElement : this.el.querySelector('form')
+
+    if (!form) {
+      throw new Error(`[${this.name}] - Form element required to initialize`)
     }
+
+    this.form = form
+
+    const input = this.form.querySelector('input[type="email"]') as HTMLInputElement | null
+    const submit = this.form.querySelector('[type="submit"]') as HTMLButtonElement | null
+
+    if (!(input && submit)) {
+      throw new Error(`[${this.name}] - Email input and submit button required to initialize`)
+    }
+
+    this.input = input
+    this.submit = submit
 
     // Allow the source to be set via the data-source attribute on the form element
     if (this.form.dataset.source) {
       this.setSource(this.form.dataset.source)
-    }
-
-    this.input = this.form.querySelector('input[type="email"]')
-    this.submit = this.form.querySelector('[type="submit"]')
-    this.isSubmitting = false
-
-    if (!this.input) {
-      console.warn(`[${this.name}] - Email input missing`)
-      return
-    }    
+    } 
 
     this.onFormSubmit = this.onFormSubmit.bind(this)
     this.form.addEventListener('submit', this.onFormSubmit)

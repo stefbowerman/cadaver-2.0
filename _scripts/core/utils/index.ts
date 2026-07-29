@@ -25,7 +25,7 @@ export function isThemeEditor(): boolean {
  *
  */
 export function getQueryParams(): Record<string, string | boolean> {
-  const queryParams = {}
+  const queryParams: Record<string, string | boolean> = {}
   const params = new URLSearchParams(window.location.search)
 
   for (const [key, value] of Array.from(params.entries())) {
@@ -123,6 +123,7 @@ export function decodeEntities(encodedString: string): string {
  */
 export function isExternal(url: string): boolean {
   const match = url.match(/^([^:\/?#]+:)?(?:\/\/([^\/?#]*))?([^?#]+)?(\?[^#]*)?(#.*)?/);
+  if (!match) return false;
   if (typeof match[1] === 'string' && match[1].length > 0 && match[1].toLowerCase() !== location.protocol) return true;
   if (typeof match[2] === 'string' && match[2].length > 0 && match[2].replace(new RegExp(":("+{"http:":80,"https:":443}[location.protocol]+")?$"), "") !== location.host) return true;
   return false;
@@ -275,7 +276,7 @@ export const hasWebGLSupport = (): boolean => {
   const canvas = document.createElement('canvas')
   const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl')
 
-  return gl && gl instanceof WebGLRenderingContext
+  return (gl && gl instanceof WebGLRenderingContext) ?? false
 }
 
 /**
@@ -286,7 +287,7 @@ export const hasWebGLSupport = (): boolean => {
  * @param wait - The number of milliseconds to delay (default: 200).
  * @returns A debounced version of the function with a `.cancel()` method to clear any pending execution.
  */
-export const debounce = <T extends (...args: unknown[]) => void>(func: T, wait = 200) => {
+export const debounce = <T extends (...args: any[]) => void>(func: T, wait = 200) => { // eslint-disable-line @typescript-eslint/no-explicit-any
   let timeout: ReturnType<typeof setTimeout> | undefined; // for the setTimeout function and so it can be cleared
   function executedFunction(...args: Parameters<T>) { // the function returned from debounce
       const later = () => { // this is the delayed function

@@ -15,30 +15,21 @@ const classes = {
 export default class NewsletterForm extends BaseComponent {
   static TYPE = 'newsletter-form'
 
-  timeoutId: ReturnType<typeof setTimeout> | null
+  timeoutId: ReturnType<typeof setTimeout> | undefined
   form: HTMLFormElement
   formInput: HTMLInputElement
   formContents: HTMLElement
   formMessage: HTMLElement
 
-  /**
-   * NewsletterForm constructor
-   */  
   constructor(el: HTMLElement) {
     super(el)
 
-    this.timeoutId = null
+    this.timeoutId = undefined
 
-    this.form = this.el.tagName === 'FORM' ? this.el as HTMLFormElement : this.qs(selectors.form) as HTMLFormElement
-    
-    if (!this.form) {
-      console.warn(`[${this.type}] - Form element required to initialize`)
-      return
-    }
-
-    this.formInput = this.qs(selectors.formInput, this.form) as HTMLInputElement
-    this.formContents = this.qs(selectors.formContents, this.form)
-    this.formMessage = this.qs(selectors.formMessage, this.form)
+    this.form = this.el.tagName === 'FORM' ? this.el as HTMLFormElement : this.qsRequired<HTMLFormElement>(selectors.form)
+    this.formInput = this.qsRequired<HTMLInputElement>(selectors.formInput, this.form)
+    this.formContents = this.qsRequired(selectors.formContents, this.form)
+    this.formMessage = this.qsRequired(selectors.formMessage, this.form)
   }
 
   destroy() {
@@ -59,13 +50,13 @@ export default class NewsletterForm extends BaseComponent {
 
     window.clearTimeout(this.timeoutId);
 
-    this.timeoutId = setTimeout(function() {
+    this.timeoutId = setTimeout(() => {
       if (reset) {
         this.reset();
       } 
 
       this.formContents.classList.remove(classes.showMessage)
-    }.bind(this), 3000);    
+    }, 3000);    
   }
 
   showFormContents() {
@@ -105,7 +96,7 @@ export default class NewsletterForm extends BaseComponent {
     
     // this.showMessageWithTimeout(this.formMessage.dataset[msgKey], reset);
 
-    this.showMessageWithTimeout(this.formMessage.dataset.success, true);
+    this.showMessageWithTimeout(this.formMessage.dataset.success ?? 'Thank you for subscribing!', true);
   }
 
   onSubmitStart() {
@@ -118,6 +109,6 @@ export default class NewsletterForm extends BaseComponent {
   }
 
   onSubscribeFail() {
-    this.showMessageWithTimeout(this.formMessage.dataset.fail, false);
+    this.showMessageWithTimeout(this.formMessage.dataset.fail ?? 'Something went wrong', false);
   }
 }

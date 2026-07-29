@@ -27,7 +27,7 @@ export default class VariantPickerOption extends BaseComponent {
     }
     
     // Picker options are either <select> tags or a series of <input> tags
-    this.select = this.qs('select') as HTMLSelectElement || null
+    this.select = this.qs('select') as HTMLSelectElement | null
     this.inputs = this.qsa('input') as HTMLInputElement[]
 
     this.el.addEventListener('change', this.onChange.bind(this))
@@ -55,7 +55,7 @@ export default class VariantPickerOption extends BaseComponent {
 
   updateValueAvailability(value: string, available: boolean) {
     if (this.select) {
-      [...this.select.children].forEach((option: HTMLOptionElement) => {
+      [...this.select.options].forEach(option => {
         if (option.value === value) {
           option.disabled = !available
         }

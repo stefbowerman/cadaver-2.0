@@ -1,6 +1,7 @@
 <script>
   document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
   
+  {% comment %} Use this to expose anything needed throughout the rest of the app {% endcomment %}
   window.app = {
     strings: {
       addToCart: {{ 'app.add_to_cart' | t | json }},

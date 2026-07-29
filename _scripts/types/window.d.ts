@@ -1,22 +1,40 @@
 import type { Core as TaxiCore } from '@unseenco/taxi'
 import type BreakpointsController from '@/core/breakpointsController'
+import type { BreakpointChangeEvent } from '@/core/breakpointsController'
 import type LazyImageController from '@/core/lazyImageController'
+import type { CartAPIEvent } from '@/core/cartAPI'
+import type {
+  ThemeEditorBlockSelectEvent,
+  ThemeEditorBlockDeselectEvent,
+} from '@/types/shopify'
+import type {
+  TaxiNavigateOutEvent,
+  TaxiNavigateInEvent,
+  TaxiNavigateEndEvent,
+} from '@/types/taxi'
 
 declare global {
+  interface WindowEventMap {
+    'change.breakpointsController': BreakpointChangeEvent
+    'cartAPI.update': CartAPIEvent
+    'cartAPI.add': CartAPIEvent
+    'cartAPI.change': CartAPIEvent
+    'cartAPI.remove': CartAPIEvent
+    'shopify:block:select': ThemeEditorBlockSelectEvent
+    'shopify:block:deselect': ThemeEditorBlockDeselectEvent
+    'taxi.navigateOut': TaxiNavigateOutEvent
+    'taxi.navigateIn': TaxiNavigateInEvent
+    'taxi.navigateEnd': TaxiNavigateEndEvent
+  }
+
   interface Window {
     Shopify?: {
       designMode?: boolean;
       CountryProvinceSelector: any
     }
     app: {
-      strings?: {
-        addToCart: string
-        soldOut: string
-        unavailable: string
-        adding: string
-        added: string
-      };
-      routes?: {
+      strings?: Record<string, string>;
+      routes: {
         root_url: string
         predictive_search_url: string
         cart_add_url: string
@@ -27,7 +45,7 @@ declare global {
         account_addresses_url: string
         account_url: string
       };
-      taxi?: TaxiCore;
+      taxi?: TaxiCore | null;
       klaviyo?: {
         companyId: string
         listId: string

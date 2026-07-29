@@ -1139,17 +1139,17 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const BREAKPOINTS_MAP = new Map(Object.entries(BREAKPOINTS).sort((a, b) => a[1] - b[1]));
   const _BreakpointsController = class _BreakpointsController {
     constructor() {
-      this.currentKey = this.getKeyForWidth(window.innerWidth);
-      this.mediaQueries = /* @__PURE__ */ new Map();
+      this.currentKey = this.getKeyForWidth(window.innerWidth) ?? "";
+      this.mediaQueries = [];
       this.onChange = this.onChange.bind(this);
-      BREAKPOINTS_MAP.forEach((minWidth, key) => {
+      BREAKPOINTS_MAP.forEach((minWidth) => {
         const query = window.matchMedia(`(min-width: ${minWidth}px)`);
         query.addEventListener("change", this.onChange);
-        this.mediaQueries.set(key, { minWidth, query });
+        this.mediaQueries.push(query);
       });
     }
     destroy() {
-      this.mediaQueries.forEach(({ query }) => {
+      this.mediaQueries.forEach((query) => {
         query.removeEventListener("change", this.onChange);
       });
     }
@@ -1174,17 +1174,16 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onChange() {
       const oldKey = this.currentKey;
       const newKey = this.getKeyForWidth(window.innerWidth);
-      if (oldKey !== newKey) {
-        const breakpoint = this.mediaQueries.get(newKey).minWidth;
-        const fromBreakpoint = this.mediaQueries.get(oldKey).minWidth;
-        const direction = window.innerWidth > this.mediaQueries.get(oldKey).minWidth ? 1 : -1;
-        dispatch(_BreakpointsController.EVENTS.CHANGE, {
-          breakpoint,
-          fromBreakpoint,
-          direction
-        });
-        this.currentKey = newKey;
-      }
+      if (!newKey || newKey === oldKey) return;
+      const breakpoint = BREAKPOINTS_MAP.get(newKey);
+      const fromBreakpoint = BREAKPOINTS_MAP.get(oldKey);
+      const direction = breakpoint > fromBreakpoint ? 1 : -1;
+      dispatch(_BreakpointsController.EVENTS.CHANGE, {
+        breakpoint,
+        fromBreakpoint,
+        direction
+      });
+      this.currentKey = newKey;
     }
   };
   _BreakpointsController.EVENTS = {
@@ -1407,7 +1406,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         this.dispatch(CartAPI.EVENTS.ADD, cart);
         return cart;
       } catch (error) {
-        throw new Error(error.message || "An error occurred while adding the item to the cart.");
+        throw new Error(error instanceof Error ? error.message : "An error occurred while adding the item to the cart.");
       }
     },
     /**
@@ -1441,7 +1440,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         this.dispatch(CartAPI.EVENTS.UPDATE, cart);
         return cart;
       } catch (error) {
-        return Promise.reject({ message: error.message });
+        return Promise.reject({ message: error instanceof Error ? error.message : "An error occurred while changing the item quantity." });
       }
     }
   };
@@ -1554,10 +1553,25 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
      * 
      * @param selector - The CSS selector to query for an element.
      * @param dom - The DOM element to query within.  Defaults to the component's element.
-     * @returns The first matching Element object within the component's scope, or undefined if no match is found.
+     * @returns The first matching Element object within the component's scope, or null if no match is found.
      */
     qs(selector2, dom = this.el) {
-      return this.qsa(selector2, dom)[0];
+      return this.qsa(selector2, dom)[0] ?? null;
+    }
+    /**
+     * Queries for the first element matching the given selector within the component's element,
+     * throwing if no match is found. Use for elements the component's own template requires to function.
+     *
+     * @param selector - The CSS selector to query for an element.
+     * @param dom - The DOM element to query within. Defaults to the component's element.
+     * @returns The first matching element, narrowed to T.
+     */
+    qsRequired(selector2, dom = this.el) {
+      const el = this.qs(selector2, dom);
+      if (!el) {
+        throw new Error(`[${this.type}] Required element not found: "${selector2}"`);
+      }
+      return el;
     }
     /**
      * Queries for all elements matching the given selector within the component's element,
@@ -1704,6 +1718,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       return this.video && !this.video.paused;
     }
     async attemptPlay() {
+      if (!this.video) return;
       if (this.isPlaying) {
         this.onPlay();
         return;
@@ -1718,6 +1733,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
     }
     togglePlay() {
+      if (!this.video) return;
       if (this.isPlaying) {
         this.video.pause();
       } else {
@@ -1730,11 +1746,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }
     }
     onPlay() {
+      if (!this.video) return;
       this.video.classList.add(classes$7.isReady);
     }
     onPause() {
     }
     onError(e) {
+      if (!this.video) return;
       console.warn("Video error", e);
       this.video.style.display = "none";
     }
@@ -1769,14 +1787,18 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         ...options
       };
       this.#intersectionObserver = null;
-      this.container = container;
-      this.id = this.dataset.sectionId;
       this.type = this.constructor.TYPE;
-      this.parent = this.container.parentElement;
-      this.parentId = this.parent.id;
+      this.container = container;
+      this.id = this.dataset.sectionId ?? "";
       if (!this.id) {
         console.warn("Section ID not found", this);
       }
+      const parent = this.container.parentElement;
+      if (!parent) {
+        throw new Error(`[${this.type}] Section container has no parent element`);
+      }
+      this.parent = parent;
+      this.parentId = this.parent.id;
       this.onNavigateOut = this.onNavigateOut.bind(this);
       this.onNavigateIn = this.onNavigateIn.bind(this);
       this.onNavigateEnd = this.onNavigateEnd.bind(this);
@@ -1800,10 +1822,24 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
      * Query selector helper that returns the first matching element within the section container
      * @param {string} selector - CSS selector string
      * @param {HTMLElement} [dom=this.container] - Parent element to query within (defaults to section container)
-     * @returns {HTMLElement|undefined} First matching element or undefined if none found
+     * @returns {HTMLElement|null} First matching element or null if none found
      */
     qs(selector2, dom = this.container) {
-      return this.qsa(selector2, dom)[0];
+      return this.qsa(selector2, dom)[0] ?? null;
+    }
+    /**
+     * Query selector helper that returns the first matching element within the section container,
+     * throwing if no match is found. Use for elements the section's own template requires.
+     * @param {string} selector - CSS selector string
+     * @param {HTMLElement} [dom=this.container] - Parent element to query within
+     * @returns {T} The first matching element, narrowed to T
+     */
+    qsRequired(selector2, dom = this.container) {
+      const el = this.qs(selector2, dom);
+      if (!el) {
+        throw new Error(`[${this.type}] Required element not found: "${selector2}"`);
+      }
+      return el;
     }
     /**
      * Query selector all helper that returns an array of matching elements within the section container,
@@ -1886,8 +1922,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.instances = [];
       THEME_EDITOR_EVENTS.forEach((ev) => {
         const handlerName = getEventHandlerName(ev);
-        if (this[handlerName]) {
-          this[handlerName] = this[handlerName].bind(this);
+        const handler = this[handlerName];
+        if (typeof handler === "function") {
+          this[handlerName] = handler.bind(this);
         }
       });
       this.attachEvents();
@@ -1900,16 +1937,18 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     attachEvents() {
       if (!isThemeEditor()) return;
       THEME_EDITOR_EVENTS.forEach((ev) => {
-        const handler = this[getEventHandlerName(ev)];
-        if (handler) {
-          window.document.addEventListener(ev, handler.bind(this));
+        const handlerName = getEventHandlerName(ev);
+        const handler = this[handlerName];
+        if (typeof handler === "function") {
+          window.document.addEventListener(ev, handler);
         }
       });
     }
     removeEvents() {
       THEME_EDITOR_EVENTS.forEach((ev) => {
-        const handler = this[getEventHandlerName(ev)];
-        if (handler) {
+        const handlerName = getEventHandlerName(ev);
+        const handler = this[handlerName];
+        if (typeof handler === "function") {
           window.document.removeEventListener(ev, handler);
         }
       });
@@ -1922,7 +1961,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     load(container, constructor) {
       const type = container.getAttribute(SECTION_TYPE_ATTR);
-      const Konstructor = constructor || this.constructors[type];
+      const Konstructor = constructor || this.constructors[type ?? ""];
       if (typeof Konstructor === "undefined") {
         return;
       }
@@ -1957,8 +1996,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     // Simply triggers the appropriate instance method if available
     onGenericEvent(e, func) {
       const instance2 = this.getInstanceById(e.detail.sectionId);
-      if (instance2 && typeof instance2[func] === "function") {
-        instance2[func].call(instance2, e);
+      if (!instance2) return;
+      const handler = instance2[func];
+      if (typeof handler === "function") {
+        handler.call(instance2, e);
       }
     }
     onSectionLoad(e) {
@@ -2009,7 +2050,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         if (this.mediaSecondary instanceof HTMLElement && prefersPointer()) {
           const img = this.qs("img", this.mediaSecondary);
           if (img instanceof HTMLImageElement) {
-            img.onload = () => this.mediaSecondary.classList.add(classes$6.mediaSecondaryReady);
+            img.onload = () => this.mediaSecondary?.classList.add(classes$6.mediaSecondaryReady);
             if (img.dataset.src) img.src = img.dataset.src;
             if (img.dataset.srcset) img.srcset = img.dataset.srcset;
             img.removeAttribute("data-src");
@@ -2046,7 +2087,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _AddressesSection = class _AddressesSection extends BaseSection {
     constructor(container) {
       super(container);
-      this.newForm = this.qs(selectors$h.newForm);
+      this.newForm = this.qsRequired(selectors$h.newForm);
       this.container.addEventListener("click", (e) => {
         const target = e.target;
         if (target.matches(selectors$h.toggleNew)) {
@@ -2056,7 +2097,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         }
         if (target.matches(selectors$h.toggleForm)) {
           e.preventDefault();
-          toggle(this.qs(`#edit-address-${target.dataset.id}`));
+          toggle(this.qsRequired(`#edit-address-${target.dataset.id}`));
           return;
         }
         if (target.matches(selectors$h.deleteAddress)) {
@@ -2152,7 +2193,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       const dom = getDomFromString(responseText);
       return dom;
     } catch (e) {
-      if (e.name === "AbortError") {
+      if (e instanceof Error && e.name === "AbortError") {
         console.log("Fetch aborted by user");
         return void 0;
       }
@@ -6738,10 +6779,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   const _A11yStatus = class _A11yStatus extends BaseComponent {
     static generate(parent) {
-      if (!parent) {
-        console.warn("A11yStatus: No parent element provided");
-        return;
-      }
       const el = document.createElement("div");
       el.setAttribute("role", "status");
       el.setAttribute("aria-live", "polite");
@@ -6817,7 +6854,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     // Replace the entire contents of the results display
     replace(dom) {
-      if (!this.validateDom(dom)) return;
+      if (!dom || !this.validateDom(dom)) return;
       __privateGet(this, _swapTl)?.kill();
       __privateSet(this, _swapTl, swap(this.el, {
         onExitStart: () => {
@@ -6833,7 +6870,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       }));
     }
     add(dom) {
-      if (!this.validateDom(dom)) return;
+      if (!dom || !this.validateDom(dom)) return;
       if (!this.list) return;
       const newList = dom.querySelector(selectors$g.list);
       const newItems = newList ? [...newList.children] : [];
@@ -6876,22 +6913,23 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     constructor(container) {
       super(container);
       this.isFetching = false;
-      this.resultsDisplay = new ResultsDisplay(this.qs(ResultsDisplay.SELECTOR), {
+      this.resultsDisplay = new ResultsDisplay(this.qsRequired(ResultsDisplay.SELECTOR), {
         onMoreIntersection: this.onMoreIntersection.bind(this),
         onReplaceComplete: this.onReplaceComplete.bind(this)
       });
     }
     async fetchResults(url) {
-      if (this.isFetching) return;
+      if (this.isFetching) return null;
       try {
         this.isFetching = true;
         const fetchUrl = new URL(url, window.location.origin);
         fetchUrl.searchParams.set("t", Date.now().toString());
         fetchUrl.searchParams.set("section_id", this.id);
         const dom = await fetchDom(fetchUrl);
-        return dom.getElementById(this.parentId)?.querySelector(ResultsDisplay.SELECTOR);
+        return dom?.getElementById(this.parentId)?.querySelector(ResultsDisplay.SELECTOR) ?? null;
       } catch (e) {
         console.warn("something went wrong...", e);
+        return null;
       } finally {
         this.isFetching = false;
       }
@@ -6902,6 +6940,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       try {
         const target = entry.target;
         const newResults = await this.fetchResults(target.href);
+        if (!newResults) return;
         this.resultsDisplay.add(newResults);
       } catch (e) {
         console.warn("something went wrong...", e);
@@ -6933,8 +6972,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       super(el);
       this.labelPrice = this.el.dataset.labelPrice || getAppString("productPrice") || "Price";
       this.labelSalePrice = this.el.dataset.labelSalePrice || getAppString("productSalePrice") || "Sale Price";
-      this.priceValue = this.qs(selectors$f.priceValue);
-      this.priceLabel = this.qs(selectors$f.priceLabel);
+      this.priceValue = this.qsRequired(selectors$f.priceValue);
+      this.priceLabel = this.qsRequired(selectors$f.priceLabel);
       this.compare = this.qs(selectors$f.compare);
       this.comparePrice = this.qs(selectors$f.comparePrice);
     }
@@ -6949,7 +6988,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
      */
     update(variant) {
       if (variant) {
-        const onSale = variant.compare_at_price > variant.price;
+        const onSale = variant.compare_at_price && variant.compare_at_price > variant.price;
         if (this.priceValue) {
           this.priceValue.textContent = variant.price_formatted;
         }
@@ -6973,11 +7012,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     constructor(el) {
       super(el);
       this.tempText = null;
-      this.successTimeoutId = null;
-      this.label = this.qs(selectors$e.label);
-      if (!this.label) {
-        console.warn("No label found");
-      }
+      this.successTimeoutId = void 0;
+      this.label = this.qsRequired(selectors$e.label);
     }
     destroy() {
       window.clearTimeout(this.successTimeoutId);
@@ -7010,12 +7046,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onAddSuccess() {
       this.label.innerText = getAppString("added", "Added!");
       this.successTimeoutId = setTimeout(() => {
-        this.label.innerText = this.tempText;
+        if (this.tempText !== null) this.label.innerText = this.tempText;
         this.tempText = null;
       }, 1e3);
     }
     onAddFail(e) {
-      this.label.innerText = this.tempText;
+      if (this.tempText !== null) this.label.innerText = this.tempText;
     }
   };
   _ATCButton.TYPE = "atc-button";
@@ -7030,7 +7066,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (!this.name) {
         console.warn("No name attribute found");
       }
-      this.select = this.qs("select") || null;
+      this.select = this.qs("select");
       this.inputs = this.qsa("input");
       this.el.addEventListener("change", this.onChange.bind(this));
     }
@@ -7051,7 +7087,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     updateValueAvailability(value, available) {
       if (this.select) {
-        [...this.select.children].forEach((option) => {
+        [...this.select.options].forEach((option) => {
           if (option.value === value) {
             option.disabled = !available;
           }
@@ -7069,16 +7105,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   _VariantPickerOption.TYPE = "variant-picker-option";
   let VariantPickerOption = _VariantPickerOption;
   const _VariantPicker = class _VariantPicker extends BaseComponent {
-    constructor(el, options = {}) {
+    constructor(el, options) {
       super(el);
-      this.settings = {
-        product: null,
-        ...options
-      };
-      this.product = this.settings.product;
+      this.settings = options;
+      this.product = options.product;
       if (!this.product) {
-        console.warn("Product required");
-        return;
+        throw new Error("VariantPicker: Product required");
       }
       this.availableVariants = this.product.variants.filter((v) => v.available);
       this.onVariantPickerOptionChange = this.onVariantPickerOptionChange.bind(this);
@@ -7108,7 +7140,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.settings.onVariantChange?.(e);
     }
     onVariantPickerOptionChange() {
-      const selectedOptions = this.pickerOptions.map((pO) => pO.selectedOption).filter(Boolean);
+      const selectedOptions = this.pickerOptions.map((pO) => pO.selectedOption).filter((o) => Boolean(o));
       const variant = this.product.variants.find((variant2) => {
         return variant2.options.every((value, index) => value === selectedOptions[index]?.value);
       });
@@ -7139,12 +7171,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         ...options
       };
       this.submitInProgress = false;
-      this.form = this.qs(selectors$d.form);
-      this.masterSelect = this.qs(selectors$d.masterSelect);
-      this.product = JSON.parse(this.qs(selectors$d.productJSON).textContent);
-      this.price = new ProductPrice(this.qs(ProductPrice.SELECTOR));
-      this.atcButton = new ATCButton(this.qs(ATCButton.SELECTOR));
-      this.variantPicker = new VariantPicker(this.qs(VariantPicker.SELECTOR), {
+      this.form = this.qsRequired(selectors$d.form);
+      this.masterSelect = this.qsRequired(selectors$d.masterSelect);
+      this.product = JSON.parse(this.qsRequired(selectors$d.productJSON).textContent ?? "{}");
+      this.price = new ProductPrice(this.qsRequired(ProductPrice.SELECTOR));
+      this.atcButton = new ATCButton(this.qsRequired(ATCButton.SELECTOR));
+      this.variantPicker = new VariantPicker(this.qsRequired(VariantPicker.SELECTOR), {
         product: this.product,
         onVariantChange: this.onVariantChange.bind(this)
       });
@@ -7175,7 +7207,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     onFormSubmit(e) {
       e.preventDefault();
       if (this.submitInProgress) return;
-      const submit = this.qs(selectors$d.submit, this.form);
+      const submit = this.qsRequired(selectors$d.submit, this.form);
       submit.disabled = true;
       this.submitInProgress = true;
       this.onAddStart();
@@ -8842,14 +8874,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       super(el);
       this.color = this.dataset.color;
       this.productTitle = this.dataset.productTitle;
-      this.emblaNode = this.qs(".embla");
-      this.emblaViewport = this.qs(".embla__viewport");
-      this.emblaPaginationNode = this.qs(".embla__pagination");
+      this.emblaNode = this.qsRequired(".embla");
+      this.emblaViewport = this.qsRequired(".embla__viewport");
       this.slides = this.qsa(".embla__slide");
-      if (!this.emblaNode) {
-        console.warn("ProductDetailGallery: Embla node not found");
-        return;
-      }
       this.pagination = this.qs(selectors$c.pagination);
       this.buttonNext = this.qs(selectors$c.buttonNext);
       this.buttonPrevious = this.qs(selectors$c.buttonPrevious);
@@ -8895,7 +8922,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.isActive = false;
     }
     updatePagination() {
-      if (!this.pagination) return;
+      if (!this.pagination || !this.emblaApi) return;
       this.pagination.innerHTML = `${this.emblaApi?.selectedScrollSnap() + 1} / ${this.emblaApi?.scrollSnapList().length}`;
     }
     updateAriaCurrent(items, activeIndex) {
@@ -8904,7 +8931,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       });
     }
     updateCurrentStatus() {
-      let msg = `Image ${this.activeIndex + 1} of ${this.slideCount} for ${this.productTitle}`;
+      let msg = `Image ${this.activeIndex + 1} of ${this.slideCount}`;
+      if (this.productTitle) {
+        msg = `${msg} for ${this.productTitle}`;
+      }
       if (this.color) {
         msg = `${msg} in ${this.color}`;
       }
@@ -8925,7 +8955,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _ProductSection = class _ProductSection extends BaseSection {
     constructor(container) {
       super(container);
-      this.productDetailForm = new ProductDetailForm(this.qs(ProductDetailForm.SELECTOR), {
+      this.productDetailForm = new ProductDetailForm(this.qsRequired(ProductDetailForm.SELECTOR), {
         onVariantChange: this.onVariantChange.bind(this)
       });
       this.galleries = this.qsa(ProductDetailGallery.SELECTOR).map((el) => {
@@ -8946,7 +8976,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         if (selectedColor !== void 0) {
           const activeGallery = this.galleries.find((g) => g.isActive);
           const selectedColorGallery = this.galleries.find((g) => g.color === selectedColor);
-          if (activeGallery !== selectedColorGallery) {
+          if (activeGallery && selectedColorGallery && activeGallery !== selectedColorGallery) {
             activeGallery.el.style.opacity = "0";
             activeGallery.deactivate();
             selectedColorGallery.el.style.opacity = "0";
@@ -8974,9 +9004,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       __privateAdd(this, _abortController);
       __privateSet(this, _abortController, null);
       this.productCards = [];
-      this.contentTarget = this.qs(selectors$b.contentTarget);
-      this.content = this.qs(selectors$b.content);
-      this.recommendationsUrl = this.dataset.url;
+      this.contentTarget = this.qsRequired(selectors$b.contentTarget);
+      const url = this.dataset.url;
+      if (!url) {
+        throw new Error("ProductRelatedSection: Recommendations URL not found");
+      }
+      this.recommendationsUrl = url;
     }
     onUnload(e) {
       __privateGet(this, _abortController)?.abort();
@@ -9017,8 +9050,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _LoginSection = class _LoginSection extends BaseSection {
     constructor(container) {
       super(container);
-      this.loginForm = this.qs(selectors$a.loginForm);
-      this.recoverForm = this.qs(selectors$a.recoverForm);
+      this.loginForm = this.qsRequired(selectors$a.loginForm);
+      this.recoverForm = this.qsRequired(selectors$a.recoverForm);
       this.container.addEventListener("click", this.onClick.bind(this));
       if (window.location.hash == "#recover") {
         this.showRecoverForm();
@@ -9051,12 +9084,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         ...options
       };
       if (this.el.tagName !== "FORM") {
-        console.warn("SearchInline: Form element required");
-        return;
+        throw new Error("SearchInline: Form element required");
       }
-      this.input = this.qs(selectors$9.input);
+      this.input = this.qsRequired(selectors$9.input);
       this.clearButton = this.qs(selectors$9.clearButton);
-      this.action = this.el.getAttribute("action");
+      this.action = this.el.action;
       this.onSubmit = this.onSubmit.bind(this);
       this.onKeyup = this.onKeyup.bind(this);
       this.onInput = this.onInput.bind(this);
@@ -9112,7 +9144,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       super(container);
       __privateAdd(this, _isLoading);
       __privateSet(this, _isLoading, false);
-      this.searchInline = new SearchInline(this.qs(SearchInline.SELECTOR), {
+      this.searchInline = new SearchInline(this.qsRequired(SearchInline.SELECTOR), {
         onSubmit: this.onSubmit.bind(this)
       });
     }
@@ -9151,6 +9183,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   class BaseRenderer extends Renderer {
     constructor(properties) {
       super(properties);
+      this.sectionManager = null;
     }
     // NOTE: If initialLoad is defined, "onEnter" will not be called for sections that exist on page load
     // initialLoad() {
@@ -9170,7 +9203,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         SearchSection,
         PageHeroSection
       ].forEach((section) => {
-        this.sectionManager.register(section);
+        this.sectionManager?.register(section);
       });
     }
     onEnterCompleted() {
@@ -9222,7 +9255,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.toHeight = 0;
       this.autoScrollCompleteFlag = false;
       this.autoScrollCleanup = null;
-      this.autoScrollTimeoutId = null;
+      this.autoScrollTimeoutId = void 0;
     }
     /**
      * Sets or removes height style on wrapper element
@@ -9367,7 +9400,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       super(el, {
         watchCartUpdate: true
       });
-      this.count = this.qs(selectors$8.count);
+      this.count = this.qsRequired(selectors$8.count);
     }
     onCartUpdate(e) {
       const { cart } = e.detail;
@@ -9380,7 +9413,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _HeaderSection = class _HeaderSection extends BaseSection {
     constructor(container) {
       super(container);
-      this.headerCartControl = new HeaderCartControl(this.qs(HeaderCartControl.SELECTOR));
+      this.headerCartControl = new HeaderCartControl(this.qsRequired(HeaderCartControl.SELECTOR));
     }
     onNavigateIn(e) {
       const currentPath = new URL(e.detail.to.finalUrl).pathname;
@@ -9496,20 +9529,21 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         ...options
       };
       this.el = el;
-      this.form = this.el.tagName === "FORM" ? this.el : this.el.querySelector("form");
-      if (!this.form) {
-        console.warn(`[${this.name}] - Form element required to initialize`);
-        return;
+      this.isSubmitting = false;
+      const form = this.el.tagName === "FORM" ? this.el : this.el.querySelector("form");
+      if (!form) {
+        throw new Error(`[${this.name}] - Form element required to initialize`);
       }
+      this.form = form;
+      const input = this.form.querySelector('input[type="email"]');
+      const submit = this.form.querySelector('[type="submit"]');
+      if (!(input && submit)) {
+        throw new Error(`[${this.name}] - Email input and submit button required to initialize`);
+      }
+      this.input = input;
+      this.submit = submit;
       if (this.form.dataset.source) {
         this.setSource(this.form.dataset.source);
-      }
-      this.input = this.form.querySelector('input[type="email"]');
-      this.submit = this.form.querySelector('[type="submit"]');
-      this.isSubmitting = false;
-      if (!this.input) {
-        console.warn(`[${this.name}] - Email input missing`);
-        return;
       }
       this.onFormSubmit = this.onFormSubmit.bind(this);
       this.form.addEventListener("submit", this.onFormSubmit);
@@ -9598,20 +9632,13 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     showMessage: "show-message"
   };
   const _NewsletterForm = class _NewsletterForm extends BaseComponent {
-    /**
-     * NewsletterForm constructor
-     */
     constructor(el) {
       super(el);
-      this.timeoutId = null;
-      this.form = this.el.tagName === "FORM" ? this.el : this.qs(selectors$7.form);
-      if (!this.form) {
-        console.warn(`[${this.type}] - Form element required to initialize`);
-        return;
-      }
-      this.formInput = this.qs(selectors$7.formInput, this.form);
-      this.formContents = this.qs(selectors$7.formContents, this.form);
-      this.formMessage = this.qs(selectors$7.formMessage, this.form);
+      this.timeoutId = void 0;
+      this.form = this.el.tagName === "FORM" ? this.el : this.qsRequired(selectors$7.form);
+      this.formInput = this.qsRequired(selectors$7.formInput, this.form);
+      this.formContents = this.qsRequired(selectors$7.formContents, this.form);
+      this.formMessage = this.qsRequired(selectors$7.formMessage, this.form);
     }
     destroy() {
       window.clearTimeout(this.timeoutId);
@@ -9627,12 +9654,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.formMessage.innerHTML = message;
       this.formContents.classList.add(classes$4.showMessage);
       window.clearTimeout(this.timeoutId);
-      this.timeoutId = setTimeout((function() {
+      this.timeoutId = setTimeout(() => {
         if (reset) {
           this.reset();
         }
         this.formContents.classList.remove(classes$4.showMessage);
-      }).bind(this), 3e3);
+      }, 3e3);
     }
     showFormContents() {
       this.form.classList.add(classes$4.showContents);
@@ -9655,7 +9682,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.formInput.dispatchEvent(new Event("change"));
     }
     onSubscribeSuccess() {
-      this.showMessageWithTimeout(this.formMessage.dataset.success, true);
+      this.showMessageWithTimeout(this.formMessage.dataset.success ?? "Thank you for subscribing!", true);
     }
     onSubmitStart() {
       this.showMessageWithTimeout("Submitting...", false);
@@ -9665,7 +9692,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.showMessageWithTimeout(msg, false);
     }
     onSubscribeFail() {
-      this.showMessageWithTimeout(this.formMessage.dataset.fail, false);
+      this.showMessageWithTimeout(this.formMessage.dataset.fail ?? "Something went wrong", false);
     }
   };
   _NewsletterForm.TYPE = "newsletter-form";
@@ -9673,7 +9700,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _FooterSection = class _FooterSection extends BaseSection {
     constructor(container) {
       super(container);
-      this.newsletterFormEl = this.qs(NewsletterForm.SELECTOR) ?? null;
+      this.newsletterFormEl = this.qs(NewsletterForm.SELECTOR);
       this.newsletterForm = null;
       this.ajaxForm = null;
       if (this.newsletterFormEl) {
@@ -9932,12 +9959,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _MobileMenuDrawer = class _MobileMenuDrawer extends Drawer {
     constructor(el) {
       super(el, {
-        maxBreakpoint: BREAKPOINTS.md,
+        maxBreakpoint: BREAKPOINTS.lg,
         backdropOptions: {
           title: "Close mobile menu"
         }
       });
-      this.searchInline = new SearchInline(this.qs(SearchInline.SELECTOR));
+      this.searchInline = new SearchInline(this.qsRequired(SearchInline.SELECTOR));
     }
   };
   _MobileMenuDrawer.TYPE = "mobile-menu-drawer";
@@ -9945,7 +9972,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   const _MobileMenuSection = class _MobileMenuSection extends BaseSection {
     constructor(container) {
       super(container);
-      this.drawer = new MobileMenuDrawer(this.qs(MobileMenuDrawer.SELECTOR));
+      this.drawer = new MobileMenuDrawer(this.qsRequired(MobileMenuDrawer.SELECTOR));
     }
     onSectionSelect() {
       this.drawer.open();
@@ -9980,9 +10007,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         ...options
       };
       this.changeEvent = new Event("change", { bubbles: true });
-      this.input = this.qs(selectors$5.input);
-      this.increment = this.qs(selectors$5.increment);
-      this.decrement = this.qs(selectors$5.decrement);
+      this.input = this.qsRequired(selectors$5.input);
+      this.increment = this.qsRequired(selectors$5.increment);
+      this.decrement = this.qsRequired(selectors$5.decrement);
       this.input.addEventListener("change", this.onChange.bind(this));
       this.increment.addEventListener("click", this.onStepClick.bind(this));
       this.decrement.addEventListener("click", this.onStepClick.bind(this));
@@ -10099,10 +10126,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       };
       this.itemData = itemData;
       this.id = this.itemData.id;
-      this.remove = this.qs(selectors$4.remove);
-      this.price = this.qs(selectors$4.price);
+      this.remove = this.qsRequired(selectors$4.remove);
+      this.price = this.qsRequired(selectors$4.price);
       this.debouncedOnQuantityAdjusterChange = debounce(this.onQuantityAdjusterChange.bind(this), isTouch() ? 500 : 250);
-      this.quantityAdjuster = new QuantityAdjuster(this.qs(QuantityAdjuster.SELECTOR), {
+      this.quantityAdjuster = new QuantityAdjuster(this.qsRequired(QuantityAdjuster.SELECTOR), {
         onChange: (qty) => {
           if (qty === 0) {
             this.debouncedOnQuantityAdjusterChange?.cancel();
@@ -10190,7 +10217,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       __privateAdd(this, _muteUpdateSync);
       __privateSet(this, _muteUpdateSync, false);
       this.cartData = cartData;
-      this.list = this.qs(selectors$3.list);
+      this.list = this.qsRequired(selectors$3.list);
+      this.a11yStatus = A11yStatus.generate(this.el);
       this.onItemRemoveClick = this.onItemRemoveClick.bind(this);
       this.onItemQuantityAdjusterChange = this.onItemQuantityAdjusterChange.bind(this);
       this.itemInstances = this.qsa(CartItem.SELECTOR).map((el2, i) => this.createCartItemInstance(el2, this.cartData.items[i]));
@@ -10283,7 +10311,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         __privateSet(this, _muteUpdateSync, true);
         const cart = await CartAPI.changeLineItemQuantity(item.key, 0);
         this.onItemRemoveSuccess(item, cart);
+        this.a11yStatus.text = "Item removed from cart";
       } catch (error) {
+        this.a11yStatus.text = "Error removing item from cart";
         console.error("Error removing item", error);
       } finally {
         __privateSet(this, _muteUpdateSync, false);
@@ -10296,12 +10326,15 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         const cart = await CartAPI.changeLineItemQuantity(item.key, q);
         if (q === 0) {
           this.onItemRemoveSuccess(item, cart);
+          this.a11yStatus.text = "Item removed from cart";
         } else {
           this.onItemChangeSuccess(item, cart);
+          this.a11yStatus.text = "Cart updated";
         }
       } catch (error) {
         item.state = void 0;
         item.quantityAdjuster.value = item.itemData.quantity;
+        this.a11yStatus.text = "Error updating cart";
         console.error("Error updating item quantity", error);
       } finally {
         if (q > 0) {
@@ -10323,8 +10356,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       super(el, {
         watchCartUpdate: true
       });
-      this.submit = this.qs(selectors$2.submit);
-      this.subtotalPrice = this.qs(selectors$2.subtotalPrice);
+      this.submit = this.qsRequired(selectors$2.submit);
+      this.subtotalPrice = this.qsRequired(selectors$2.subtotalPrice);
     }
     onCartUpdate(e) {
       const { cart } = e.detail;
@@ -10354,8 +10387,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         ...options
       };
       this.role = this.el.getAttribute("role");
-      this.cartBody = new CartBody(this.qs(CartBody.SELECTOR), cartData);
-      this.cartFooter = new CartFooter(this.qs(CartFooter.SELECTOR));
+      this.cartBody = new CartBody(this.qsRequired(CartBody.SELECTOR), cartData);
+      this.cartFooter = new CartFooter(this.qsRequired(CartFooter.SELECTOR));
       this.focusTrap = new FocusTrap(this.el, {
         autofocus: false,
         returnFocus: false,
@@ -10370,8 +10403,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.el.addEventListener("transitionend", this.onTransitionEnd);
       document.body.addEventListener("click", this.onBodyClick);
       this.setEmpty(cartData.item_count === 0);
-      if (this.role) {
-        this.ariaControlElements.forEach((el2) => el2.setAttribute("aria-haspopup", this.role));
+      const role = this.role;
+      if (role) {
+        this.ariaControlElements.forEach((el2) => el2.setAttribute("aria-haspopup", role));
       }
     }
     destroy() {
@@ -10454,7 +10488,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         throw new Error("Cart JSON element not found");
       }
       const cartData = JSON.parse(cartJsonEl.textContent);
-      this.ajaxCart = new AJAXCart(this.qs(AJAXCart.SELECTOR), cartData);
+      this.ajaxCart = new AJAXCart(this.qsRequired(AJAXCart.SELECTOR), cartData);
       if (getQueryParams().cart) {
         this.open({ delay: true });
       }
@@ -10484,7 +10518,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _AJAXCartSection.TYPE = "ajax-cart";
   let AJAXCartSection = _AJAXCartSection;
-  window.app = window.app || {};
   window.app.taxi = null;
   function init() {
     const viewContainer = document.querySelector("main#view-container");
@@ -10507,7 +10540,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         default: PageTransition
       },
       reloadJsFilter: (element) => {
-        return element.dataset.taxiReload !== void 0 || viewContainer.contains(element);
+        return element.dataset.taxiReload !== void 0 || (viewContainer?.contains(element) ?? false);
       },
       allowInterruption: true,
       enablePrefetch: true

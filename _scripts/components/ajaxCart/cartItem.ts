@@ -46,12 +46,12 @@ export default class CartItem extends BaseComponent {
     this.itemData = itemData
     this.id = this.itemData.id
 
-    this.remove = this.qs(selectors.remove) as HTMLButtonElement
-    this.price = this.qs(selectors.price)
+    this.remove = this.qsRequired<HTMLButtonElement>(selectors.remove)
+    this.price = this.qsRequired(selectors.price)
 
     this.debouncedOnQuantityAdjusterChange = debounce(this.onQuantityAdjusterChange.bind(this), (isTouch() ? 500 : 250)) // <- Longer debounce for touch devices since fast touches are taken as a double click which causes page zoom
 
-    this.quantityAdjuster = new QuantityAdjuster(this.qs(QuantityAdjuster.SELECTOR), {
+    this.quantityAdjuster = new QuantityAdjuster(this.qsRequired(QuantityAdjuster.SELECTOR), {
       onChange: qty => {
         // If the quantity is changed to 0, trigger change callback immediately
         if (qty === 0) {

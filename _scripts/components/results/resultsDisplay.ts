@@ -100,8 +100,8 @@ export default class ResultsDisplay extends BaseComponent {
   }
 
   // Replace the entire contents of the results display
-  replace(dom: HTMLElement | undefined) {
-    if (!this.validateDom(dom)) return
+  replace(dom: HTMLElement | null) {
+    if (!dom || !this.validateDom(dom)) return
 
     this.#swapTl?.kill()
     this.#swapTl = swap(this.el, {
@@ -121,7 +121,7 @@ export default class ResultsDisplay extends BaseComponent {
   }
 
   add(dom: HTMLElement | undefined) {
-    if (!this.validateDom(dom)) return
+    if (!dom || !this.validateDom(dom)) return
     if (!this.list) return
 
     const newList = dom.querySelector(selectors.list)

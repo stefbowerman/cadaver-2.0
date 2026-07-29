@@ -4,12 +4,7 @@ import BaseComponent from '@/components/base'
 export default class A11yStatus extends BaseComponent {
   static TYPE = 'a11y-status'
 
-  static generate(parent: HTMLElement) {
-    if (!parent) {
-      console.warn('A11yStatus: No parent element provided')
-      return
-    }
-
+  static generate(parent: HTMLElement): A11yStatus {
     const el = document.createElement('div')
     el.setAttribute('role', 'status')
     el.setAttribute('aria-live', 'polite')

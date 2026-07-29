@@ -18,7 +18,6 @@ export default class ProductRelatedSection extends BaseSection {
   #abortController: AbortController | null
   productCards: ProductCard[]
   contentTarget: HTMLElement
-  content: HTMLElement
   recommendationsUrl: string
 
   constructor(container: HTMLElement) {
@@ -32,10 +31,15 @@ export default class ProductRelatedSection extends BaseSection {
     this.#abortController = null
     this.productCards = []
 
-    this.contentTarget = this.qs(selectors.contentTarget)
-    this.content = this.qs(selectors.content)
+    this.contentTarget = this.qsRequired(selectors.contentTarget)
 
-    this.recommendationsUrl = this.dataset.url
+    const url = this.dataset.url
+
+    if (!url) {
+      throw new Error('ProductRelatedSection: Recommendations URL not found')
+    }
+
+    this.recommendationsUrl = url
   }
 
   onUnload(e: ThemeEditorSectionUnloadEvent) {

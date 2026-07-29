@@ -13,7 +13,7 @@ export default class SearchSection extends ResultsSection {
 
     this.#isLoading = false
 
-    this.searchInline = new SearchInline(this.qs(SearchInline.SELECTOR) as HTMLFormElement, {
+    this.searchInline = new SearchInline(this.qsRequired<HTMLFormElement>(SearchInline.SELECTOR), {
       onSubmit: this.onSubmit.bind(this)
     })
   }

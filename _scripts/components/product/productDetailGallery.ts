@@ -12,17 +12,16 @@ const selectors = {
 export default class ProductDetailGallery extends BaseComponent {
   static TYPE = 'product-detail-gallery'
 
-  color: string
-  productTitle: string
-  emblaNode: HTMLElement | undefined
-  emblaViewport: HTMLElement | undefined
-  emblaPaginationNode: HTMLElement | undefined
+  color: string | undefined
+  productTitle: string | undefined
+  emblaNode: HTMLElement
+  emblaViewport: HTMLElement
   slides: HTMLElement[]
-  pagination: HTMLElement | undefined
-  buttonNext: HTMLElement | undefined
-  buttonPrevious: HTMLElement | undefined
+  pagination: HTMLElement | null
+  buttonNext: HTMLElement | null
+  buttonPrevious: HTMLElement | null
   slideshowDisabled: boolean
-  emblaA11yStatus: A11yStatus | undefined
+  emblaA11yStatus: A11yStatus
   emblaApi: EmblaCarouselType | undefined
 
   constructor(el: HTMLElement) {
@@ -31,15 +30,9 @@ export default class ProductDetailGallery extends BaseComponent {
     this.color = this.dataset.color
     this.productTitle = this.dataset.productTitle
 
-    this.emblaNode = this.qs('.embla')
-    this.emblaViewport = this.qs('.embla__viewport')
-    this.emblaPaginationNode = this.qs('.embla__pagination')
+    this.emblaNode = this.qsRequired('.embla')
+    this.emblaViewport = this.qsRequired('.embla__viewport')
     this.slides = this.qsa('.embla__slide')
-
-    if (!this.emblaNode) {
-      console.warn('ProductDetailGallery: Embla node not found')
-      return
-    }
 
     this.pagination = this.qs(selectors.pagination)
     this.buttonNext = this.qs(selectors.buttonNext)
@@ -103,7 +96,7 @@ export default class ProductDetailGallery extends BaseComponent {
   }
 
   updatePagination() {
-    if (!this.pagination) return
+    if (!this.pagination || !this.emblaApi) return
     
     this.pagination.innerHTML = `${this.emblaApi?.selectedScrollSnap() + 1} / ${this.emblaApi?.scrollSnapList().length}`
   }
@@ -115,7 +108,11 @@ export default class ProductDetailGallery extends BaseComponent {
   }
 
   updateCurrentStatus() {
-    let msg = `Image ${this.activeIndex + 1} of ${this.slideCount} for ${this.productTitle}`
+    let msg = `Image ${this.activeIndex + 1} of ${this.slideCount}`
+
+    if (this.productTitle) {
+      msg = `${msg} for ${this.productTitle}`
+    }
 
     if (this.color) {
       msg = `${msg} in ${this.color}`

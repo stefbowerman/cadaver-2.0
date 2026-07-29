@@ -45,8 +45,8 @@ export default class AJAXCart extends BaseComponent {
 
     this.role = this.el.getAttribute('role')
 
-    this.cartBody = new CartBody(this.qs(CartBody.SELECTOR), cartData)
-    this.cartFooter = new CartFooter(this.qs(CartFooter.SELECTOR))
+    this.cartBody = new CartBody(this.qsRequired(CartBody.SELECTOR), cartData)
+    this.cartFooter = new CartFooter(this.qsRequired(CartFooter.SELECTOR))
 
     this.focusTrap = new FocusTrap(this.el, {
       autofocus: false,
@@ -68,8 +68,9 @@ export default class AJAXCart extends BaseComponent {
     // Set empty state based on initial cart data
     this.setEmpty(cartData.item_count === 0)
 
-    if (this.role) {
-      this.ariaControlElements.forEach(el => el.setAttribute('aria-haspopup', this.role))
+    const role = this.role
+    if (role) {
+      this.ariaControlElements.forEach(el => el.setAttribute('aria-haspopup', role))
     }
   }
 

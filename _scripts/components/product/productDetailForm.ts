@@ -51,14 +51,14 @@ export default class ProductDetailForm extends BaseComponent {
 
     this.submitInProgress = false
 
-    this.form = this.qs(selectors.form) as HTMLFormElement
-    this.masterSelect = this.qs(selectors.masterSelect) as HTMLSelectElement
+    this.form = this.qsRequired<HTMLFormElement>(selectors.form)
+    this.masterSelect = this.qsRequired<HTMLSelectElement>(selectors.masterSelect)
 
-    this.product = JSON.parse(this.qs(selectors.productJSON).textContent)
-    this.price = new ProductPrice(this.qs(ProductPrice.SELECTOR))
-    this.atcButton = new ATCButton(this.qs(ATCButton.SELECTOR) as HTMLButtonElement)
+    this.product = JSON.parse(this.qsRequired(selectors.productJSON).textContent ?? '{}')
+    this.price = new ProductPrice(this.qsRequired(ProductPrice.SELECTOR))
+    this.atcButton = new ATCButton(this.qsRequired<HTMLButtonElement>(ATCButton.SELECTOR))
 
-    this.variantPicker = new VariantPicker(this.qs(VariantPicker.SELECTOR), {
+    this.variantPicker = new VariantPicker(this.qsRequired(VariantPicker.SELECTOR), {
       product: this.product,
       onVariantChange: this.onVariantChange.bind(this)
     })
@@ -68,7 +68,7 @@ export default class ProductDetailForm extends BaseComponent {
     this.form.addEventListener('submit', this.onFormSubmit.bind(this))
   }
 
-  updateHistoryState(variant: LiteVariant) {
+  updateHistoryState(variant?: LiteVariant) {
     if (!this.settings.enableHistoryState) return
 
     const newurl = new URL(window.location.href)
@@ -105,7 +105,7 @@ export default class ProductDetailForm extends BaseComponent {
 
     if (this.submitInProgress) return
 
-    const submit = this.qs(selectors.submit, this.form) as HTMLButtonElement
+    const submit = this.qsRequired<HTMLButtonElement>(selectors.submit, this.form)
 
     // Disable the button so the user knows the form is being submitted
     submit.disabled = true

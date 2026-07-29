@@ -31,9 +31,9 @@ export default class BaseSection {
   #settings: BaseSectionSettings;
   #intersectionObserver: IntersectionObserver | null;
 
+  type: string
   container: HTMLElement
   id: string
-  type: string
   parent: HTMLElement
   parentId: string
   graphicCoverVideos: GraphicCoverVideo[]
@@ -49,16 +49,23 @@ export default class BaseSection {
     }
 
     this.#intersectionObserver = null
+    this.type = (this.constructor as typeof BaseSection).TYPE
 
     this.container = container
-    this.id = this.dataset.sectionId
-    this.type = (this.constructor as typeof BaseSection).TYPE
-    this.parent = this.container.parentElement // Automatically generated wrapper element
-    this.parentId = this.parent.id
+    this.id = this.dataset.sectionId ?? ''
 
     if (!this.id) {
       console.warn('Section ID not found', this)
+    }    
+
+    const parent = this.container.parentElement
+
+    if (!parent) { 
+      throw new Error(`[${this.type}] Section container has no parent element`)
     }
+
+    this.parent = parent
+    this.parentId = this.parent.id
 
     this.onNavigateOut = this.onNavigateOut.bind(this)
     this.onNavigateIn  = this.onNavigateIn.bind(this)
@@ -80,7 +87,7 @@ export default class BaseSection {
     })
 
     // Format tables in RTE
-    Array.from(container.querySelectorAll('.rte table')).forEach(formatTable)    
+    Array.from(container.querySelectorAll('.rte table') as NodeListOf<HTMLTableElement>).forEach(formatTable)    
 
     // Good for testing...
     // Array.from(container.querySelectorAll('img')).forEach(el => {
@@ -98,10 +105,27 @@ export default class BaseSection {
    * Query selector helper that returns the first matching element within the section container
    * @param {string} selector - CSS selector string
    * @param {HTMLElement} [dom=this.container] - Parent element to query within (defaults to section container)
-   * @returns {HTMLElement|undefined} First matching element or undefined if none found
+   * @returns {HTMLElement|null} First matching element or null if none found
    */
-  qs(selector: string, dom: HTMLElement = this.container): HTMLElement | undefined {
-    return this.qsa(selector, dom)[0]
+  qs(selector: string, dom: HTMLElement = this.container): HTMLElement | null {
+    return this.qsa(selector, dom)[0] ?? null
+  }
+
+  /**
+   * Query selector helper that returns the first matching element within the section container,
+   * throwing if no match is found. Use for elements the section's own template requires.
+   * @param {string} selector - CSS selector string
+   * @param {HTMLElement} [dom=this.container] - Parent element to query within
+   * @returns {T} The first matching element, narrowed to T
+   */
+  qsRequired<T extends HTMLElement = HTMLElement>(selector: string, dom: HTMLElement = this.container): T {
+    const el = this.qs(selector, dom)
+
+    if (!el) {
+      throw new Error(`[${this.type}] Required element not found: "${selector}"`)
+    }
+
+    return el as T
   }
 
   /**
@@ -145,7 +169,7 @@ export default class BaseSection {
 
   }
 
-  onUnload(e: ThemeEditorSectionUnloadEvent) {
+  onUnload(e?: ThemeEditorSectionUnloadEvent) {
     window.removeEventListener('taxi.navigateOut', this.onNavigateOut)
     window.removeEventListener('taxi.navigateIn', this.onNavigateIn)
     window.removeEventListener('taxi.navigateEnd', this.onNavigateEnd)
