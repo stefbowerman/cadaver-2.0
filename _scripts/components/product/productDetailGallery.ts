@@ -14,15 +14,14 @@ export default class ProductDetailGallery extends BaseComponent {
 
   color: string
   productTitle: string
-  emblaNode: HTMLElement | undefined
-  emblaViewport: HTMLElement | undefined
-  emblaPaginationNode: HTMLElement | undefined
+  emblaNode: HTMLElement | null
+  emblaViewport: HTMLElement | null
   slides: HTMLElement[]
-  pagination: HTMLElement | undefined
-  buttonNext: HTMLElement | undefined
-  buttonPrevious: HTMLElement | undefined
+  pagination: HTMLElement | null
+  buttonNext: HTMLElement | null
+  buttonPrevious: HTMLElement | null
   slideshowDisabled: boolean
-  emblaA11yStatus: A11yStatus | undefined
+  emblaA11yStatus: A11yStatus
   emblaApi: EmblaCarouselType | undefined
 
   constructor(el: HTMLElement) {
@@ -33,7 +32,6 @@ export default class ProductDetailGallery extends BaseComponent {
 
     this.emblaNode = this.qs('.embla')
     this.emblaViewport = this.qs('.embla__viewport')
-    this.emblaPaginationNode = this.qs('.embla__pagination')
     this.slides = this.qsa('.embla__slide')
 
     if (!this.emblaNode) {

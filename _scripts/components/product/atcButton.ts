@@ -21,11 +21,7 @@ export default class ATCButton extends BaseComponent {
     this.tempText = null
     this.successTimeoutId = null
 
-    this.label = this.qs(selectors.label) as HTMLElement
-
-    if (!this.label) {
-      console.warn('No label found')
-    }
+    this.label = this.qsRequired(selectors.label)
   }
 
   destroy() {
@@ -69,12 +65,12 @@ export default class ATCButton extends BaseComponent {
 
     this.successTimeoutId = setTimeout(() => {
       // Reset the button text
-      this.label.innerText = this.tempText
+      if (this.tempText !== null) this.label.innerText = this.tempText
       this.tempText = null
     }, 1000)
   }
 
   onAddFail(e: Error) {
-    this.label.innerText = this.tempText
+    if (this.tempText !== null) this.label.innerText = this.tempText
   }
 }

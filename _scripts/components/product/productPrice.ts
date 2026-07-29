@@ -14,10 +14,10 @@ export default class ProductPrice extends BaseComponent {
 
   labelPrice: string
   labelSalePrice: string
-  priceValue: HTMLElement | undefined
-  priceLabel: HTMLElement | undefined
-  compare: HTMLElement | undefined
-  comparePrice: HTMLElement | undefined
+  priceValue: HTMLElement
+  priceLabel: HTMLElement
+  compare: HTMLElement | null
+  comparePrice: HTMLElement | null
 
   constructor(el: HTMLElement) {
     super(el)
@@ -25,12 +25,12 @@ export default class ProductPrice extends BaseComponent {
     this.labelPrice = this.el.dataset.labelPrice || getAppString('productPrice') || 'Price'
     this.labelSalePrice = this.el.dataset.labelSalePrice || getAppString('productSalePrice') || 'Sale Price'
 
-    this.priceValue = this.qs(selectors.priceValue) as HTMLElement | undefined
-    this.priceLabel = this.qs(selectors.priceLabel) as HTMLElement | undefined
-     
+    this.priceValue = this.qsRequired(selectors.priceValue)
+    this.priceLabel = this.qsRequired(selectors.priceLabel)
+
     // These only exists if one or more product variants have a compare at price
-    this.compare = this.qs(selectors.compare) as HTMLElement | undefined
-    this.comparePrice = this.qs(selectors.comparePrice) as HTMLElement | undefined
+    this.compare = this.qs(selectors.compare)
+    this.comparePrice = this.qs(selectors.comparePrice)
   }
 
   /**
@@ -44,7 +44,7 @@ export default class ProductPrice extends BaseComponent {
    */  
   update(variant: LiteVariant) {
     if (variant) {
-      const onSale = variant.compare_at_price > variant.price
+      const onSale = variant.compare_at_price && variant.compare_at_price > variant.price
       
       if (this.priceValue) {
         this.priceValue.textContent = variant.price_formatted

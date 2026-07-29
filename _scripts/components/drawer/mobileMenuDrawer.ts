@@ -15,6 +15,6 @@ export default class MobileMenuDrawer extends Drawer {
       }
     })
 
-    this.searchInline = new SearchInline(this.qs(SearchInline.SELECTOR) as HTMLFormElement)
+    this.searchInline = new SearchInline(this.qsRequired<HTMLFormElement>(SearchInline.SELECTOR))
   }
 }

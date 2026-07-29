@@ -26,7 +26,7 @@ export default class AddressesSection extends BaseSection {
   constructor(container: HTMLElement) {
     super(container)
 
-    this.newForm = this.qs(selectors.newForm)
+    this.newForm = this.qsRequired(selectors.newForm)
 
     this.container.addEventListener('click', (e) => {
       const target = e.target as HTMLElement
@@ -39,7 +39,7 @@ export default class AddressesSection extends BaseSection {
 
       if (target.matches(selectors.toggleForm)) {
         e.preventDefault()
-        toggle(this.qs(`#edit-address-${target.dataset.id}`))
+        toggle(this.qsRequired(`#edit-address-${target.dataset.id}`))
         return
       }
 

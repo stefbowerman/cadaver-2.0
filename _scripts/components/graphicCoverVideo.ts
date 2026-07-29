@@ -42,6 +42,8 @@ export default class GraphicCoverVideo extends BaseComponent {
   }
 
   async attemptPlay() {
+    if (!this.video) return
+
     if (this.isPlaying) {
       this.onPlay()
 
@@ -61,6 +63,8 @@ export default class GraphicCoverVideo extends BaseComponent {
   }
 
   togglePlay() {
+    if (!this.video) return
+
     if (this.isPlaying) {
       this.video.pause()
     }
@@ -76,6 +80,8 @@ export default class GraphicCoverVideo extends BaseComponent {
   }
 
   onPlay() {
+    if (!this.video) return
+
     this.video.classList.add(classes.isReady)
   }
 
@@ -84,6 +90,8 @@ export default class GraphicCoverVideo extends BaseComponent {
   }
 
   onError(e: ErrorEvent) {
+    if (!this.video) return
+
     console.warn('Video error', e)
     this.video.style.display = 'none'
   }

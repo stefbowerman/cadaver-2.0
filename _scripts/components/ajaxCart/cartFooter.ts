@@ -18,8 +18,8 @@ export default class CartFooter extends BaseComponent {
       watchCartUpdate: true,
     })
     
-    this.submit = this.qs(selectors.submit) as HTMLButtonElement
-    this.subtotalPrice = this.qs(selectors.subtotalPrice)
+    this.submit = this.qsRequired<HTMLButtonElement>(selectors.submit)
+    this.subtotalPrice = this.qsRequired(selectors.subtotalPrice)
   }
 
   onCartUpdate(e: CartAPIEvent) {

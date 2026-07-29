@@ -38,8 +38,8 @@ const selectors = {
 
 // @NOTE - Maybe change this to "speed" so that we can calculate durations and clamp them to reasonable values?
 interface TabsOptions {
-  leaveDuration?: number
-  enterDuration?: number
+  leaveDuration: number
+  enterDuration: number
 }
 
 export default class Tabs extends BaseComponent {
@@ -54,7 +54,7 @@ export default class Tabs extends BaseComponent {
   currentTab: HTMLElement
   orientationVertical: boolean
 
-  constructor(el: HTMLElement, options: TabsOptions = {}) {
+  constructor(el: HTMLElement, options: Partial<TabsOptions> = {}) {
     super(el)
 
     this.settings = {
@@ -65,16 +65,15 @@ export default class Tabs extends BaseComponent {
 
     this.#transitionTl = null
 
-    this.tablist = this.qs(selectors.tabList)
+    this.tablist = this.qsRequired(selectors.tabList)
     this.tabs = this.qsa(selectors.tabs)
-    this.tabpanelsWrapper = this.qs(selectors.tabpanelsWrapper)
+    this.tabpanelsWrapper = this.qsRequired(selectors.tabpanelsWrapper)
     this.tabpanels = this.qsa(selectors.tabpanels)
-    this.currentTab = this.tabs.find(tab => tab.getAttribute('aria-selected') === 'true') as HTMLElement
-    this.orientationVertical = this.tablist.getAttribute('aria-orientation') === 'vertical'
 
-    if (!this.tabpanelsWrapper) {
-      throw new Error('Tabpanels wrapper not found')
-    }
+    const selectedTab = this.tabs.find(tab => tab.getAttribute('aria-selected') === 'true')
+
+    this.currentTab = selectedTab ?? this.tabs[0]
+    this.orientationVertical = this.tablist.getAttribute('aria-orientation') === 'vertical'
 
     if (this.tabs.length === 0) {
       throw new Error('No tabs found')
@@ -86,12 +85,11 @@ export default class Tabs extends BaseComponent {
     this.tablist.addEventListener('keydown', this.onTablistKeyDown)
     this.tabs.forEach(tab => tab.addEventListener('click', this.onTabClick))
 
-    if (!this.currentTab) {
+    if (!selectedTab) {
       // Force the first tab+panel to be active
-      this.setTabActive(this.tabs[0], true)
-      this.currentTab = this.tabs[0]
+      this.setTabActive(this.currentTab, true)
       this.tabpanels[0].hidden = false
-    }    
+    }
   }
 
   destroy() {

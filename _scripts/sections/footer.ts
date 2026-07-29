@@ -17,7 +17,7 @@ export default class FooterSection extends BaseSection {
   constructor(container: HTMLElement) {
     super(container)
 
-    this.newsletterFormEl = this.qs(NewsletterForm.SELECTOR) ?? null
+    this.newsletterFormEl = this.qs(NewsletterForm.SELECTOR)
     this.newsletterForm = null
     this.ajaxForm = null
 

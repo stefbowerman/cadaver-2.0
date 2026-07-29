@@ -12,7 +12,7 @@ export default class HeaderSection extends BaseSection {
   constructor(container: HTMLElement) {
     super(container)
 
-    this.headerCartControl = new HeaderCartControl(this.qs(HeaderCartControl.SELECTOR))
+    this.headerCartControl = new HeaderCartControl(this.qsRequired(HeaderCartControl.SELECTOR))
   }
 
   onNavigateIn(e: TaxiNavigateInEvent) {

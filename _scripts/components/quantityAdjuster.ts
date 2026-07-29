@@ -54,9 +54,9 @@ export default class QuantityAdjuster extends BaseComponent {
 
     this.changeEvent = new Event('change', { bubbles: true }) // stepUp / stepDown doesn't trigger input change
 
-    this.input = this.qs(selectors.input) as HTMLInputElement
-    this.increment = this.qs(selectors.increment) as HTMLButtonElement
-    this.decrement = this.qs(selectors.decrement) as HTMLButtonElement
+    this.input = this.qsRequired<HTMLInputElement>(selectors.input)
+    this.increment = this.qsRequired<HTMLButtonElement>(selectors.increment)
+    this.decrement = this.qsRequired<HTMLButtonElement>(selectors.decrement)
 
     this.input.addEventListener('change', this.onChange.bind(this))
     this.increment.addEventListener('click', this.onStepClick.bind(this))

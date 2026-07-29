@@ -98,10 +98,27 @@ export default class BaseSection {
    * Query selector helper that returns the first matching element within the section container
    * @param {string} selector - CSS selector string
    * @param {HTMLElement} [dom=this.container] - Parent element to query within (defaults to section container)
-   * @returns {HTMLElement|undefined} First matching element or undefined if none found
+   * @returns {HTMLElement|null} First matching element or null if none found
    */
-  qs(selector: string, dom: HTMLElement = this.container): HTMLElement | undefined {
-    return this.qsa(selector, dom)[0]
+  qs(selector: string, dom: HTMLElement = this.container): HTMLElement | null {
+    return this.qsa(selector, dom)[0] ?? null
+  }
+
+  /**
+   * Query selector helper that returns the first matching element within the section container,
+   * throwing if no match is found. Use for elements the section's own template requires.
+   * @param {string} selector - CSS selector string
+   * @param {HTMLElement} [dom=this.container] - Parent element to query within
+   * @returns {T} The first matching element, narrowed to T
+   */
+  qsRequired<T extends HTMLElement = HTMLElement>(selector: string, dom: HTMLElement = this.container): T {
+    const el = this.qs(selector, dom)
+
+    if (!el) {
+      throw new Error(`[${this.type}] Required element not found: "${selector}"`)
+    }
+
+    return el as T
   }
 
   /**

@@ -19,7 +19,7 @@ export default class HeaderCartControl extends BaseComponent {
       watchCartUpdate: true,
     })
 
-    this.count = this.qs(selectors.count)
+    this.count = this.qsRequired(selectors.count)
   }
 
   onCartUpdate(e: CartAPIEvent) {

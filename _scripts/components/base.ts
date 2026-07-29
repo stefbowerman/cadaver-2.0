@@ -159,10 +159,28 @@ export default class BaseComponent {
    * 
    * @param selector - The CSS selector to query for an element.
    * @param dom - The DOM element to query within.  Defaults to the component's element.
-   * @returns The first matching Element object within the component's scope, or undefined if no match is found.
+   * @returns The first matching Element object within the component's scope, or null if no match is found.
    */
-  qs(selector: string, dom: HTMLElement = this.el): HTMLElement | undefined {
-    return this.qsa(selector, dom)[0]
+  qs(selector: string, dom: HTMLElement = this.el): HTMLElement | null {
+    return this.qsa(selector, dom)[0] ?? null
+  }
+
+  /**
+   * Queries for the first element matching the given selector within the component's element,
+   * throwing if no match is found. Use for elements the component's own template requires to function.
+   *
+   * @param selector - The CSS selector to query for an element.
+   * @param dom - The DOM element to query within. Defaults to the component's element.
+   * @returns The first matching element, narrowed to T.
+   */
+  qsRequired<T extends HTMLElement = HTMLElement>(selector: string, dom: HTMLElement = this.el): T {
+    const el = this.qs(selector, dom)
+
+    if (!el) {
+      throw new Error(`[${this.type}] Required element not found: "${selector}"`)
+    }
+
+    return el as T
   }
 
   /**

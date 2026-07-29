@@ -14,14 +14,14 @@ export default class ResultsSection extends BaseSection {
 
     this.isFetching = false
 
-    this.resultsDisplay = new ResultsDisplay(this.qs(ResultsDisplay.SELECTOR), {
+    this.resultsDisplay = new ResultsDisplay(this.qsRequired(ResultsDisplay.SELECTOR), {
       onMoreIntersection: this.onMoreIntersection.bind(this),
       onReplaceComplete: this.onReplaceComplete.bind(this)
     })
   }
 
-  async fetchResults(url: string): Promise<HTMLElement | undefined> {
-    if (this.isFetching) return
+  async fetchResults(url: string): Promise<HTMLElement | null> {
+    if (this.isFetching) return null
 
     try {
       this.isFetching = true
@@ -31,11 +31,12 @@ export default class ResultsSection extends BaseSection {
             fetchUrl.searchParams.set('section_id', this.id)
 
       const dom = await fetchDom(fetchUrl)
-      
-      return dom.getElementById(this.parentId)?.querySelector(ResultsDisplay.SELECTOR) as HTMLElement
+
+      return (dom.getElementById(this.parentId)?.querySelector(ResultsDisplay.SELECTOR) ?? null) as HTMLElement | null
     }
     catch (e) {
       console.warn('something went wrong...', e)
+      return null
     }
     finally {
       this.isFetching = false
@@ -50,7 +51,9 @@ export default class ResultsSection extends BaseSection {
     try {
       const target = entry.target as HTMLAnchorElement
       const newResults = await this.fetchResults(target.href)
-      
+
+      if (!newResults) return
+
       this.resultsDisplay.add(newResults)
     }
     catch (e) {

@@ -41,7 +41,7 @@ export default class Drawer extends BaseComponent {
   settings: DrawerSettings
   role: string | null
   focusTrap: FocusTrap
-  scroller: HTMLElement | undefined
+  scroller: HTMLElement | null
   backdrop: Backdrop | null
 
   constructor(el: HTMLElement, options: DrawerSettings = {}) {

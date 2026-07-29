@@ -39,7 +39,7 @@ export default class VariantPicker extends BaseComponent {
     this.onVariantPickerOptionChange = this.onVariantPickerOptionChange.bind(this)
 
     this.pickerOptions = this.qsa(VariantPickerOption.SELECTOR).map(el => {
-      return new VariantPickerOption(el as HTMLElement, {
+      return new VariantPickerOption(el, {
         onChange: this.onVariantPickerOptionChange
       })
     })

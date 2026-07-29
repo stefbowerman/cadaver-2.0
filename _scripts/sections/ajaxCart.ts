@@ -24,7 +24,7 @@ export default class AJAXCartSection extends BaseSection {
 
     const cartData: LiteCart = JSON.parse(cartJsonEl.textContent)
 
-    this.ajaxCart = new AJAXCart(this.qs(AJAXCart.SELECTOR), cartData)
+    this.ajaxCart = new AJAXCart(this.qsRequired(AJAXCart.SELECTOR), cartData)
 
     // If redirected from the cart, show the ajax cart after a short delay
     if (getQueryParams().cart) {
