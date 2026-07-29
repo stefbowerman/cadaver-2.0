@@ -1,19 +1,19 @@
 import BaseComponent from '@/components/base'
 import type { SelectedOption } from '@/types/shopify'
 
-interface VariantPickerOptionSettings {
+interface VariantPickerOptionOptions {
   onChange?: () => void
 }
 
 export default class VariantPickerOption extends BaseComponent {
   static TYPE = 'variant-picker-option'
 
-  settings: VariantPickerOptionSettings
+  settings: VariantPickerOptionOptions
   name: string | undefined
   select: HTMLSelectElement | null
   inputs: HTMLInputElement[]
 
-  constructor(el: HTMLElement, options: VariantPickerOptionSettings = {}) {
+  constructor(el: HTMLElement, options: VariantPickerOptionOptions = {}) {
     super(el)
 
     this.settings = {

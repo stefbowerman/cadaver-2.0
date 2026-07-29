@@ -5,16 +5,16 @@ import { ThemeEditorBlockDeselectEvent, ThemeEditorBlockSelectEvent } from '@/ty
 
 const THEME_EDITOR_BLOCK_ATTR = 'data-shopify-editor-block'
 
-export interface BaseComponentSettings {
-  watchResize?: boolean;
-  watchBreakpoint?: boolean;
-  watchScroll?: boolean;
-  watchCartUpdate?: boolean;
-  watchIntersection?: boolean;
-  intersectionOptions?: IntersectionObserverInit;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any; // Allow additional properties from subclasses
+export interface BaseComponentOptions {
+  watchResize?: boolean
+  watchBreakpoint?: boolean
+  watchScroll?: boolean
+  watchCartUpdate?: boolean
+  watchIntersection?: boolean
+  intersectionOptions?: IntersectionObserverInit
 }
+
+type BaseComponentSettings = Required<BaseComponentOptions>
 
 export default class BaseComponent {
   #settings: BaseComponentSettings;
@@ -30,7 +30,7 @@ export default class BaseComponent {
     return `[data-component="${this.TYPE}"]`
   }
 
-  constructor(el: HTMLElement, options: BaseComponentSettings = {}) {
+  constructor(el: HTMLElement, options: BaseComponentOptions = {}) {
     this.#settings = {
       watchResize: false,
       watchBreakpoint: false,

@@ -14,7 +14,7 @@ import { setAriaFlag, setAriaState } from '@/core/utils/a11y'
 import FocusTrap from '@/core/focusTrap'
 import { BreakpointChangeEvent } from '@/core/breakpointsController'
 
-import BaseComponent, { type BaseComponentSettings } from '@/components/base'
+import BaseComponent, { type BaseComponentOptions } from '@/components/base'
 import Backdrop, { type BackdropOptions } from '@/components/backdrop'
 
 const selectors = {
@@ -26,13 +26,20 @@ const classes = {
   bodyIsOpen: 'drawer-open'
 }
 
-interface DrawerSettings extends BaseComponentSettings {
+interface DrawerOptions extends BaseComponentOptions {
   minBreakpoint?: number | null
   maxBreakpoint?: number | null
   backdrop?: boolean
   backdropOptions?: BackdropOptions
   onOpenComplete?: () => void
   onCloseComplete?: () => void  
+}
+
+interface DrawerSettings extends DrawerOptions {
+  minBreakpoint: number | null
+  maxBreakpoint: number | null
+  backdrop: boolean
+  backdropOptions: BackdropOptions
 }
 
 export default class Drawer extends BaseComponent {
@@ -44,7 +51,7 @@ export default class Drawer extends BaseComponent {
   scroller: HTMLElement | null
   backdrop: Backdrop | null
 
-  constructor(el: HTMLElement, options: DrawerSettings = {}) {
+  constructor(el: HTMLElement, options: DrawerOptions = {}) {
     super(el, {
       watchBreakpoint: (typeof options.minBreakpoint === 'number' || typeof options.maxBreakpoint === 'number') ? true : false,
       ...options

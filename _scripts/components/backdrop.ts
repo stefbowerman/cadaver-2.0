@@ -5,16 +5,21 @@ const classes = {
   backdrop: 'backdrop'
 }
 
-export type BackdropOptions = {
+export interface BackdropOptions {
   title?: string
   ariaLabel?: string
   ariaControls?: string
 }
 
+interface BackdropSettings extends BackdropOptions {
+  title: string
+  ariaLabel: string
+}
+
 export default class Backdrop extends BaseComponent {
   static TYPE = 'backdrop'
 
-  settings: BackdropOptions
+  settings: BackdropSettings
 
   static generate(parent: Element | undefined, options: BackdropOptions = {}) {
     const el = document.createElement('button')
@@ -40,8 +45,8 @@ export default class Backdrop extends BaseComponent {
       ...options
     }
 
-    el.setAttribute('title', this.settings.title!)
-    el.setAttribute('aria-label', this.settings.ariaLabel || this.settings.title!)    
+    el.setAttribute('title', this.settings.title)
+    el.setAttribute('aria-label', this.settings.ariaLabel || this.settings.title)
 
     if (this.settings.ariaControls) {
       el.setAttribute('aria-controls', this.settings.ariaControls)

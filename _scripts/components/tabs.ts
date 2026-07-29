@@ -38,15 +38,17 @@ const selectors = {
 
 // @NOTE - Maybe change this to "speed" so that we can calculate durations and clamp them to reasonable values?
 interface TabsOptions {
-  leaveDuration: number
-  enterDuration: number
+  leaveDuration?: number
+  enterDuration?: number
 }
+
+type TabsSettings = Required<TabsOptions>
 
 export default class Tabs extends BaseComponent {
   static TYPE = 'tabs'
 
   #transitionTl: gsap.core.Timeline | null
-  settings: TabsOptions
+  settings: TabsSettings
   tablist: HTMLElement
   tabs: HTMLElement[]
   tabpanelsWrapper: HTMLElement
@@ -54,7 +56,7 @@ export default class Tabs extends BaseComponent {
   currentTab: HTMLElement
   orientationVertical: boolean
 
-  constructor(el: HTMLElement, options: Partial<TabsOptions> = {}) {
+  constructor(el: HTMLElement, options: TabsOptions = {}) {
     super(el)
 
     this.settings = {

@@ -5,7 +5,7 @@ const selectors = {
   clearButton: 'button[data-clear]'
 }
 
-type SearchInlineOptions = {
+interface SearchInlineOptions {
   onSubmit?: (e: SubmitEvent, url: string) => void | boolean
   onKeyup?: (e: KeyboardEvent) => void
   onInput?: (e: InputEvent) => void

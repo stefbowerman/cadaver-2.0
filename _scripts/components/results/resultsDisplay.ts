@@ -10,7 +10,7 @@ const selectors = {
   more: 'a[data-more]'
 }
 
-interface ResultsDisplaySettings {
+interface ResultsDisplayOptions {
   onMoreIntersection?: (entries: IntersectionObserverEntry[]) => void
   onReplaceStart?: (resultsDisplay: ResultsDisplay) => void
   onReplaceComplete?: (resultsDisplay: ResultsDisplay) => void
@@ -22,13 +22,13 @@ export default class ResultsDisplay extends BaseComponent {
   #swapTl: gsap.core.Timeline | null
   #moreObserver: IntersectionObserver | null
 
-  settings: ResultsDisplaySettings
+  settings: ResultsDisplayOptions
   productCards: ProductCard[]
   list: HTMLUListElement | null
   a11yStatus: A11yStatus | null
   more: HTMLAnchorElement | null
 
-  constructor(el: HTMLElement, options: ResultsDisplaySettings = {}) {
+  constructor(el: HTMLElement, options: ResultsDisplayOptions = {}) {
     super(el)
 
     this.settings = {
