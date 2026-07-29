@@ -6799,6 +6799,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     list: "ul",
     more: "a[data-more]"
   };
+  function parseProductsCount(el) {
+    return el.dataset.productsCount ? parseInt(el.dataset.productsCount) : 0;
+  }
   const _ResultsDisplay = class _ResultsDisplay extends BaseComponent {
     constructor(el, options = {}) {
       super(el);
@@ -6852,9 +6855,14 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.teardown();
       super.destroy();
     }
+    // This is exposed so that the parent can update any related components - typically used with facets (that aren't yet implemented)
+    get productsCount() {
+      return parseProductsCount(this.el);
+    }
     // Replace the entire contents of the results display
     replace(dom) {
       if (!dom || !this.validateDom(dom)) return;
+      this.el.dataset.productsCount = parseProductsCount(dom).toString();
       __privateGet(this, _swapTl)?.kill();
       __privateSet(this, _swapTl, swap(this.el, {
         onExitStart: () => {

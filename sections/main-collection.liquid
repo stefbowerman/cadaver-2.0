@@ -20,6 +20,7 @@
     <div
       class="results-display"
       data-component="results-display"
+      data-products-count="{{ collection.products_count | default: 0 }}"
     >
       <ul>
         {% if collection.products.size > 0 %}   

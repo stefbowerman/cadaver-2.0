@@ -10,6 +10,10 @@ const selectors = {
   more: 'a[data-more]'
 }
 
+function parseProductsCount(el: HTMLElement) {
+  return el.dataset.productsCount ? parseInt(el.dataset.productsCount) : 0
+}
+
 interface ResultsDisplayOptions {
   onMoreIntersection?: (entries: IntersectionObserverEntry[]) => void
   onReplaceStart?: (resultsDisplay: ResultsDisplay) => void
@@ -98,9 +102,17 @@ export default class ResultsDisplay extends BaseComponent {
     super.destroy()
   }
 
+  // This is exposed so that the parent can update any related components - typically used with facets (that aren't yet implemented)
+  get productsCount() {
+    return parseProductsCount(this.el)
+  }
+
   // Replace the entire contents of the results display
   replace(dom: HTMLElement | null) {
     if (!dom || !this.validateDom(dom)) return
+
+    // Update the products count from the entire component DOM because we only update the innerHTML of the results display
+    this.el.dataset.productsCount = parseProductsCount(dom).toString()
 
     this.#swapTl?.kill()
     this.#swapTl = swap(this.el, {
