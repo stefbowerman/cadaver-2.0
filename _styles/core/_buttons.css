@@ -1,3 +1,7 @@
+button:not([disabled]) {
+  @apply cursor-pointer;
+}
+
 button[disabled] {
   @apply cursor-not-allowed;
 }

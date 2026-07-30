@@ -1,0 +1,58 @@
+{% doc %}
+  Accordion Item
+  --------------------------------
+
+  @param {string} title - The title of the accordion item
+  @param {string} [title_link] - The link of the title - if provided, the title will be a link instead of a button
+  @param {string} [content] - The content of the accordion item
+  @param {string} [attributes] - The attributes of the accordion item
+  @param {string} [classes] - The classes of the accordion item
+  @param {object} [block] - The block of the accordion item
+
+  @example
+    {% render 'accordion-item',
+              title: 'Accordion Item Title',
+              content: '<p>Accordion Item Content</p>'
+              block: block
+    %}
+{% enddoc %}
+
+<div
+  class="accordion-item {{ classes }}"
+  data-component="accordion-item"
+  {% if block %}
+    data-block-id="{{ block.id }}"
+    {{ block.shopify_attributes }}
+  {% endif %}
+  {{ attributes }}
+>
+  {% if title_link %}
+    <a
+      class="accordion-item__header"
+      href="{{ title_link }}"
+      data-header
+    >
+      <span>{{ title }}</span>
+    </a>
+  {% else %}
+    <button
+      class="accordion-item__header"
+      type="button"
+      data-header
+    >  
+      <span>{{ title }}</span>
+
+      {{- 'icon-plus.svg' | inline_asset_content -}}      
+    </button>    
+  {% endif %}
+
+  <div
+    class="accordion-item__body"
+    hidden
+    data-body
+  >
+    <div class="accordion-item__body-inner">
+      {{ content }}
+    </div>
+  </div>
+</div>

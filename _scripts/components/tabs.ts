@@ -48,13 +48,14 @@ export default class Tabs extends BaseComponent {
   static TYPE = 'tabs'
 
   #transitionTl: gsap.core.Timeline | null
+  #orientationVertical: boolean
+  
   settings: TabsSettings
   tablist: HTMLElement
   tabs: HTMLElement[]
   tabpanelsWrapper: HTMLElement
   tabpanels: HTMLElement[]
   currentTab: HTMLElement
-  orientationVertical: boolean
 
   constructor(el: HTMLElement, options: TabsOptions = {}) {
     super(el)
@@ -79,7 +80,7 @@ export default class Tabs extends BaseComponent {
     const selectedTab = this.tabs.find(tab => tab.getAttribute('aria-selected') === 'true')
 
     this.currentTab = selectedTab ?? this.tabs[0]
-    this.orientationVertical = this.tablist.getAttribute('aria-orientation') === 'vertical'
+    this.#orientationVertical = this.tablist.getAttribute('aria-orientation') === 'vertical'
 
     this.onTabClick = this.onTabClick.bind(this)
     this.onTablistKeyDown = this.onTablistKeyDown.bind(this)
@@ -227,10 +228,10 @@ export default class Tabs extends BaseComponent {
     const currentTabIndex = this.tabs.indexOf(this.currentTab)
  
     switch (e.key) {
-      case this.orientationVertical ? ARROW_DOWN_KEY : ARROW_RIGHT_KEY:
+      case this.#orientationVertical ? ARROW_DOWN_KEY : ARROW_RIGHT_KEY:
         newIndex = (currentTabIndex + 1) % this.tabs.length
         break
-      case this.orientationVertical ? ARROW_UP_KEY : ARROW_LEFT_KEY:
+      case this.#orientationVertical ? ARROW_UP_KEY : ARROW_LEFT_KEY:
         newIndex = (currentTabIndex - 1 + this.tabs.length) % this.tabs.length
         break
       case HOME_KEY:
