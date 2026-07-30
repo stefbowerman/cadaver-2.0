@@ -42,25 +42,14 @@ Production examples of this project in action:
 
 ## Pre-built Components
 
-Ready-to-use interactive components that can be dropped into any section.
+Ready-to-use, interactive components with ARIA compliance and theme editor integration.
 
-### Tabs
-Animated tab panels with keyboard navigation, ARIA compliance, and GSAP-powered transitions.
-
-- Source: [`_scripts/components/tabs.ts`](_scripts/components/tabs.ts)
-- Snippets: [`snippets/tabs-tab.liquid`](snippets/tabs-tab.liquid), [`snippets/tabs-tabpanel.liquid`](snippets/tabs-tabpanel.liquid)
-
-### Drawer
-Accessible slide-in drawer with focus trap, optional backdrop, and breakpoint-aware auto-close.
-
-- Source: [`_scripts/components/drawer/index.ts`](_scripts/components/drawer/index.ts)
-- Snippet: [`snippets/drawer.liquid`](snippets/drawer.liquid)
-
-### Quantity Adjuster
-Quantity input component with increment/decrement buttons, validation, and configurable min/max bounds.
-
-- Source: [`_scripts/components/quantityAdjuster.ts`](_scripts/components/quantityAdjuster.ts)
-- Snippet: [`snippets/quantity-adjuster.liquid`](snippets/quantity-adjuster.liquid)
+| Component | Description | Source | Snippets |
+|---|---|---|---|
+| Tabs | Animated tab panels with keyboard navigation and GSAP-powered transitions. | [`tabs.ts`](_scripts/components/tabs.ts) | [`tabs-tab.liquid`](snippets/tabs-tab.liquid), [`tabs-tabpanel.liquid`](snippets/tabs-tabpanel.liquid) |
+| Drawer | Slide-in drawer with focus trap, optional backdrop, and breakpoint-aware auto-close. | [`drawer/index.ts`](_scripts/components/drawer/index.ts) | [`drawer.liquid`](snippets/drawer.liquid) |
+| Accordion | Collapsible content panels with animated expand/collapse, single or multi-open modes. | [`accordion.ts`](_scripts/components/accordion.ts), [`accordionItem.ts`](_scripts/components/accordionItem.ts) | [`accordion-item.liquid`](snippets/accordion-item.liquid) |
+| Quantity Adjuster | Numeric input component with increment/decrement buttons, validation, and configurable min/max bounds. | [`quantityAdjuster.ts`](_scripts/components/quantityAdjuster.ts) | [`quantity-adjuster.liquid`](snippets/quantity-adjuster.liquid) |
 
 ## Project Structure
 

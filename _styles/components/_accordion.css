@@ -1,0 +1,43 @@
+.accordion {
+  /* &[data-multi="true"] {
+
+  } */
+}
+
+
+.accordion-item {
+  @apply border-b border-grey;
+
+  /* Use this if you need to style inactive items when multi is not enabled */
+  /* @apply transition-opacity duration-400; */
+
+  /* .accordion:not([data-multi="true"]).is-active &:not(:has([aria-expanded="true"])) {
+    @apply opacity-50;
+  } */
+}
+
+.accordion-item__header {
+  @apply relative flex py-3 leading-none;
+  @apply w-full text-left; /* This is needed because we're using a button element.  If we change the markup, re-visit this */
+
+  padding-right: 1.5rem;
+
+  svg {
+    @apply absolute right-0 top-3.5 h-auto transition-transform duration-400;
+    width: 0.8rem;
+  }
+
+  &[aria-expanded="true"] {
+    svg {
+      transform: rotate(135deg);
+    }
+  }
+}
+
+.accordion-item__body {
+  @apply overflow-hidden; 
+}
+
+.accordion-item__body-inner {
+  @apply pb-3; /* Match the padding-bottom of the header */
+}
