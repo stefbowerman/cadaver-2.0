@@ -13,6 +13,7 @@ import type {
   TaxiNavigateEndEvent,
 } from '@/types/taxi'
 
+import { sectionRenderService } from '@/core/sectionRenderService'
 import { formatTable } from '@/core/rte'
 
 import { doComponentCleanup } from '@/components/base'
@@ -21,8 +22,9 @@ import { doComponentCleanup } from '@/components/base'
 import GraphicCoverVideo from '@/components/graphicCoverVideo'
 
 export interface BaseSectionOptions {
-  watchIntersection?: boolean;
-  intersectionOptions?: IntersectionObserverInit;
+  watchIntersection?: boolean
+  intersectionOptions?: IntersectionObserverInit
+  cacheOnLoad?: boolean
 }
 
 type BaseSectionSettings = Required<BaseSectionOptions>
@@ -43,6 +45,7 @@ export default class BaseSection {
   constructor(container: HTMLElement, options: BaseSectionOptions = {}) {
     this.#settings = {
       watchIntersection: false,
+      cacheOnLoad: false,
       intersectionOptions: {
         rootMargin: '0px',
         threshold: 0.01,        
@@ -77,6 +80,11 @@ export default class BaseSection {
     window.addEventListener('taxi.navigateOut', this.onNavigateOut)
     window.addEventListener('taxi.navigateIn', this.onNavigateIn)
     window.addEventListener('taxi.navigateEnd', this.onNavigateEnd)
+
+    // This need to go here so that the clean section html is cached before any component initialization
+    if (this.#settings.cacheOnLoad) {
+      sectionRenderService.cacheSection(this)
+    }    
 
     if (this.#settings.watchIntersection) {
       this.#intersectionObserver = new IntersectionObserver(this.onIntersection, this.#settings.intersectionOptions)

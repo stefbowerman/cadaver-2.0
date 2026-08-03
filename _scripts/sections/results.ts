@@ -1,4 +1,4 @@
-import { fetchDom } from '@/core/utils/dom'
+import { sectionRenderService } from '@/core/sectionRenderService'
 
 import BaseSection from '@/sections/base'
 import ResultsDisplay from '@/components/results/resultsDisplay'
@@ -6,13 +6,14 @@ import ResultsDisplay from '@/components/results/resultsDisplay'
 export default class ResultsSection extends BaseSection {
   static TYPE = 'results'
 
-  isFetching: boolean
+  #isFetching: boolean
+
   resultsDisplay: ResultsDisplay
 
   constructor(container: HTMLElement) {
-    super(container)
+    super(container, { cacheOnLoad: true })
 
-    this.isFetching = false
+    this.#isFetching = false
 
     this.resultsDisplay = new ResultsDisplay(this.qsRequired(ResultsDisplay.SELECTOR), {
       onMoreIntersection: this.onMoreIntersection.bind(this),
@@ -21,16 +22,16 @@ export default class ResultsSection extends BaseSection {
   }
 
   async fetchResults(url: string): Promise<HTMLElement | null> {
-    if (this.isFetching) return null
+    if (this.#isFetching) return null
 
     try {
-      this.isFetching = true
+      this.#isFetching = true
 
       const fetchUrl = new URL(url, window.location.origin)
-            fetchUrl.searchParams.set('t', Date.now().toString()) // Add timestamp to prevent caching?
+            // fetchUrl.searchParams.set('t', Date.now().toString()) // Add timestamp to prevent caching?
             fetchUrl.searchParams.set('section_id', this.id)
 
-      const dom = await fetchDom(fetchUrl)
+      const dom = await sectionRenderService.getSectionDom(this.id, fetchUrl)
 
       return (dom?.getElementById(this.parentId)?.querySelector(ResultsDisplay.SELECTOR) ?? null) as HTMLElement | null
     }
@@ -39,7 +40,7 @@ export default class ResultsSection extends BaseSection {
       return null
     }
     finally {
-      this.isFetching = false
+      this.#isFetching = false
     }
   }
 
@@ -58,10 +59,7 @@ export default class ResultsSection extends BaseSection {
     }
     catch (e) {
       console.warn('something went wrong...', e)
-    }
-    finally {
-      this.isFetching = false
-    }        
+    }       
   }
 
   onReplaceComplete(resultsDisplay: ResultsDisplay) {

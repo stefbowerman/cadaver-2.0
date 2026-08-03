@@ -7,7 +7,7 @@ var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot
 var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 (function() {
   "use strict";
-  var _settings, _resizeObserver, _intersectionObserver, _onBlockSelect, _onBlockDeselect, _swapTl, _moreObserver, _abortController, _isLoading, _observer, _state, _muteUpdateSync;
+  var _settings, _resizeObserver, _intersectionObserver, _onBlockSelect, _onBlockDeselect, _swapTl, _moreObserver, _isFetching, _abortController, _isLoading, _observer, _state, _muteUpdateSync;
   function SelectorSet() {
     if (!(this instanceof SelectorSet)) {
       return new SelectorSet();
@@ -1342,6 +1342,175 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     };
     return executedFunction;
   };
+  const isElement = (object) => {
+    if (!object || typeof object !== "object") {
+      return false;
+    }
+    return object instanceof Element || object instanceof Document;
+  };
+  const isDisabled = (element) => {
+    if (!element || element.nodeType !== Node.ELEMENT_NODE) {
+      return true;
+    }
+    if (element.classList.contains("disabled")) {
+      return true;
+    }
+    if ("disabled" in element) {
+      return element.disabled;
+    }
+    return element.hasAttribute("disabled") && element.getAttribute("disabled") !== "false";
+  };
+  const isVisible = (element) => {
+    if (!isElement(element) || element.getClientRects().length === 0) {
+      return false;
+    }
+    const elementIsVisible = getComputedStyle(element).getPropertyValue("visibility") === "visible";
+    const closedDetails = element.closest("details:not([open])");
+    if (!closedDetails) {
+      return elementIsVisible;
+    }
+    if (closedDetails !== element) {
+      const summary = element.closest("summary");
+      if (summary && summary.parentNode !== closedDetails) {
+        return false;
+      }
+      if (summary === null) {
+        return false;
+      }
+    }
+    return elementIsVisible;
+  };
+  const getFocusableChildren = (element) => {
+    const focusables = [
+      "a[href]",
+      "button",
+      "input",
+      "textarea",
+      "select",
+      "details",
+      '[tabindex]:not([tabindex^="-"])',
+      '[contenteditable="true"]'
+    ].join(",");
+    const children = Array.from(element.querySelectorAll(focusables));
+    return children.filter((el) => !isDisabled(el) && isVisible(el));
+  };
+  const getDomFromString = (string) => {
+    return new DOMParser().parseFromString(string, "text/html");
+  };
+  const fetchDom = async (url, signal) => {
+    try {
+      const response = await fetch(url, { signal });
+      if (!response.ok) throw new Error("Network response was not ok");
+      const responseText = await response.text();
+      const dom = getDomFromString(responseText);
+      return dom;
+    } catch (e) {
+      if (e instanceof Error && e.name === "AbortError") {
+        console.log("Fetch aborted by user");
+        return void 0;
+      }
+      console.warn("something went wrong...", e);
+      return void 0;
+    }
+  };
+  function buildFullUrl(sectionId, url) {
+    const _url = new URL(url);
+    _url.searchParams.set("section_id", sectionId);
+    _url.searchParams.sort();
+    return _url.toString();
+  }
+  function cloneDocument(doc) {
+    return doc.cloneNode(true);
+  }
+  class SectionRenderService {
+    #cache = /* @__PURE__ */ new Map();
+    #pending = /* @__PURE__ */ new Map();
+    #abortKeyToUrl = /* @__PURE__ */ new Map();
+    clearCache() {
+      this.#cache.clear();
+    }
+    cacheSection(section) {
+      const url = buildFullUrl(section.id, new URL(window.location.href));
+      const dom = new DOMParser().parseFromString(section.parent.outerHTML, "text/html");
+      this.#cache.set(url, dom);
+    }
+    /**
+     * Fetches a section's DOM, using in-memory cache and promise deduplication.
+     * Failure — abort or a real fetch error — always resolves to undefined; it
+     * never falls back to a stale cached copy, so callers can't mistake old
+     * data for a fresh result.
+     *
+     * @param url - The full URL to fetch (including search params)
+     * @param abortKey - If provided, registers this key as a waiter on the in-flight fetch for `url`
+     */
+    async #fetch(url, useCache, abortKey) {
+      const pending = this.#pending.get(url);
+      if (pending) {
+        if (abortKey) pending.waiters.add(abortKey);
+        return pending.promise;
+      }
+      if (useCache && this.#cache.has(url)) {
+        return cloneDocument(this.#cache.get(url));
+      }
+      const controller = new AbortController();
+      const waiters = new Set(abortKey ? [abortKey] : []);
+      const promise = fetchDom(url, controller.signal).then((dom) => {
+        if (!dom) return void 0;
+        this.#cache.set(url, dom);
+        return cloneDocument(dom);
+      }).finally(() => {
+        this.#pending.delete(url);
+      });
+      this.#pending.set(url, { promise, controller, waiters });
+      return promise;
+    }
+    /**
+     * Fetches section DOM by full URL. Single code path for section DOM fetching:
+     * cache key = URL, abort key = abortKey. Use for predictive search or any
+     * URL that isn't "current page + section_id".
+     *
+     * A shared in-flight fetch is only actually cancelled once every abortKey
+     * relying on it has moved on — one caller's supersession can't silently
+     * cancel data another, unrelated caller is still waiting on.
+     *
+     * @param fullUrl - The full URL to fetch (including search params)
+     * @param abortKey - Key for cancellation; a new call with the same key detaches from its previous URL
+     * @param useCache - Whether to return cached result when available (default true)
+     */
+    async getSectionDomByUrl(fullUrl, abortKey, useCache = true) {
+      const prevUrl = this.#abortKeyToUrl.get(abortKey);
+      if (prevUrl && prevUrl !== fullUrl) {
+        const prevEntry = this.#pending.get(prevUrl);
+        if (prevEntry) {
+          prevEntry.waiters.delete(abortKey);
+          if (prevEntry.waiters.size === 0) {
+            prevEntry.controller.abort();
+          }
+        }
+      }
+      this.#abortKeyToUrl.set(abortKey, fullUrl);
+      return this.#fetch(fullUrl, useCache, abortKey);
+    }
+    /**
+     * Fetches a section's DOM for the given page URL (section_id appended).
+     * Delegates to getSectionDomByUrl so abort and fetch logic live in one place.
+     */
+    async getSectionDom(sectionId, url, useCache = true) {
+      const fullUrl = buildFullUrl(sectionId, url);
+      return this.getSectionDomByUrl(fullUrl, sectionId, useCache);
+    }
+    /**
+     * Pre-fetches a URL and stores it in cache.
+     * Useful for hover states on filters.
+     */
+    prefetch(sectionId, url) {
+      const fullUrl = buildFullUrl(sectionId, url);
+      if (this.#cache.has(fullUrl) || this.#pending.has(fullUrl)) return;
+      this.#fetch(fullUrl, true).catch(() => {
+      });
+    }
+  }
+  const sectionRenderService = new SectionRenderService();
   const formatTable = (table) => {
     if (!table || !(table instanceof HTMLTableElement)) return;
     const wrapper = document.createElement("div");
@@ -1780,6 +1949,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     constructor(container, options = {}) {
       this.#settings = {
         watchIntersection: false,
+        cacheOnLoad: false,
         intersectionOptions: {
           rootMargin: "0px",
           threshold: 0.01
@@ -1806,6 +1976,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       window.addEventListener("taxi.navigateOut", this.onNavigateOut);
       window.addEventListener("taxi.navigateIn", this.onNavigateIn);
       window.addEventListener("taxi.navigateEnd", this.onNavigateEnd);
+      if (this.#settings.cacheOnLoad) {
+        sectionRenderService.cacheSection(this);
+      }
       if (this.#settings.watchIntersection) {
         this.#intersectionObserver = new IntersectionObserver(this.onIntersection, this.#settings.intersectionOptions);
         this.#intersectionObserver.observe(this.container);
@@ -2130,77 +2303,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   };
   _BlogSection.TYPE = "blog";
   let BlogSection = _BlogSection;
-  const isElement = (object) => {
-    if (!object || typeof object !== "object") {
-      return false;
-    }
-    return object instanceof Element || object instanceof Document;
-  };
-  const isDisabled = (element) => {
-    if (!element || element.nodeType !== Node.ELEMENT_NODE) {
-      return true;
-    }
-    if (element.classList.contains("disabled")) {
-      return true;
-    }
-    if ("disabled" in element) {
-      return element.disabled;
-    }
-    return element.hasAttribute("disabled") && element.getAttribute("disabled") !== "false";
-  };
-  const isVisible = (element) => {
-    if (!isElement(element) || element.getClientRects().length === 0) {
-      return false;
-    }
-    const elementIsVisible = getComputedStyle(element).getPropertyValue("visibility") === "visible";
-    const closedDetails = element.closest("details:not([open])");
-    if (!closedDetails) {
-      return elementIsVisible;
-    }
-    if (closedDetails !== element) {
-      const summary = element.closest("summary");
-      if (summary && summary.parentNode !== closedDetails) {
-        return false;
-      }
-      if (summary === null) {
-        return false;
-      }
-    }
-    return elementIsVisible;
-  };
-  const getFocusableChildren = (element) => {
-    const focusables = [
-      "a[href]",
-      "button",
-      "input",
-      "textarea",
-      "select",
-      "details",
-      '[tabindex]:not([tabindex^="-"])',
-      '[contenteditable="true"]'
-    ].join(",");
-    const children = Array.from(element.querySelectorAll(focusables));
-    return children.filter((el) => !isDisabled(el) && isVisible(el));
-  };
-  const getDomFromString = (string) => {
-    return new DOMParser().parseFromString(string, "text/html");
-  };
-  const fetchDom = async (url, signal) => {
-    try {
-      const response = await fetch(url, { signal });
-      if (!response.ok) throw new Error("Network response was not ok");
-      const responseText = await response.text();
-      const dom = getDomFromString(responseText);
-      return dom;
-    } catch (e) {
-      if (e instanceof Error && e.name === "AbortError") {
-        console.log("Fetch aborted by user");
-        return void 0;
-      }
-      console.warn("something went wrong...", e);
-      return void 0;
-    }
-  };
   function _assertThisInitialized(self) {
     if (self === void 0) {
       throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -6919,27 +7021,27 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   let ResultsDisplay = _ResultsDisplay;
   const _ResultsSection = class _ResultsSection extends BaseSection {
     constructor(container) {
-      super(container);
-      this.isFetching = false;
+      super(container, { cacheOnLoad: true });
+      __privateAdd(this, _isFetching);
+      __privateSet(this, _isFetching, false);
       this.resultsDisplay = new ResultsDisplay(this.qsRequired(ResultsDisplay.SELECTOR), {
         onMoreIntersection: this.onMoreIntersection.bind(this),
         onReplaceComplete: this.onReplaceComplete.bind(this)
       });
     }
     async fetchResults(url) {
-      if (this.isFetching) return null;
+      if (__privateGet(this, _isFetching)) return null;
       try {
-        this.isFetching = true;
+        __privateSet(this, _isFetching, true);
         const fetchUrl = new URL(url, window.location.origin);
-        fetchUrl.searchParams.set("t", Date.now().toString());
         fetchUrl.searchParams.set("section_id", this.id);
-        const dom = await fetchDom(fetchUrl);
+        const dom = await sectionRenderService.getSectionDom(this.id, fetchUrl);
         return dom?.getElementById(this.parentId)?.querySelector(ResultsDisplay.SELECTOR) ?? null;
       } catch (e) {
         console.warn("something went wrong...", e);
         return null;
       } finally {
-        this.isFetching = false;
+        __privateSet(this, _isFetching, false);
       }
     }
     async onMoreIntersection(entries) {
@@ -6952,13 +7054,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         this.resultsDisplay.add(newResults);
       } catch (e) {
         console.warn("something went wrong...", e);
-      } finally {
-        this.isFetching = false;
       }
     }
     onReplaceComplete(resultsDisplay) {
     }
   };
+  _isFetching = new WeakMap();
   _ResultsSection.TYPE = "results";
   let ResultsSection = _ResultsSection;
   const _CollectionSection = class _CollectionSection extends ResultsSection {
