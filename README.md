@@ -91,14 +91,52 @@ Ready-to-use, interactive components with ARIA compliance and theme editor integ
 
 ```bash
 npm run dev      # Vite watch build (sourcemaps, no minification)
-npm run build    # Production build (minified)
+npm run build    # Production build (minified) - run before committing
 
 # Run alongside Shopify CLI in a separate terminal:
 shopify theme dev --store={store_id}
 ```
 
-## Manual Deployment
-> __Note__: this process is only necessary for themes that do _not_ use the GitHub integration.  This is an entirely manual process that I use to push a single codebase to multiple stores.
+## Deployment
+<details>
+<summary>
+<h3 style="display:inline">Non-main branch</h3>
+
+> This process is for stores running the GitHub integration on branches that aren't the "main" branch in the repo.  This is used for stores that have multiple Shopify instances and updates to main need to be pulled into the respective branches without affecting theme editor updates
+</summary>
+
+The [`.gitattributes`](.gitattributes) file marks `config/settings_data.json` and `templates/**/*.json` with `merge=ours`. On merge, git keeps the current branch's version of those files and discards incoming changes to them, so merging `main` into the live branch never clobbers that store's live settings or template layout.
+
+This requires the `ours` merge driver to be registered locally (this is machine config, not something `.gitattributes` can set by itself).  You only need to run this command once before doing this type of deployment the first time.
+```bash
+git config merge.ours.driver true
+```
+
+To pull `main` into the live branch (e.g. `production`) and deploy:
+```bash
+# Make sure the live branch is up to date first
+git fetch origin
+git checkout production
+git pull origin production
+
+# Merge in main - settings_data.json and templates/**/*.json are protected by merge=ours
+git merge main
+
+# Resolve any conflicts in non-protected files (most likely bundled CSS and JS files) then push
+git push origin production
+```
+
+Since the store's connected theme tracks `production` through the GitHub integration, pushing to `production` triggers Shopify to sync automatically — no `shopify theme push` needed.
+</details>
+
+
+<details>
+<summary>
+<h3 style="display:inline">Manual</h3>
+
+> This process is only necessary for themes that do _not_ use the GitHub integration.  This is an entirely manual process that I use to push a single codebase to multiple stores.
+</summary>
+
 
 Deploying updates to the site is a multi-step process as we need to push code changes while preserving the template settings on the live theme.
 
@@ -172,3 +210,5 @@ $ git reset HEAD --hard
 $ git checkout main
 $ git branch -D deploy
 ```
+
+</details>
