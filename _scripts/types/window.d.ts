@@ -31,7 +31,11 @@ declare global {
     Shopify?: {
       designMode?: boolean;
       // This comes from shopify_common.js
-      CountryProvinceSelector: (countrySelector: string, provinceSelector: string, options: { hideElement: string }) => void
+      CountryProvinceSelector: new (
+        countrySelector: string,
+        provinceSelector: string,
+        options: { hideElement: string }
+      ) => void
     }
     app: {
       strings?: Record<string, string>;

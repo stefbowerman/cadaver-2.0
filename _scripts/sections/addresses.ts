@@ -57,14 +57,17 @@ export default class AddressesSection extends BaseSection {
     })
 
     // Initialize observers on address selectors
-    new window.Shopify.CountryProvinceSelector('address-country-new', 'address-province-new', {
+    const CountryProvinceSelector = window.Shopify?.CountryProvinceSelector
+    if (!CountryProvinceSelector) return
+
+    new CountryProvinceSelector('address-country-new', 'address-province-new', {
       hideElement: 'address-province-container-new'
     })
 
     this.qsa('[data-address-form]').forEach((el: HTMLElement) => {
       const id = el.dataset.id
 
-      new window.Shopify.CountryProvinceSelector(`address-country-${id}`, `address-province-${id}`, {
+      new CountryProvinceSelector(`address-country-${id}`, `address-province-${id}`, {
         hideElement: `address-province-container-${id}`
       })
     })

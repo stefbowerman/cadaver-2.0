@@ -2282,12 +2282,14 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
           return;
         }
       });
-      new window.Shopify.CountryProvinceSelector("address-country-new", "address-province-new", {
+      const CountryProvinceSelector = window.Shopify?.CountryProvinceSelector;
+      if (!CountryProvinceSelector) return;
+      new CountryProvinceSelector("address-country-new", "address-province-new", {
         hideElement: "address-province-container-new"
       });
       this.qsa("[data-address-form]").forEach((el) => {
         const id = el.dataset.id;
-        new window.Shopify.CountryProvinceSelector(`address-country-${id}`, `address-province-${id}`, {
+        new CountryProvinceSelector(`address-country-${id}`, `address-province-${id}`, {
           hideElement: `address-province-container-${id}`
         });
       });
