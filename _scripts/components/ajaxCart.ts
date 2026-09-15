@@ -1,6 +1,6 @@
 import type { LiteCart } from '@/types/shopify'
 import type { CartAPIEvent } from '@/core/cartAPI'
-import { setAriaFlag, setAriaState } from '@/core/utils/a11y'
+import { setAriaFlag, setAriaState, closeOnEscape } from '@/core/utils/a11y'
 import FocusTrap from '@/core/focusTrap'
 
 import BaseComponent from '@/components/base'
@@ -61,9 +61,11 @@ export default class AJAXCart extends BaseComponent {
 
     this.onBodyClick = this.onBodyClick.bind(this)
     this.onTransitionEnd = this.onTransitionEnd.bind(this)
+    this.onKeydown = this.onKeydown.bind(this)
 
     this.el.addEventListener('transitionend', this.onTransitionEnd)
     document.body.addEventListener('click', this.onBodyClick)
+    document.addEventListener('keydown', this.onKeydown)
 
     // Set empty state based on initial cart data
     this.setEmpty(cartData.item_count === 0)
@@ -79,6 +81,7 @@ export default class AJAXCart extends BaseComponent {
 
     document.body.classList.remove(classes.bodyCartOpen)
     document.body.removeEventListener('click', this.onBodyClick)
+    document.removeEventListener('keydown', this.onKeydown)
 
     this.ariaControlElements.forEach(el => el.removeAttribute('aria-haspopup'))
 
@@ -143,6 +146,10 @@ export default class AJAXCart extends BaseComponent {
     this.setEmpty(cart.item_count === 0)
     
     this.open()
+  }
+
+  onKeydown(e: KeyboardEvent) {
+    closeOnEscape(e, this)
   }
 
   onBodyClick(e: MouseEvent) {

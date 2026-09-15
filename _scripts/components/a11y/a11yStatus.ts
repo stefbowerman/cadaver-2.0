@@ -1,4 +1,3 @@
-import { setAriaFlag } from '@/core/utils/a11y'
 import BaseComponent from '@/components/base'
 
 export default class A11yStatus extends BaseComponent {
@@ -9,7 +8,6 @@ export default class A11yStatus extends BaseComponent {
     el.setAttribute('role', 'status')
     el.setAttribute('aria-live', 'polite')
     el.setAttribute('aria-atomic', 'true')
-    setAriaFlag(el, 'aria-hidden', true)
     el.setAttribute('data-component', A11yStatus.TYPE)
     el.classList.add('sr-only')
 

@@ -10,7 +10,7 @@
  * See snippets/drawer.liquid for the full drawer markup.
  */
 
-import { setAriaFlag, setAriaState } from '@/core/utils/a11y'
+import { setAriaFlag, setAriaState, closeOnEscape } from '@/core/utils/a11y'
 import FocusTrap from '@/core/focusTrap'
 import { BreakpointChangeEvent } from '@/core/breakpointsController'
 
@@ -75,10 +75,12 @@ export default class Drawer extends BaseComponent {
     this.onClick = this.onClick.bind(this)
     this.onBodyClick = this.onBodyClick.bind(this)
     this.onTransitionEnd = this.onTransitionEnd.bind(this)
+    this.onKeydown = this.onKeydown.bind(this)
 
     this.el.addEventListener('click', this.onClick)
     this.el.addEventListener('transitionend', this.onTransitionEnd)
     document.body.addEventListener('click', this.onBodyClick)
+    document.addEventListener('keydown', this.onKeydown)
 
     if (this.settings.backdrop) {
       this.backdrop = Backdrop.generate(document.body, {
@@ -98,6 +100,7 @@ export default class Drawer extends BaseComponent {
 
     document.body.classList.remove(classes.bodyIsOpen)
     document.body.removeEventListener('click', this.onBodyClick)
+    document.removeEventListener('keydown', this.onKeydown)
 
     this.ariaControlElements.forEach(el => el.removeAttribute('aria-haspopup'))
 
@@ -182,10 +185,14 @@ export default class Drawer extends BaseComponent {
     }
   }
 
+  onKeydown(e: KeyboardEvent) {
+    closeOnEscape(e, this)
+  }
+
   onBodyClick(e: MouseEvent) {
     const target = e.target as HTMLElement
 
-    if (this.ariaControlElements.some(el => 
+    if (this.ariaControlElements.some(el =>
       el.isSameNode(target) || el.contains(target)
     )) {
       e.preventDefault()

@@ -1847,6 +1847,12 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
   function setAriaCurrent(el, value) {
     setOrRemoveAttr(el, "aria-current", value);
   }
+  function closeOnEscape(e, component) {
+    if (e.key !== "Escape" || !component.isOpen) return;
+    const hadFocus = component.el.contains(document.activeElement);
+    component.close();
+    if (hadFocus) component.ariaControlElements.find((el) => el.tabIndex >= 0)?.focus();
+  }
   function setLinkAriaCurrent(link, currentPath) {
     if (!(link instanceof HTMLAnchorElement)) {
       console.warn("Invalid link element provided.");
@@ -6887,7 +6893,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       el.setAttribute("role", "status");
       el.setAttribute("aria-live", "polite");
       el.setAttribute("aria-atomic", "true");
-      setAriaFlag(el, "aria-hidden", true);
       el.setAttribute("data-component", _A11yStatus.TYPE);
       el.classList.add("sr-only");
       parent.appendChild(el);
@@ -9980,9 +9985,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.onClick = this.onClick.bind(this);
       this.onBodyClick = this.onBodyClick.bind(this);
       this.onTransitionEnd = this.onTransitionEnd.bind(this);
+      this.onKeydown = this.onKeydown.bind(this);
       this.el.addEventListener("click", this.onClick);
       this.el.addEventListener("transitionend", this.onTransitionEnd);
       document.body.addEventListener("click", this.onBodyClick);
+      document.addEventListener("keydown", this.onKeydown);
       if (this.settings.backdrop) {
         this.backdrop = Backdrop.generate(document.body, {
           ...this.settings.backdropOptions,
@@ -9998,6 +10005,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.focusTrap.destroy();
       document.body.classList.remove(classes$2.bodyIsOpen);
       document.body.removeEventListener("click", this.onBodyClick);
+      document.removeEventListener("keydown", this.onKeydown);
       this.ariaControlElements.forEach((el) => el.removeAttribute("aria-haspopup"));
       super.destroy();
     }
@@ -10051,6 +10059,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         e.preventDefault();
         this.close();
       }
+    }
+    onKeydown(e) {
+      closeOnEscape(e, this);
     }
     onBodyClick(e) {
       const target = e.target;
@@ -10511,8 +10522,10 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       });
       this.onBodyClick = this.onBodyClick.bind(this);
       this.onTransitionEnd = this.onTransitionEnd.bind(this);
+      this.onKeydown = this.onKeydown.bind(this);
       this.el.addEventListener("transitionend", this.onTransitionEnd);
       document.body.addEventListener("click", this.onBodyClick);
+      document.addEventListener("keydown", this.onKeydown);
       this.setEmpty(cartData.item_count === 0);
       const role = this.role;
       if (role) {
@@ -10523,6 +10536,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.focusTrap.destroy();
       document.body.classList.remove(classes.bodyCartOpen);
       document.body.removeEventListener("click", this.onBodyClick);
+      document.removeEventListener("keydown", this.onKeydown);
       this.ariaControlElements.forEach((el) => el.removeAttribute("aria-haspopup"));
       super.destroy();
     }
@@ -10569,6 +10583,9 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       const { cart } = e.detail;
       this.setEmpty(cart.item_count === 0);
       this.open();
+    }
+    onKeydown(e) {
+      closeOnEscape(e, this);
     }
     onBodyClick(e) {
       const target = e.target;

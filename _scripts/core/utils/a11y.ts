@@ -28,6 +28,27 @@ export function setAriaCurrent(el: HTMLElement, value?: AriaCurrentValue): void 
   setOrRemoveAttr(el, 'aria-current', value)
 }
 
+interface Dismissible {
+  el: HTMLElement
+  isOpen: boolean
+  close: () => void
+  ariaControlElements: HTMLElement[]
+}
+
+/**
+ * Closes a dialog-like component on Escape.
+ * Closing makes the component inert, so if focus was inside, it's handed back to the first focusable trigger instead of being lost to <body>
+ */
+export function closeOnEscape(e: KeyboardEvent, component: Dismissible): void {
+  if (e.key !== 'Escape' || !component.isOpen) return
+
+  const hadFocus = component.el.contains(document.activeElement)
+
+  component.close()
+
+  if (hadFocus) component.ariaControlElements.find(el => el.tabIndex >= 0)?.focus()
+}
+
 export function setLinkAriaCurrent(link: HTMLAnchorElement, currentPath: string): void {
   if (!(link instanceof HTMLAnchorElement)) {
     console.warn('Invalid link element provided.')
