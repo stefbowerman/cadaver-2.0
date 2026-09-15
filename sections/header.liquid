@@ -79,20 +79,24 @@
 {% endcomment %}
 <script type="application/ld+json">
   {
-    "@context": "http://schema.org",
+    "@context": "https://schema.org",
     "@type": "Organization",
     "name": {{ shop.name | json }},
     {% if shop.brand.logo %}
       "logo": {{ shop.brand.logo | image_url: width: 500 | prepend: "https:" | json }},
     {% endif %}
-    "sameAs": [
-      {{ settings.social_link_twitter   | json }},
-      {{ settings.social_link_facebook  | json }},
-      {{ settings.social_link_youtube   | json }},
-      {{ settings.social_link_tiktok    | json }},
-      {{ settings.social_link_instagram | json }}
-    ],
-    "url": {{ request.origin | append: page.url | json }}
+    {%- liquid
+      assign networks = 'twitter,facebook,youtube,tiktok,instagram' | split: ','
+      assign same_as = ''
+      for network in networks
+        assign key = 'social_link_' | append: network
+        if settings[key] != blank
+          assign same_as = same_as | append: settings[key] | append: '|'
+        endif
+      endfor
+    -%}
+    "sameAs": {{ same_as | split: '|' | json }},
+    "url": {{ request.origin | append: routes.root_url | json }}
   }
 </script>
 
