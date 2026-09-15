@@ -30,7 +30,8 @@ declare global {
   interface Window {
     Shopify?: {
       designMode?: boolean;
-      CountryProvinceSelector: any
+      // This comes from shopify_common.js
+      CountryProvinceSelector: (countrySelector: string, provinceSelector: string, options: { hideElement: string }) => void
     }
     app: {
       strings?: Record<string, string>;

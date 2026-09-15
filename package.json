@@ -10,7 +10,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite build --watch --mode development",
-    "build": "vite build"
+    "build": "vite build",
+    "lint": "eslint ./_scripts --ext .js,.ts"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.21.3",
