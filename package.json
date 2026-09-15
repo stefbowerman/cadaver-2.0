@@ -32,5 +32,22 @@
     "embla-carousel": "^8.6.0",
     "gsap": "^3.12.7",
     "tailwindcss": "^4.1.17"
+  },
+  "overrides": {
+    "@tailwindcss/vite": {
+      "nanoid": "5.1.16"
+    },
+    "nanoid": {
+      "nanoid": "5.1.16"
+    },
+    "postcss": {
+      "nanoid": "5.1.16"
+    },
+    "vite": {
+      "nanoid": "5.1.16"
+    },
+    "vite-plugin-eslint": {
+      "nanoid": "5.1.16"
+    }
   }
 }
