@@ -8996,11 +8996,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.pagination = this.qs(selectors$c.pagination);
       this.buttonNext = this.qs(selectors$c.buttonNext);
       this.buttonPrevious = this.qs(selectors$c.buttonPrevious);
-      this.slideshowDisabled = this.slideCount <= 1;
+      this.slides.forEach((el2, i) => el2.setAttribute("aria-label", `${i + 1} of ${this.slideCount}`));
       this.emblaA11yStatus = A11yStatus.generate(this.emblaNode);
       this.emblaApi = EmblaCarousel(this.emblaViewport, {
         loop: this.slideCount > 1,
-        watchDrag: !this.slideshowDisabled
+        watchDrag: this.slideCount > 1
       });
       const setCurrentStatus = () => {
         this.updatePagination();
@@ -9022,7 +9022,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       return this.emblaApi.selectedScrollSnap() ?? 0;
     }
     get slideCount() {
-      return this.slides?.length ?? 0;
+      return this.slides.length;
     }
     destroy() {
       this.emblaApi.destroy();
@@ -9041,11 +9041,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (!this.pagination || !this.emblaApi) return;
       this.pagination.innerHTML = `${this.emblaApi.selectedScrollSnap() + 1} / ${this.emblaApi.scrollSnapList().length}`;
     }
-    updateAriaCurrent(items, activeIndex) {
-      items?.forEach((item, index) => {
-        setAriaCurrent(item, index === activeIndex ? "true" : void 0);
-      });
-    }
     updateCurrentStatus() {
       let msg = `Image ${this.activeIndex + 1} of ${this.slideCount}`;
       if (this.productTitle) {
@@ -9055,7 +9050,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         msg = `${msg} in ${this.color}`;
       }
       this.emblaA11yStatus.text = msg;
-      this.updateAriaCurrent(this.slides, this.activeIndex);
     }
     onButtonNextClick(e) {
       e.preventDefault();

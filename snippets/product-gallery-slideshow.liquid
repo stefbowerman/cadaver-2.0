@@ -10,7 +10,12 @@
 {% enddoc %}
 
 <div class="product-detail-gallery__slideshow">
-  <div class="embla">
+  <div
+    class="embla"
+    role="region"
+    aria-roledescription="carousel"
+    aria-label="Product {{ slides_count | pluralize: 'image', 'images' }}"
+  >
     <div class="embla__viewport">
       <div class="embla__container">
         {{ slides }}

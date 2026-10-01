@@ -20,7 +20,6 @@ export default class ProductDetailGallery extends BaseComponent {
   pagination: HTMLElement | null
   buttonNext: HTMLButtonElement | null
   buttonPrevious: HTMLButtonElement | null
-  slideshowDisabled: boolean
   emblaA11yStatus: A11yStatus
   emblaApi: EmblaCarouselType
 
@@ -38,13 +37,13 @@ export default class ProductDetailGallery extends BaseComponent {
     this.buttonNext = this.qs<HTMLButtonElement>(selectors.buttonNext)
     this.buttonPrevious = this.qs<HTMLButtonElement>(selectors.buttonPrevious)
 
-    this.slideshowDisabled = this.slideCount <= 1
+    this.slides.forEach((el, i) => el.setAttribute('aria-label', `${i + 1} of ${this.slideCount}`))
 
     this.emblaA11yStatus = A11yStatus.generate(this.emblaNode)
 
     this.emblaApi = EmblaCarousel(this.emblaViewport, {
       loop: this.slideCount > 1,
-      watchDrag: !this.slideshowDisabled,
+      watchDrag: this.slideCount > 1,
     })
 
     const setCurrentStatus = () => {
@@ -73,7 +72,7 @@ export default class ProductDetailGallery extends BaseComponent {
   }
 
   get slideCount() {
-    return this.slides?.length ?? 0
+    return this.slides.length
   }
 
   destroy() {
@@ -101,12 +100,6 @@ export default class ProductDetailGallery extends BaseComponent {
     this.pagination.innerHTML = `${this.emblaApi.selectedScrollSnap() + 1} / ${this.emblaApi.scrollSnapList().length}`
   }
 
-  updateAriaCurrent(items: HTMLElement[], activeIndex: number) {
-    items?.forEach((item, index) => {
-      setAriaCurrent(item, index === activeIndex ? 'true' : undefined)
-    })
-  }
-
   updateCurrentStatus() {
     let msg = `Image ${this.activeIndex + 1} of ${this.slideCount}`
 
@@ -119,7 +112,6 @@ export default class ProductDetailGallery extends BaseComponent {
     }
 
     this.emblaA11yStatus.text = msg    
-    this.updateAriaCurrent(this.slides, this.activeIndex) 
   }
 
   onButtonNextClick(e: MouseEvent) {
