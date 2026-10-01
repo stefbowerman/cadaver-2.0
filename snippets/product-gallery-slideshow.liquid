@@ -10,7 +10,12 @@
 {% enddoc %}
 
 <div class="product-detail-gallery__slideshow">
-  <div class="embla">
+  <div
+    class="embla"
+    role="region"
+    aria-roledescription="carousel"
+    aria-label="Product {{ slides_count | pluralize: 'image', 'images' }}"
+  >
     <div class="embla__viewport">
       <div class="embla__container">
         {{ slides }}
@@ -21,8 +26,16 @@
 
     {% if slides_count > 1 %}
       <div class="flex justify-between items-center">
-        <button class="btn" type="button" aria-label="Previous Image" data-previous>Back</button>
-        <button class="btn" type="button" aria-label="Next image" data-next>Forward</button>
+        {% comment %}
+          NOTE:
+            WCAG Success Criterion 2.5.3 Label in Name (Level A) requires that any interactive element with a visible text label
+            must include that exact visible text inside its programmatic accessible name.
+
+            Leaving this note here in case the button contents change in the future.
+          e.g. <button type="button" aria-label="Previous Image">Previous</button>
+        {% endcomment %}
+        <button class="btn" type="button" data-previous>Previous Image</button>
+        <button class="btn" type="button" data-next>Next Image</button>
       </div>
     {% endif %}
   </div>

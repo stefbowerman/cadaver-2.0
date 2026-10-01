@@ -36,8 +36,9 @@
       <div>{{ display_title }}</div>
 
       <button
+        type="button"
         data-close
-        aria-label="Close Menu"  
+        aria-label="Close {{ title | default: 'drawer' | escape }}"
       >Close</button>
     </div>
 

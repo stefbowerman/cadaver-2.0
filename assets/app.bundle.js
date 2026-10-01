@@ -7,7 +7,7 @@ var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError("Cannot
 var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "write to private field"), setter ? setter.call(obj, value) : member.set(obj, value), value);
 (function() {
   "use strict";
-  var _settings, _resizeObserver, _intersectionObserver, _onBlockSelect, _onBlockDeselect, _swapTl, _moreObserver, _isFetching, _abortController, _isLoading, _observer, _state, _muteUpdateSync;
+  var _settings, _resizeObserver, _intersectionObserver, _onBlockSelect, _onBlockDeselect, _timeoutId, _swapTl, _moreObserver, _isFetching, _abortController, _isLoading, _observer, _state, _muteUpdateSync;
   function SelectorSet() {
     if (!(this instanceof SelectorSet)) {
       return new SelectorSet();
@@ -1342,185 +1342,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     };
     return executedFunction;
   };
-  const isElement = (object) => {
-    if (!object || typeof object !== "object") {
-      return false;
-    }
-    return object instanceof Element || object instanceof Document;
-  };
-  const isDisabled = (element) => {
-    if (!element || element.nodeType !== Node.ELEMENT_NODE) {
-      return true;
-    }
-    if (element.classList.contains("disabled")) {
-      return true;
-    }
-    if ("disabled" in element) {
-      return element.disabled;
-    }
-    return element.hasAttribute("disabled") && element.getAttribute("disabled") !== "false";
-  };
-  const isVisible = (element) => {
-    if (!isElement(element) || element.getClientRects().length === 0) {
-      return false;
-    }
-    const elementIsVisible = getComputedStyle(element).getPropertyValue("visibility") === "visible";
-    const closedDetails = element.closest("details:not([open])");
-    if (!closedDetails) {
-      return elementIsVisible;
-    }
-    if (closedDetails !== element) {
-      const summary = element.closest("summary");
-      if (summary && summary.parentNode !== closedDetails) {
-        return false;
-      }
-      if (summary === null) {
-        return false;
-      }
-    }
-    return elementIsVisible;
-  };
-  const getFocusableChildren = (element) => {
-    const focusables = [
-      "a[href]",
-      "button",
-      "input",
-      "textarea",
-      "select",
-      "details",
-      '[tabindex]:not([tabindex^="-"])',
-      '[contenteditable="true"]'
-    ].join(",");
-    const children = Array.from(element.querySelectorAll(focusables));
-    return children.filter((el) => !isDisabled(el) && isVisible(el));
-  };
-  const getDomFromString = (string) => {
-    return new DOMParser().parseFromString(string, "text/html");
-  };
-  const fetchDom = async (url, signal) => {
-    try {
-      const response = await fetch(url, { signal });
-      if (!response.ok) throw new Error("Network response was not ok");
-      const responseText = await response.text();
-      const dom = getDomFromString(responseText);
-      return dom;
-    } catch (e) {
-      if (e instanceof Error && e.name === "AbortError") {
-        console.log("Fetch aborted by user");
-        return void 0;
-      }
-      console.warn("something went wrong...", e);
-      return void 0;
-    }
-  };
-  function buildFullUrl(sectionId, url) {
-    const _url = new URL(url);
-    _url.searchParams.set("section_id", sectionId);
-    _url.searchParams.sort();
-    return _url.toString();
-  }
-  function cloneDocument(doc) {
-    return doc.cloneNode(true);
-  }
-  class SectionRenderService {
-    #cache = /* @__PURE__ */ new Map();
-    #pending = /* @__PURE__ */ new Map();
-    #abortKeyToUrl = /* @__PURE__ */ new Map();
-    clearCache() {
-      this.#cache.clear();
-    }
-    cacheSection(section) {
-      const url = buildFullUrl(section.id, new URL(window.location.href));
-      const dom = new DOMParser().parseFromString(section.parent.outerHTML, "text/html");
-      this.#cache.set(url, dom);
-    }
-    /**
-     * Fetches a section's DOM, using in-memory cache and promise deduplication.
-     * Failure — abort or a real fetch error — always resolves to undefined; it
-     * never falls back to a stale cached copy, so callers can't mistake old
-     * data for a fresh result.
-     *
-     * @param url - The full URL to fetch (including search params)
-     * @param abortKey - If provided, registers this key as a waiter on the in-flight fetch for `url`
-     */
-    async #fetch(url, useCache, abortKey) {
-      const pending = this.#pending.get(url);
-      if (pending) {
-        if (abortKey) pending.waiters.add(abortKey);
-        return pending.promise;
-      }
-      if (useCache && this.#cache.has(url)) {
-        return cloneDocument(this.#cache.get(url));
-      }
-      const controller = new AbortController();
-      const waiters = new Set(abortKey ? [abortKey] : []);
-      const promise = fetchDom(url, controller.signal).then((dom) => {
-        if (!dom) return void 0;
-        this.#cache.set(url, dom);
-        return cloneDocument(dom);
-      }).finally(() => {
-        this.#pending.delete(url);
-      });
-      this.#pending.set(url, { promise, controller, waiters });
-      return promise;
-    }
-    /**
-     * Fetches section DOM by full URL. Single code path for section DOM fetching:
-     * cache key = URL, abort key = abortKey. Use for predictive search or any
-     * URL that isn't "current page + section_id".
-     *
-     * A shared in-flight fetch is only actually cancelled once every abortKey
-     * relying on it has moved on — one caller's supersession can't silently
-     * cancel data another, unrelated caller is still waiting on.
-     *
-     * @param fullUrl - The full URL to fetch (including search params)
-     * @param abortKey - Key for cancellation; a new call with the same key detaches from its previous URL
-     * @param useCache - Whether to return cached result when available (default true)
-     */
-    async getSectionDomByUrl(fullUrl, abortKey, useCache = true) {
-      const prevUrl = this.#abortKeyToUrl.get(abortKey);
-      if (prevUrl && prevUrl !== fullUrl) {
-        const prevEntry = this.#pending.get(prevUrl);
-        if (prevEntry) {
-          prevEntry.waiters.delete(abortKey);
-          if (prevEntry.waiters.size === 0) {
-            prevEntry.controller.abort();
-          }
-        }
-      }
-      this.#abortKeyToUrl.set(abortKey, fullUrl);
-      return this.#fetch(fullUrl, useCache, abortKey);
-    }
-    /**
-     * Fetches a section's DOM for the given page URL (section_id appended).
-     * Delegates to getSectionDomByUrl so abort and fetch logic live in one place.
-     */
-    async getSectionDom(sectionId, url, useCache = true) {
-      const fullUrl = buildFullUrl(sectionId, url);
-      return this.getSectionDomByUrl(fullUrl, sectionId, useCache);
-    }
-    /**
-     * Pre-fetches a URL and stores it in cache.
-     * Useful for hover states on filters.
-     */
-    prefetch(sectionId, url) {
-      const fullUrl = buildFullUrl(sectionId, url);
-      if (this.#cache.has(fullUrl) || this.#pending.has(fullUrl)) return;
-      this.#fetch(fullUrl, true).catch(() => {
-      });
-    }
-  }
-  const sectionRenderService = new SectionRenderService();
-  const formatTable = (table) => {
-    if (!table || !(table instanceof HTMLTableElement)) return;
-    const wrapper = document.createElement("div");
-    wrapper.classList.add("rte-table-wrapper");
-    const parent = table.parentNode;
-    if (parent) {
-      parent.insertBefore(wrapper, table);
-      wrapper.appendChild(table);
-    }
-  };
   const CartAPI = {
     EVENTS: {
       UPDATE: "cartAPI.update",
@@ -1831,6 +1652,216 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         });
       }
     });
+  };
+  const _A11yStatus = class _A11yStatus extends BaseComponent {
+    constructor() {
+      super(...arguments);
+      __privateAdd(this, _timeoutId);
+    }
+    static generate(parent) {
+      const el = document.createElement("div");
+      el.setAttribute("role", "status");
+      el.setAttribute("aria-live", "polite");
+      el.setAttribute("aria-atomic", "true");
+      el.setAttribute("data-component", _A11yStatus.TYPE);
+      el.classList.add("sr-only");
+      parent.appendChild(el);
+      return new _A11yStatus(el);
+    }
+    // Clear first and set after a short delay so screen readers announce repeated identical messages
+    set text(text) {
+      clearTimeout(__privateGet(this, _timeoutId));
+      this.el.textContent = "";
+      __privateSet(this, _timeoutId, setTimeout(() => {
+        this.el.textContent = text;
+      }, 100));
+    }
+    destroy() {
+      clearTimeout(__privateGet(this, _timeoutId));
+      super.destroy();
+    }
+  };
+  _timeoutId = new WeakMap();
+  _A11yStatus.TYPE = "a11y-status";
+  let A11yStatus = _A11yStatus;
+  const isElement = (object) => {
+    if (!object || typeof object !== "object") {
+      return false;
+    }
+    return object instanceof Element || object instanceof Document;
+  };
+  const isDisabled = (element) => {
+    if (!element || element.nodeType !== Node.ELEMENT_NODE) {
+      return true;
+    }
+    if (element.classList.contains("disabled")) {
+      return true;
+    }
+    if ("disabled" in element) {
+      return element.disabled;
+    }
+    return element.hasAttribute("disabled") && element.getAttribute("disabled") !== "false";
+  };
+  const isVisible = (element) => {
+    if (!isElement(element) || element.getClientRects().length === 0) {
+      return false;
+    }
+    const elementIsVisible = getComputedStyle(element).getPropertyValue("visibility") === "visible";
+    const closedDetails = element.closest("details:not([open])");
+    if (!closedDetails) {
+      return elementIsVisible;
+    }
+    if (closedDetails !== element) {
+      const summary = element.closest("summary");
+      if (summary && summary.parentNode !== closedDetails) {
+        return false;
+      }
+      if (summary === null) {
+        return false;
+      }
+    }
+    return elementIsVisible;
+  };
+  const getFocusableChildren = (element) => {
+    const focusables = [
+      "a[href]",
+      "button",
+      "input",
+      "textarea",
+      "select",
+      "details",
+      '[tabindex]:not([tabindex^="-"])',
+      '[contenteditable="true"]'
+    ].join(",");
+    const children = Array.from(element.querySelectorAll(focusables));
+    return children.filter((el) => !isDisabled(el) && isVisible(el));
+  };
+  const getDomFromString = (string) => {
+    return new DOMParser().parseFromString(string, "text/html");
+  };
+  const fetchDom = async (url, signal) => {
+    try {
+      const response = await fetch(url, { signal });
+      if (!response.ok) throw new Error("Network response was not ok");
+      const responseText = await response.text();
+      const dom = getDomFromString(responseText);
+      return dom;
+    } catch (e) {
+      if (e instanceof Error && e.name === "AbortError") {
+        console.log("Fetch aborted by user");
+        return void 0;
+      }
+      console.warn("something went wrong...", e);
+      return void 0;
+    }
+  };
+  function buildFullUrl(sectionId, url) {
+    const _url = new URL(url);
+    _url.searchParams.set("section_id", sectionId);
+    _url.searchParams.sort();
+    return _url.toString();
+  }
+  function cloneDocument(doc) {
+    return doc.cloneNode(true);
+  }
+  class SectionRenderService {
+    #cache = /* @__PURE__ */ new Map();
+    #pending = /* @__PURE__ */ new Map();
+    #abortKeyToUrl = /* @__PURE__ */ new Map();
+    clearCache() {
+      this.#cache.clear();
+    }
+    cacheSection(section) {
+      const url = buildFullUrl(section.id, new URL(window.location.href));
+      const dom = new DOMParser().parseFromString(section.parent.outerHTML, "text/html");
+      this.#cache.set(url, dom);
+    }
+    /**
+     * Fetches a section's DOM, using in-memory cache and promise deduplication.
+     * Failure — abort or a real fetch error — always resolves to undefined; it
+     * never falls back to a stale cached copy, so callers can't mistake old
+     * data for a fresh result.
+     *
+     * @param url - The full URL to fetch (including search params)
+     * @param abortKey - If provided, registers this key as a waiter on the in-flight fetch for `url`
+     */
+    async #fetch(url, useCache, abortKey) {
+      const pending = this.#pending.get(url);
+      if (pending) {
+        if (abortKey) pending.waiters.add(abortKey);
+        return pending.promise;
+      }
+      if (useCache && this.#cache.has(url)) {
+        return cloneDocument(this.#cache.get(url));
+      }
+      const controller = new AbortController();
+      const waiters = new Set(abortKey ? [abortKey] : []);
+      const promise = fetchDom(url, controller.signal).then((dom) => {
+        if (!dom) return void 0;
+        this.#cache.set(url, dom);
+        return cloneDocument(dom);
+      }).finally(() => {
+        this.#pending.delete(url);
+      });
+      this.#pending.set(url, { promise, controller, waiters });
+      return promise;
+    }
+    /**
+     * Fetches section DOM by full URL. Single code path for section DOM fetching:
+     * cache key = URL, abort key = abortKey. Use for predictive search or any
+     * URL that isn't "current page + section_id".
+     *
+     * A shared in-flight fetch is only actually cancelled once every abortKey
+     * relying on it has moved on — one caller's supersession can't silently
+     * cancel data another, unrelated caller is still waiting on.
+     *
+     * @param fullUrl - The full URL to fetch (including search params)
+     * @param abortKey - Key for cancellation; a new call with the same key detaches from its previous URL
+     * @param useCache - Whether to return cached result when available (default true)
+     */
+    async getSectionDomByUrl(fullUrl, abortKey, useCache = true) {
+      const prevUrl = this.#abortKeyToUrl.get(abortKey);
+      if (prevUrl && prevUrl !== fullUrl) {
+        const prevEntry = this.#pending.get(prevUrl);
+        if (prevEntry) {
+          prevEntry.waiters.delete(abortKey);
+          if (prevEntry.waiters.size === 0) {
+            prevEntry.controller.abort();
+          }
+        }
+      }
+      this.#abortKeyToUrl.set(abortKey, fullUrl);
+      return this.#fetch(fullUrl, useCache, abortKey);
+    }
+    /**
+     * Fetches a section's DOM for the given page URL (section_id appended).
+     * Delegates to getSectionDomByUrl so abort and fetch logic live in one place.
+     */
+    async getSectionDom(sectionId, url, useCache = true) {
+      const fullUrl = buildFullUrl(sectionId, url);
+      return this.getSectionDomByUrl(fullUrl, sectionId, useCache);
+    }
+    /**
+     * Pre-fetches a URL and stores it in cache.
+     * Useful for hover states on filters.
+     */
+    prefetch(sectionId, url) {
+      const fullUrl = buildFullUrl(sectionId, url);
+      if (this.#cache.has(fullUrl) || this.#pending.has(fullUrl)) return;
+      this.#fetch(fullUrl, true).catch(() => {
+      });
+    }
+  }
+  const sectionRenderService = new SectionRenderService();
+  const formatTable = (table) => {
+    if (!table || !(table instanceof HTMLTableElement)) return;
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("rte-table-wrapper");
+    const parent = table.parentNode;
+    if (parent) {
+      parent.insertBefore(wrapper, table);
+      wrapper.appendChild(table);
+    }
   };
   function prefersReducedMotion() {
     return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -6887,23 +6918,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     });
     return tl.play();
   };
-  const _A11yStatus = class _A11yStatus extends BaseComponent {
-    static generate(parent) {
-      const el = document.createElement("div");
-      el.setAttribute("role", "status");
-      el.setAttribute("aria-live", "polite");
-      el.setAttribute("aria-atomic", "true");
-      el.setAttribute("data-component", _A11yStatus.TYPE);
-      el.classList.add("sr-only");
-      parent.appendChild(el);
-      return new _A11yStatus(el);
-    }
-    set text(text) {
-      this.el.textContent = text;
-    }
-  };
-  _A11yStatus.TYPE = "a11y-status";
-  let A11yStatus = _A11yStatus;
   const selectors$g = {
     list: "ul",
     more: "a[data-more]"
@@ -8996,11 +9010,11 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       this.pagination = this.qs(selectors$c.pagination);
       this.buttonNext = this.qs(selectors$c.buttonNext);
       this.buttonPrevious = this.qs(selectors$c.buttonPrevious);
-      this.slideshowDisabled = this.slideCount <= 1;
+      this.slides.forEach((el2, i) => el2.setAttribute("aria-label", `${i + 1} of ${this.slideCount}`));
       this.emblaA11yStatus = A11yStatus.generate(this.emblaNode);
       this.emblaApi = EmblaCarousel(this.emblaViewport, {
         loop: this.slideCount > 1,
-        watchDrag: !this.slideshowDisabled
+        watchDrag: this.slideCount > 1
       });
       const setCurrentStatus = () => {
         this.updatePagination();
@@ -9022,7 +9036,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       return this.emblaApi.selectedScrollSnap() ?? 0;
     }
     get slideCount() {
-      return this.slides?.length ?? 0;
+      return this.slides.length;
     }
     destroy() {
       this.emblaApi.destroy();
@@ -9041,11 +9055,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
       if (!this.pagination || !this.emblaApi) return;
       this.pagination.innerHTML = `${this.emblaApi.selectedScrollSnap() + 1} / ${this.emblaApi.scrollSnapList().length}`;
     }
-    updateAriaCurrent(items, activeIndex) {
-      items?.forEach((item, index) => {
-        setAriaCurrent(item, index === activeIndex ? "true" : void 0);
-      });
-    }
     updateCurrentStatus() {
       let msg = `Image ${this.activeIndex + 1} of ${this.slideCount}`;
       if (this.productTitle) {
@@ -9055,7 +9064,6 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         msg = `${msg} in ${this.color}`;
       }
       this.emblaA11yStatus.text = msg;
-      this.updateAriaCurrent(this.slides, this.activeIndex);
     }
     onButtonNextClick(e) {
       e.preventDefault();
@@ -10657,6 +10665,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     sectionManager.register(FooterSection);
     sectionManager.register(MobileMenuSection);
     sectionManager.register(AJAXCartSection);
+    const a11yStatus = A11yStatus.generate(document.body);
     if (isThemeEditor()) {
       Array.from(document.getElementsByTagName("a")).forEach((a) => a.setAttribute("data-taxi-ignore", "true"));
     }
@@ -10699,6 +10708,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
         }
       });
       targetBlankExternalLinks();
+      viewContainer?.focus({ preventScroll: true });
+      a11yStatus.text = document.title;
       dispatch("taxi.navigateEnd", e);
     });
     window.app.taxi = taxi;
