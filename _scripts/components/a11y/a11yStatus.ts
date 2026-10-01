@@ -16,7 +16,22 @@ export default class A11yStatus extends BaseComponent {
     return new A11yStatus(el)
   }
 
+  #timeoutId: ReturnType<typeof setTimeout> | undefined
+
+  // Clear first and set after a short delay so screen readers announce repeated identical messages
   set text(text: string) {
-    this.el.textContent = text
+    clearTimeout(this.#timeoutId)
+
+    this.el.textContent = ''
+
+    this.#timeoutId = setTimeout(() => {
+      this.el.textContent = text
+    }, 100)
+  }
+
+  destroy() {
+    clearTimeout(this.#timeoutId)
+
+    super.destroy()
   }
 }

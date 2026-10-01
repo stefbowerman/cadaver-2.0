@@ -17,6 +17,8 @@ import {
 } from '@/core/utils'
 import { dispatch } from '@/core/utils/event'
 
+import A11yStatus from '@/components/a11y/a11yStatus'
+
 // Renderers
 import BaseRenderer from '@/renderers/base'
 
@@ -34,7 +36,7 @@ import AJAXCartSection from '@/sections/ajaxCart'
 window.app.taxi = null;
 
 function init() {
-  const viewContainer = document.querySelector('main#view-container')
+  const viewContainer = document.querySelector<HTMLElement>('main#view-container')
   const TEMPLATE_REGEX = /\btemplate-\w*/
 
   // Initialize all global controllers before starting Taxi and registering sections
@@ -47,6 +49,9 @@ function init() {
   sectionManager.register(FooterSection)
   sectionManager.register(MobileMenuSection)
   sectionManager.register(AJAXCartSection)
+
+  // Create a global A11yStatus to announce view changes
+  const a11yStatus = A11yStatus.generate(document.body)
 
   // START Taxi
   if (isThemeEditor()) {
@@ -106,6 +111,9 @@ function init() {
     })
 
     targetBlankExternalLinks()
+
+    viewContainer?.focus({ preventScroll: true })
+    a11yStatus.text = document.title
 
     dispatch('taxi.navigateEnd', e)
   })

@@ -162,7 +162,12 @@
   
   *:focus-visible:not([disabled]) {
     @apply outline outline-solid outline-black outline-offset-3;
-  }  
+  }
+
+  /* Containers focused by script (Taxi navigation, skip link) aren't controls, so no ring */
+  [tabindex="-1"]:focus-visible {
+    @apply outline-none;
+  }
 
   /* Remove all animations and transitions for people that prefer not to see them */
   @media (prefers-reduced-motion: reduce) {
