@@ -27,8 +27,11 @@
     {% if slides_count > 1 %}
       <div class="flex justify-between items-center">
         {% comment %}
-          WCAG Success Criterion 2.5.3 Label in Name (Level A) requires that any interactive element with a visible text label
-          must include that exact visible text inside its programmatic accessible name
+          NOTE:
+            WCAG Success Criterion 2.5.3 Label in Name (Level A) requires that any interactive element with a visible text label
+            must include that exact visible text inside its programmatic accessible name.
+
+            Leaving this note here in case the button contents change in the future.
           e.g. <button type="button" aria-label="Previous Image">Previous</button>
         {% endcomment %}
         <button class="btn" type="button" data-previous>Previous Image</button>
