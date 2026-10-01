@@ -18,7 +18,6 @@
               <button
                 class="header-nav__item"
                 data-mobile-menu-toggle
-                aria-label="Toggle Menu"
                 aria-controls="mobile-menu"
                 aria-expanded="false"                
               >
@@ -48,7 +47,6 @@
           <button
             class="header-nav__item"
             data-ajax-cart-toggle
-            aria-label="Toggle Cart"
             aria-controls="ajax-cart"
             aria-expanded="false"
           >
@@ -56,7 +54,7 @@
               class="{% if cart.item_count > 0 %}has-items{% endif %}"
               data-component="header-cart-control"
             >
-              Cart <span class="header-cart-count" data-count>{{ cart.item_count }}</span>
+              Cart <span class="header-cart-count" data-count>{{ cart.item_count }}</span><span class="sr-only"> items</span>
             </span>
           </button>
         
