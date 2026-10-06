@@ -44,7 +44,7 @@ export default defineConfig(({ mode }) => {
         }
       },
 
-      sourcemap: isDev ? true : false,
+      sourcemap: isDev ? 'inline' : false,
       minify: isDev ? false : 'terser',
       terserOptions: {
         compress: {
