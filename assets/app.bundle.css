@@ -613,10 +613,6 @@
     height: 100vh;
   }
 
-  .min-h-\[100lvh\] {
-    min-height: 100lvh;
-  }
-
   .min-h-\[500px\] {
     min-height: 500px;
   }
