@@ -1306,9 +1306,8 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     return Math.max(Math.min(num, Math.max(a, b)), Math.min(a, b));
   }
   function targetBlankExternalLinks() {
-    document.querySelectorAll("a").forEach((link) => {
-      const href = link.getAttribute("href");
-      if (href && link.hostname !== location.hostname && !href.includes("mailto:")) {
+    document.querySelectorAll("a[href]").forEach((link) => {
+      if (link.protocol.startsWith("http") && link.hostname !== location.hostname) {
         link.target = "_blank";
         link.setAttribute("aria-describedby", "a11y-new-window-message");
       }
@@ -9259,6 +9258,7 @@ var __privateSet = (obj, member, value, setter) => (__accessCheck(obj, member, "
     }
     onClearButtonClick() {
       this.reset();
+      this.input.focus();
     }
   };
   _SearchInline.TYPE = "search-inline";

@@ -1,52 +1,49 @@
 {% capture content %}
-  {%- if section.settings.primary_menu != blank and section.settings.primary_menu.links.size > 0 -%}
-    <nav aria-label="Mobile main navigation">
-      {%- for link in section.settings.primary_menu.links -%}
-        {% if link.links.size > 0 %}
-          <div>
-            {% assign id = section.id | append: '-primary-' | append: forloop.index %}
-            <div id="{{ id }}">
-              {{ link.title }}
-            </div>
-            
-            <div class="flex flex-col gap-5 py-3" role="group" aria-labelledby="{{ id }}">
-              {% for sublink in link.links %}
-                <div class="px-6">
-                  <a
-                    href="{{ sublink.url }}"
-                    {% if sublink.current %}
-                      aria-current="page"
-                    {% endif %}
-                  >
-                    {{ sublink.title }}
-                  </a>
-                </div>
-              {% endfor %}
-            </div>
-          </div>
-        {% else %}
-          <a
-            href="{{ link.url }}"
-            {% if link.current %}
-              aria-current="page"
+  {%- if section.settings.primary_menu.links.size > 0 -%}
+    <nav aria-label="{{ 'accessibility.mobile_menu.primary_menu' | t }}">
+      <ul>
+        {%- for link in section.settings.primary_menu.links -%}
+          <li>
+            {% if link.links.size > 0 %}
+              {{- link.title -}}
+              
+              <ul class="flex flex-col py-3 px-6 text-sm">
+                {% for sublink in link.links %}
+                  <li>
+                    <a
+                      href="{{ sublink.url }}"
+                      {% if sublink.current %}
+                        aria-current="page"
+                      {% endif %}
+                    >
+                      {{- sublink.title -}}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <a
+                href="{{ link.url }}"
+                {% if link.current %}
+                  aria-current="page"
+                {% endif %}
+              >
+                {{- link.title -}}
+              </a>
             {% endif %}
-          >
-            {{ link.title }}
-          </a>       
-        {% endif %}
-      {%- endfor -%}
+          </li>
+        {%- endfor -%}
+      </ul>
     </nav>
   {%- endif -%}
 
-
-  <div class="w-full max-w-[260px] my-16">
+  <div class="my-16">
     {% render 'search-inline', id_prefix: section.id, clear_button: true %}
   </div>
 
-
-  {%- if section.settings.secondary_menu != blank and section.settings.secondary_menu.links.size > 0 -%}
-    <nav aria-label="Mobile secondary navigation">
-      <ul class="grid grid-cols-2 gap-4">
+  {%- if section.settings.secondary_menu.links.size > 0 -%}
+    <nav class="text-sm" aria-label="{{ 'accessibility.mobile_menu.secondary_menu' | t }}">
+      <ul>
         {%- for link in section.settings.secondary_menu.links -%}
           <li>
             <a
@@ -55,20 +52,28 @@
                 aria-current="page"
               {% endif %}
             >
-              {{ link.title }}
+              {{- link.title -}}
             </a>
           </li>
-        {%- endfor -%}              
+        {%- endfor -%}
       </ul>
     </nav>
   {%- endif -%}
 {% endcapture %}
 
+<div
+  data-section-id="{{ section.id }}" data-section-type="mobile-menu"
+  {% comment %}
+    Adding these classes so the link touch targets are large enough to pass a11y checks
+    Remove before styling
+  {% endcomment %}
+  class="[&_a]:block [&_a]:py-2"
+>
+  {% assign title = 'layout.mobile_menu.title' | t %}
 
-<div data-section-id="{{ section.id }}" data-section-type="mobile-menu">
   {% render 'drawer',
              id: section.id,
-             title: 'Mobile Menu',
+             title: title,
              content: content,
              component: 'mobile-menu-drawer'
   %}

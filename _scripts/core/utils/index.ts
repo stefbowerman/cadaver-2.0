@@ -160,10 +160,8 @@ export function credits(): void {
 }
 
 export function targetBlankExternalLinks(): void { 
-  document.querySelectorAll('a').forEach(link => {
-    const href = link.getAttribute('href')
-    
-    if (href && link.hostname !== location.hostname && !href.includes('mailto:')) {
+  document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach(link => {
+    if (link.protocol.startsWith('http') && link.hostname !== location.hostname) {
       link.target = '_blank'
       link.setAttribute('aria-describedby', 'a11y-new-window-message')
     }

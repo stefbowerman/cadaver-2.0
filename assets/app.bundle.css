@@ -717,8 +717,16 @@
     row-gap: calc(var(--spacing) * 2);
   }
 
+  .gap-y-3 {
+    row-gap: calc(var(--spacing) * 3);
+  }
+
   .gap-y-4 {
     row-gap: calc(var(--spacing) * 4);
+  }
+
+  .gap-y-5 {
+    row-gap: calc(var(--spacing) * 5);
   }
 
   .gap-y-8 {
@@ -990,6 +998,14 @@
     .xl\:mb-2 {
       margin-bottom: calc(var(--spacing) * 2);
     }
+  }
+
+  .\[\&_a\]\:block a {
+    display: block;
+  }
+
+  .\[\&_a\]\:py-2 a {
+    padding-block: calc(var(--spacing) * 2);
   }
 }
 
