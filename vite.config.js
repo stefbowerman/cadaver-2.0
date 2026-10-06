@@ -30,7 +30,7 @@ export default defineConfig(({ mode }) => {
       watch: isDev ? {} : null,
       lib: {
         name: 'app',
-        entry: resolve(__dirname, '_scripts/app.js'),
+        entry: resolve(__dirname, '_scripts/app.ts'),
         formats: ['iife'], 
         fileName: () => 'app.bundle.js'
       },

@@ -633,10 +633,6 @@
     max-width: 7em;
   }
 
-  .max-w-\[260px\] {
-    max-width: 260px;
-  }
-
   .max-w-\[400px\] {
     max-width: 400px;
   }
@@ -693,10 +689,6 @@
     gap: calc(var(--spacing) * 4);
   }
 
-  .gap-5 {
-    gap: calc(var(--spacing) * 5);
-  }
-
   .gap-x-\(--grid-column-gap\) {
     column-gap: var(--grid-column-gap);
   }
@@ -717,16 +709,8 @@
     row-gap: calc(var(--spacing) * 2);
   }
 
-  .gap-y-3 {
-    row-gap: calc(var(--spacing) * 3);
-  }
-
   .gap-y-4 {
     row-gap: calc(var(--spacing) * 4);
-  }
-
-  .gap-y-5 {
-    row-gap: calc(var(--spacing) * 5);
   }
 
   .gap-y-8 {
