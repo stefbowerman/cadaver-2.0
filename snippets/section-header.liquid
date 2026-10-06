@@ -10,14 +10,14 @@
              subtitle: { text } - optional
              actions: { html } - optional
 
-             title_tag: { text } - optional - defaults to h3
+             title_tag: { text } - optional - defaults to h2
   %}
 
 {% endcomment -%}
 
 {%- liquid
   if title_tag == blank
-    assign title_tag = 'h3'
+    assign title_tag = 'h2'
   endif
 -%}
 

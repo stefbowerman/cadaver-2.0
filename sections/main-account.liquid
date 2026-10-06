@@ -12,7 +12,7 @@
 
     <div class="account-main">
       <div class="flex-1">
-        <h3>Order History</h3>
+        <h2>Order History</h2>
         {% paginate customer.orders by 20 %}
           <table class="table">
             <thead>
@@ -54,7 +54,7 @@
       </div>
       <div>
         <div>
-          <h3>Account Details</h3>
+          <h2>Account Details</h2>
         
           <p class="type-fine">Name</p>
           <p>{{ customer.name }}</p>

@@ -19,7 +19,7 @@
         {% comment %}
           List all customer addresses with a unique edit form.
         {% endcomment %}
-        <h4 class="text-center">Addresses</h4>
+        <h2 class="text-center">Addresses</h2>
 
         <div style="display: flex; flex-direction: column; gap: 50px">
           {% for address in customer.addresses %}
@@ -60,7 +60,7 @@
               >
                 {% form 'customer_address', address, class: 'form-horizontal', data-address-form: true, data-id: address.id %}
 
-                  <h4>Edit Address</h4>
+                  <h3>Edit Address</h3>
                   
                   {{ form.errors | default_errors }}
 
@@ -153,7 +153,7 @@
           {% unless form.errors %} display: none;{% endunless %}
         ">
         {% form 'customer_address', customer.new_address %}
-          <h4>Add A New Address</h4>
+          <h2>Add A New Address</h2>
 
           {{ form.errors | default_errors }}
 
