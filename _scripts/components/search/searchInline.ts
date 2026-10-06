@@ -98,5 +98,6 @@ export default class SearchInline extends BaseComponent {
 
   onClearButtonClick() {
     this.reset()
+    this.input.focus()
   }
 }

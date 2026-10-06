@@ -45,7 +45,7 @@ export default class NewsletterForm extends BaseComponent {
    * @param reset - If true, will call this.reset when finished
    */  
   showMessageWithTimeout(message: string, reset: boolean = false) {
-    this.formMessage.innerHTML = message
+    this.formMessage.textContent = message
     this.formContents.classList.add(classes.showMessage)
 
     window.clearTimeout(this.timeoutId);
@@ -103,9 +103,8 @@ export default class NewsletterForm extends BaseComponent {
     this.showMessageWithTimeout('Submitting...', false);
   }  
 
-  onSubmitFail(errors: Error[] | string) {
-    const msg = Array.isArray(errors) ? errors.join('  ') : errors;
-    this.showMessageWithTimeout(msg, false);
+  onSubmitFail(errors: Error[]) {
+    this.showMessageWithTimeout(errors.map(e => e.message).join(' '), false);
   }
 
   onSubscribeFail() {

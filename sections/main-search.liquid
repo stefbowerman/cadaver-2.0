@@ -27,7 +27,7 @@
           {% if search.results_count == 0 %}
             <li class="col-span-full text-center">
               <p>
-                Your search for "{{ search.terms | url_decode }}" did not yield any results.
+                Your search for "{{ search.terms | escape }}" did not yield any results.
               </p>
             </li>
           {% else %}

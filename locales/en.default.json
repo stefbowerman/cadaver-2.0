@@ -59,14 +59,17 @@
       "submit": "Search",
       "search": "Search",
       "clear": "Clear"
-    },
-
+    }
   },
   "accessibility": {
     "skip_to_content": "Skip to content",
     "link_messages": {
       "new_window": "Link opens in a new window."
-    }      
+    },
+    "mobile_menu": {
+      "primary_menu": "Mobile main navigation",
+      "secondary_menu": "Mobile secondary navigation"
+    }  
   },  
   "blogs": {
     "article": {
@@ -268,6 +271,9 @@
         "other": "items"
       }
     },
+    "mobile_menu": {
+      "title": "Mobile Menu"
+    },
     "customer": {
       "account": "Account",
       "my_account": "My Account",
@@ -300,7 +306,7 @@
         "label": "Quantity",
         "input_label": "Quantity for {{ product }}",
         "increase": "Increase quantity for {{ product }}",
-        "decrease": "Decrease quantity for {{ product }}",
+        "decrease": "Decrease quantity for {{ product }}"
       },
       "price": {
         "price": "Price",
