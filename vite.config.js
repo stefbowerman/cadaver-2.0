@@ -1,6 +1,5 @@
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
-import eslint from 'vite-plugin-eslint'
 import { visualizer } from 'rollup-plugin-visualizer'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -9,10 +8,6 @@ export default defineConfig(({ mode }) => {
     
   return {
     plugins: [
-      eslint({
-        include: ['_scripts/**/*.{js,ts}'],
-        exclude: ['node_modules']
-      }),
       visualizer({
         open: false //
       }),
