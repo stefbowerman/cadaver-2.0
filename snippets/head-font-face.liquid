@@ -1,9 +1,14 @@
 {% # theme-check-disable AssetPreload %}
 
 <link rel="preload" as="font" href="{{ 'HelveticaNeueLTStd-Roman.woff2' | asset_url }}" type="font/woff2" crossorigin>
-<link rel="preload" as="font" href="{{ 'HelveticaNeueLTStd-It.woff2' | asset_url }}" type="font/woff2" crossorigin>
 <link rel="preload" as="font" href="{{ 'HelveticaNeueLTStd-Bd.woff2' | asset_url }}" type="font/woff2" crossorigin>
-<link rel="preload" as="font" href="{{ 'HelveticaNeueLTStd-BdIt.woff2' | asset_url }}" type="font/woff2" crossorigin>
+
+{% comment %}
+  @NOTE: Italic fonts are commented out so they are not preloaded as they are unlikely to be used above the fold.
+
+  <link rel="preload" as="font" href="{{ 'HelveticaNeueLTStd-It.woff2' | asset_url }}" type="font/woff2" crossorigin>
+  <link rel="preload" as="font" href="{{ 'HelveticaNeueLTStd-BdIt.woff2' | asset_url }}" type="font/woff2" crossorigin>
+{% endcomment %}
 
 <style>
   {%- capture content -%}
