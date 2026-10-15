@@ -352,9 +352,12 @@
     }
   }
 
-  :focus, :focus-visible {
-    --tw-outline-style: none;
-    outline-style: none;
+  :focus-visible:not([disabled]) {
+    outline-style: var(--tw-outline-style);
+    outline-width: var(--default-border-width);
+    outline-offset: 3px;
+    --tw-outline-style: solid;
+    outline-style: solid;
   }
 
   html {

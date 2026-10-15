@@ -97,10 +97,9 @@
     */ 
   }
 
-  :focus,
-  :focus-visible {
-    @apply outline-none; /* Applies outline-width and offset */
-  }
+  *:focus-visible:not([disabled]) {
+    @apply outline-(length:--default-border-width) outline-solid outline-offset-3;
+  } 
     
   html {
     -webkit-text-size-adjust: 100%;
