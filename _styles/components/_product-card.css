@@ -8,7 +8,7 @@
   width: 100%;
   
   img {
-    @apply absolute h-full w-full object-contain select-none;
+    @apply absolute size-full object-contain select-none;
   }
 }
 

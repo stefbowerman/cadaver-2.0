@@ -25,6 +25,7 @@
     assign image_min_width = image_min_width | default: 500
     assign image_max_width = image_max_width | default: 1200
     assign sizes = sizes | default: '(max-width: 47.98rem) 50vw, (max-width: 79.98rem) 33vw, 25vw'
+    assign image_class = ''
     assign is_on_sale = false
     assign primary_image = primary_image | default: product.featured_image
     assign secondary_image = secondary_image | default: product.images[1]
@@ -33,6 +34,10 @@
     capture image_widths
       render 'image-widths', min_width: image_min_width, max_width: image_max_width
     endcapture
+
+    if loading == 'lazy'
+      assign image_class = 'lazy-image'
+    endif
 
     assign product_url = product.url
     if collection and collection.handle != 'all'
@@ -68,30 +73,30 @@
               loading: loading,
               widths: image_widths,
               alt: alt_text,
-              class: 'lazy-image',
+              class: image_class,
               sizes: sizes
           }}
         </div>
-      {% endif %}
 
-      
-      {% if secondary_image and secondary_image_enabled %}
-        <div class="product-card__media-secondary" data-media-secondary>
-          {% capture secondary_image_html %}
-            {{ secondary_image
-              | image_url: width: image_max_width
-              | image_tag:
-                loading: 'lazy',
-                widths: image_widths,
-                alt: secondary_image.alt,
-                sizes: sizes,
-                aria-hidden: true
-            }}
-          {% endcapture %}
-
-          {{ secondary_image_html | replace: 'src=', 'data-src=' | replace: 'srcset=', 'data-srcset=' }}
-        </div>
-      {% endif %}            
+        {% comment %} Only show the secondary image if the primary image exists {% endcomment %}
+        {% if secondary_image and secondary_image_enabled %}
+          <div class="product-card__media-secondary" data-media-secondary>
+            {% capture secondary_image_html %}
+              {{ secondary_image
+                | image_url: width: image_max_width
+                | image_tag:
+                  loading: 'lazy',
+                  widths: image_widths,
+                  alt: secondary_image.alt,
+                  sizes: sizes,
+                  aria-hidden: true
+              }}
+            {% endcapture %}
+  
+            {{ secondary_image_html | replace: 'src=', 'data-src=' | replace: 'srcset=', 'data-srcset=' }}
+          </div>
+        {% endif %}           
+      {% endif %}         
     </a>
 
     <a href="{{ product_url }}" title="{{ product.title }}" class="block text-center px-4">

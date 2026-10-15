@@ -87,7 +87,10 @@ export default class Drawer extends BaseComponent {
         ...this.settings.backdropOptions,
         ariaControls: this.el.id
       })
-    }    
+    }
+    
+    // Set aria-expanded state for all control elements based on the initial state
+    this.ariaControlElements.forEach(el => setAriaState(el, 'aria-expanded', this.isOpen))
 
     if (this.role) {
       const role = this.role
