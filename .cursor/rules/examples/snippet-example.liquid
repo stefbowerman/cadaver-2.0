@@ -64,14 +64,14 @@
     <div class="flex flex-col gap-4">
       <div class="relative w-full aspect-square">
         <a href="{{ product_url }}" title="{{ product.title }}">
-          <div class="h-full w-full">
+          <div class="size-full">
             {{ product.featured_image
               | image_url: width: image_max_width
               | image_tag:
                 loading: loading,
                 widths: image_widths,
                 alt: alt_text,
-                class: 'h-full w-full object-contain lazy-image',
+                class: 'size-full object-contain lazy-image',
                 sizes: sizes
             }}             
           </div>

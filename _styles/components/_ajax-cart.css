@@ -84,7 +84,7 @@
 }
 
 .ajax-cart__empty {
-  @apply absolute top-0 left-0 h-full w-full flex flex-col justify-center bg-white;
+  @apply absolute top-0 left-0 size-full flex flex-col justify-center bg-white;
   z-index: var(--z-empty);  
 
   /* @TODO...something about this inner padding? */

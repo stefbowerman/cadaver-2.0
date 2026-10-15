@@ -19,7 +19,7 @@
 }
 
 .backdrop {
-  @apply fixed z-(--z-backdrop) top-0 left-0 h-full w-full pointer-events-none cursor-pointer;
+  @apply fixed z-(--z-backdrop) top-0 left-0 size-full pointer-events-none cursor-pointer;
 
   background-color: var(--backdrop-color);
   opacity: 0;
