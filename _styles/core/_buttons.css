@@ -28,12 +28,14 @@ button[disabled] {
     @apply hover:bg-[#222] hover:border-black;
     @apply active:bg-black active:border-black;
   }
-
-  /* Alternative styles go here... */
-  /* &--primary {
-
-  } */
 }
+
+/* Alternative styles go here... */
+/*
+  .btn-primary {
+
+  }
+*/
 
 .btn-block {
   @apply w-full flex-1;
