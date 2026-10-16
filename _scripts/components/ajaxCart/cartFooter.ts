@@ -18,8 +18,8 @@ export default class CartFooter extends BaseComponent {
       watchCartUpdate: true,
     })
     
-    this.submit = this.qs(selectors.submit) as HTMLButtonElement
-    this.subtotalPrice = this.qs(selectors.subtotalPrice)
+    this.submit = this.qsRequired<HTMLButtonElement>(selectors.submit)
+    this.subtotalPrice = this.qsRequired(selectors.subtotalPrice)
   }
 
   onCartUpdate(e: CartAPIEvent) {
@@ -28,10 +28,10 @@ export default class CartFooter extends BaseComponent {
     this.subtotalPrice.textContent = cart.items_subtotal_price_formatted
 
     if (cart.items.length === 0) {
-      this.submit.setAttribute('disabled', 'true')      
+      this.submit.disabled = true
     }
     else {
-      this.submit.removeAttribute('disabled')
+      this.submit.disabled = false
     }
   }
 }

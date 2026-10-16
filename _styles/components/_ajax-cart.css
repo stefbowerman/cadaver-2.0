@@ -13,7 +13,7 @@
 
   pointer-events: none;
 
-  &.is-open {
+  &:not([aria-hidden="true"]) {
     @apply translate-x-0;
     transition: var(--transition-drawer-in);
     pointer-events: auto;
@@ -61,7 +61,7 @@
   }
 
   img {
-    @apply w-[100px] aspect-square object-contain;
+    @apply w-25 aspect-product object-contain;
 
     &.is-cached {
       transition: none;
@@ -84,7 +84,7 @@
 }
 
 .ajax-cart__empty {
-  @apply absolute top-0 left-0 h-full w-full flex flex-col justify-center bg-white;
+  @apply absolute top-0 left-0 size-full flex flex-col justify-center bg-white;
   z-index: var(--z-empty);  
 
   /* @TODO...something about this inner padding? */

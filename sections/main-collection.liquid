@@ -20,12 +20,18 @@
     <div
       class="results-display"
       data-component="results-display"
+      data-products-count="{{ collection.products_count | default: 0 }}"
     >
       <ul>
         {% if collection.products.size > 0 %}   
           {% for product in collection.products %}
             {%- liquid
               assign loading = blank
+              assign fetchpriority = blank
+
+              if forloop.index == 1
+                assign fetchpriority = 'high'
+              endif
 
               if forloop.index <= 8
                 assign loading = 'eager'
@@ -35,7 +41,9 @@
             <li>
               {% render 'product-card',
                          product: product,
-                         loading: loading
+                         loading: loading,
+                         fetchpriority: fetchpriority,
+                         secondary_image_enabled: true
               %}
             </li>
           {% endfor %}
@@ -52,6 +60,7 @@
           href="{{- paginate.next.url -}}"
           class="h-0 w-0 overflow-hidden opacity-0"
           aria-hidden="true"
+          tabindex="-1"
           data-more
         >
           Load more

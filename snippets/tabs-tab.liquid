@@ -1,0 +1,25 @@
+{% doc %}
+  @param {string} tab_id
+  @param {string} panel_id
+  @param {boolean} [selected]
+  @param {string} label
+  @param {string} [attributes]
+  @param {object} [block]
+{% enddoc %}
+
+{% assign selected = selected | default: false %}
+
+<button
+  role="tab"
+  id="{{ tab_id }}"
+  aria-controls="{{ panel_id }}"
+  aria-selected="{% if selected %}true{% else %}false{% endif %}"
+  tabindex="{% if selected %}0{% else %}-1{% endif %}"
+  {% if block %}
+    data-block-id="{{ block.id }}"
+    {{ block.shopify_attributes }}
+  {% endif %}
+  {{ attributes }}
+>
+  {{ label }}
+</button>

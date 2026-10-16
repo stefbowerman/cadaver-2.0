@@ -1,20 +1,20 @@
 import BreakpointsController, { type BreakpointChangeEvent } from '@/core/breakpointsController'
 import CartAPI, { type CartAPIEvent } from '@/core/cartAPI'
-import { isObject } from '@/core/utils'
+import { isObject, isThemeEditor } from '@/core/utils'
 import { ThemeEditorBlockDeselectEvent, ThemeEditorBlockSelectEvent } from '@/types/shopify';
 
 const THEME_EDITOR_BLOCK_ATTR = 'data-shopify-editor-block'
 
-export interface BaseComponentSettings {
-  watchResize?: boolean;
-  watchBreakpoint?: boolean;
-  watchScroll?: boolean;
-  watchCartUpdate?: boolean;
-  watchIntersection?: boolean;
-  intersectionOptions?: IntersectionObserverInit;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any; // Allow additional properties from subclasses
+export interface BaseComponentOptions {
+  watchResize?: boolean
+  watchBreakpoint?: boolean
+  watchScroll?: boolean
+  watchCartUpdate?: boolean
+  watchIntersection?: boolean
+  intersectionOptions?: IntersectionObserverInit
 }
+
+type BaseComponentSettings = Required<BaseComponentOptions>
 
 export default class BaseComponent {
   #settings: BaseComponentSettings;
@@ -30,7 +30,7 @@ export default class BaseComponent {
     return `[data-component="${this.TYPE}"]`
   }
 
-  constructor(el: HTMLElement, options: BaseComponentSettings = {}) {
+  constructor(el: HTMLElement, options: BaseComponentOptions = {}) {
     this.#settings = {
       watchResize: false,
       watchBreakpoint: false,
@@ -87,7 +87,7 @@ export default class BaseComponent {
       window.addEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate)
     }
 
-    if (this.el.hasAttribute(THEME_EDITOR_BLOCK_ATTR)) {
+    if (isThemeEditor()) {
       window.addEventListener('shopify:block:select', this.#onBlockSelect)
       window.addEventListener('shopify:block:deselect', this.#onBlockDeselect)
     }
@@ -100,8 +100,7 @@ export default class BaseComponent {
     }
 
     if (this.#intersectionObserver) {
-      this.#intersectionObserver.disconnect()
-      this.#intersectionObserver = null
+      this.killIntersectionObserver()
     }
 
     if (this.#settings.watchBreakpoint) {
@@ -116,24 +115,12 @@ export default class BaseComponent {
       window.removeEventListener(CartAPI.EVENTS.UPDATE, this.onCartUpdate)
     }
 
-    if (this.el.hasAttribute(THEME_EDITOR_BLOCK_ATTR)) {
+    if (isThemeEditor()) {
       window.removeEventListener('shopify:block:select', this.#onBlockSelect)
       window.removeEventListener('shopify:block:deselect', this.#onBlockDeselect)
     }
 
     doComponentCleanup(this)
-  }
-
-  #onBlockSelect = (e: ThemeEditorBlockSelectEvent) => {
-    if (e.target === this.el) {
-      this.onSelfBlockSelect(e)
-    }
-  }
-
-  #onBlockDeselect = (e: ThemeEditorBlockDeselectEvent) => {
-    if (e.target === this.el) {
-      this.onSelfBlockDeselect(e)
-    }
   }
 
   get dataset(): DOMStringMap {
@@ -146,39 +133,75 @@ export default class BaseComponent {
 
   get ariaControlElements(): HTMLElement[] {
     return [...document.querySelectorAll(`[aria-controls="${this.el.id}"]`)] as HTMLElement[]
-  }  
+  }
+
+  #onBlockSelect = (e: ThemeEditorBlockSelectEvent) => {
+    if (e.target === this.el) {
+      this.onSelfBlockSelect(e)
+    }
+    else if (this.el.contains(e.target as HTMLElement)) {
+      this.onChildBlockSelect(e)
+    }
+  }
+
+  #onBlockDeselect = (e: ThemeEditorBlockDeselectEvent) => {
+    if (e.target === this.el) {
+      this.onSelfBlockDeselect(e)
+    }
+    else if (this.el.contains(e.target as HTMLElement)) {
+      this.onChildBlockDeselect(e)
+    }
+  }
 
   /**
    * Queries for the first element matching the given selector within the component's element,
    * excluding elements that belong to nested components.
-   * 
+   *
    * @param selector - The CSS selector to query for an element.
    * @param dom - The DOM element to query within.  Defaults to the component's element.
-   * @returns The first matching Element object within the component's scope, or undefined if no match is found.
+   * @returns The first matching element within the component's scope, narrowed to T, or null if no match is found.
    */
-  qs(selector: string, dom: HTMLElement = this.el): HTMLElement | undefined {
-    return this.qsa(selector, dom)[0]
+  qs<T extends HTMLElement = HTMLElement>(selector: string, dom: HTMLElement = this.el): T | null {
+    return this.qsa<T>(selector, dom)[0] ?? null
+  }
+
+  /**
+   * Queries for the first element matching the given selector within the component's element,
+   * throwing if no match is found. Use for elements the component's own template requires to function.
+   *
+   * @param selector - The CSS selector to query for an element.
+   * @param dom - The DOM element to query within. Defaults to the component's element.
+   * @returns The first matching element, narrowed to T.
+   */
+  qsRequired<T extends HTMLElement = HTMLElement>(selector: string, dom: HTMLElement = this.el): T {
+    const el = this.qs<T>(selector, dom)
+
+    if (!el) {
+      throw new Error(`[${this.type}] Required element not found: "${selector}"`)
+    }
+
+    return el
   }
 
   /**
    * Queries for all elements matching the given selector within the component's element,
    * excluding elements that belong to nested components.
-   * 
+   *
    * @param selector - The CSS selector to query for elements
    * @param dom - The DOM element to query within. Defaults to the component's element
-   * @returns An array of matching Element objects within the component's scope
-   * 
+   * @returns An array of matching elements within the component's scope, narrowed to T
+   *
    * @description
    * This method filters out elements that belong to nested components by checking if the
    * closest parent component is either the querying component itself or matches the
    * selector (which would make it a target of the query rather than a container to exclude).
    */
-  qsa(selector: string, dom: HTMLElement = this.el): HTMLElement[] {
-    return Array.from(dom.querySelectorAll(selector)).filter(el => {
+  qsa<T extends HTMLElement = HTMLElement>(selector: string, dom: HTMLElement = this.el): T[] {
+    return Array.from(dom.querySelectorAll<T>(selector)).filter(el => {
       const closest = el.closest('[data-component]')
 
-      return closest.isSameNode(this.el) || closest.matches(selector)
-    }) as HTMLElement[]
+      return !closest || closest.isSameNode(this.el) || closest.matches(selector)
+    })
   }
 
   // Make sure we're working with a DOM element that matches the component selector
@@ -199,6 +222,13 @@ export default class BaseComponent {
   onIntersection(entries: IntersectionObserverEntry[]) {
     // override in subclass
   }  
+
+  killIntersectionObserver() {
+    // Only call this externally if you know what you're doing
+    // e.g. you want to stop observing an element and don't need to re-observe it later
+    this.#intersectionObserver?.disconnect()
+    this.#intersectionObserver = null
+  }
 
   onBreakpointChange(e: BreakpointChangeEvent) {
     // override in subclass
@@ -230,6 +260,22 @@ export default class BaseComponent {
   onSelfBlockDeselect(e: ThemeEditorBlockDeselectEvent) {
     // override in subclass
   }
+
+  /**
+   * Called if this component contains a block that is selected in the theme editor
+   * @param e - The event object
+   */
+  onChildBlockSelect(e: ThemeEditorBlockSelectEvent) {
+    // override in subclass
+  }
+
+  /**
+   * Called if this component contains a block that is deselected in the theme editor
+   * @param e - The event object
+   */
+  onChildBlockDeselect(e: ThemeEditorBlockDeselectEvent) {
+    // override in subclass
+  }  
 }
 
 /**

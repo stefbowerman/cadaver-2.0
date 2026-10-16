@@ -40,7 +40,7 @@ export function imageSize(src: string): string | null {
  * @param size
  * @returns {*}
  */
-export function getSizedImageUrl(src: string, size: string | null): string | null {
+export function getSizedImageUrl(src: string | null, size: string | null): string | null {
   if (size === null || src === null) {
     return src;
   }
@@ -73,7 +73,9 @@ export function preload(images: string | string[], size: string | null): void {
   }
 
   for (let i = 0; i < images.length; i++) {
-    const image = images[i];
-    loadImage(getSizedImageUrl(image, size));
+    const sizedUrl = getSizedImageUrl(images[i], size)
+    if (sizedUrl) {
+      loadImage(sizedUrl)
+    }
   }
 }

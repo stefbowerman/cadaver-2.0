@@ -2,22 +2,24 @@ import BaseComponent from '@/components/base'
 
 const selectors = {
   input: 'input[name="q"]',
-  icon: '[data-icon]'
+  clearButton: 'button[data-clear]'
 }
 
-type SearchInlineOptions = {
-  onSubmit?: (e: Event, url: string) => void | boolean;
-  onKeyup?: (e: Event) => void;
+interface SearchInlineOptions {
+  onSubmit?: (e: SubmitEvent, url: string) => void | boolean
+  onKeyup?: (e: KeyboardEvent) => void
+  onInput?: (e: InputEvent) => void
 }
 
 export default class SearchInline extends BaseComponent {
   static TYPE = 'search-inline'
 
-  declare el: HTMLFormElement;
-  settings: SearchInlineOptions;
-  input: HTMLInputElement;
-  icon: HTMLElement;
-  action: string;
+  declare el: HTMLFormElement
+
+  settings: SearchInlineOptions
+  input: HTMLInputElement
+  clearButton: HTMLButtonElement | null
+  action: string
 
   constructor(el: HTMLFormElement, options: SearchInlineOptions = {}) {
     super(el)
@@ -27,23 +29,33 @@ export default class SearchInline extends BaseComponent {
     }
 
     if (this.el.tagName !== 'FORM') {
-      console.warn('SearchInline: Form element required')
-      return
+      throw new Error('SearchInline: Form element required')
     }
 
-    this.input = this.el.querySelector(selectors.input)
-    this.icon = this.el.querySelector(selectors.icon)
-    this.action = this.el.getAttribute('action')
+    this.input = this.qsRequired<HTMLInputElement>(selectors.input)
+    this.clearButton = this.qs<HTMLButtonElement>(selectors.clearButton)
+    this.action = this.el.action
 
     this.onSubmit = this.onSubmit.bind(this)
     this.onKeyup = this.onKeyup.bind(this)
+    this.onInput = this.onInput.bind(this)
+    this.onClearButtonClick = this.onClearButtonClick.bind(this)    
 
     this.el.addEventListener('submit', this.onSubmit)
     this.input.addEventListener('keyup', this.onKeyup)
+    this.input.addEventListener('input', this.onInput as (e: Event) => void)
+    this.clearButton?.addEventListener('click', this.onClearButtonClick)
   }
+
+  private checkClearButton() {
+    if (this.clearButton) {              
+      this.clearButton.hidden = !this.input.value
+    }
+  }   
 
   reset() {
     this.input.value = ''
+    this.checkClearButton()
   }
 
   onSubmit(e: SubmitEvent) {
@@ -56,12 +68,7 @@ export default class SearchInline extends BaseComponent {
       return
     }
 
-    const params = new URLSearchParams({
-      type: type,
-      q: encodeURIComponent(q)
-    })
-
-    const url = `${this.action}?${params.toString()}`
+    const url = `${this.action}?type=${encodeURIComponent(type)}&q=${encodeURIComponent(q)}`
 
     if (this.settings.onSubmit?.(e, url) === false) {
       return
@@ -80,6 +87,17 @@ export default class SearchInline extends BaseComponent {
 
 
   onKeyup(e: KeyboardEvent) {
+    this.checkClearButton()
     this.settings.onKeyup?.(e)
+  }
+
+  onInput(e: InputEvent) {
+    this.checkClearButton()
+    this.settings.onInput?.(e)
+  }
+
+  onClearButtonClick() {
+    this.reset()
+    this.input.focus()
   }
 }

@@ -1,5 +1,5 @@
 import { BREAKPOINTS } from '@/core/breakpointsController'
-import gsap from '@/core/gsap'
+import { swap } from '@/core/gsap'
 
 import BaseComponent from '@/components/base'
 import ProductCard from '@/components/product/productCard'
@@ -10,7 +10,11 @@ const selectors = {
   more: 'a[data-more]'
 }
 
-interface ResultsDisplaySettings {
+function parseProductsCount(el: HTMLElement) {
+  return el.dataset.productsCount ? parseInt(el.dataset.productsCount) : 0
+}
+
+interface ResultsDisplayOptions {
   onMoreIntersection?: (entries: IntersectionObserverEntry[]) => void
   onReplaceStart?: (resultsDisplay: ResultsDisplay) => void
   onReplaceComplete?: (resultsDisplay: ResultsDisplay) => void
@@ -19,28 +23,28 @@ interface ResultsDisplaySettings {
 export default class ResultsDisplay extends BaseComponent {
   static TYPE = 'results-display'
 
-  settings: ResultsDisplaySettings
+  #swapTl: gsap.core.Timeline | null
+  #moreObserver: IntersectionObserver | null
+
+  settings: ResultsDisplayOptions
   productCards: ProductCard[]
   list: HTMLUListElement | null
   a11yStatus: A11yStatus | null
-  more: HTMLAnchorElement | undefined
-  moreObserver: IntersectionObserver | null
-  replacementTl: gsap.core.Timeline | null
+  more: HTMLAnchorElement | null
 
-  constructor(el: HTMLElement, options: ResultsDisplaySettings = {}) {
+  constructor(el: HTMLElement, options: ResultsDisplayOptions = {}) {
     super(el)
 
     this.settings = {
       ...options
     }
 
+    this.#swapTl = null
+    this.#moreObserver = null
     this.productCards = []
-
     this.list = null
     this.a11yStatus = null
     this.more = null
-    this.moreObserver = null
-    this.replacementTl = null
 
     this.onMoreIntersection = this.onMoreIntersection.bind(this)
 
@@ -50,21 +54,24 @@ export default class ResultsDisplay extends BaseComponent {
   setup() {
     this.productCards = this.qsa(ProductCard.SELECTOR).map(el => new ProductCard(el))
 
-    this.list = this.qs(selectors.list) as HTMLUListElement | null
-    this.more = this.qs(selectors.more) as HTMLAnchorElement | undefined
+    this.list = this.qs<HTMLUListElement>(selectors.list)
+    this.more = this.qs<HTMLAnchorElement>(selectors.more)
 
     if (this.more) {
+      const more = this.more
       const rootMargin = window.innerWidth < BREAKPOINTS.md ? '1000px' : `${Math.max(window.innerHeight*2, 1500)}px`
 
-      this.moreObserver = new IntersectionObserver(this.onMoreIntersection, {
+      this.#moreObserver = new IntersectionObserver(this.onMoreIntersection, {
         root: null,
         rootMargin,
         threshold: 0.1
       })
 
+      const moreObserver = this.#moreObserver
+
       // Prevent immediate triggering
       requestAnimationFrame(() => {
-        this.moreObserver.observe(this.more)
+        moreObserver.observe(more)
       })
     }
 
@@ -78,59 +85,55 @@ export default class ResultsDisplay extends BaseComponent {
     this.list = null
     this.more = null
 
-    this.moreObserver?.disconnect()
-    this.moreObserver = null
+    this.#moreObserver?.disconnect()
+    this.#moreObserver = null
 
-    this.a11yStatus.el?.remove()
-    this.a11yStatus.destroy()
+    this.a11yStatus?.el?.remove()
+    this.a11yStatus?.destroy()
     this.a11yStatus = null
   }
 
   destroy() {
-    this.replacementTl?.kill()
-    this.replacementTl = null
+    this.#swapTl?.kill()
+    this.#swapTl = null
 
     this.teardown()
 
     super.destroy()
   }
 
+  // This is exposed so that the parent can update any related components - typically used with facets (that aren't yet implemented)
+  get productsCount() {
+    return parseProductsCount(this.el)
+  }
+
   // Replace the entire contents of the results display
-  replace(dom: HTMLElement | undefined) {
-    if (!this.validateDom(dom)) return
+  replace(dom: HTMLElement | null) {
+    if (!dom || !this.validateDom(dom)) return
 
-    this.replacementTl = gsap.timeline({ paused: true })
+    // Update the products count from the entire component DOM because we only update the innerHTML of the results display
+    this.el.dataset.productsCount = parseProductsCount(dom).toString()
 
-    this.replacementTl.to(this.el, {
-      duration: 0.4,
-      opacity: 0,
-      ease: 'power2.out',
-      onStart: () => {
+    this.#swapTl?.kill()
+    this.#swapTl = swap(this.el, {
+      onExitStart: () => {
         this.settings.onReplaceStart?.(this)
       },
-      onComplete: () => {
+      onExitComplete: () => {
         this.teardown()
         this.el.innerHTML = dom.innerHTML
         this.setup()
 
-        gsap.set(this.el, { clearProps: true })
+        if (this.a11yStatus) this.a11yStatus.text = 'Results updated'
 
         this.settings.onReplaceComplete?.(this)
       }
     })
-
-    this.replacementTl.to(this.el, {
-      duration: 1,
-      delay: 0.25,
-      opacity: 1,
-      ease: 'power2.in'
-    })
-
-    this.replacementTl.play()
   }
 
   add(dom: HTMLElement | undefined) {
-    if (!this.validateDom(dom)) return
+    if (!dom || !this.validateDom(dom)) return
+    if (!this.list) return
 
     const newList = dom.querySelector(selectors.list)
     const newItems = newList ? [...newList.children] : []
@@ -142,7 +145,7 @@ export default class ResultsDisplay extends BaseComponent {
       newItems.forEach(el => {      
         fragment.append(el) // el === <li>
         
-        const card = el.querySelector(ProductCard.SELECTOR) as HTMLElement
+        const card = el.querySelector<HTMLElement>(ProductCard.SELECTOR)
 
         if (card) {
           this.productCards.push(new ProductCard(card))
@@ -150,10 +153,10 @@ export default class ResultsDisplay extends BaseComponent {
       })
 
       this.list.append(fragment)
-      this.a11yStatus.text = `${newItems.length} items loaded`
+      if (this.a11yStatus) this.a11yStatus.text = `${newItems.length} items loaded`
 
       // Replace the "more" link if it exists
-      const newMore = dom.querySelector(selectors.more) as HTMLAnchorElement | undefined
+      const newMore = dom.querySelector<HTMLAnchorElement>(selectors.more)
 
       if (this.more && newMore) {
         this.more.href = newMore.href
@@ -165,11 +168,13 @@ export default class ResultsDisplay extends BaseComponent {
   }
 
   onNoMoreResults() {
+    if (!this.more) return
+
     this.more.remove()
     this.more = null
 
-    this.moreObserver?.disconnect()
-    this.moreObserver = null
+    this.#moreObserver?.disconnect()
+    this.#moreObserver = null
   }  
 
   onMoreIntersection(entries: IntersectionObserverEntry[]) {

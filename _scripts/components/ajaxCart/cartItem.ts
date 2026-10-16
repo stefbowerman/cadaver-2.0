@@ -1,7 +1,6 @@
-import debounce, { type DebouncedFunc } from 'lodash.debounce'
-
-import { isTouch } from '@/core/utils'
 import type { LiteLineItem } from '@/types/shopify'
+import { isTouch, debounce } from '@/core/utils'
+import { setAriaFlag } from '@/core/utils/a11y'
 
 import BaseComponent from '@/components/base'
 import QuantityAdjuster from '@/components/quantityAdjuster'
@@ -16,7 +15,7 @@ const classes = {
   updating: 'is-updating'
 }
 
-interface CartItemSettings {
+interface CartItemOptions {
   onRemoveClick?: (item: CartItem) => void,
   onQuantityAdjusterChange?: (item: CartItem, qty: number) => void
 }
@@ -27,15 +26,15 @@ export default class CartItem extends BaseComponent {
   static TYPE = 'cart-item'
 
   #state: CartItemAllowedState
-  settings: CartItemSettings
+  settings: CartItemOptions
   id: number
   itemData: LiteLineItem
   remove: HTMLButtonElement
   price: HTMLElement
-  debouncedOnQuantityAdjusterChange: DebouncedFunc<(qty: number) => void>
+  debouncedOnQuantityAdjusterChange: ReturnType<typeof debounce<(qty: number) => void>>
   quantityAdjuster: QuantityAdjuster
 
-  constructor(el: HTMLElement, itemData: LiteLineItem, options: CartItemSettings = {}) {
+  constructor(el: HTMLElement, itemData: LiteLineItem, options: CartItemOptions = {}) {
     super(el)
 
     this.#state = undefined
@@ -47,12 +46,12 @@ export default class CartItem extends BaseComponent {
     this.itemData = itemData
     this.id = this.itemData.id
 
-    this.remove = this.qs(selectors.remove) as HTMLButtonElement
-    this.price = this.qs(selectors.price)
+    this.remove = this.qsRequired<HTMLButtonElement>(selectors.remove)
+    this.price = this.qsRequired(selectors.price)
 
     this.debouncedOnQuantityAdjusterChange = debounce(this.onQuantityAdjusterChange.bind(this), (isTouch() ? 500 : 250)) // <- Longer debounce for touch devices since fast touches are taken as a double click which causes page zoom
 
-    this.quantityAdjuster = new QuantityAdjuster(this.el.querySelector(QuantityAdjuster.SELECTOR), {
+    this.quantityAdjuster = new QuantityAdjuster(this.qsRequired(QuantityAdjuster.SELECTOR), {
       onChange: qty => {
         // If the quantity is changed to 0, trigger change callback immediately
         if (qty === 0) {
@@ -68,6 +67,12 @@ export default class CartItem extends BaseComponent {
     this.remove.addEventListener('click', this.onRemoveClick.bind(this))
   }
 
+  destroy() {
+    this.debouncedOnQuantityAdjusterChange.cancel() // Prevent a pending quantity change from firing after the item is removed
+
+    super.destroy()
+  }
+
   get key() {
     return this.itemData.key
   }
@@ -76,18 +81,18 @@ export default class CartItem extends BaseComponent {
     switch (state) {
       case 'removing':
         this.remove.disabled = true
-        this.remove.setAttribute('aria-disabled', 'true')
+        setAriaFlag(this.remove, 'aria-disabled', true)
         this.el.classList.add(classes.removing)
         break
       case 'updating':
         this.remove.disabled = true
-        this.remove.setAttribute('aria-disabled', 'true')
+        setAriaFlag(this.remove, 'aria-disabled', true)
         this.el.classList.add(classes.updating)
         break
       case undefined:
       default:
         this.remove.disabled = false
-        this.remove.removeAttribute('aria-disabled')
+        setAriaFlag(this.remove, 'aria-disabled', false)
         this.el.classList.remove(classes.removing, classes.updating)
         break
     }

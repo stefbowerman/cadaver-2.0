@@ -19,7 +19,7 @@
   endcomment
     
   assign output = ''
-  assign widths = '180, 300, 500, 700, 900, 1100, 1400, 1600, 1800, 2560, 3840' | split: ', '
+  assign widths = '180, 300, 400, 500, 700, 900, 1100, 1400, 1600, 1800, 2560, 3840' | split: ', '
 
   if min_width == blank
     assign min_width = widths | first | plus: 0

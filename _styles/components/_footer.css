@@ -5,7 +5,7 @@
   @apply py-10;
 
   /* These are the footer section headings */
-  h3 {
+  h2 {
     @apply mb-6 text-2xl uppercase;
   }
 }

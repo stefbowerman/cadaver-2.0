@@ -1,4 +1,6 @@
+import type { ThemeEditorSectionUnloadEvent } from '@/types/shopify'
 import { fetchDom } from '@/core/utils/dom'
+import { setAriaFlag } from '@/core/utils/a11y'
 
 import BaseSection from '@/sections/base'
 import ProductCard from '@/components/product/productCard'
@@ -13,9 +15,9 @@ const selectors = {
 export default class ProductRelatedSection extends BaseSection {
   static TYPE = 'product-related'
 
+  #abortController: AbortController | null
   productCards: ProductCard[]
   contentTarget: HTMLElement
-  content: HTMLElement
   recommendationsUrl: string
 
   constructor(container: HTMLElement) {
@@ -26,26 +28,49 @@ export default class ProductRelatedSection extends BaseSection {
       }
     })
 
+    this.#abortController = null
     this.productCards = []
 
-    this.contentTarget = this.qs(selectors.contentTarget)
-    this.content = this.qs(selectors.content)
+    this.contentTarget = this.qsRequired(selectors.contentTarget)
 
-    this.recommendationsUrl = this.dataset.url
+    const url = this.dataset.url
+
+    if (!url) {
+      throw new Error('ProductRelatedSection: Recommendations URL not found')
+    }
+
+    this.recommendationsUrl = url
+  }
+
+  onUnload(e: ThemeEditorSectionUnloadEvent) {
+    this.#abortController?.abort();
+    this.#abortController = null
+
+    super.onUnload(e)
   }
 
   onIntersection(entries: IntersectionObserverEntry[]) {
     if (!entries[0].isIntersecting) return
 
-    this.stopIntersectionObserver() // We only want to check for intersection *once*
+    this.killIntersectionObserver() // We only want to check for intersection *once*
 
     this.getRecommendations()
   }  
 
   async getRecommendations() {
     try {
-      const dom = await fetchDom(this.recommendationsUrl)
+      this.#abortController?.abort();
+      this.#abortController = new AbortController();
+
+      const dom = await fetchDom(this.recommendationsUrl, this.#abortController.signal)
+
+      if (this.#abortController.signal.aborted) return
+
+      if (!dom) throw new Error('Failed to load recommendations')
+
       const content = dom.querySelector(selectors.content)
+
+      if (!content) throw new Error('Recommendations content not found')      
 
       this.contentTarget.replaceChildren(content)
 
@@ -56,7 +81,7 @@ export default class ProductRelatedSection extends BaseSection {
 
       // Hide the container entirely
       this.container.style.display = 'none'
-      this.container.setAttribute('aria-hidden', 'true')      
+      setAriaFlag(this.container, 'aria-hidden', true)
     }
   }  
 }

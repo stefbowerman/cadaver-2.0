@@ -1,5 +1,5 @@
 import CartAPI from '@/core/cartAPI'
-import { toAriaBoolean } from '@/core/utils/a11y'
+import { setAriaFlag } from '@/core/utils/a11y'
 import type { LiteProduct, LiteVariant } from '@/types/shopify'
 
 import BaseComponent from '@/components/base'
@@ -15,9 +15,13 @@ const selectors = {
   masterSelect: 'select[name="id"]'
 }
 
-interface ProductDetailFormSettings {
+interface ProductDetailFormOptions {
   onVariantChange?: (e: VariantChangeEvent) => void
   enableHistoryState?: boolean
+}
+
+interface ProductDetailFormSettings extends ProductDetailFormOptions {
+  enableHistoryState: boolean
 }
 
 export default class ProductDetailForm extends BaseComponent {
@@ -41,7 +45,7 @@ export default class ProductDetailForm extends BaseComponent {
    * @param options.onVariantChange -  Called when a new variant has been selected from the form,
    * @param options.enableHistoryState - If set to "true", turns on URL updating when switching variant
    */  
-  constructor(el: HTMLElement, options: ProductDetailFormSettings = {}) {
+  constructor(el: HTMLElement, options: ProductDetailFormOptions = {}) {
     super(el)
 
     this.settings = {
@@ -51,14 +55,14 @@ export default class ProductDetailForm extends BaseComponent {
 
     this.submitInProgress = false
 
-    this.form = this.qs(selectors.form) as HTMLFormElement
-    this.masterSelect = this.qs(selectors.masterSelect) as HTMLSelectElement
+    this.form = this.qsRequired<HTMLFormElement>(selectors.form)
+    this.masterSelect = this.qsRequired<HTMLSelectElement>(selectors.masterSelect)
 
-    this.product = JSON.parse(this.qs(selectors.productJSON).textContent)
-    this.price = new ProductPrice(this.qs(ProductPrice.SELECTOR))
-    this.atcButton = new ATCButton(this.qs(ATCButton.SELECTOR) as HTMLButtonElement)
+    this.product = JSON.parse(this.qsRequired(selectors.productJSON).textContent ?? '{}')
+    this.price = new ProductPrice(this.qsRequired(ProductPrice.SELECTOR))
+    this.atcButton = new ATCButton(this.qsRequired<HTMLButtonElement>(ATCButton.SELECTOR))
 
-    this.variantPicker = new VariantPicker(this.qs(VariantPicker.SELECTOR), {
+    this.variantPicker = new VariantPicker(this.qsRequired(VariantPicker.SELECTOR), {
       product: this.product,
       onVariantChange: this.onVariantChange.bind(this)
     })
@@ -68,7 +72,7 @@ export default class ProductDetailForm extends BaseComponent {
     this.form.addEventListener('submit', this.onFormSubmit.bind(this))
   }
 
-  updateHistoryState(variant: LiteVariant) {
+  updateHistoryState(variant?: LiteVariant) {
     if (!this.settings.enableHistoryState) return
 
     const newurl = new URL(window.location.href)
@@ -105,7 +109,7 @@ export default class ProductDetailForm extends BaseComponent {
 
     if (this.submitInProgress) return
 
-    const submit = this.form.querySelector(selectors.submit) as HTMLButtonElement
+    const submit = this.qsRequired<HTMLButtonElement>(selectors.submit, this.form)
 
     // Disable the button so the user knows the form is being submitted
     submit.disabled = true
@@ -128,19 +132,19 @@ export default class ProductDetailForm extends BaseComponent {
 
   onAddStart() {
     this.a11yStatus.text = 'Adding item to cart'
-    this.form.setAttribute('aria-busy', toAriaBoolean(true))    
+    setAriaFlag(this.form, 'aria-busy', true)    
     this.atcButton.onAddStart()
   }
 
   onAddSuccess() {
     this.a11yStatus.text = 'Item added to cart'
-    this.form.removeAttribute('aria-busy')    
+    setAriaFlag(this.form, 'aria-busy', false)    
     this.atcButton.onAddSuccess()
   }
 
   onAddFail(e: Error) {
     this.a11yStatus.text = e.message || 'Error adding to cart'
-    this.form.removeAttribute('aria-busy')
+    setAriaFlag(this.form, 'aria-busy', false)
     this.atcButton.onAddFail(e)
   }  
 }

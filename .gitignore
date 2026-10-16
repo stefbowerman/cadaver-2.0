@@ -81,3 +81,6 @@ stats.html
 
 # Claude Code
 .claude/
+
+skills-lock.json
+.agents/

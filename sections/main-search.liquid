@@ -1,6 +1,13 @@
+{%- comment %}
+
+  Search Main Section
+  ------------------------------------------------------------------------------
+
+{% endcomment -%}
+
 {%- capture actions -%}
   <div style="max-width: 625px; margin: 0 auto 40px">
-    {% render 'search-inline', id: 'main-search-inline', include_terms: true %}
+    {% render 'search-inline', id_prefix: section.id, include_terms: true %}
   </div>   
 {%- endcapture -%}
 
@@ -15,17 +22,19 @@
     %}
   </div>
 
+  {% comment %} "data-products-count" should probably be narrowed to just products but that's the only kind of search we have enabled on the site anyways {% endcomment %}
   <div class="container">
     <div
       class="results-display"
       data-component="results-display"
+      data-products-count="{{ search.results_count | default: 0 }}"
     >
       <ul>
         {% if search.performed %}
           {% if search.results_count == 0 %}
             <li class="col-span-full text-center">
               <p>
-                Your search for "{{ search.terms | url_decode }}" did not yield any results.
+                Your search for "{{ search.terms | escape }}" did not yield any results.
               </p>
             </li>
           {% else %}
@@ -34,6 +43,11 @@
     
               for item in search.results
                 assign loading = blank
+                assign fetchpriority = blank
+
+                if forloop.index == 1
+                  assign fetchpriority = 'high'
+                endif
 
                 if forloop.index <= 8
                   assign loading = 'eager'
@@ -42,7 +56,7 @@
                 if item.object_type == 'product'
                   capture card_html
                     echo '<li>'
-                      render 'product-card', product: item, loading: loading
+                      render 'product-card', product: item, loading: loading, fetchpriority: fetchpriority
                     echo '</li>'
                   endcapture
     
@@ -74,6 +88,7 @@
           href="{{- paginate.next.url -}}"
           class="h-0 w-0 overflow-hidden opacity-0"
           aria-hidden="true"
+          tabindex="-1"
           data-more
         >
           Load more

@@ -4,7 +4,6 @@
 <html class="no-js" lang="{{ request.locale.iso_code }}">
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
     <link rel="canonical" href="{{ canonical_url }}">
@@ -27,8 +26,8 @@
     {% if template.suffix != blank %} template-{{ template.name | append: '-' | append: template.suffix | handle }} {% endif %}
   {% endcapture %}
 
-  <body id="{{ page_title | handle }}" class="{{ body_class | strip | strip_newlines }}">
-    <a class="z-(--z-skip) sr-only focus:not-sr-only" href="#view-container">
+  <body class="{{ body_class | strip | strip_newlines }}">
+    <a class="z-(--z-skip) sr-only focus:not-sr-only focus:fixed!" href="#view-container">
       {{ 'accessibility.skip_to_content' | t }}
     </a>
 
@@ -36,7 +35,7 @@
     {% section 'mobile-menu' %}
 
     <div class="flex flex-col">
-      <main id="view-container" class="min-h-[100lvh]" role="main" data-taxi>
+      <main id="view-container" class="min-h-lvh" tabindex="-1" data-taxi>
         <div data-taxi-view>
           {{ content_for_layout }}
         </div>

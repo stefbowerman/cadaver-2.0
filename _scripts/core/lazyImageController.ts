@@ -89,7 +89,7 @@ export default class LazyImageController {
   }
 
   onMutation(mutationsList: MutationRecord[]) {
-    const processNodes = (nodes: NodeList, handler: (node: HTMLElement) => void) => {
+    const processNodes = (nodes: NodeList, handler: (img: HTMLImageElement) => void) => {
       nodes.forEach(node => {
         if (!(node instanceof HTMLElement)) return
   

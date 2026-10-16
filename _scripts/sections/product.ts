@@ -1,4 +1,4 @@
-import type { ThemeEditorSectionUnloadEvent, SelectedOption } from '@/types/shopify'
+import type { SelectedOption } from '@/types/shopify'
 
 import BaseSection from '@/sections/base'
 import type { VariantChangeEvent } from '@/components/product/variantPicker'
@@ -14,20 +14,13 @@ export default class ProductSection extends BaseSection {
   constructor(container: HTMLElement) {
     super(container)
 
-    this.productDetailForm = new ProductDetailForm(this.qs(ProductDetailForm.SELECTOR), {
+    this.productDetailForm = new ProductDetailForm(this.qsRequired(ProductDetailForm.SELECTOR), {
       onVariantChange: this.onVariantChange.bind(this)
     })
 
     this.galleries = this.qsa(ProductDetailGallery.SELECTOR).map(el => {
       return new ProductDetailGallery(el)
     })
-  }
-
-  onUnload(e: ThemeEditorSectionUnloadEvent) {    
-    this.productDetailForm.destroy()
-    this.galleries.forEach(g => g.destroy())
-
-    super.onUnload(e)
   }
 
   /**
@@ -47,7 +40,7 @@ export default class ProductSection extends BaseSection {
         const activeGallery = this.galleries.find(g => g.isActive)
         const selectedColorGallery = this.galleries.find(g => g.color === selectedColor)
 
-        if (activeGallery !== selectedColorGallery) {
+        if (activeGallery && selectedColorGallery && activeGallery !== selectedColorGallery) {
           activeGallery.el.style.opacity = '0'
           activeGallery.deactivate()
 

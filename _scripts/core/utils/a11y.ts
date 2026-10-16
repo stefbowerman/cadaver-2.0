@@ -1,20 +1,55 @@
-/**
- * Returns whether the use prefers reduced motion or not
- *
- * @return {Boolean}
- */
 export function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
+function setOrRemoveAttr(el: HTMLElement, attr: string, value?: string): void {
+  value !== undefined ? el.setAttribute(attr, value) : el.removeAttribute(attr)
+}
+
+const AriaFlagAttributes = ['aria-hidden', 'aria-modal', 'aria-disabled', 'aria-busy'] as const
+type AriaFlagAttribute = typeof AriaFlagAttributes[number]
+
+export function setAriaFlag(el: HTMLElement, attr: AriaFlagAttribute, value: boolean): void {
+  setOrRemoveAttr(el, attr, value ? 'true' : undefined)
+}
+
+// For attributes where absent = "doesn't apply" — always sets "true" or "false"
+const AriaStateAttributes = ['aria-expanded', 'aria-selected', 'aria-checked', 'aria-pressed', 'aria-invalid'] as const
+type AriaStateAttribute = typeof AriaStateAttributes[number]
+
+export function setAriaState(el: HTMLElement, attr: AriaStateAttribute, value: boolean): void {
+  el.setAttribute(attr, value ? 'true' : 'false')
+}
+
+const AriaCurrentValues = ['page', 'step', 'location', 'date', 'time', 'true'] as const
+type AriaCurrentValue = typeof AriaCurrentValues[number]
+
+export function setAriaCurrent(el: HTMLElement, value?: AriaCurrentValue): void {
+  setOrRemoveAttr(el, 'aria-current', value)
+}
+
+interface Dismissible {
+  el: HTMLElement
+  isOpen: boolean
+  close: () => void
+  ariaControlElements: HTMLElement[]
+}
+
 /**
- * Sets the ARIA current attribute on a link element based on the current path.
- *
- * @param {HTMLAnchorElement} link - The link element to set the ARIA attribute on.
- * @param {string} currentPath - The current path to compare against the link's pathname.
- * @return {void} 
+ * Closes a dialog-like component on Escape.
+ * Closing makes the component inert, so if focus was inside, it's handed back to the first focusable trigger instead of being lost to <body>
  */
-export function setAriaCurrent(link: HTMLAnchorElement, currentPath: string): void {
+export function closeOnEscape(e: KeyboardEvent, component: Dismissible): void {
+  if (e.key !== 'Escape' || !component.isOpen) return
+
+  const hadFocus = component.el.contains(document.activeElement)
+
+  component.close()
+
+  if (hadFocus) component.ariaControlElements.find(el => el.tabIndex >= 0)?.focus()
+}
+
+export function setLinkAriaCurrent(link: HTMLAnchorElement, currentPath: string): void {
   if (!(link instanceof HTMLAnchorElement)) {
     console.warn('Invalid link element provided.')
     return
@@ -27,26 +62,5 @@ export function setAriaCurrent(link: HTMLAnchorElement, currentPath: string): vo
 
   if (!link.href) return
 
-  const isExactMatch = link.pathname === currentPath
-
-  if (isExactMatch) {
-    link.setAttribute('aria-current', 'page')
-  }
-  else {
-    link.removeAttribute('aria-current')
-  }  
-}
-
-/**
- * Converts a boolean value to its string representation ('true' or 'false').
- * Used for ARIA attributes that require string values of 'true' or 'false'
- * rather than boolean values (e.g., aria-expanded, aria-hidden, aria-selected).
- * 
- * @param {boolean} value - The boolean value to convert
- * @returns {string} The string representation ('true' or 'false') for use in ARIA attributes
- * @example
- * element.setAttribute('aria-expanded', booleanAsString(isExpanded));
- */
-export function toAriaBoolean(value: boolean): string {
-  return value ? 'true' : 'false'
+  setAriaCurrent(link, link.pathname === currentPath ? 'page' : undefined)
 }

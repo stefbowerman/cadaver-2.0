@@ -8,12 +8,16 @@ import type {
 } from '@/types/taxi'
 
 import BreakpointsController from '@/core/breakpointsController'
+import LazyImageController from '@/core/lazyImageController'
 
 import {
   isThemeEditor,
+  prefersPointer,
   targetBlankExternalLinks
 } from '@/core/utils'
 import { dispatch } from '@/core/utils/event'
+
+import A11yStatus from '@/components/a11y/a11yStatus'
 
 // Renderers
 import BaseRenderer from '@/renderers/base'
@@ -28,16 +32,16 @@ import FooterSection from '@/sections/footer'
 import MobileMenuSection from '@/sections/mobileMenu'
 import AJAXCartSection from '@/sections/ajaxCart'
 
-// Use this to expose anything needed throughout the rest of the app
-window.app = window.app || {};
+// window.app is always set by the inline script in snippets/head-scripts.liquid before this bundle runs
 window.app.taxi = null;
 
 function init() {
-  const viewContainer = document.querySelector('main#view-container')
+  const viewContainer = document.querySelector<HTMLElement>('main#view-container')
   const TEMPLATE_REGEX = /\btemplate-\w*/
 
   // Initialize all global controllers before starting Taxi and registering sections
   window.app.breakpointsController = new BreakpointsController()
+  window.app.lazyImageController = new LazyImageController(document.body)
 
   const sectionManager = new SectionManager()
 
@@ -45,6 +49,9 @@ function init() {
   sectionManager.register(FooterSection)
   sectionManager.register(MobileMenuSection)
   sectionManager.register(AJAXCartSection)
+
+  // Create a global A11yStatus to announce view changes
+  const a11yStatus = A11yStatus.generate(document.body)
 
   // START Taxi
   if (isThemeEditor()) {
@@ -61,7 +68,7 @@ function init() {
     },
     reloadJsFilter: (element) => {
       // Whitelist any scripts here that need to be reloaded on page change
-      return element.dataset.taxiReload !== undefined || viewContainer.contains(element)
+      return element.dataset.taxiReload !== undefined || (viewContainer?.contains(element) ?? false)
     },
     allowInterruption: true,
     enablePrefetch: true
@@ -105,6 +112,9 @@ function init() {
 
     targetBlankExternalLinks()
 
+    viewContainer?.focus({ preventScroll: true })
+    a11yStatus.text = document.title
+
     dispatch('taxi.navigateEnd', e)
   })
 
@@ -118,11 +128,17 @@ function init() {
     window.history.scrollRestoration = 'manual'
   }
 
-  document.body.classList.add('is-loaded')
+  // Use these root classes as styling hooks for different application states
+  if (!prefersPointer()) {
+    document.documentElement.classList.add('no-hover')
+  }
 
   if (isThemeEditor()) {
     document.documentElement.classList.add('is-theme-editor')
-  }  
+  }
+  
+  // @NOTE: This class was only used for the body reveal animation which has been disabled.  See app.css.
+  document.body.classList.add('is-loaded')  
 }
 
 document.addEventListener('DOMContentLoaded', init)

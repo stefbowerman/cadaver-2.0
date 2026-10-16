@@ -57,9 +57,10 @@ export default class SectionManager {
     // Bind all the theme editor event handlers
     THEME_EDITOR_EVENTS.forEach(ev => {
       const handlerName = getEventHandlerName(ev)
+      const handler = (this as Record<string, unknown>)[handlerName]
 
-      if (this[handlerName]) {
-        this[handlerName] = this[handlerName].bind(this)
+      if (typeof handler === 'function') {
+        (this as Record<string, unknown>)[handlerName] = handler.bind(this)
       }
     })
 
@@ -78,20 +79,22 @@ export default class SectionManager {
     if (!isThemeEditor()) return
 
     THEME_EDITOR_EVENTS.forEach(ev => {
-      const handler = this[getEventHandlerName(ev)]
+      const handlerName = getEventHandlerName(ev)
+      const handler = (this as Record<string, unknown>)[handlerName]
 
-      if (handler) {
-        window.document.addEventListener(ev, handler.bind(this))
+      if (typeof handler === 'function') {
+        window.document.addEventListener(ev as keyof DocumentEventMap, handler as EventListener)
       }
     })
   }
 
   removeEvents() {
     THEME_EDITOR_EVENTS.forEach(ev => {
-      const handler = this[getEventHandlerName(ev)]
+      const handlerName = getEventHandlerName(ev)
+      const handler = (this as Record<string, unknown>)[handlerName]
 
-      if (handler) {
-        window.document.removeEventListener(ev, handler)
+      if (typeof handler === 'function') {
+        window.document.removeEventListener(ev as keyof DocumentEventMap, handler as EventListener)
       }
     })
   }
@@ -106,7 +109,7 @@ export default class SectionManager {
 
   load(container: HTMLElement, constructor?: typeof BaseSection) {
     const type = container.getAttribute(SECTION_TYPE_ATTR)
-    const Konstructor = constructor || this.constructors[type] // No param re-assignment
+    const Konstructor = constructor || this.constructors[type ?? ''] // No param re-assignment
 
     if (typeof Konstructor === 'undefined') {
       return
@@ -142,11 +145,10 @@ export default class SectionManager {
       return
     }
 
-
     this.constructors[TYPE] = constructor
 
-    document.querySelectorAll(`[${SECTION_TYPE_ATTR}="${TYPE}"]`).forEach((container: HTMLElement) => {
-      this.load(container, constructor)
+    document.querySelectorAll(`[${SECTION_TYPE_ATTR}="${TYPE}"]`).forEach(container => {
+      this.load(container as HTMLElement, constructor)
     })
   }
 
@@ -155,9 +157,13 @@ export default class SectionManager {
   onGenericEvent(e: ThemeEditorGenericEvent, func: string) {
     const instance = this.getInstanceById(e.detail.sectionId)
 
-    if (instance && typeof instance[func] === 'function') {
-      instance[func].call(instance, e)
-    }    
+    if (!instance) return
+
+    const handler = (instance as unknown as Record<string, unknown>)[func]
+
+    if (typeof handler === 'function') {
+      handler.call(instance, e)
+    }
   }
 
   onSectionLoad(e: ThemeEditorSectionLoadEvent) {

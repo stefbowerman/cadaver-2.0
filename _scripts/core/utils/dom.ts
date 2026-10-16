@@ -110,9 +110,9 @@ export const getDomFromString = (string: string): Document => {
  * @param url - The URL to fetch the DOM from.
  * @returns The DOM.
  */
-export const fetchDom = async (url: string | URL): Promise<Document | undefined> => {
+export const fetchDom = async (url: string | URL, signal?: AbortSignal): Promise<Document | undefined> => {
   try {
-    const response = await fetch(url)
+    const response = await fetch(url, { signal })
 
     if (!response.ok) throw new Error('Network response was not ok')
 
@@ -121,7 +121,12 @@ export const fetchDom = async (url: string | URL): Promise<Document | undefined>
 
     return dom
   }
-  catch (e) {
+  catch (e: unknown) {
+    if (e instanceof Error && e.name === 'AbortError') {
+      console.log('Fetch aborted by user') // eslint-disable-line no-console
+      return undefined
+    }
+
     console.warn('something went wrong...', e)
     return undefined
   }

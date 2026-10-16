@@ -1,7 +1,7 @@
-import { toAriaBoolean } from '@/core/utils/a11y'
-import FocusTrap from '@/core/focusTrap'
 import type { LiteCart } from '@/types/shopify'
 import type { CartAPIEvent } from '@/core/cartAPI'
+import { setAriaFlag, setAriaState, closeOnEscape } from '@/core/utils/a11y'
+import FocusTrap from '@/core/focusTrap'
 
 import BaseComponent from '@/components/base'
 import Backdrop from '@/components/backdrop'
@@ -9,41 +9,45 @@ import CartBody from '@/components/ajaxCart/cartBody'
 import CartFooter from '@/components/ajaxCart/cartFooter'
 
 const selectors = {
-  close: '[data-ajax-cart-close]',
-  toggle: '[data-ajax-cart-toggle][aria-controls]' // Not scoped to the component
+  close: '[data-ajax-cart-close]'
 }
 
 const classes = {
-  open: 'is-open',
   empty: 'is-empty',
   bodyCartOpen: 'ajax-cart-open'
 }
 
 // NOTE: This component takes a lot of inspiration from the drawer component but is purposely built separately so that it can easily be modified to work differently/independently
 
+interface AJAXCartOptions {
+  onOpenComplete?: () => void
+  onCloseComplete?: () => void
+}
+
 export default class AJAXCart extends BaseComponent {
   static TYPE = 'ajax-cart'
 
-  isOpen: boolean
-  requestInProgress: boolean
+  settings: AJAXCartOptions
   role: string | null
+  focusTrap: FocusTrap
   cartBody: CartBody
   cartFooter: CartFooter
-  focusTrap: FocusTrap
   backdrop: Backdrop
 
-  constructor(el: HTMLElement, cartData: LiteCart) {
+  constructor(el: HTMLElement, cartData: LiteCart, options: AJAXCartOptions = {}) {
     super(el, {
-      watchCartUpdate: true,
+      watchCartUpdate: true
     })
 
-    this.isOpen = false
-    this.requestInProgress = false
+    this.settings = {
+      ...options
+    }
+
     this.role = this.el.getAttribute('role')
 
-    this.cartBody = new CartBody(this.qs(CartBody.SELECTOR), cartData)
-    this.cartFooter = new CartFooter(this.qs(CartFooter.SELECTOR))
-    
+    this.cartBody = new CartBody(this.qsRequired(CartBody.SELECTOR), cartData)
+    this.cartFooter = new CartFooter(this.qsRequired(CartFooter.SELECTOR))
+
     this.focusTrap = new FocusTrap(this.el, {
       autofocus: false,
       returnFocus: false,
@@ -52,28 +56,43 @@ export default class AJAXCart extends BaseComponent {
 
     this.backdrop = Backdrop.generate(document.body, {
       ariaControls: this.el.id,
-      ariaExpanded: false
+      title: 'Close cart'
     })
 
     this.onBodyClick = this.onBodyClick.bind(this)
+    this.onTransitionEnd = this.onTransitionEnd.bind(this)
+    this.onKeydown = this.onKeydown.bind(this)
 
+    this.el.addEventListener('transitionend', this.onTransitionEnd)
     document.body.addEventListener('click', this.onBodyClick)
+    document.addEventListener('keydown', this.onKeydown)
 
     // Set empty state based on initial cart data
     this.setEmpty(cartData.item_count === 0)
 
-    if (this.role) {
-      this.ariaControlElements.forEach(el => el.setAttribute('aria-haspopup', this.role))
+    // Set aria-expanded state for all control elements based on the initial state
+    this.ariaControlElements.forEach(el => setAriaState(el, 'aria-expanded', this.isOpen))    
+
+    const role = this.role
+    if (role) {
+      this.ariaControlElements.forEach(el => el.setAttribute('aria-haspopup', role))
     }
   }
 
   destroy() {
     this.focusTrap.destroy()
 
-    document.body.classList.remove(classes.bodyCartOpen)    
+    document.body.classList.remove(classes.bodyCartOpen)
     document.body.removeEventListener('click', this.onBodyClick)
+    document.removeEventListener('keydown', this.onKeydown)
+
+    this.ariaControlElements.forEach(el => el.removeAttribute('aria-haspopup'))
 
     super.destroy()
+  }
+
+  get isOpen() {
+    return !this.isAriaHidden
   }
 
   setEmpty(isEmpty: boolean) {
@@ -87,37 +106,41 @@ export default class AJAXCart extends BaseComponent {
   open() {
     if (this.isOpen) return
 
-    this.el.classList.add(classes.open)
-    this.el.setAttribute('aria-hidden', toAriaBoolean(false))
-    this.el.removeAttribute('inert')
+    setAriaFlag(this.el, 'aria-hidden', false)
+    setAriaFlag(this.el, 'aria-modal', true)
 
+    this.el.inert = false
     this.backdrop.show()
-
-    this.ariaControlElements.forEach(el => el.setAttribute('aria-expanded', toAriaBoolean(true)))
-
+    this.ariaControlElements.forEach(el => setAriaState(el, 'aria-expanded', true))
     document.body.classList.add(classes.bodyCartOpen)
-
-    this.focusTrap.activate()  // @NOTE - If using JS for animation, activation should happen on openComplete
-    
-    this.isOpen = true
   }
 
   close() {
     if (!this.isOpen) return
 
-    this.el.classList.remove(classes.open)
-    this.el.setAttribute('aria-hidden', toAriaBoolean(true))
-    this.el.setAttribute('inert', toAriaBoolean(true))
+    setAriaFlag(this.el, 'aria-hidden', true)
+    setAriaFlag(this.el, 'aria-modal', false)
 
+    this.el.inert = true
     this.backdrop.hide()
-
-    this.ariaControlElements.forEach(el => el.setAttribute('aria-expanded', toAriaBoolean(false)))  
-    
+    this.ariaControlElements.forEach(el => setAriaState(el, 'aria-expanded', false))
+    this.focusTrap.deactivate()
     document.body.classList.remove(classes.bodyCartOpen)
+  }
 
-    this.focusTrap.deactivate() // @NOTE - If using JS for animation, deactivation should happen on closeStart
+  onOpenComplete() {
+    this.focusTrap.activate()
+    this.settings.onOpenComplete?.()
+  }
 
-    this.isOpen = false
+  onCloseComplete() {
+    this.settings.onCloseComplete?.()
+  }
+
+  onTransitionEnd(e: TransitionEvent) {
+    if (e.target !== this.el) return
+
+    this.isOpen ? this.onOpenComplete() : this.onCloseComplete()
   }
 
   onCartUpdate(e: CartAPIEvent) {
@@ -126,6 +149,10 @@ export default class AJAXCart extends BaseComponent {
     this.setEmpty(cart.item_count === 0)
     
     this.open()
+  }
+
+  onKeydown(e: KeyboardEvent) {
+    closeOnEscape(e, this)
   }
 
   onBodyClick(e: MouseEvent) {
@@ -140,12 +167,6 @@ export default class AJAXCart extends BaseComponent {
       e.preventDefault()
       this.toggle()
     } 
-  }
-
-  onToggleClick(e: MouseEvent) {
-    e.preventDefault()
-
-    this.toggle()
   }
 
   onCloseClick(e: MouseEvent) {

@@ -13,11 +13,6 @@ export const BREAKPOINTS = {
 // Sort the breakpoints from small -> large
 const BREAKPOINTS_MAP = new Map(Object.entries(BREAKPOINTS).sort((a, b) => a[1] - b[1]));
 
-type MediaQuery = {
-  minWidth: number
-  query: MediaQueryList
-}
-
 export type BreakpointChangeEvent = CustomEvent<{
   breakpoint: number
   fromBreakpoint: number
@@ -27,29 +22,29 @@ export type BreakpointChangeEvent = CustomEvent<{
 export default class BreakpointsController {
   static EVENTS = {
     CHANGE: 'change.breakpointsController'
-  }
+  } as const
 
   currentKey: string
-  mediaQueries: Map<string, MediaQuery>
+  mediaQueries: MediaQueryList[]
 
   constructor() {
-    this.currentKey = this.getKeyForWidth(window.innerWidth)
-    this.mediaQueries = new Map()
+    this.currentKey = this.getKeyForWidth(window.innerWidth) ?? ''
+    this.mediaQueries = []
 
     this.onChange = this.onChange.bind(this)
 
     // Initialize media queries
-    BREAKPOINTS_MAP.forEach((minWidth, key) => {
+    BREAKPOINTS_MAP.forEach((minWidth) => {
       const query = window.matchMedia(`(min-width: ${minWidth}px)`)
 
       query.addEventListener('change', this.onChange)
 
-      this.mediaQueries.set(key, { minWidth, query } as MediaQuery)
+      this.mediaQueries.push(query)
     })
   }
 
   destroy() {
-    this.mediaQueries.forEach(({ query }) => {
+    this.mediaQueries.forEach((query) => {
       query.removeEventListener('change', this.onChange)
     })
   }
@@ -80,18 +75,18 @@ export default class BreakpointsController {
     const oldKey = this.currentKey
     const newKey = this.getKeyForWidth(window.innerWidth)
 
-    if (oldKey !== newKey) {
-      const breakpoint = this.mediaQueries.get(newKey).minWidth
-      const fromBreakpoint = this.mediaQueries.get(oldKey).minWidth
-      const direction = window.innerWidth > this.mediaQueries.get(oldKey).minWidth ? 1 : -1
+    if (!newKey || newKey === oldKey) return
 
-      dispatch(BreakpointsController.EVENTS.CHANGE, {
-        breakpoint,
-        fromBreakpoint,
-        direction
-      })
-      
-      this.currentKey = newKey
-    }
+    const breakpoint = BREAKPOINTS_MAP.get(newKey)!
+    const fromBreakpoint = BREAKPOINTS_MAP.get(oldKey)!
+    const direction = breakpoint > fromBreakpoint ? 1 : -1
+
+    dispatch(BreakpointsController.EVENTS.CHANGE, {
+      breakpoint,
+      fromBreakpoint,
+      direction
+    })
+
+    this.currentKey = newKey
   }
 }

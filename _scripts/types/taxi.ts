@@ -51,11 +51,11 @@ export type TransitionProps = {
 export type TransitionOnLeaveProps = {
   from: HTMLElement | Element,
   trigger: string | HTMLElement | false,
-  done: Function
+  done: () => void
 }
 
 export type TransitionOnEnterProps = {
   to: HTMLElement | Element,
   trigger: string | HTMLElement | false,
-  done: Function
+  done: () => void
 }

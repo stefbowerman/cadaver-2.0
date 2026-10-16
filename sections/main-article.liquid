@@ -19,7 +19,11 @@
         {{ article.content }}
       </div>
     </div>
-  </div>    
+  </div>
+
+  <script type="application/ld+json">
+    {{ article | structured_data }}
+  </script>
 </div>
 
 {% schema %}

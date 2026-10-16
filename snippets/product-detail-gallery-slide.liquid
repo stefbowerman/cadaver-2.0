@@ -4,6 +4,7 @@
 
   @param {image} image - The image to display - required
   @param {string} [loading] - The loading attribute value - optional, defaults to 'lazy'
+  @param {string} [fetchpriority] - The fetchpriority attribute value - optional, defaults to 'auto'
 
   @example
     {% render 'product-detail-gallery-slide', image: product.images[0], loading: 'eager' %}
@@ -12,10 +13,17 @@
 {% if image != blank %}
   {%- liquid
     assign loading = loading | default: 'lazy'
-    
+    assign fetchpriority = fetchpriority | default: 'auto'
+
     capture main_image_widths
       render 'image-widths', max_width: 1100
     endcapture
+
+    assign image_class = 'size-full object-contain'
+    
+    if loading == 'lazy'
+      assign image_class = image_class | append: ' lazy-image'
+    endif
   -%}
   
   <div
@@ -28,10 +36,11 @@
       | image_url: width: 720
       | image_tag:
         loading: loading,
+        fetchpriority: fetchpriority,
         widths: main_image_widths,
         sizes: '100vw',
         alt: image.alt,
-        class: 'h-full w-full object-contain lazy-image'
+        class: image_class
     }}
   </div>     
 {% endif %}

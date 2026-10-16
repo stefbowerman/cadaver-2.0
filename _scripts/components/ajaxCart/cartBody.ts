@@ -5,6 +5,7 @@ import CartAPI, { type CartAPIEvent } from '@/core/cartAPI'
 
 import BaseComponent from '@/components/base'
 import CartItem from '@/components/ajaxCart/cartItem'
+import A11yStatus from '@/components/a11y/a11yStatus'
 
 const selectors = {
   list: '[data-list]'
@@ -17,6 +18,7 @@ export default class CartBody extends BaseComponent {
   cartData: LiteCart
   list: HTMLElement
   itemInstances: CartItem[]
+  a11yStatus: A11yStatus
 
   constructor(el: HTMLElement, cartData: LiteCart) {
     super(el, {
@@ -27,7 +29,8 @@ export default class CartBody extends BaseComponent {
 
     this.cartData = cartData
 
-    this.list = this.qs(selectors.list)
+    this.list = this.qsRequired(selectors.list)
+    this.a11yStatus = A11yStatus.generate(this.el)
 
     this.onItemRemoveClick = this.onItemRemoveClick.bind(this)
     this.onItemQuantityAdjusterChange = this.onItemQuantityAdjusterChange.bind(this)
@@ -54,15 +57,20 @@ export default class CartBody extends BaseComponent {
     this.itemInstances = this.itemInstances.filter(instance => instance !== removalInstance)
     
     // Animate the removal and then clean up the instance
+    // The tween can fire both onInterrupt and onComplete, so guard against destroying the instance twice
+    let cleanedUp = false
+    const cleanup = () => {
+      if (cleanedUp) return
+      cleanedUp = true
+
+      this.cleanupItemInstance(removalInstance)
+    }
+
     slideUp(removalInstance.el, {
       duration: 0.45,
-      onInterrupt: () => {
-        this.cleanupItemInstance(removalInstance)
-      },
-      onComplete: () => {
-        this.cleanupItemInstance(removalInstance)
-      }
-    })    
+      onInterrupt: cleanup,
+      onComplete: cleanup
+    })
   }
 
   performItemInstanceUpdate(updateInstance: CartItem, newItemData: LiteLineItem) {
@@ -75,7 +83,12 @@ export default class CartBody extends BaseComponent {
   performItemInstanceAddition(newItemData: LiteLineItem, newIndex: number) {
     if (!newItemData) return
 
-    const newItemEl = getDomFromString(newItemData.item_html).querySelector(CartItem.SELECTOR) as HTMLElement
+    const newItemEl = getDomFromString(newItemData.item_html).querySelector<HTMLElement>(CartItem.SELECTOR)
+
+    if (!newItemEl) {
+      throw new Error(`[${this.type}] Required element not found: "${CartItem.SELECTOR}"`)
+    }
+
     const newItemInstance = this.createCartItemInstance(newItemEl, newItemData)
     
     // Insert to list DOM
@@ -159,9 +172,11 @@ export default class CartBody extends BaseComponent {
       const cart = await CartAPI.changeLineItemQuantity(item.key, 0)
 
       this.onItemRemoveSuccess(item, cart)
+      this.a11yStatus.text = 'Item removed from cart'
     }
     catch (error) {
-      console.error('Error removing item', error)      
+      this.a11yStatus.text = 'Error removing item from cart'
+      console.error('Error removing item', error)
     }
     finally {
       this.#muteUpdateSync = false
@@ -178,15 +193,18 @@ export default class CartBody extends BaseComponent {
 
       if (q === 0) {
         this.onItemRemoveSuccess(item, cart)
+        this.a11yStatus.text = 'Item removed from cart'
       }
       else {
         this.onItemChangeSuccess(item, cart)
+        this.a11yStatus.text = 'Cart updated'
       }
     }
     catch (error) {
       item.state = undefined
       item.quantityAdjuster.value = item.itemData.quantity // Reset the quantity adjuster to the original quantity
 
+      this.a11yStatus.text = 'Error updating cart'
       console.error('Error updating item quantity', error)
     }
     finally {

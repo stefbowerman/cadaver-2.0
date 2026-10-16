@@ -2,3 +2,5 @@ ImgLazyLoading:
   enabled: false
 PaginationSize:
   enabled: false
+OrphanedSnippet:
+  enabled: false

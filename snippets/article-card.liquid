@@ -1,41 +1,57 @@
-{%- comment %}
+{% doc %}
+  @param {article} article - The article to display - required
+  @param {string} [loading] - Optional loading attribute for the image - defaults to "lazy"
+  @param {string} [fetchpriority] - Optional fetch priority attribute for the image - defaults to "auto"
+  @param {string} [sizes] - Optional sizes attribute for the image - defaults to sizes for blog grid
+  @param {number} [image_min_width] - Optional minimum width for the image - defaults to 300
+  @param {number} [image_max_width] - Optional maximum width for the image - defaults to 1200
 
-  Article Card
-  ------------------------------------------------------------------------------
-
-  Usage:
-
+  @example
   {% render 'article-card',
-             article: { article } - required
+             article: article,
+             loading: 'eager',
+             fetchpriority: 'high',
+             sizes: '(max-width: 63.98rem) 100vw, 50vw'
   %}
-
-{% endcomment -%}
+{% enddoc %}
 
 {% if article %}
-  <div class="flex flex-col gap-y-2">
-    <a href="{{ article.url }}" title="{{ article.title | escape }}">
-      <div class="relative aspect-[1.47]">
-        {%- liquid
-          assign alt_text =  article.image.alt | default: article.title | escape
+  {%- liquid
+    assign loading = loading | default: 'lazy'
+    assign fetchpriority = fetchpriority | default: 'auto'
+    assign image_min_width = image_min_width | default: 300
+    assign image_max_width = image_max_width | default: 1200
+    assign sizes = sizes | default: '(max-width: 63.98rem) 100vw, 50vw'
+    assign image_class = 'size-full object-cover'
 
-          capture image_widths
-            render 'image-widths', max_width: 900
-          endcapture
-        -%}
+    capture image_widths
+      render 'image-widths', min_width: image_min_width, max_width: image_max_width
+    endcapture
 
-        {{
-          article.image
-          | image_url: width: 900
+    if loading == 'lazy'
+      assign image_class = image_class | append: ' lazy-image'
+    endif
+  -%}
+
+  <a href="{{ article.url }}" class="flex flex-col gap-y-2">
+    <div class="relative aspect-[1.47]">
+      {% if article.image %}
+        {{ article.image
+          | image_url: width: image_max_width
           | image_tag:
+            loading: loading,
+            fetchpriority: fetchpriority,
             widths: image_widths,
-            alt: alt_text,
-            class: 'h-full w-full object-cover lazy-image'
+            class: image_class,
+            sizes: sizes
+          | replace: '<img ', '<img alt="" '
         }}
-      </div>
-      <div class="flex flex-col gap-y-2">
-        <div class="text-sm uppercase">{{- article.published_at | time_tag: format: 'date' -}}</div>
-        <div class="text-lg font-medium">{{ article.title }}</div>
-      </div>
-    </a>
-  </div>
+      {% endif %}
+    </div>
+    <div class="flex flex-col gap-y-2">
+      {% comment %} Title comes first in the DOM so the link's accessible name leads with it - date is moved visually above with 'order-first' {% endcomment %}
+      <div class="text-lg font-medium">{{ article.title }}</div>
+      <div class="text-sm uppercase order-first">{{- article.published_at | time_tag: format: 'date' -}}</div>
+    </div>
+  </a>
 {% endif %}

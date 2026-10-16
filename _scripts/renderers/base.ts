@@ -8,6 +8,7 @@ import Addresses from '@/sections/addresses'
 import Article from '@/sections/article'
 import Blog from '@/sections/blog'
 import Collection from '@/sections/collection'
+import Page from '@/sections/page'
 import Product from '@/sections/product'
 import ProductRelated from '@/sections/productRelated'
 import Login from '@/sections/login'
@@ -25,6 +26,8 @@ export default class BaseRenderer extends Renderer {
 
   constructor(properties: RendererProps) {
     super(properties)
+
+    this.sectionManager = null
   }
 
   // NOTE: If initialLoad is defined, "onEnter" will not be called for sections that exist on page load
@@ -45,13 +48,14 @@ export default class BaseRenderer extends Renderer {
       Article,
       Blog,
       Collection,
+      Page,
       Product,
       ProductRelated,
       Login,
       Search,
       PageHero
     ].forEach(section => {
-      this.sectionManager.register(section)
+      this.sectionManager?.register(section)
     })    
   }
 

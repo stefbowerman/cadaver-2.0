@@ -15,8 +15,8 @@ export default class LoginSection extends BaseSection {
   constructor(container: HTMLElement) {
     super(container)
 
-    this.loginForm = this.qs(selectors.loginForm)
-    this.recoverForm = this.qs(selectors.recoverForm)
+    this.loginForm = this.qsRequired(selectors.loginForm)
+    this.recoverForm = this.qsRequired(selectors.recoverForm)
     
     this.container.addEventListener('click', this.onClick.bind(this))
 

@@ -1,12 +1,14 @@
-<div class="container">
-  {% render 'section-header',
-            title: page.title,
-            title_tag: 'h1'
-  %}
+<div data-section-id="{{ section.id }}" data-section-type="page">
+  <div class="container">
+    {% render 'section-header',
+              title: page.title,
+              title_tag: 'h1'
+    %}
 
-  <div class="mx-auto" style="max-width: 560px">
-    <div class="rte">
-      {{ page.content }}
+    <div class="mx-auto" style="max-width: 560px">
+      <div class="rte">
+        {{ page.content }}
+      </div>
     </div>
   </div>
 </div>

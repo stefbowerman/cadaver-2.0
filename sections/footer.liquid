@@ -7,9 +7,9 @@
     <div class="grid lg:grid-cols-2 gap-y-8 lg:gap-y-20 gap-x-(--grid-column-gap)">
       {% comment %} Newsletter {% endcomment %}
       <div>
-        <h3>
+        <h2>
           {{ section.settings.newsletter_title | default: 'Newsletter Signup' }}
-        </h3>
+        </h2>
 
         {% if section.settings.newsletter_message != blank %}
           <div class="form-group">
@@ -26,9 +26,9 @@
 
       {% comment %} Socials {% endcomment %}
       <div>
-        <h3>
+        <h2>
           {{ section.settings.socials_title }}
-        </h3>
+        </h2>
         
         {%- if section.settings.socials_menu != blank -%}
           <div class="footer-menu">

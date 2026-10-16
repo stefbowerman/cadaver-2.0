@@ -18,9 +18,7 @@
               <button
                 class="header-nav__item"
                 data-mobile-menu-toggle
-                aria-label="Toggle Menu"
-                aria-controls="mobile-menu"
-                aria-expanded="false"                
+                aria-controls="mobile-menu"               
               >
                 Menu
               </button>
@@ -45,18 +43,21 @@
     
       <div class="header-nav header-nav--right">
         <div class="header-nav__list">
+          {%- liquid
+            assign cart_item_label = 'cart.label.item' | t
+            assign cart_items_label = 'cart.label.items' | t
+          -%}
+          
           <button
             class="header-nav__item"
             data-ajax-cart-toggle
-            aria-label="Toggle Cart"
             aria-controls="ajax-cart"
-            aria-expanded="false"
           >
             <span
               class="{% if cart.item_count > 0 %}has-items{% endif %}"
               data-component="header-cart-control"
             >
-              Cart <span class="header-cart-count" data-count>{{ cart.item_count }}</span>
+              Cart <span class="header-cart-count" data-count>{{ cart.item_count }}</span><span class="sr-only" data-count-label> {{ cart.item_count | pluralize: cart_item_label, cart_items_label }}</span>
             </span>
           </button>
         
@@ -64,8 +65,8 @@
             href="{{ routes.search_url }}"
             class="header-nav__item"
           >
-            {{- 'icon-search.svg' | inline_asset_content -}}
-            <span class="sr-only">Search icon</span>
+            {{- 'icon-search.svg' | inline_asset_content | replace: '<svg ', '<svg aria-hidden="true" focusable="false" '-}}
+            <span class="sr-only">{{ 'general.search.search' | t }}</span>
           </a>
         </div>  
       </div>
@@ -79,20 +80,24 @@
 {% endcomment %}
 <script type="application/ld+json">
   {
-    "@context": "http://schema.org",
+    "@context": "https://schema.org",
     "@type": "Organization",
     "name": {{ shop.name | json }},
     {% if shop.brand.logo %}
       "logo": {{ shop.brand.logo | image_url: width: 500 | prepend: "https:" | json }},
     {% endif %}
-    "sameAs": [
-      {{ settings.social_link_twitter   | json }},
-      {{ settings.social_link_facebook  | json }},
-      {{ settings.social_link_youtube   | json }},
-      {{ settings.social_link_tiktok    | json }},
-      {{ settings.social_link_instagram | json }}
-    ],
-    "url": {{ request.origin | append: page.url | json }}
+    {%- liquid
+      assign networks = 'twitter,facebook,youtube,tiktok,instagram' | split: ','
+      assign same_as = ''
+      for network in networks
+        assign key = 'social_link_' | append: network
+        if settings[key] != blank
+          assign same_as = same_as | append: settings[key] | append: '|'
+        endif
+      endfor
+    -%}
+    "sameAs": {{ same_as | split: '|' | json }},
+    "url": {{ request.origin | append: routes.root_url | json }}
   }
 </script>
 

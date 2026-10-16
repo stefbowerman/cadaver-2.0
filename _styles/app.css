@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @source not '../assets/app.bundle.css';
 @source not '../assets/app.bundle.js';
+@source not '../.cursor/rules/**/*.liquid';
 
 @theme {
   --color-red: #F00;
@@ -19,6 +20,8 @@
   --z-ajax-cart: 200;
   --z-drawer: 200;
   --z-skip: 10000;
+
+  --aspect-product: 0.8;
 }
 
 @utility container {
@@ -46,14 +49,14 @@
     --header-height: 65px;
     --header-logo-width: 110px;
 
-    @media (min-width: 1280px) {
+    @variant xl {
       --header-logo-width: 140px;
     }
 
     --layout-padding-top: 60px;
     --layout-padding-bottom: 60px;
 
-    @media (min-width: 768px) {
+    @variant md {
       --layout-padding-top: 100px;
       --layout-padding-bottom: 100px;
     }      
@@ -94,10 +97,9 @@
     */ 
   }
 
-  :focus,
-  :focus-visible {
-    @apply outline-none; /* Applies outline-width and offset */
-  }
+  *:focus-visible:not([disabled]) {
+    @apply outline-(length:--default-border-width) outline-solid outline-offset-3;
+  } 
     
   html {
     -webkit-text-size-adjust: 100%;
@@ -122,7 +124,8 @@
     @apply overflow-hidden;
   }    
 
-  html.js {
+  /* Disabling this effect because it hurts LCP score in Lighthouse.  */
+  /* html.js {
     body {
       opacity: 0;
       transition: opacity 0.5s cubic-bezier(0.33, 0.01, 0.49, 1.02) 0.15s;
@@ -131,7 +134,7 @@
         opacity: 1;
       }
     }
-  }
+  } */
 
   /* Only show when JS is not supported */
   .no-js:not(html) {
@@ -148,21 +151,32 @@
       display: none;
     }
   }
+
+  address {
+    font-style: normal;
+  }
+
+  ::selection {
+    /* Set the background and text color for selected text */
+  }
   
-  a, button {
-    &:focus-visible:not(:has([disabled])) {
-      @apply outline outline-blue;
-    }
+  *:focus-visible:not([disabled]) {
+    @apply outline outline-solid outline-black outline-offset-3;
+  }
+
+  /* Containers focused by script (Taxi navigation, skip link) aren't controls, so no ring */
+  [tabindex="-1"]:focus-visible {
+    @apply outline-none;
   }
 
   /* Remove all animations and transitions for people that prefer not to see them */
-  @media (prefers-reduced-motion: reduce) {
+  @variant motion-reduce {
     *,
     *::before,
     *::after {
+      transition-duration: 0.01ms !important;
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
 
@@ -175,7 +189,7 @@
 .image-responsive {
   object-position: var(--object-position-mobile, 50% 50%);
 
-  @media (min-width: 1024px) {
+  @variant lg {
     object-position: var(--object-position-desktop, 50% 50%);
   }
 }
@@ -240,3 +254,5 @@ img.lazy-image {
 @import './components/_ajax-cart.css';
 @import './components/_drawer.css';
 @import './components/_policy.css';
+@import './components/_product-card.css';
+@import './components/_accordion.css';

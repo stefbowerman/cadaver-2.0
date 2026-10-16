@@ -1,7 +1,27 @@
+/**
+ * Quantity adjuster component with increment/decrement buttons, validation, and configurable min/max bounds.
+ *
+ * @example
+ * {% render 'quantity-adjuster',
+ *          value: 1,
+ *          min: 1,
+ *          max: 10,
+ *          product_title: product.title
+ * %}
+ *
+ * Bind to changes:
+ * const adjuster = new QuantityAdjuster(el, {
+ *   onChange: (value) => console.log('Quantity changed to:', value)
+ * })
+ *
+ * See snippets/quantity-adjuster.liquid for the full markup.
+ */
+
 import { isNumber, clamp } from '@/core/utils'
 import BaseComponent from '@/components/base'
 
 const selectors = {
+  input: 'input[type="number"]',
   increment: 'button[data-increment]',
   decrement: 'button[data-decrement]'
 }
@@ -10,21 +30,22 @@ const DEFAULT_MIN = 0
 const DEFAULT_MAX = 999
 const DEFAULT_STEP = 1
 
-interface QuantityAdjusterSettings {
+interface QuantityAdjusterOptions {
   onChange?: (value: number) => void
 }
 
 export default class QuantityAdjuster extends BaseComponent {
   static TYPE = 'quantity-adjuster'
 
-  settings: QuantityAdjusterSettings
+  #observer: MutationObserver
+
+  settings: QuantityAdjusterOptions
   changeEvent: Event
   input: HTMLInputElement
   increment: HTMLButtonElement
   decrement: HTMLButtonElement
-  observer: MutationObserver
 
-  constructor(el: HTMLElement, options: QuantityAdjusterSettings = {}) {
+  constructor(el: HTMLElement, options: QuantityAdjusterOptions = {}) {
     super(el)
 
     this.settings = {
@@ -33,16 +54,16 @@ export default class QuantityAdjuster extends BaseComponent {
 
     this.changeEvent = new Event('change', { bubbles: true }) // stepUp / stepDown doesn't trigger input change
 
-    this.input = this.el.querySelector('input[type="number"]')!
-    this.increment = this.el.querySelector(selectors.increment)!
-    this.decrement = this.el.querySelector(selectors.decrement)!
+    this.input = this.qsRequired<HTMLInputElement>(selectors.input)
+    this.increment = this.qsRequired<HTMLButtonElement>(selectors.increment)
+    this.decrement = this.qsRequired<HTMLButtonElement>(selectors.decrement)
 
     this.input.addEventListener('change', this.onChange.bind(this))
     this.increment.addEventListener('click', this.onStepClick.bind(this))
     this.decrement.addEventListener('click', this.onStepClick.bind(this))
 
-    this.observer = new MutationObserver(this.onInputMutation.bind(this))
-    this.observer.observe(this.input, {
+    this.#observer = new MutationObserver(this.onInputMutation.bind(this))
+    this.#observer.observe(this.input, {
       attributes: true,
       attributeFilter: ['min', 'max', 'step']
     })
@@ -51,13 +72,13 @@ export default class QuantityAdjuster extends BaseComponent {
   }
 
   destroy() {
-    this.observer.disconnect()
+    this.#observer.disconnect()
 
     super.destroy()
   }
 
   parseAttribute(value: string, defaultValue: number): number {
-    const parsed = parseInt(value, 10)
+    const parsed = parseFloat(value)
     
     return isNaN(parsed) ? defaultValue : parsed
   }
@@ -140,7 +161,7 @@ export default class QuantityAdjuster extends BaseComponent {
     const previousValue = this.value
 
     if (e.currentTarget === this.increment) {
-      if (this.min > this.step && previousValue == 0) {
+      if (this.min > this.step && previousValue === 0) {
         this.value = this.min
       }
       else {

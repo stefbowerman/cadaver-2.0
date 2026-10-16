@@ -13,19 +13,15 @@ export default class ATCButton extends BaseComponent {
 
   tempText: string | null
   label: HTMLElement
-  successTimeoutId: ReturnType<typeof setTimeout> | null
+  successTimeoutId: ReturnType<typeof setTimeout> | undefined
 
   constructor(el: HTMLButtonElement) {
     super(el)
 
     this.tempText = null
-    this.successTimeoutId = null
+    this.successTimeoutId = undefined
 
-    this.label = this.qs(selectors.label) as HTMLElement
-
-    if (!this.label) {
-      console.warn('No label found')
-    }
+    this.label = this.qsRequired(selectors.label)
   }
 
   destroy() {
@@ -39,7 +35,7 @@ export default class ATCButton extends BaseComponent {
    *
    * @param variant - LiteVariant object
    */
-  update(variant: LiteVariant) {
+  update(variant?: LiteVariant) {
     let isDisabled = true
     let labelText = getAppString('unavailable', 'Unavailable')
 
@@ -69,12 +65,12 @@ export default class ATCButton extends BaseComponent {
 
     this.successTimeoutId = setTimeout(() => {
       // Reset the button text
-      this.label.innerText = this.tempText
+      if (this.tempText !== null) this.label.innerText = this.tempText
       this.tempText = null
     }, 1000)
   }
 
   onAddFail(e: Error) {
-    this.label.innerText = this.tempText
+    if (this.tempText !== null) this.label.innerText = this.tempText
   }
 }

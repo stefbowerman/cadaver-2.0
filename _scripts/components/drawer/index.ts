@@ -1,9 +1,21 @@
-import BaseComponent, { type BaseComponentSettings } from '@/components/base'
-import Backdrop from '@/components/backdrop'
+/**
+ * Accessible drawer/panel component with focus trap, backdrop, and breakpoint-aware auto-close.
+ *
+ * @example
+ * {%- render 'drawer', id: 'my-drawer', origin: 'right' -%}
+ *
+ * <!-- Trigger button (anywhere in the DOM) -->
+ * <button aria-controls="my-drawer">Open</button>
+ *
+ * See snippets/drawer.liquid for the full drawer markup.
+ */
 
-import { toAriaBoolean } from '@/core/utils/a11y'
+import { setAriaFlag, setAriaState, closeOnEscape } from '@/core/utils/a11y'
 import FocusTrap from '@/core/focusTrap'
 import { BreakpointChangeEvent } from '@/core/breakpointsController'
+
+import BaseComponent, { type BaseComponentOptions } from '@/components/base'
+import Backdrop, { type BackdropOptions } from '@/components/backdrop'
 
 const selectors = {
   scroller: '[data-scroller]',
@@ -11,13 +23,21 @@ const selectors = {
 }
 
 const classes = {
-  isOpen: 'is-open',
   bodyIsOpen: 'drawer-open'
 }
 
-interface DrawerSettings extends BaseComponentSettings {
-  maxBreakpoint?: number | null
+interface DrawerOptions extends BaseComponentOptions {
+  minBreakpoint?: number
+  maxBreakpoint?: number
   backdrop?: boolean
+  backdropOptions?: BackdropOptions
+  onOpenComplete?: () => void
+  onCloseComplete?: () => void
+}
+
+interface DrawerSettings extends DrawerOptions {
+  backdrop: boolean
+  backdropOptions: BackdropOptions
 }
 
 export default class Drawer extends BaseComponent {
@@ -26,18 +46,18 @@ export default class Drawer extends BaseComponent {
   settings: DrawerSettings
   role: string | null
   focusTrap: FocusTrap
-  scroller: HTMLElement | undefined
+  scroller: HTMLElement | null
   backdrop: Backdrop | null
 
-  constructor(el: HTMLElement, options: DrawerSettings = {}) {
+  constructor(el: HTMLElement, options: DrawerOptions = {}) {
     super(el, {
-      watchBreakpoint: options.maxBreakpoint ? true : false,
+      watchBreakpoint: (typeof options.minBreakpoint === 'number' || typeof options.maxBreakpoint === 'number') ? true : false,
       ...options
     })
 
     this.settings = {
-      maxBreakpoint: null,
       backdrop: true,
+      backdropOptions: {},
       ...options
     }
 
@@ -54,25 +74,36 @@ export default class Drawer extends BaseComponent {
 
     this.onClick = this.onClick.bind(this)
     this.onBodyClick = this.onBodyClick.bind(this)
+    this.onTransitionEnd = this.onTransitionEnd.bind(this)
+    this.onKeydown = this.onKeydown.bind(this)
 
     this.el.addEventListener('click', this.onClick)
+    this.el.addEventListener('transitionend', this.onTransitionEnd)
     document.body.addEventListener('click', this.onBodyClick)
+    document.addEventListener('keydown', this.onKeydown)
 
     if (this.settings.backdrop) {
       this.backdrop = Backdrop.generate(document.body, {
-        ariaControls: this.el.id,
-        ariaExpanded: false
+        ...this.settings.backdropOptions,
+        ariaControls: this.el.id
       })
-    }    
+    }
+    
+    // Set aria-expanded state for all control elements based on the initial state
+    this.ariaControlElements.forEach(el => setAriaState(el, 'aria-expanded', this.isOpen))
 
     if (this.role) {
-      this.ariaControlElements.forEach(el => el.setAttribute('aria-haspopup', this.role))
-    }     
+      const role = this.role
+      this.ariaControlElements.forEach(el => el.setAttribute('aria-haspopup', role))
+    }
   }
 
   destroy() {
     this.focusTrap.destroy()
+
+    document.body.classList.remove(classes.bodyIsOpen)
     document.body.removeEventListener('click', this.onBodyClick)
+    document.removeEventListener('keydown', this.onKeydown)
 
     this.ariaControlElements.forEach(el => el.removeAttribute('aria-haspopup'))
 
@@ -86,18 +117,15 @@ export default class Drawer extends BaseComponent {
   open() {
     if (this.isOpen) return
 
-    this.el.classList.add(classes.isOpen)
-    this.el.setAttribute('aria-hidden', toAriaBoolean(false))
-    this.el.setAttribute('aria-modal', toAriaBoolean(true))
+    setAriaFlag(this.el, 'aria-hidden', false)
+    setAriaFlag(this.el, 'aria-modal', true)
 
     document.body.classList.add(classes.bodyIsOpen)
-    this.ariaControlElements.forEach(el => el.setAttribute('aria-expanded', toAriaBoolean(true)))
+    this.ariaControlElements.forEach(el => setAriaState(el, 'aria-expanded', true))
 
     this.backdrop?.show()
 
-    this.el.removeAttribute('inert')
-
-    this.focusTrap.activate()   // @NOTE - If using JS for animation, activation should happen on openComplete
+    this.el.inert = false
 
     if (this.scroller) this.scroller.scrollTop = 0
   }
@@ -105,17 +133,15 @@ export default class Drawer extends BaseComponent {
   close() {
     if (!this.isOpen) return
 
-    this.el.classList.remove(classes.isOpen)
-    this.el.setAttribute('aria-hidden', toAriaBoolean(true))
-    this.el.setAttribute('aria-modal', toAriaBoolean(false))
-
+    setAriaFlag(this.el, 'aria-hidden', true)
+    setAriaFlag(this.el, 'aria-modal', false)
 
     this.backdrop?.hide()
     
     document.body.classList.remove(classes.bodyIsOpen)
-    this.ariaControlElements.forEach(el => el.setAttribute('aria-expanded', toAriaBoolean(false))) 
+    this.ariaControlElements.forEach(el => setAriaState(el, 'aria-expanded', false)) 
 
-    this.el.setAttribute('inert', toAriaBoolean(true))
+    this.el.inert = true
 
     this.focusTrap.deactivate()
   }
@@ -124,12 +150,31 @@ export default class Drawer extends BaseComponent {
     this.isOpen ? this.close() : this.open()
   }
 
+  onOpenComplete() {
+    this.focusTrap.activate()
+
+    this.settings.onOpenComplete?.()
+  }
+
+  onCloseComplete() {
+    this.settings.onCloseComplete?.()
+  }
+
+  onTransitionEnd(e: TransitionEvent) {
+    if (e.target !== this.el) return
+
+    this.isOpen ? this.onOpenComplete() : this.onCloseComplete()
+  }  
+
   onBreakpointChange(e: BreakpointChangeEvent) {
+    if (!this.isOpen) return
+
     const { detail: { breakpoint } } = e
 
-    if (!this.isOpen || !this.settings.maxBreakpoint) return
-
-    if (breakpoint > this.settings.maxBreakpoint) {
+    if (
+      (this.settings.maxBreakpoint && breakpoint >= this.settings.maxBreakpoint) ||
+      (this.settings.minBreakpoint && breakpoint < this.settings.minBreakpoint)
+    ) {
       this.close()
     }
   }
@@ -143,10 +188,14 @@ export default class Drawer extends BaseComponent {
     }
   }
 
+  onKeydown(e: KeyboardEvent) {
+    closeOnEscape(e, this)
+  }
+
   onBodyClick(e: MouseEvent) {
     const target = e.target as HTMLElement
 
-    if (this.ariaControlElements.some(el => 
+    if (this.ariaControlElements.some(el =>
       el.isSameNode(target) || el.contains(target)
     )) {
       e.preventDefault()

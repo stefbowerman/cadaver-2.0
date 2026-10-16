@@ -13,16 +13,21 @@ import type {
   TaxiNavigateEndEvent,
 } from '@/types/taxi'
 
-import LazyImageController from '@/core/lazyImageController'
+import { sectionRenderService } from '@/core/sectionRenderService'
+import { formatTable } from '@/core/rte'
+
 import { doComponentCleanup } from '@/components/base'
 
 // Standard components
 import GraphicCoverVideo from '@/components/graphicCoverVideo'
 
-export interface BaseSectionSettings {
-  watchIntersection?: boolean;
-  intersectionOptions?: IntersectionObserverInit;
+export interface BaseSectionOptions {
+  watchIntersection?: boolean
+  intersectionOptions?: IntersectionObserverInit
+  cacheOnLoad?: boolean
 }
+
+type BaseSectionSettings = Required<BaseSectionOptions>
 
 export default class BaseSection {
   static TYPE: string
@@ -30,17 +35,17 @@ export default class BaseSection {
   #settings: BaseSectionSettings;
   #intersectionObserver: IntersectionObserver | null;
 
+  type: string
   container: HTMLElement
   id: string
-  type: string
   parent: HTMLElement
   parentId: string
-  lazyImageController: LazyImageController
   graphicCoverVideos: GraphicCoverVideo[]
 
-  constructor(container: HTMLElement, options: BaseSectionSettings = {}) {
+  constructor(container: HTMLElement, options: BaseSectionOptions = {}) {
     this.#settings = {
       watchIntersection: false,
+      cacheOnLoad: false,
       intersectionOptions: {
         rootMargin: '0px',
         threshold: 0.01,        
@@ -49,16 +54,23 @@ export default class BaseSection {
     }
 
     this.#intersectionObserver = null
+    this.type = (this.constructor as typeof BaseSection).TYPE
 
     this.container = container
-    this.id = this.dataset.sectionId
-    this.type = (this.constructor as typeof BaseSection).TYPE
-    this.parent = this.container.parentElement // Automatically generated wrapper element
-    this.parentId = this.parent.id
+    this.id = this.dataset.sectionId ?? ''
 
     if (!this.id) {
       console.warn('Section ID not found', this)
+    }    
+
+    const parent = this.container.parentElement
+
+    if (!parent) { 
+      throw new Error(`[${this.type}] Section container has no parent element`)
     }
+
+    this.parent = parent
+    this.parentId = this.parent.id
 
     this.onNavigateOut = this.onNavigateOut.bind(this)
     this.onNavigateIn  = this.onNavigateIn.bind(this)
@@ -69,17 +81,23 @@ export default class BaseSection {
     window.addEventListener('taxi.navigateIn', this.onNavigateIn)
     window.addEventListener('taxi.navigateEnd', this.onNavigateEnd)
 
+    // This need to go here so that the clean section html is cached before any component initialization
+    if (this.#settings.cacheOnLoad) {
+      sectionRenderService.cacheSection(this)
+    }    
+
     if (this.#settings.watchIntersection) {
       this.#intersectionObserver = new IntersectionObserver(this.onIntersection, this.#settings.intersectionOptions)
       this.#intersectionObserver.observe(this.container)
     }      
 
-    this.lazyImageController = new LazyImageController(this.container)
-
     // Below are standard components that can be initialized at the base section level (until there's a reason for them to get pushed down somewhere more specific)
     this.graphicCoverVideos = this.qsa(GraphicCoverVideo.SELECTOR).map(el => {
       return new GraphicCoverVideo(el)
     })
+
+    // Format tables in RTE
+    Array.from(container.querySelectorAll('.rte table') as NodeListOf<HTMLTableElement>).forEach(formatTable)    
 
     // Good for testing...
     // Array.from(container.querySelectorAll('img')).forEach(el => {
@@ -97,34 +115,51 @@ export default class BaseSection {
    * Query selector helper that returns the first matching element within the section container
    * @param {string} selector - CSS selector string
    * @param {HTMLElement} [dom=this.container] - Parent element to query within (defaults to section container)
-   * @returns {HTMLElement|undefined} First matching element or undefined if none found
+   * @returns {T|null} First matching element, narrowed to T, or null if none found
    */
-  qs(selector: string, dom: HTMLElement = this.container): HTMLElement | undefined {
-    return this.qsa(selector, dom)[0]
+  qs<T extends HTMLElement = HTMLElement>(selector: string, dom: HTMLElement = this.container): T | null {
+    return this.qsa<T>(selector, dom)[0] ?? null
+  }
+
+  /**
+   * Query selector helper that returns the first matching element within the section container,
+   * throwing if no match is found. Use for elements the section's own template requires.
+   * @param {string} selector - CSS selector string
+   * @param {HTMLElement} [dom=this.container] - Parent element to query within
+   * @returns {T} The first matching element, narrowed to T
+   */
+  qsRequired<T extends HTMLElement = HTMLElement>(selector: string, dom: HTMLElement = this.container): T {
+    const el = this.qs<T>(selector, dom)
+
+    if (!el) {
+      throw new Error(`[${this.type}] Required element not found: "${selector}"`)
+    }
+
+    return el
   }
 
   /**
    * Query selector all helper that returns an array of matching elements within the section container,
    * filtering out nested components that match the selector.
-   * 
+   *
    * @param {string} selector - CSS selector string to match elements
    * @param {HTMLElement} [dom=this.container] - Parent element to query within (defaults to section container)
-   * @returns {HTMLElement[]} Array of matching elements, excluding nested component matches
+   * @returns {T[]} Array of matching elements, narrowed to T, excluding nested component matches
    *
    */
-  qsa(selector: string, dom: HTMLElement = this.container): HTMLElement[] {
-    return Array.from(dom.querySelectorAll(selector)).filter(el => {
+  qsa<T extends HTMLElement = HTMLElement>(selector: string, dom: HTMLElement = this.container): T[] {
+    return Array.from(dom.querySelectorAll<T>(selector)).filter(el => {
       const closest = el.closest('[data-component]')
 
       return !closest || closest.isSameNode(el)
-    }) as HTMLElement[]
+    })
   }
 
   onIntersection(entries: IntersectionObserverEntry[]) {
     // override in subclass
   }
 
-  stopIntersectionObserver() {
+  killIntersectionObserver() {
     this.#intersectionObserver?.disconnect()
     this.#intersectionObserver = null
   }
@@ -144,13 +179,12 @@ export default class BaseSection {
 
   }
 
-  onUnload(e: ThemeEditorSectionUnloadEvent) {
+  onUnload(e?: ThemeEditorSectionUnloadEvent) {
     window.removeEventListener('taxi.navigateOut', this.onNavigateOut)
     window.removeEventListener('taxi.navigateIn', this.onNavigateIn)
     window.removeEventListener('taxi.navigateEnd', this.onNavigateEnd)
 
-    this.lazyImageController.destroy()
-    this.#intersectionObserver?.disconnect()
+    this.killIntersectionObserver()
 
     doComponentCleanup(this) // This automatically calls this.destroy() up all components recursively
   }

@@ -57,15 +57,19 @@
       "placeholder": "Search",
       "mobile_placeholder": "Tap to search",
       "submit": "Search",
-      "search": "Search"
-    },
-
+      "search": "Search",
+      "clear": "Clear"
+    }
   },
   "accessibility": {
     "skip_to_content": "Skip to content",
     "link_messages": {
       "new_window": "Link opens in a new window."
-    }      
+    },
+    "mobile_menu": {
+      "primary_menu": "Mobile main navigation",
+      "secondary_menu": "Mobile secondary navigation"
+    }  
   },  
   "blogs": {
     "article": {
@@ -115,7 +119,9 @@
       "total": "Total",
       "discounted_price": "Discounted price",
       "original_price": "Original price",
-      "add_note": "Add a note to your order"
+      "add_note": "Add a note to your order",
+      "item": "item",
+      "items": "items"
     }
   },
   "collections": {
@@ -267,6 +273,9 @@
         "other": "items"
       }
     },
+    "mobile_menu": {
+      "title": "Mobile Menu"
+    },
     "customer": {
       "account": "Account",
       "my_account": "My Account",
@@ -299,7 +308,7 @@
         "label": "Quantity",
         "input_label": "Quantity for {{ product }}",
         "increase": "Increase quantity for {{ product }}",
-        "decrease": "Decrease quantity for {{ product }}",
+        "decrease": "Decrease quantity for {{ product }}"
       },
       "price": {
         "price": "Price",

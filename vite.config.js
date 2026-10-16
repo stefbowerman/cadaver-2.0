@@ -1,6 +1,5 @@
 import { resolve } from 'path'
 import { defineConfig } from 'vite'
-import eslint from 'vite-plugin-eslint'
 import { visualizer } from 'rollup-plugin-visualizer'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -9,10 +8,6 @@ export default defineConfig(({ mode }) => {
     
   return {
     plugins: [
-      eslint({
-        include: ['_scripts/**/*.{js,ts}'],
-        exclude: ['node_modules']
-      }),
       visualizer({
         open: false //
       }),
@@ -30,7 +25,7 @@ export default defineConfig(({ mode }) => {
       watch: isDev ? {} : null,
       lib: {
         name: 'app',
-        entry: resolve(__dirname, '_scripts/app.js'),
+        entry: resolve(__dirname, '_scripts/app.ts'),
         formats: ['iife'], 
         fileName: () => 'app.bundle.js'
       },
@@ -49,11 +44,10 @@ export default defineConfig(({ mode }) => {
         }
       },
 
-      sourcemap: isDev ? true : false,
+      sourcemap: isDev ? 'inline' : false,
       minify: isDev ? false : 'terser',
       terserOptions: {
         compress: {
-          drop_console: true,
           drop_debugger: true,
           passes: 2
         }

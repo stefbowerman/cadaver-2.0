@@ -8,7 +8,7 @@
   @param {object} [current_variant] - The current variant to display - optional
 
   @example
-    {% render 'product-price',
+    {% render 'product-detail-form',
               product: product
     %}
 {% enddoc %}
@@ -114,11 +114,11 @@
                   </span>
                 </button>  
 
-                <div>
+                {% if product.available %}
                   <div>
                     {{ form | payment_terms }}
                   </div>
-                </div>
+                {% endif %}
 
               {% if product.description != blank %}
                 <div>

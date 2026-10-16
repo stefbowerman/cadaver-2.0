@@ -14,12 +14,15 @@ export default class GraphicCoverVideo extends BaseComponent {
 
   constructor(el: HTMLElement) {
     super(el, {
-      watchIntersection: true
+      watchIntersection: true,
+      intersectionOptions: {
+        rootMargin: '50px 0px 50px 0px',
+      }
     })
 
     this.autoPlayEnabled = prefersReducedMotion() ? false : true
 
-    this.video = this.qs('video') as HTMLVideoElement | null
+    this.video = this.qs<HTMLVideoElement>('video')
     this.inView = false
 
     if (!this.video) {
@@ -39,6 +42,8 @@ export default class GraphicCoverVideo extends BaseComponent {
   }
 
   async attemptPlay() {
+    if (!this.video) return
+
     if (this.isPlaying) {
       this.onPlay()
 
@@ -58,6 +63,8 @@ export default class GraphicCoverVideo extends BaseComponent {
   }
 
   togglePlay() {
+    if (!this.video) return
+
     if (this.isPlaying) {
       this.video.pause()
     }
@@ -73,6 +80,8 @@ export default class GraphicCoverVideo extends BaseComponent {
   }
 
   onPlay() {
+    if (!this.video) return
+
     this.video.classList.add(classes.isReady)
   }
 
@@ -81,11 +90,15 @@ export default class GraphicCoverVideo extends BaseComponent {
   }
 
   onError(e: ErrorEvent) {
+    if (!this.video) return
+
     console.warn('Video error', e)
     this.video.style.display = 'none'
   }
 
   async onVisibilityChange(visible = false) {
+    if (!this.video) return
+
     this.inView = visible
 
     if (this.inView) {

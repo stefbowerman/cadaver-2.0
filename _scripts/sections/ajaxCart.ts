@@ -5,7 +5,7 @@ import BaseSection from '@/sections/base'
 import AJAXCart from '@/components/ajaxCart'
 
 const selectors = {
-  cartJson: '[data-cart-json]'
+  cartJson: 'script[data-cart-json]'
 }
 
 export default class AJAXCartSection extends BaseSection {
@@ -16,7 +16,7 @@ export default class AJAXCartSection extends BaseSection {
   constructor(container: HTMLElement) {
     super(container)
 
-    const cartJsonEl = this.qs(selectors.cartJson)
+    const cartJsonEl = this.qs<HTMLScriptElement>(selectors.cartJson)
     
     if (!cartJsonEl?.textContent) {
       throw new Error('Cart JSON element not found')
@@ -24,7 +24,7 @@ export default class AJAXCartSection extends BaseSection {
 
     const cartData: LiteCart = JSON.parse(cartJsonEl.textContent)
 
-    this.ajaxCart = new AJAXCart(this.qs(AJAXCart.SELECTOR), cartData)
+    this.ajaxCart = new AJAXCart(this.qsRequired(AJAXCart.SELECTOR), cartData)
 
     // If redirected from the cart, show the ajax cart after a short delay
     if (getQueryParams().cart) {
