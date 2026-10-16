@@ -55,7 +55,7 @@
           type="submit"
           aria-label="{{ 'general.search.search' | t }}"
         >
-          {{- 'icon-search.svg' | inline_asset_content -}}
+          {{- 'icon-search.svg' | inline_asset_content | replace: '<svg ', '<svg aria-hidden="true" focusable="false" '-}}
         </button>     
       </span>        
     </div>

@@ -49,7 +49,7 @@
 
       <div class="form-control">
         <span class="form-control__affix">
-          {{- 'icon-search.svg' | inline_asset_content -}}
+          {{- 'icon-search.svg' | inline_asset_content | replace: '<svg ', '<svg aria-hidden="true" focusable="false" '-}}
           <span class="sr-only">Search icon</span>
         </span>
 
@@ -84,7 +84,7 @@
         </select>
 
         <span class="form-control__affix">
-          {{- 'icon-caret-down.svg' | inline_asset_content -}}
+          {{- 'icon-caret-down.svg' | inline_asset_content | replace: '<svg ', '<svg aria-hidden="true" focusable="false" '-}}
         </span>          
       </div>
     </div>

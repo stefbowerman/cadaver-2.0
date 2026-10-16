@@ -33,7 +33,7 @@
       disabled
     {% endif %}
   >
-    {{- 'icon-minus.svg' | inline_asset_content -}}
+    {{- 'icon-minus.svg' | inline_asset_content | replace: '<svg ', '<svg aria-hidden="true" focusable="false" '-}}
   </button>
 
   <input
@@ -58,6 +58,6 @@
       disabled
     {% endif %}
   >
-    {{- 'icon-plus.svg' | inline_asset_content -}}
+    {{- 'icon-plus.svg' | inline_asset_content | replace: '<svg ', '<svg aria-hidden="true" focusable="false" '-}}
   </button>                            
 </div>
