@@ -119,7 +119,9 @@
       "total": "Total",
       "discounted_price": "Discounted price",
       "original_price": "Original price",
-      "add_note": "Add a note to your order"
+      "add_note": "Add a note to your order",
+      "item": "item",
+      "items": "items"
     }
   },
   "collections": {
