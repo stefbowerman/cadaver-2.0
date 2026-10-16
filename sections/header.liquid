@@ -60,8 +60,8 @@
             href="{{ routes.search_url }}"
             class="header-nav__item"
           >
-            {{- 'icon-search.svg' | inline_asset_content -}}
-            <span class="sr-only">Search icon</span>
+            {{- 'icon-search.svg' | inline_asset_content | replace: '<svg ', '<svg aria-hidden="true" focusable="false" '-}}
+            <span class="sr-only">{{ 'general.search.search' | t }}</span>
           </a>
         </div>  
       </div>
