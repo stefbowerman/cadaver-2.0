@@ -1,9 +1,10 @@
 {% doc %}
   @param {product} product - The product to display - required
   @param {string} [loading] - Optional loading attribute for the image - defaults to "lazy"
+  @param {string} [fetchpriority] - Optional fetch priority attribute for the image - defaults to "auto"
   @param {string} [sizes] - Optional sizes attribute for the image - defaults to sizes for results grid
-  @param {number} [image_min_width] - Optional minimum width for the image - defaults to 500
-  @param {number} [image_max_width] - Optional maximum width for the image - defaults to 900  
+  @param {number} [image_min_width] - Optional minimum width for the image - defaults to 300
+  @param {number} [image_max_width] - Optional maximum width for the image - defaults to 1200  
   @param {object} [primary_image] - Primary image to display - defaults to the product's featured image
   @param {object} [secondary_image] - Secondary image to display - defaults to the product's second image
   @param {boolean} [secondary_image_enabled] - Whether to display the secondary image - defaults to false
@@ -22,7 +23,8 @@
   {%- liquid
     assign selected_variant = product.selected_or_first_available_variant
     assign loading = loading | default: 'lazy'
-    assign image_min_width = image_min_width | default: 500
+    assign fetchpriority = fetchpriority | default: 'auto'
+    assign image_min_width = image_min_width | default: 300
     assign image_max_width = image_max_width | default: 1200
     assign sizes = sizes | default: '(max-width: 47.98rem) 50vw, (max-width: 79.98rem) 33vw, 25vw'
     assign image_class = ''
@@ -62,6 +64,7 @@
             | image_url: width: image_max_width
             | image_tag:
               loading: loading,
+              fetchpriority: fetchpriority,
               widths: image_widths,
               class: image_class,
               sizes: sizes

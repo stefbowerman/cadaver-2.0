@@ -124,7 +124,8 @@
     @apply overflow-hidden;
   }    
 
-  html.js {
+  /* Disabling this effect because it hurts LCP score in Lighthouse.  */
+  /* html.js {
     body {
       opacity: 0;
       transition: opacity 0.5s cubic-bezier(0.33, 0.01, 0.49, 1.02) 0.15s;
@@ -133,7 +134,7 @@
         opacity: 1;
       }
     }
-  }
+  } */
 
   /* Only show when JS is not supported */
   .no-js:not(html) {

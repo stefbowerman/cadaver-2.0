@@ -64,8 +64,8 @@
 
           for image in product.images
             assign image_alt_upcase = image.alt | upcase
-            assign loading = 'lazy'
-            assign fetchpriority = 'auto'
+            assign loading = blank
+            assign fetchpriority = blank
 
             if image_alt_upcase contains color_upcase
               if slides_count == 0 and is_active
@@ -117,8 +117,8 @@
     assign slides_count = 0
 
     for image in product.images
-      assign loading = 'lazy'
-      assign fetchpriority = 'auto'
+      assign loading = blank
+      assign fetchpriority = blank
 
       if forloop.first
         assign loading = 'eager'

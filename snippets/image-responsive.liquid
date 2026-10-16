@@ -30,7 +30,13 @@
       endif
     endcapture
 
-    assign style = style | strip   
+    assign style = style | strip
+
+    assign class = 'image-responsive'
+
+    if loading == 'lazy'
+      assign class = class | append: ' lazy-image'
+    endif
   %}
 
   <picture>
@@ -63,7 +69,7 @@
         loading: loading,
         alt: alt,
         style: style,
-        class: 'image-responsive lazy-image',
+        class: class,
         fetchpriority: fetch_priority,
         sizes: sizes
     }}          

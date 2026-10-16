@@ -137,6 +137,7 @@ function init() {
     document.documentElement.classList.add('is-theme-editor')
   }
   
+  // @NOTE: This class was only used for the body reveal animation which has been disabled.  See app.css.
   document.body.classList.add('is-loaded')  
 }
 

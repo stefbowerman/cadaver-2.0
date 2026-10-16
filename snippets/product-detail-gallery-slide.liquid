@@ -18,6 +18,12 @@
     capture main_image_widths
       render 'image-widths', max_width: 1100
     endcapture
+
+    assign image_class = 'size-full object-contain'
+    
+    if loading == 'lazy'
+      assign image_class = image_class | append: ' lazy-image'
+    endif
   -%}
   
   <div
@@ -34,7 +40,7 @@
         widths: main_image_widths,
         sizes: '100vw',
         alt: image.alt,
-        class: 'size-full object-contain lazy-image'
+        class: image_class
     }}
   </div>     
 {% endif %}
