@@ -388,15 +388,6 @@
     overflow: hidden;
   }
 
-  html.js body {
-    opacity: 0;
-    transition: opacity .5s cubic-bezier(.33, .01, .49, 1.02) .15s;
-  }
-
-  html.js body.is-loaded {
-    opacity: 1;
-  }
-
   .no-js:not(html) {
     display: none;
   }
