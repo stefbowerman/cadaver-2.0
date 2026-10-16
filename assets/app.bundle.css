@@ -479,6 +479,10 @@
     z-index: 2;
   }
 
+  .order-first {
+    order: -9999;
+  }
+
   .col-span-full {
     grid-column: 1 / -1;
   }

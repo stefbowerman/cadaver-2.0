@@ -4,15 +4,30 @@
 
     <div class="layout-content-wrapper">
       <div class="container">
-        <div class="grid gap-y-8 gap-x-8 grid-cols-1 lg:grid-cols-2">
+        <ul class="grid gap-y-8 gap-x-8 grid-cols-1 lg:grid-cols-2">
           {% for article in blog.articles %}
-            <div>
+            {%- liquid
+              assign loading = blank
+              assign fetchpriority = blank
+
+              if forloop.index == 1
+                assign fetchpriority = 'high'
+              endif
+
+              if forloop.index <= 2
+                assign loading = 'eager'
+              endif
+            %}
+
+            <li>
               {% render 'article-card',
-                        article: article
+                         article: article,
+                         loading: loading,
+                         fetchpriority: fetchpriority
               %}
-            </div>
+            </li>
           {% endfor %}
-        </div>
+        </ul>
       </div>
 
       {% if paginate.next.is_link %}
