@@ -19,6 +19,12 @@
     capture main_image_widths
       render 'image-widths', max_width: 900
     endcapture
+
+    assign image_class = 'size-full object-contain'
+
+    if loading == 'lazy'
+      assign image_class = image_class | append: ' lazy-image'
+    endif
   -%}
 
   <div class="relative aspect-square">
@@ -31,7 +37,7 @@
         widths: main_image_widths,
         sizes: '(max-width: 1024px) 100vw, (max-width: 1920px) 50vw, 900px',
         alt: image.alt,
-        class: 'size-full object-contain lazy-image'
+        class: image_class
     }}
   </div>     
 {% endif %}

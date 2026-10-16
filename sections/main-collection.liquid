@@ -27,6 +27,11 @@
           {% for product in collection.products %}
             {%- liquid
               assign loading = blank
+              assign fetchpriority = blank
+
+              if forloop.index == 1
+                assign fetchpriority = 'high'
+              endif
 
               if forloop.index <= 8
                 assign loading = 'eager'
@@ -37,6 +42,7 @@
               {% render 'product-card',
                          product: product,
                          loading: loading,
+                         fetchpriority: fetchpriority,
                          secondary_image_enabled: true
               %}
             </li>

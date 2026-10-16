@@ -1,3 +1,10 @@
+{%- comment %}
+
+  Search Main Section
+  ------------------------------------------------------------------------------
+
+{% endcomment -%}
+
 {%- capture actions -%}
   <div style="max-width: 625px; margin: 0 auto 40px">
     {% render 'search-inline', id_prefix: section.id, include_terms: true %}
@@ -36,6 +43,11 @@
     
               for item in search.results
                 assign loading = blank
+                assign fetchpriority = blank
+
+                if forloop.index == 1
+                  assign fetchpriority = 'high'
+                endif
 
                 if forloop.index <= 8
                   assign loading = 'eager'
@@ -44,7 +56,7 @@
                 if item.object_type == 'product'
                   capture card_html
                     echo '<li>'
-                      render 'product-card', product: item, loading: loading
+                      render 'product-card', product: item, loading: loading, fetchpriority: fetchpriority
                     echo '</li>'
                   endcapture
     
