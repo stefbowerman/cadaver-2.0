@@ -50,21 +50,12 @@
     endif
   -%}
 
-  {%- capture alt_text %}
-    {% if product.featured_image.alt %}
-      {{ product.featured_image.alt }}
-    {% else %}
-      "{{ product.title }}" Featured Image
-    {% endif %}
-  {%- endcapture %}
-  {% assign alt_text = alt_text | strip_newlines | strip %}
-
-
-  <div
+  <a
+    href="{{ product_url }}"
     class="product-card flex flex-col gap-4"
     data-component="product-card"
   >
-    <a href="{{ product_url }}" class="relative w-full aspect-product" title="{{ product.title }}" tabindex="-1">
+    <div class="relative w-full aspect-product">
       {% if primary_image %}
         <div class="product-card__media-primary">
           {{ primary_image
@@ -72,34 +63,31 @@
             | image_tag:
               loading: loading,
               widths: image_widths,
-              alt: alt_text,
               class: image_class,
               sizes: sizes
+            | replace: '<img ', '<img alt="" '
           }}
         </div>
 
-        {% comment %} Only show the secondary image if the primary image exists {% endcomment %}
+        {% comment %} Nest this inside 'if primary_image' to only output secondary if the primary image exists {% endcomment %}
         {% if secondary_image and secondary_image_enabled %}
           <div class="product-card__media-secondary" data-media-secondary>
-            {% capture secondary_image_html %}
-              {{ secondary_image
-                | image_url: width: image_max_width
-                | image_tag:
-                  loading: 'lazy',
-                  widths: image_widths,
-                  alt: secondary_image.alt,
-                  sizes: sizes,
-                  aria-hidden: true
-              }}
-            {% endcapture %}
-  
-            {{ secondary_image_html | replace: 'src=', 'data-src=' | replace: 'srcset=', 'data-srcset=' }}
+            {{ secondary_image
+              | image_url: width: image_max_width
+              | image_tag:
+                loading: 'lazy',
+                widths: image_widths,
+                sizes: sizes,
+                aria-hidden: true
+              | replace: '<img ', '<img alt="" '
+              | replace: 'src=', 'data-src=' | replace: 'srcset=', 'data-srcset='
+            }}
           </div>
         {% endif %}           
       {% endif %}         
-    </a>
+    </div>
 
-    <a href="{{ product_url }}" title="{{ product.title }}" class="block text-center px-4">
+    <div class="text-center px-4">
       <div class="font-bold">{{ product.title }}</div>
       <div>
         {% if product.available %}
@@ -116,6 +104,6 @@
           {{ 'products.product.sold_out' | t }}
         {% endif %}
       </div>
-    </a>
-  </div>
+    </div>
+  </a>
 {% endif %}
