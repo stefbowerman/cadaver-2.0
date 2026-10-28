@@ -57,20 +57,20 @@ export default class ATCButton extends BaseComponent {
 
   onAddStart() {
     this.tempText = this.label.innerText // Save a copy of the original text
-    this.label.innerText = getAppString('adding', 'Adding...') // Run the "adding" animation
+    this.label.textContent = getAppString('adding', 'Adding...') // Run the "adding" animation
   }
 
   onAddSuccess() {
-    this.label.innerText = getAppString('added', 'Added!')
+    this.label.textContent = getAppString('added', 'Added!')
 
     this.successTimeoutId = setTimeout(() => {
       // Reset the button text
-      if (this.tempText !== null) this.label.innerText = this.tempText
+      if (this.tempText !== null) this.label.textContent = this.tempText
       this.tempText = null
     }, 1000)
   }
 
   onAddFail(e: Error) {
-    if (this.tempText !== null) this.label.innerText = this.tempText
+    if (this.tempText !== null) this.label.textContent = this.tempText
   }
 }
