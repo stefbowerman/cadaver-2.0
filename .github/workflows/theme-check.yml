@@ -18,3 +18,5 @@ jobs:
         uses: shopify/theme-check-action@v2
         with:
           token: ${{ github.token }}
+          # ponytail: CLI 5.0.0 changed the JSON output and crashes the action (Shopify/theme-check-action#71). Unpin once #72 ships.
+          version: '4.9.5'
