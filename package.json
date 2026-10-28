@@ -28,6 +28,6 @@
     "@unseenco/taxi": "^1.8.0",
     "animated-scroll-to": "^2.3.0",
     "embla-carousel": "^8.6.0",
-    "gsap": "^3.12.7"
+    "gsap": "^3.15.0"
   }
 }
