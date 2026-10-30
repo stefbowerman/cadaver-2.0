@@ -175,6 +175,7 @@ export default class CartBody extends BaseComponent {
       this.a11yStatus.text = 'Item removed from cart'
     }
     catch (error) {
+      item.state = undefined
       this.a11yStatus.text = 'Error removing item from cart'
       console.error('Error removing item', error)
     }
