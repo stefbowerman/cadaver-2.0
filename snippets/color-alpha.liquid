@@ -1,0 +1,14 @@
+{% doc %}
+    This snippet is used to convert a color to a rgba value with an opacity.
+
+    @param {string} color - The color to convert.
+    @param {number} opacity - The opacity to apply to the color.  Range is 0-100.
+
+    @example
+      {% render 'color-alpha', color: block.settings.background_color, opacity: 50 %}
+{% enddoc %}
+
+{%- liquid
+  assign alpha = opacity | default: 100 | divided_by: 100.0
+  echo color | color_modify: 'alpha', alpha
+-%}
