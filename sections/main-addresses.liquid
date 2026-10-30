@@ -51,13 +51,8 @@
                 </div>
               </div>
 
-              <div
-                id="edit-address-{{ address.id }}"
-                class="account-form-wrapper"
-                style="
-                  {% unless form.errors %} display: none;{% endunless %}
-                "
-              >
+              {% assign edit_form_has_errors = false %}
+              {% capture edit_form  %}
                 {% form 'customer_address', address, class: 'form-horizontal', data-address-form: true, data-id: address.id %}
 
                   <h3>Edit Address</h3>
@@ -129,7 +124,19 @@
                     </p>
                     <a href="#" data-toggle-form data-id="{{ address.id }}">Cancel</a>
                   </div>
-                {% endform %}
+
+                  {% if form.errors %}
+                    {% assign edit_form_has_errors = true %}
+                  {% endif %}
+                {% endform %}                
+              {% endcapture %}
+
+              <div
+                id="edit-address-{{ address.id }}"
+                class="account-form-wrapper"
+                style="{% unless edit_form_has_errors %} display: none;{% endunless %}"
+              >
+                {{ edit_form }}
               </div>
             </div>
           {% endfor %}
@@ -145,13 +152,8 @@
       {% comment %}
         Add address form, hidden by default
       {% endcomment %}
-
-      <div
-        class="account-form-wrapper"
-        data-new
-        style="
-          {% unless form.errors %} display: none;{% endunless %}
-        ">
+      {% assign add_form_has_errors = false %}
+      {% capture add_form  %}
         {% form 'customer_address', customer.new_address %}
           <h2>Add A New Address</h2>
 
@@ -222,7 +224,18 @@
             </p>
             <a href="#" data-toggle-new>Cancel</a>
           </div>
-        {% endform %}
+
+          {% if form.errors %}
+            {% assign add_form_has_errors = true %}
+          {% endif %}
+        {% endform %}        
+      {% endcapture %}
+
+      <div
+        class="account-form-wrapper"
+        data-new
+        style="{% unless add_form_has_errors %}display: none;{% endunless %}">
+        {{ add_form }}
       </div>
     {% endpaginate %}
   </div>
