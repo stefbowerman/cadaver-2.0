@@ -87,7 +87,6 @@ export default class NewsletterForm extends BaseComponent {
   onSubscribeSuccess() {
     // NOTE: This is commented out because Klaviyo no longer returns information about whether the email is already subscribed
 
-    
     // const isSubscribed = response && response.data && response.data.is_subscribed;
     // const msgKey = isSubscribed ? 'alreadySubscribed' : 'success';
 
@@ -103,8 +102,8 @@ export default class NewsletterForm extends BaseComponent {
     this.showMessageWithTimeout('Submitting...', false);
   }  
 
-  onSubmitFail(errors: Error[]) {
-    this.showMessageWithTimeout(errors.map(e => e.message).join(' '), false);
+  onSubmitFail() {
+    this.showMessageWithTimeout(this.formMessage.dataset.fail ?? 'Something went wrong', false);
   }
 
   onSubscribeFail() {
