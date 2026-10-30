@@ -112,7 +112,8 @@ export default class ProductDetailForm extends BaseComponent {
     const submit = this.qsRequired<HTMLButtonElement>(selectors.submit, this.form)
 
     // Disable the button so the user knows the form is being submitted
-    submit.disabled = true
+    // Use aria-disabled because 'disabled' will prevent return focus to the button on cart close
+    setAriaFlag(submit, 'aria-disabled', true)
     this.submitInProgress = true
 
     this.onAddStart()
@@ -125,7 +126,7 @@ export default class ProductDetailForm extends BaseComponent {
         this.onAddFail(e)
       })
       .finally(() => {
-        submit.disabled = false
+        setAriaFlag(submit, 'aria-disabled', false)
         this.submitInProgress = false
       })
   }   

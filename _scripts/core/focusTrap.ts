@@ -54,12 +54,9 @@ export default class FocusTrap {
     this.focusableElements = getFocusableChildren(this.el)
  
     if (this.settings.autofocus) {
-      if (this.focusableElements.length) {
-        this.focusableElements[0].focus()
-      }
-      else {
-        this.el.focus()
-      }
+      const focusEl = this.focusableElements[0] ?? this.el
+
+      focusEl.focus({ preventScroll: this.settings.preventScroll })
     }
 
     document.addEventListener('focusin', this.onFocusin)
@@ -69,14 +66,20 @@ export default class FocusTrap {
   }
 
   deactivate() {
+    if (!this.isActive) {
+      return
+    }
+
     this.isActive = false
 
     document.removeEventListener('focusin', this.onFocusin)
     document.removeEventListener('keydown', this.onKeydown)
 
     if (this.settings.returnFocus && this.previouslyFocusedElement) {
-      this.previouslyFocusedElement.focus()
+      this.previouslyFocusedElement.focus({ preventScroll: this.settings.preventScroll })
     }
+
+    this.previouslyFocusedElement = null
   }
 
   onFocusin(event: FocusEvent) {

@@ -71,6 +71,7 @@
     --z-drawer: 200;
     --z-skip: 10000;
     --aspect-product: .8;
+    --default-border-width: 1px;
   }
 }
 
@@ -352,14 +353,6 @@
     }
   }
 
-  :focus-visible:not([disabled]) {
-    outline-style: var(--tw-outline-style);
-    outline-width: var(--default-border-width);
-    outline-offset: 3px;
-    --tw-outline-style: solid;
-    outline-style: solid;
-  }
-
   html {
     -webkit-text-size-adjust: 100%;
     -moz-text-size-adjust: 100%;
@@ -404,10 +397,10 @@
     font-style: normal;
   }
 
-  :focus-visible:not([disabled]) {
+  :focus-visible {
     outline-style: var(--tw-outline-style);
+    outline-width: var(--default-border-width);
     outline-offset: 3px;
-    outline-width: 1px;
     outline-color: var(--color-black);
     --tw-outline-style: solid;
     outline-style: solid;
@@ -1163,11 +1156,11 @@ table tfoot tr:first-child td {
   border-top-width: 1px;
 }
 
-button:not([disabled]) {
+button:not([disabled], [aria-disabled="true"]) {
   cursor: pointer;
 }
 
-button[disabled] {
+button:is([disabled], [aria-disabled="true"]) {
   cursor: not-allowed;
 }
 
@@ -1203,20 +1196,20 @@ button[disabled] {
   display: inline-flex;
 }
 
-.btn[disabled] {
+.btn:is([disabled], [aria-disabled="true"]) {
   color: #ddd;
   background-color: #222;
   border-color: #111;
 }
 
 @media (hover: hover) {
-  .btn:not([disabled]):hover {
+  .btn:not([disabled], [aria-disabled="true"]):hover {
     border-color: var(--color-black);
     background-color: #222;
   }
 }
 
-.btn:not([disabled]):active {
+.btn:not([disabled], [aria-disabled="true"]):active {
   border-color: var(--color-black);
   background-color: var(--color-black);
 }
