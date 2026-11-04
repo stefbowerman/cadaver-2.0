@@ -51,6 +51,13 @@ Ready-to-use, interactive components with ARIA compliance and theme editor integ
 | Accordion | Collapsible content panels with animated expand/collapse, single or multi-open modes. | [`accordion.ts`](_scripts/components/accordion.ts), [`accordionItem.ts`](_scripts/components/accordionItem.ts) | [`accordion-item.liquid`](snippets/accordion-item.liquid) |
 | Quantity Adjuster | Numeric input component with increment/decrement buttons, validation, and configurable min/max bounds. | [`quantityAdjuster.ts`](_scripts/components/quantityAdjuster.ts) | [`quantity-adjuster.liquid`](snippets/quantity-adjuster.liquid) |
 
+## Newsletter Integration
+
+| Provider | Source | Theme settings | Default |
+|---|---|---|---|
+| Klaviyo | [`ajaxKlaviyoForm.ts`](_scripts/core/ajaxKlaviyoForm.ts) | Public API Key, Newsletter List ID | ✅ |
+| Mailchimp | [`ajaxMailchimpForm.ts`](_scripts/core/ajaxMailchimpForm.ts) | Signup Form URL (embedded form action URL) | |
+
 ## Project Structure
 
 ```

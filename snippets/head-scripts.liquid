@@ -29,7 +29,29 @@
     klaviyo: {
       companyId: {{ settings.klaviyo_public_api_key | json }},
       listId: {{ settings.klaviyo_newsletter_list_id | json }}
-    },     
+    },
+    {% comment %}
+      To use Mailchimp -
+        1. Add the below settings to settings_schema.json:
+
+        {
+          "name": "Mailchimp",
+          "settings": [
+            {
+              "type": "text",
+              "id": "mailchimp_form_url",
+              "label": "Signup Form URL",
+              "info": "The action URL from your Mailchimp embedded signup form, e.g. https:\/\/example.us5.list-manage.com\/subscribe\/post?u=XXXX&id=YYYY"
+            }
+          ]
+        }
+
+        2. Uncomment the following lines:
+
+        mailchimp: {
+          formUrl: {{ settings.mailchimp_form_url | json }}
+        }
+    {% endcomment %}
   };
 </script>
 
