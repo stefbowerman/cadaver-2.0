@@ -18,7 +18,6 @@ interface AJAXKlaviyoFormSettings {
 }
 
 export default class AJAXKlaviyoForm {
-  name: string
   settings: AJAXKlaviyoFormSettings
   el: HTMLElement
   form: HTMLFormElement
@@ -27,8 +26,6 @@ export default class AJAXKlaviyoForm {
   isSubmitting: boolean
 
   constructor(el: HTMLElement, options: AJAXKlaviyoFormSettings = {}) {
-    this.name = 'ajaxKlaviyoForm'
-
     this.settings = {
       source: 'Shopify Form',
       ...options
@@ -40,7 +37,7 @@ export default class AJAXKlaviyoForm {
     const form = this.el.tagName === 'FORM' ? this.el as HTMLFormElement : this.el.querySelector('form')
 
     if (!form) {
-      throw new Error(`[${this.name}] - Form element required to initialize`)
+      throw new Error('Form element required to initialize')
     }
 
     this.form = form
@@ -49,7 +46,7 @@ export default class AJAXKlaviyoForm {
     const submit = this.form.querySelector('[type="submit"]') as HTMLButtonElement | null
 
     if (!(input && submit)) {
-      throw new Error(`[${this.name}] - Email input and submit button required to initialize`)
+      throw new Error('Email input and submit button required to initialize')
     }
 
     this.input = input
@@ -73,7 +70,7 @@ export default class AJAXKlaviyoForm {
   logErrors(errors: Error[]) {
     if (Array.isArray(errors) && errors.length) {
       for (let i = errors.length - 1; i >= 0; i--) {
-        console.warn(`[${this.name}] - onSubmitFail error: ${errors[i].message}`);
+        console.warn(`onSubmitFail error: ${errors[i].message}`);
       }
     }
   }
@@ -124,7 +121,7 @@ export default class AJAXKlaviyoForm {
 
     // This prop validation should probably be handled in a promise rejection from the KlaviyoAPI...?
     if (!email) {
-      console.warn(`[${this.name}] - Email is required`)
+      console.warn('Email is required')
       return
     }    
 
