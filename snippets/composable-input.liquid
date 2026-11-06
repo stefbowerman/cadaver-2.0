@@ -1,0 +1,46 @@
+{% doc %}
+  Composable Input
+  ------------------------------------------------------------------------------
+  @param {string} input_id - The id of the input - required
+  @param {string} name - The name of the input - required
+  @param {string} value - The value of the input - required 
+  @param {string} [type] - The type of input - optional - default 'checkbox'
+  @param {string} [label] - The label of the input - optional - default the value of the input
+  @param {boolean} [is_checked] - Whether the input is checked - optional - default false
+  @param {boolean} [is_disabled] - Whether the input is disabled - optional - default false
+  @param {string} [display_style] - The style of the input display - 'checkbox' or 'chip' -default 'checkbox'
+{% enddoc %}
+
+{%- liquid
+  assign type = type | default: 'checkbox'
+  assign display_style = display_style | default: 'checkbox'
+  assign label = label | default: value
+%}
+
+<div class="composable-input">
+  <input
+    type="{{ type }}"
+    name="{{ name | escape }}"
+    value="{{ value | escape }}"
+    id="{{ input_id }}"
+    {% if is_checked %}
+      checked
+    {% endif %}
+    {% if is_disabled %}
+      disabled
+    {% endif %}
+  />
+
+  <label for="{{ input_id }}">
+    {% comment %} @TODO - This isn't being used at all.  Probably when we need it for swatches? {% endcomment %}
+    {% if display_style == 'chip' %}
+      <span class="chip">
+        {{- label | escape -}}
+      </span>
+    {% else %}
+      <span class="check-input">
+        {{- label | escape -}}
+      </span>
+    {% endif %}
+  </label>
+</div>

@@ -1,0 +1,53 @@
+{% doc %}
+  Facets Sort
+  ------------------------------------------------------------------------------
+
+  @param {object} results - The collection or search object - required
+  @param {string} id_prefix - The id prefix to use for the form inputs - required
+
+  @example
+    {% render 'facets-sort', results: collection %}
+{% enddoc %}
+
+{% assign sort_by = results.sort_by | default: results.default_sort_by %}
+{% assign enabled_sort_option_values = 'relevance, manual, best-selling, title-ascending, title-descending, created-descending, created-ascending, price-ascending, price-descending' | split: ', ' %}
+
+{% comment %} @TODO - Would be good to make this adjustable so it could be a dropdown or a list of radio buttons {% endcomment %}
+
+<div data-check-group>
+  {% for option in results.sort_options %}
+    {% if enabled_sort_option_values contains option.value %}
+      {% liquid
+        assign input_id = 'sort-' | append: option.value | handle | escape
+        if id_prefix != blank
+          assign input_id = id_prefix | append: '-' | append: input_id
+        endif
+        
+        assign is_checked = false
+
+        if option.value == sort_by
+          assign is_checked = true
+        endif
+
+        assign label = option.name
+
+        if option.value == 'created-descending'
+          assign label = 'general.sort.created_descending' | t
+        elsif option.value == 'price-ascending'
+          assign label = 'general.sort.price_ascending' | t
+        elsif option.value == 'price-descending'
+          assign label = 'general.sort.price_descending' | t
+        endif
+      %}
+
+      {% render 'composable-input'
+                type: 'radio',
+                name: 'sort_by',
+                value: option.value,
+                input_id: input_id,
+                label: label,
+                is_checked: is_checked
+      %}
+    {% endif %}
+  {% endfor %}
+</div>

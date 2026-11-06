@@ -59,10 +59,18 @@
       "submit": "Search",
       "search": "Search",
       "clear": "Clear"
-    }
+    },
+    "sort": {
+      "created_descending": "Newest",
+      "price_ascending": "Price Low to High",
+      "price_descending": "Price High to Low",
+      "sort_by": "Sort By",
+      "sort": "Sort"
+    }    
   },
   "accessibility": {
     "skip_to_content": "Skip to content",
+    "results_updated": "Results updated",
     "link_messages": {
       "new_window": "Link opens in a new window."
     },
@@ -70,6 +78,10 @@
       "primary_menu": "Mobile main navigation",
       "secondary_menu": "Mobile secondary navigation"
     }  
+  },
+  "actions": {
+    "filter": "Filter",
+    "clear": "Clear"
   },  
   "blogs": {
     "article": {
@@ -128,6 +140,7 @@
     "general": {
       "no_matches": "Sorry, there are no products in this collection",
       "no_products_found": "No products found",
+      "clear_filters": "Clear filters",
       "link_title": "Browse our {{ title }} collection"
     }
   },

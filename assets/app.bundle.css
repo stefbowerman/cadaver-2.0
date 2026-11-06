@@ -24,6 +24,7 @@
       --tw-translate-x: 0;
       --tw-translate-y: 0;
       --tw-translate-z: 0;
+      --tw-content: "";
       --tw-duration: initial;
     }
   }
@@ -40,6 +41,8 @@
     --color-black: #000;
     --color-white: #fff;
     --spacing: .25rem;
+    --text-xs: .75rem;
+    --text-xs--line-height: calc(1 / .75);
     --text-sm: .875rem;
     --text-sm--line-height: calc(1.25 / .875);
     --text-base: 1rem;
@@ -521,6 +524,10 @@
     margin-inline: auto;
   }
 
+  .my-4 {
+    margin-block: calc(var(--spacing) * 4);
+  }
+
   .my-8 {
     margin-block: calc(var(--spacing) * 8);
   }
@@ -694,6 +701,10 @@
     column-gap: calc(var(--spacing) * 2);
   }
 
+  .gap-x-4 {
+    column-gap: calc(var(--spacing) * 4);
+  }
+
   .gap-x-5 {
     column-gap: calc(var(--spacing) * 5);
   }
@@ -801,6 +812,10 @@
     text-align: right;
   }
 
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+
   .text-2xl {
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
@@ -819,6 +834,16 @@
   .text-xl {
     font-size: var(--text-xl);
     line-height: var(--tw-leading, var(--text-xl--line-height));
+  }
+
+  .text-xs {
+    font-size: var(--text-xs);
+    line-height: var(--tw-leading, var(--text-xs--line-height));
+  }
+
+  .leading-0 {
+    --tw-leading: 0px;
+    line-height: 0;
   }
 
   .leading-none {
@@ -1015,6 +1040,11 @@
 
   .\[\&_a\]\:py-2 a {
     padding-block: calc(var(--spacing) * 2);
+  }
+
+  .\[\&_legend\]\:font-bold legend {
+    --tw-font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-bold);
   }
 }
 
@@ -1580,11 +1610,11 @@ input[type="number"] {
 }
 
 .composable-input label {
+  cursor: pointer;
   width: 100%;
-  position: relative;
 }
 
-.composable-input input[type="radio"], .composable-input input[type="checkbox"] {
+.composable-input input {
   clip-path: inset(50%);
   white-space: nowrap;
   border-width: 0;
@@ -1596,9 +1626,46 @@ input[type="number"] {
   overflow: hidden;
 }
 
-.composable-input:focus-visible {
-  --tw-outline-style: none;
-  outline-style: none;
+.composable-input input:focus-visible + label {
+  outline-style: var(--tw-outline-style);
+  outline-width: var(--default-border-width);
+  outline-offset: 3px;
+  outline-color: var(--color-black);
+  --tw-outline-style: solid;
+  outline-style: solid;
+}
+
+.composable-input input:disabled + label {
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.check-input:before {
+  margin-right: var(--spacing);
+  aspect-ratio: 1;
+  border-style: var(--tw-border-style);
+  --tw-content: "";
+  content: var(--tw-content);
+  border-width: 1px;
+  border-radius: 3.40282e38px;
+  width: 1em;
+  display: inline-block;
+}
+
+.composable-input input:checked + label .check-input:before {
+  background-color: currentColor;
+}
+
+@media (hover: hover) {
+  .composable-input input:enabled:not(:checked) + label:hover .check-input:before {
+    background-color: currentColor;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .composable-input input:enabled:not(:checked) + label:hover .check-input:before {
+      background-color: color-mix(in oklab, currentcolor 50%, transparent);
+    }
+  }
 }
 
 .embla {
@@ -2312,6 +2379,12 @@ header.header nav a[aria-current="page"] {
   syntax: "*";
   inherits: false;
   initial-value: 0;
+}
+
+@property --tw-content {
+  syntax: "*";
+  inherits: false;
+  initial-value: "";
 }
 
 @property --tw-duration {

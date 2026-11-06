@@ -6,77 +6,130 @@
 {% endcomment -%}
 
 {% paginate collection.products by 12 %}
+  {%- liquid
+    assign facets_enabled = false
 
-<div data-section-id="{{ section.id }}" data-section-type="collection">
-  <div class="mb-8 lg:mb-10">
-    <div class="container">
+    # Here, check for the size of the collection (collection.all_products_count) without any filters or pagination (collection.products.size)
+    if collection.all_products_count > 0
+      if section.settings.enable_filtering or section.settings.enable_sorting
+        assign facets_enabled = true
+      endif
+    endif
+  -%}
+
+  <div data-section-id="{{ section.id }}" data-section-type="collection">
+    <div class="container mb-8 lg:mb-10">
       <h1 class="text-xl text-center">
         {{ collection.title }}
       </h1>
-    </div>    
-  </div>
+    </div>
 
-  <div class="container">
-    <div
-      class="results-display"
-      data-component="results-display"
-      data-products-count="{{ collection.products_count | default: 0 }}"
-    >
-      <ul>
-        {% if collection.products.size > 0 %}   
-          {% for product in collection.products %}
-            {%- liquid
-              assign loading = blank
-              assign fetchpriority = blank
+    <div class="container">
+      {% if facets_enabled %}
+        {% capture contents %}
+          {% render 'facets-form',
+                    results: collection,
+                    enable_filtering: section.settings.enable_filtering,
+                    enable_sorting: section.settings.enable_sorting
+          %}
+        {% endcapture %}
 
-              if forloop.index == 1
-                assign fetchpriority = 'high'
-              endif
+        {% render 'facets-panel',
+                  results: collection,
+                  contents: contents
+        %}
+      {% endif %}
 
-              if forloop.index <= 8
-                assign loading = 'eager'
-              endif
-            %}
-                        
-            <li>
-              {% render 'product-card',
-                         product: product,
-                         loading: loading,
-                         fetchpriority: fetchpriority,
-                         secondary_image_enabled: true
+      <div
+        class="results-display"
+        data-component="results-display"
+        data-products-count="{{ collection.products_count | default: 0 }}"
+      >
+        {% if collection.products.size > 0 %} 
+          <ul>
+            {% for product in collection.products %}
+              {%- liquid
+                assign loading = blank
+                assign fetchpriority = blank
+
+                if forloop.index == 1
+                  assign fetchpriority = 'high'
+                endif
+
+                if forloop.index <= 8
+                  assign loading = 'eager'
+                endif
               %}
-            </li>
-          {% endfor %}
+                          
+              <li>
+                {% render 'product-card',
+                          product: product,
+                          loading: loading,
+                          fetchpriority: fetchpriority,
+                          secondary_image_enabled: true
+                %}
+              </li>
+            {% endfor %}
+          </ul>
+
+          {% if paginate.next %}
+            <a
+              href="{{- paginate.next.url -}}"
+              class="h-0 w-0 overflow-hidden opacity-0"
+              aria-hidden="true"
+              tabindex="-1"
+              data-more
+            >
+              Load more
+            </a>
+          {% endif %}
         {% else %}
-          <li class="col-span-full text-center">
-            <p>Nothing Found..</p>
-          </li>
-        {% endif %}
-      </ul>
+          <div class="text-center">
+            {% assign fallback_text = 'collections.general.no_products_found' | t %}
 
+            <p>{{ section.settings.nothing_found_text | default: fallback_text }}</p>
 
-      {% if paginate.next %}
-        <a
-          href="{{- paginate.next.url -}}"
-          class="h-0 w-0 overflow-hidden opacity-0"
-          aria-hidden="true"
-          tabindex="-1"
-          data-more
-        >
-          Load more
-        </a>
-      {% endif %}      
+            {% comment %} No results in a non-empty collection means filters are active, so offer a way out {% endcomment %}
+            {% if collection.all_products_count > 0 %}
+              {%- liquid
+                assign clear_url = collection.url
+                if collection.sort_by != blank
+                  assign clear_url = clear_url | append: '?sort_by=' | append: collection.sort_by
+                endif
+              -%}
+              <a href="{{ clear_url }}" class="underline">
+                {{ 'collections.general.clear_filters' | t }}
+              </a>
+            {% endif %}            
+          </div>
+        {% endif %}      
+      </div>
     </div>
   </div>
-</div>
-
 {% endpaginate %}
 
 {% schema %}
 {
   "name": "Collection - Main",
   "settings": [
-
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "label": "Enable Sorting",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_filtering",
+      "label": "Enable Filtering",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "nothing_found_text",
+      "label": "Nothing Found Text",
+      "default": "Nothing Found..."
+    }
   ]
 }
 {% endschema %}

@@ -1,0 +1,125 @@
+{% doc %}
+
+  Facets Form
+  ------------------------------------------------------------------------------
+
+  @param {object} results - The collection or search object - required
+  @param {string} [id_prefix] - The id prefix to use for the form inputs
+  @param {boolean} [enable_filtering] - Whether to enable filtering - optional - default true
+  @param {boolean} [enable_sorting] - Whether to enable sorting - optional - default true
+
+  @example
+    {% render 'facets-form', results: collection, id_prefix: 'facets-dropdown' %}
+
+{% enddoc %}
+
+{%- liquid
+  assign id_prefix = id_prefix | default: 'facets-form'
+
+  # When explicitly passing in "false", this is the proper way to set a default
+  if enable_sorting != false
+    assign enable_sorting = true
+  endif
+
+  if enable_filtering != false
+    assign enable_filtering = true
+  endif
+%}
+
+{% capture form_contents %}
+  {% if enable_filtering %}
+    {%- for filter in results.filters -%}
+      {%- capture filter_contents -%}
+        {% comment %}
+        {% assign swatch_index = filter.values | find_index: 'swatch' %}
+        <div class="text-xs my-4">
+          Debug:
+          <div class="font-mono leading-none">
+            <span class="opacity-50">Type</span>: {{ filter.type }}<br />
+            <span class="opacity-50">Presentation</span>: {{ filter.presentation }}<br />
+            <span class="opacity-50">Swatch Index</span>: {{ swatch_index }}
+          </div>
+        </div>
+        {% endcomment %}
+
+        {% comment %}
+        @TODO - match the logic from Shopify Horizon
+          - https://github.com/Shopify/horizon/blob/main/blocks/filters.liquid
+          - https://github.com/Shopify/horizon/blob/main/snippets/list-filter.liquid
+          - https://github.com/Shopify/horizon/blob/main/snippets/price-filter.liquid
+        {% endcomment %}
+        {% comment %}
+        {%- case filter.type -%}
+          {% when 'price_range' %}
+            <div style="opacity: 0.5">DO PRICE RANGE STUFF HERE</div>
+          {% else %}
+            <div style="opacity: 0.5">DO OTHER STUFF HERE</div>
+        {%- endcase -%}
+        {% endcomment %}
+
+        {%- case filter.type -%}
+          {%- when 'list' -%}        
+            {% if filter.presentation == 'swatch' %}
+              <div style="opacity: 0.5">DO SWATCH STUFF HERE</div>
+            {% elsif filter.presentation == 'image' %}
+              <div style="opacity: 0.5">DO IMAGE STUFF HERE</div>
+            {% else %}
+              <div data-check-group>
+                {%- for filter_value in filter.values -%}
+                  {% assign label_handle = filter_value.label | handle %}
+
+                  {% comment %} Don't allow filtering for out of stock items {% endcomment %}
+                  {% if label_handle == 'out-of-stock' %}
+                    {% continue %}
+                  {% endif %}
+
+                  {%- render 'facets-filter-value', filter_value: filter_value, index: forloop.index, id_prefix: id_prefix -%}
+                {%- endfor %}
+              </div>
+            {%- endif -%}
+          {%- when 'boolean' -%}
+            <div style="background-color: red;">What does this look like?</div>
+
+            {%- for filter_value in filter.values -%}
+              {%- render 'facets-filter-value',
+                          filter_value: filter_value,
+                          index: forloop.index,
+                          display_style: 'checkbox',
+                          id_prefix: id_prefix
+              -%}
+            {%- endfor -%}
+          {%- when 'price_range' -%}
+            <div style="opacity: 0.5">DO PRICE RANGE STUFF HERE</div>
+        {%- endcase -%}
+      {%- endcapture -%}
+
+      {%- if filter_contents != blank -%}
+        <fieldset>
+          <legend>{{ filter.label }}</legend>
+
+          <div>{{ filter_contents }}</div>
+        </fieldset>
+      {%- endif -%}
+    {%- endfor -%}
+  {% endif %}
+
+  {% if enable_sorting %}
+    <fieldset>
+      <legend>{{ 'general.sort.sort' | t }}</legend>
+
+      <div>
+        {% render 'facets-sort', results: results, id_prefix: id_prefix %}
+      </div>
+    </fieldset>
+  {% endif %}
+{% endcapture %}
+
+{% if form_contents != blank %}
+  <form
+    class="flex gap-x-4 [&_legend]:font-bold"
+    data-component="facets-form"
+    data-default-sort-by="{{ results.default_sort_by | escape }}"
+  >
+    {{ form_contents }}
+  </form>
+{% endif %}

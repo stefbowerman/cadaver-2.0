@@ -1,0 +1,45 @@
+{% doc %}
+  Facets Filter Value
+  ------------------------------------------------------------------------------
+
+  @param {object} filter_value - The filter value to display
+  @param {string} id_prefix - The id prefix to use for the form inputs
+  @param {number} [index] - The index of the filter value - used for generating ID
+  @param {string} [display_style] - The style of the filter value - see 'composable-input' for options
+  @param {string} [display_label] - The label of the filter value
+
+  @example
+    {% render 'facets-filter-value',
+      filter_value: filter_value,
+      index: index,
+      display_label: 'Size'
+    %}  
+{% enddoc %}
+
+{% if filter_value != empty %}
+  {%- liquid
+    assign input_id = id_prefix | append: '-' | append: filter_value.param_name | append: '-' | append: index | handle | escape
+    assign filter_label = filter_value.label
+    assign is_disabled = false
+  
+    if filter_value.count == 0 and filter_value.active == false
+      assign is_disabled = true
+    endif
+
+    if display_label != blank
+      assign filter_label = display_label
+    endif
+  -%}
+
+  
+    {% render 'composable-input'
+              input_id: input_id,
+              name: filter_value.param_name,
+              value: filter_value.value,
+              type: 'checkbox',
+              label: filter_label,
+              is_checked: filter_value.active,
+              is_disabled: is_disabled,
+              display_style: display_style
+    %}
+{% endif %}

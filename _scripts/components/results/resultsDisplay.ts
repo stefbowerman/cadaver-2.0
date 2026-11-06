@@ -1,5 +1,6 @@
 import { BREAKPOINTS } from '@/core/breakpointsController'
 import { swap } from '@/core/gsap'
+import { getAppString } from '@/core/utils/string'
 
 import BaseComponent from '@/components/base'
 import ProductCard from '@/components/product/productCard'
@@ -124,7 +125,8 @@ export default class ResultsDisplay extends BaseComponent {
         this.el.innerHTML = dom.innerHTML
         this.setup()
 
-        if (this.a11yStatus) this.a11yStatus.text = 'Results updated'
+        // @TODO - Add the products count to the accessibility status message
+        if (this.a11yStatus) this.a11yStatus.text = getAppString('resultsUpdated', 'Results updated')
 
         this.settings.onReplaceComplete?.(this)
       }
@@ -159,7 +161,9 @@ export default class ResultsDisplay extends BaseComponent {
       const newMore = dom.querySelector<HTMLAnchorElement>(selectors.more)
 
       if (this.more && newMore) {
+        this.#moreObserver?.unobserve(this.more)
         this.more.href = newMore.href
+        this.#moreObserver?.observe(this.more)
       }
       else {
         this.onNoMoreResults()
