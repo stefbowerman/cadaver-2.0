@@ -94,6 +94,21 @@ export default class FacetsPanel extends BaseComponent {
     this.facetsForms.forEach(f => f.processInputs(callback))
   }
 
+  // Check exactly the inputs present in params, so the form matches the results on screen
+  syncInputsToParams(params: URLSearchParams) {
+    const sortBy = params.get('sort_by') ?? this.defaultSortBy
+
+    this.processFacetsFormsInputs(el => {
+      if (el.type !== 'checkbox' && el.type !== 'radio') return
+
+      el.checked = el.name === 'sort_by'
+        ? el.value === sortBy
+        : params.getAll(el.name).includes(el.value)
+    })
+
+    this.updateActiveCountDisplay(this.activeFiltersCount)
+  }
+
   updateCount(count: number) {
     // @TODO - console.log('updateCount => ', count)
   }

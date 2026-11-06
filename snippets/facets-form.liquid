@@ -95,7 +95,7 @@
 
       {%- if filter_contents != blank -%}
         <fieldset>
-          <legend>{{ filter.label }}</legend>
+          <legend>{{ filter.label | escape }}</legend>
 
           <div>{{ filter_contents }}</div>
         </fieldset>
@@ -105,7 +105,7 @@
 
   {% if enable_sorting %}
     <fieldset>
-      <legend>{{ 'general.sort.sort' | t }}</legend>
+      <legend>{{ 'general.sort.sort' | t | escape }}</legend>
 
       <div>
         {% render 'facets-sort', results: results, id_prefix: id_prefix %}

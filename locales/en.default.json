@@ -71,6 +71,7 @@
   "accessibility": {
     "skip_to_content": "Skip to content",
     "results_updated": "Results updated",
+    "results_error": "Results could not be updated. Please try again.",
     "link_messages": {
       "new_window": "Link opens in a new window."
     },

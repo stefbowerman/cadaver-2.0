@@ -1,6 +1,7 @@
 import { type ThemeEditorSectionUnloadEvent } from '@/types/shopify'
 import { sectionRenderService } from '@/core/sectionRenderService'
 import { debounce } from '@/core/utils'
+import { getAppString } from '@/core/utils/string'
 
 import BaseSection from '@/sections/base'
 import ResultsDisplay from '@/components/results/resultsDisplay'
@@ -12,6 +13,8 @@ export default class ResultsSection extends BaseSection {
 
   #isFetching: boolean
   #isFiltering: boolean
+  #isUnloaded = false
+  #filterRequestId = 0
 
   resultsDisplay: ResultsDisplay
   facetsPanel: FacetsPanel | undefined
@@ -39,6 +42,7 @@ export default class ResultsSection extends BaseSection {
   }
 
   onUnload(e?: ThemeEditorSectionUnloadEvent): void {
+    this.#isUnloaded = true
     this.debouncedFacetsFormInputTogglePrefetch.cancel()
 
     super.onUnload(e)
@@ -76,6 +80,8 @@ export default class ResultsSection extends BaseSection {
   }, 200)
 
   async onFacetsFiltersChange(params: URLSearchParams) {
+    const requestId = ++this.#filterRequestId
+
     const fetchUrl = new URL(window.location.href)
           fetchUrl.search = params.toString()
 
@@ -84,6 +90,10 @@ export default class ResultsSection extends BaseSection {
     this.#isFiltering = true
     try {
       const dom = await sectionRenderService.getSectionDom(this.id, fetchUrl)
+
+      // Section unloaded mid-fetch: don't touch the DOM or the next page's URL.
+      // Superseded by a newer filter change: its fetch aborted ours, so dom is undefined.
+      if (this.#isUnloaded || requestId !== this.#filterRequestId) return
 
       if (!dom) throw new Error('Failed to load results')
 
@@ -117,11 +127,19 @@ export default class ResultsSection extends BaseSection {
     }
     catch (e) {
       console.warn('something went wrong...', e)
+
+      // The URL is only updated on success, so it still describes the results on screen
+      this.facetsPanel?.syncInputsToParams(new URLSearchParams(window.location.search))
+
+      if (this.resultsDisplay.a11yStatus) {
+        this.resultsDisplay.a11yStatus.text = getAppString('resultsError', 'Results could not be updated. Please try again.')
+      }
     }
     finally {
-      this.#isFiltering = false
+      // Only the latest request clears the flag, so infinite scroll stays paused until it lands
+      if (requestId === this.#filterRequestId) this.#isFiltering = false
     }
-  }  
+  }
 
   async fetchResults(url: string): Promise<HTMLElement | null> {
     if (this.#isFetching) return null
