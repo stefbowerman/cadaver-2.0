@@ -64,7 +64,7 @@
             {% elsif filter.presentation == 'image' %}
               <div style="opacity: 0.5">DO IMAGE STUFF HERE</div>
             {% else %}
-              <div data-check-group>
+              <div>
                 {%- for filter_value in filter.values -%}
                   {% assign label_handle = filter_value.label | handle %}
 

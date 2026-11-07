@@ -70,7 +70,7 @@
   },
   "accessibility": {
     "skip_to_content": "Skip to content",
-    "results_updated": "Results updated",
+    "results_updated": "Results updated.  Count: %count%",
     "results_error": "Results could not be updated. Please try again.",
     "link_messages": {
       "new_window": "Link opens in a new window."
@@ -78,7 +78,7 @@
     "mobile_menu": {
       "primary_menu": "Mobile main navigation",
       "secondary_menu": "Mobile secondary navigation"
-    }  
+    }
   },
   "actions": {
     "filter": "Filter",
@@ -142,6 +142,7 @@
       "no_matches": "Sorry, there are no products in this collection",
       "no_products_found": "No products found",
       "clear_filters": "Clear filters",
+      "active_filters": "Active filters",
       "link_title": "Browse our {{ title }} collection"
     }
   },

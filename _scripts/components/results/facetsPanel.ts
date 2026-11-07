@@ -1,10 +1,9 @@
 import BaseComponent from '@/components/base'
-import FacetsForm , { type FacetsFormSettings } from '@/components/results/facetsForm'
+import FacetsForm from '@/components/results/facetsForm'
 
 export type FacetFilters = Map<string, string[]>
 
 interface FacetsPanelSettings {
-  formInputsSortFunc?: FacetsFormSettings['sortFunc']
   onFiltersChange: (params: URLSearchParams) => void
   onInputPointerEnter?: (input: HTMLInputElement) => void
   onInputPointerLeave?: (input: HTMLInputElement) => void
@@ -13,6 +12,7 @@ interface FacetsPanelSettings {
 const selectors = {
   filtersActiveCount: '[data-filters-active-count]',
   filtersActiveCountValue: '[data-filters-active-count-value]',
+  productsCountValue: '[data-products-count-value]',
   clearFilters: 'button[data-clear-filters]',
 }
 
@@ -21,6 +21,7 @@ export default class FacetsPanel extends BaseComponent {
 
   settings: FacetsPanelSettings
   facetsForms: FacetsForm[]
+  productsCountValueEl: HTMLElement
   filtersActiveCountEls: HTMLElement[]
   filtersActiveCountValueEls: HTMLElement[]
   clearFiltersButton: HTMLButtonElement | undefined
@@ -32,14 +33,15 @@ export default class FacetsPanel extends BaseComponent {
       ...options
     }
 
+    this.productsCountValueEl = this.qsRequired(selectors.productsCountValue)
+
     this.filtersActiveCountEls = this.qsa(selectors.filtersActiveCount)
     this.filtersActiveCountValueEls = this.qsa(selectors.filtersActiveCountValue) 
     
-    this.clearFiltersButton = this.qs(selectors.clearFilters) as HTMLButtonElement ?? undefined
+    this.clearFiltersButton = this.qs<HTMLButtonElement>(selectors.clearFilters) ?? undefined
     this.clearFiltersButton?.addEventListener('click', this.onClearFiltersButtonClick.bind(this))
 
     this.facetsForms = this.qsa(FacetsForm.SELECTOR).map(el => new FacetsForm(el as HTMLFormElement, {
-      sortFunc: this.settings.formInputsSortFunc,
       onInput: this.onFacetsFormInput.bind(this),
       onSubmit: (e: SubmitEvent) => e.preventDefault(),
       onInputPointerEnter: this.settings.onInputPointerEnter,
@@ -110,7 +112,7 @@ export default class FacetsPanel extends BaseComponent {
   }
 
   updateCount(count: number) {
-    // @TODO - console.log('updateCount => ', count)
+    this.productsCountValueEl.textContent = count.toString()
   }
 
   updateActiveCountDisplay(activeCount: number) {

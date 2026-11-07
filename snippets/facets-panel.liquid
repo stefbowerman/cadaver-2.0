@@ -26,24 +26,26 @@
 %}
 
 <div data-component="facets-panel">
-  {% comment %} @TODO - Hiding this until we finish sorting and move on to filtering {% endcomment %}
-  {% comment %}
-    {% if results.filters.size > 0 %}
-      <div>
-        <span data-filters-active-count {% if active_filters_count == 0 %}hidden{% endif %}>
-          (<span data-filters-active-count-value>{{ active_filters_count }}</span>)
-        </span>
+  <div>
+    Product Count: <span data-products-count-value>{{ results.products_count }}</span>
+  </div>
 
-        <button
-          type="button"
-          data-clear-filters
-          {% if active_filters_count == 0 %}hidden{% endif %}
-        >
-          {{ 'actions.clear' | t }}
-        </button>
-      </div>
-    {% endif %}
-  {% endcomment %}
+  {% if results.filters.size > 0 %}
+    <div>
+      <span data-filters-active-count {% if active_filters_count == 0 %}hidden{% endif %}>
+        (<span class="sr-only">{{ 'collections.general.active_filters' | t }}</span><span data-filters-active-count-value>{{ active_filters_count }}</span>)
+      </span>
+
+      <button
+        type="button"
+        data-clear-filters
+        {% if active_filters_count == 0 %}hidden{% endif %}
+      >
+        {{ 'actions.clear' | t }}
+      </button>
+    </div>
+  {% endif %}
+  
 
   <div>
     {{ contents }}

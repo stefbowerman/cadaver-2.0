@@ -48,7 +48,7 @@ export default class ResultsSection extends BaseSection {
     super.onUnload(e)
   }
 
-  async facetsFormInputTogglePrefetch(target: HTMLInputElement) {
+  facetsFormInputTogglePrefetch(target: HTMLInputElement) {
     if (target.disabled) return
 
     const url = new URL(window.location.href)

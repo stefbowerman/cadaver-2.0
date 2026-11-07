@@ -113,7 +113,8 @@ export default class ResultsDisplay extends BaseComponent {
     if (!dom || !this.validateDom(dom)) return
 
     // Update the products count from the entire component DOM because we only update the innerHTML of the results display
-    this.el.dataset.productsCount = parseProductsCount(dom).toString()
+    const count = parseProductsCount(dom).toString()
+    this.el.dataset.productsCount = count
 
     this.#swapTl?.kill()
     this.#swapTl = swap(this.el, {
@@ -125,8 +126,7 @@ export default class ResultsDisplay extends BaseComponent {
         this.el.innerHTML = dom.innerHTML
         this.setup()
 
-        // @TODO - Add the products count to the accessibility status message
-        if (this.a11yStatus) this.a11yStatus.text = getAppString('resultsUpdated', 'Results updated')
+        if (this.a11yStatus) this.a11yStatus.text = getAppString('resultsUpdated', 'Results updated.  Count: %count%').replace('%count%', count)
 
         this.settings.onReplaceComplete?.(this)
       }
