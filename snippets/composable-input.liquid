@@ -8,7 +8,7 @@
   @param {string} [label] - The label of the input - optional - default the value of the input
   @param {boolean} [is_checked] - Whether the input is checked - optional - default false
   @param {boolean} [is_disabled] - Whether the input is disabled - optional - default false
-  @param {string} [display_style] - The style of the input display - 'checkbox' or 'chip' -default 'checkbox'
+  @param {string} [display_style] - The style of the input display - 'checkbox' or 'chip' - default 'checkbox'
 {% enddoc %}
 
 {%- liquid
@@ -34,7 +34,7 @@
   <label for="{{ input_id }}">
     {% comment %} @TODO - This isn't being used at all.  Probably when we need it for swatches? {% endcomment %}
     {% if display_style == 'chip' %}
-      <span class="chip">
+      <span class="chip-input">
         {{- label | escape -}}
       </span>
     {% else %}

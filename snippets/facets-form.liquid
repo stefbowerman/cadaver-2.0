@@ -58,36 +58,8 @@
         {% endcomment %}
 
         {%- case filter.type -%}
-          {%- when 'list' -%}        
-            {% if filter.presentation == 'swatch' %}
-              <div style="opacity: 0.5">DO SWATCH STUFF HERE</div>
-            {% elsif filter.presentation == 'image' %}
-              <div style="opacity: 0.5">DO IMAGE STUFF HERE</div>
-            {% else %}
-              <div>
-                {%- for filter_value in filter.values -%}
-                  {% assign label_handle = filter_value.label | handle %}
-
-                  {% comment %} Don't allow filtering for out of stock items {% endcomment %}
-                  {% if label_handle == 'out-of-stock' %}
-                    {% continue %}
-                  {% endif %}
-
-                  {%- render 'facets-filter-value', filter_value: filter_value, index: forloop.index, id_prefix: id_prefix -%}
-                {%- endfor %}
-              </div>
-            {%- endif -%}
-          {%- when 'boolean' -%}
-            <div style="background-color: red;">What does this look like?</div>
-
-            {%- for filter_value in filter.values -%}
-              {%- render 'facets-filter-value',
-                          filter_value: filter_value,
-                          index: forloop.index,
-                          display_style: 'checkbox',
-                          id_prefix: id_prefix
-              -%}
-            {%- endfor -%}
+          {%- when 'list', 'boolean' -%}
+            {%- render 'facets-list-filter', filter: filter, id_prefix: id_prefix -%}
           {%- when 'price_range' -%}
             <div style="opacity: 0.5">DO PRICE RANGE STUFF HERE</div>
         {%- endcase -%}
