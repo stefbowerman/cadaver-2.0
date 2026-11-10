@@ -29,7 +29,7 @@ export default class HeaderCartControl extends BaseComponent {
   onCartUpdate(e: CartAPIEvent) {
     const { cart } = e.detail
 
-    this.count.innerText = cart.item_count.toString()
+    this.count.textContent = cart.item_count.toString()
     this.countLabel.textContent = ` ${pluralize(
       cart.item_count,
       getAppString('cartItem', 'item'),

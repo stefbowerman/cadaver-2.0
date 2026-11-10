@@ -49,8 +49,6 @@ export default class AJAXCart extends BaseComponent {
     this.cartFooter = new CartFooter(this.qsRequired(CartFooter.SELECTOR))
 
     this.focusTrap = new FocusTrap(this.el, {
-      autofocus: false,
-      returnFocus: false,
       preventScroll: true
     })
 
@@ -113,6 +111,7 @@ export default class AJAXCart extends BaseComponent {
     this.backdrop.show()
     this.ariaControlElements.forEach(el => setAriaState(el, 'aria-expanded', true))
     document.body.classList.add(classes.bodyCartOpen)
+    this.focusTrap.activate()
   }
 
   close() {
@@ -129,7 +128,6 @@ export default class AJAXCart extends BaseComponent {
   }
 
   onOpenComplete() {
-    this.focusTrap.activate()
     this.settings.onOpenComplete?.()
   }
 

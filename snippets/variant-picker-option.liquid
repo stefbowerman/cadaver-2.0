@@ -13,7 +13,9 @@
 {%- liquid
   assign option_name_handle = option.name | handle
   assign option_parent_id = 'vpo-' | append: option_name_handle | append: '-' | append: product.id
-  assign swatch_count = option.values | map: 'swatch' | compact | size
+  
+  # Show each value's variant image in its swatch instead of the swatch color / image
+  assign use_variant_image = false
   assign is_radio = false
 
   if selection_type == 'radio'
@@ -27,36 +29,36 @@
       {%- for value in option.values -%}
         {%- liquid
           assign input_id = option_parent_id | append: forloop.index0
-        -%}
-      
-        <div class="composable-input">
-          <input
-            type="radio"
-            id="{{ input_id }}"
-            name="{{ option.name | escape }}"
-            value="{{ value | escape }}"
-            aria-label="{{ value | escape }}"
-            {% if value.selected %}
-              checked
-            {% endif %}
-            {% if value.available != true %}
-              disabled
-              aria-disabled="true"
-            {% endif %}
-          >
 
-          <label for="{{ input_id }}">
-            {% if swatch_count > 0 and value.swatch %}
-              {% comment %} This probably needs a tool tip or something? {% endcomment %}
-              {% render 'swatch', option_value: value, swatch: value.swatch, variant_image: value.variant.featured_media, use_variant_image: false %}
-            {% else %}
-              {% comment %} This will need interactive styling similar to _swatches.css {% endcomment %}
-              <span class="inline-block py-2 px-4 border border-black rounded leading-none cursor-pointer">
-                {{- value -}}
-              </span>
-            {% endif %}
-          </label>
-        </div>
+          assign display_style = 'chip'
+          assign swatch_image = nil
+
+          if value.swatch
+            assign display_style = 'swatch'
+
+            if use_variant_image and value.variant.featured_media
+              assign swatch_image = value.variant.featured_media
+            endif            
+          endif
+
+          assign is_disabled = false
+          if value.available != true
+            assign is_disabled = true
+          endif
+        -%}
+
+        {% render 'composable-input',
+                  type: 'radio',
+                  input_id: input_id,
+                  name: option.name,
+                  value: value.name,
+                  label: value.name,
+                  is_checked: value.selected,
+                  is_disabled: is_disabled,
+                  display_style: display_style,
+                  swatch: value.swatch,
+                  image: swatch_image
+        %}
       {%- endfor -%}
     </div>
   {% else %}

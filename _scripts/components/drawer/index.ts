@@ -64,8 +64,6 @@ export default class Drawer extends BaseComponent {
     this.role = this.el.getAttribute('role')
 
     this.focusTrap = new FocusTrap(this.el, {
-      autofocus: false,
-      returnFocus: false,
       preventScroll: true
     })
 
@@ -128,6 +126,8 @@ export default class Drawer extends BaseComponent {
     this.el.inert = false
 
     if (this.scroller) this.scroller.scrollTop = 0
+
+    this.focusTrap.activate()
   }
 
   close() {
@@ -151,8 +151,6 @@ export default class Drawer extends BaseComponent {
   }
 
   onOpenComplete() {
-    this.focusTrap.activate()
-
     this.settings.onOpenComplete?.()
   }
 

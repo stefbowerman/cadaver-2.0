@@ -1,0 +1,22 @@
+name: Theme Check
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  checks: write  # the action posts its results as a check run with annotations
+
+jobs:
+  theme-check:
+    name: Theme Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Theme Check
+        uses: shopify/theme-check-action@v2
+        with:
+          token: ${{ github.token }}
+          # ponytail: CLI 5.0.0 changed the JSON output and crashes the action (Shopify/theme-check-action#71). Unpin once #72 ships.
+          version: '4.9.5'

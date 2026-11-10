@@ -18,29 +18,26 @@ interface AJAXKlaviyoFormSettings {
 }
 
 export default class AJAXKlaviyoForm {
-  name: string
   settings: AJAXKlaviyoFormSettings
   el: HTMLElement
   form: HTMLFormElement
   input: HTMLInputElement
   submit: HTMLButtonElement
-  isSubmitting: boolean
+  #isSubmitting: boolean
 
   constructor(el: HTMLElement, options: AJAXKlaviyoFormSettings = {}) {
-    this.name = 'ajaxKlaviyoForm'
-
     this.settings = {
       source: 'Shopify Form',
       ...options
     }
 
     this.el = el
-    this.isSubmitting = false
+    this.#isSubmitting = false
 
     const form = this.el.tagName === 'FORM' ? this.el as HTMLFormElement : this.el.querySelector('form')
 
     if (!form) {
-      throw new Error(`[${this.name}] - Form element required to initialize`)
+      throw new Error('Form element required to initialize')
     }
 
     this.form = form
@@ -49,7 +46,7 @@ export default class AJAXKlaviyoForm {
     const submit = this.form.querySelector('[type="submit"]') as HTMLButtonElement | null
 
     if (!(input && submit)) {
-      throw new Error(`[${this.name}] - Email input and submit button required to initialize`)
+      throw new Error('Email input and submit button required to initialize')
     }
 
     this.input = input
@@ -73,7 +70,7 @@ export default class AJAXKlaviyoForm {
   logErrors(errors: Error[]) {
     if (Array.isArray(errors) && errors.length) {
       for (let i = errors.length - 1; i >= 0; i--) {
-        console.warn(`[${this.name}] - onSubmitFail error: ${errors[i].message}`);
+        console.warn(`onSubmitFail error: ${errors[i].message}`);
       }
     }
   }
@@ -99,16 +96,12 @@ export default class AJAXKlaviyoForm {
   }
 
   onSubscribeFail(errors: Error[]) {
-    this.submit.removeAttribute('disabled')
-
     this.logErrors(errors)  
     this.settings.onSubscribeFail?.()
   }
 
   // This is when something goes wrong with the form submissions / network request, not the subscription itself
   onSubmitFail(errors: Error[]) {
-    this.submit.removeAttribute('disabled')
-
     this.logErrors(errors)
     this.settings.onSubmitFail?.(errors)
   }
@@ -116,7 +109,7 @@ export default class AJAXKlaviyoForm {
   async onFormSubmit(e: SubmitEvent) {
     e.preventDefault()
 
-    if (this.isSubmitting || this.onBeforeSend() === false) {
+    if (this.#isSubmitting || this.onBeforeSend() === false) {
       return false
     }
 
@@ -124,12 +117,12 @@ export default class AJAXKlaviyoForm {
 
     // This prop validation should probably be handled in a promise rejection from the KlaviyoAPI...?
     if (!email) {
-      console.warn(`[${this.name}] - Email is required`)
+      console.warn('Email is required')
       return
     }    
 
     try {
-      this.isSubmitting = true;
+      this.#isSubmitting = true;
 
       this.submit.disabled = true
       this.settings.onSubmitStart?.()
@@ -144,7 +137,7 @@ export default class AJAXKlaviyoForm {
       }
       else {
         this.onSubscribeFail([
-          new Error('Subscription failed') as Error
+          new Error('Subscription failed')
         ])
       }
     }
@@ -153,9 +146,9 @@ export default class AJAXKlaviyoForm {
       this.onSubmitFail([error])
     }
     finally {
-      this.submit.removeAttribute('disabled')
+      this.submit.disabled = false
 
-      this.isSubmitting = false
+      this.#isSubmitting = false
     }
 
     return false

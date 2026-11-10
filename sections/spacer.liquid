@@ -1,0 +1,66 @@
+<div
+  class="h-(--h-xs) md:h-(--h-md) xl:h-(--h-xl) 2xl:h-(--h-2xl)"
+  style="
+    --h-xs:  {{ section.settings.height_xs }}px;
+    --h-md:  {{ section.settings.height_md }}px;
+    --h-xl:  {{ section.settings.height_xl }}px;
+    --h-2xl: {{ section.settings.height_2xl }}px;
+  "
+  aria-hidden="true"
+></div>
+
+{% schema %}
+  {
+    "name": "Spacer",
+    "settings": [
+      {
+        "type": "range",
+        "id": "height_xs",
+        "label": "Mobile",
+        "min": 0,
+        "max": 200,
+        "step": 5,
+        "unit": "px",
+        "default": 30
+      },
+      {
+        "type": "range",
+        "id": "height_md",
+        "label": "Tablet",
+        "info": "Screen size ≥ 768px",
+        "min": 0,
+        "max": 200,
+        "step": 5,
+        "unit": "px",
+        "default": 60
+      },
+      {
+        "type": "range",
+        "id": "height_xl",
+        "label": "Desktop",
+        "info": "Screen size ≥ 1280px",
+        "min": 0,
+        "max": 200,
+        "step": 5,
+        "unit": "px",
+        "default": 120
+      },
+      {
+        "type": "range",
+        "id": "height_2xl",
+        "label": "Desktop - Large",
+        "info": "Screen size ≥ 1536px",
+        "min": 0,
+        "max": 200,
+        "step": 5,
+        "unit": "px",
+        "default": 180
+      }
+    ],
+    "presets": [
+      {
+        "name": "Spacer"
+      }
+    ]
+  }
+{% endschema %}

@@ -22,6 +22,8 @@
   --z-skip: 10000;
 
   --aspect-product: 0.8;
+
+  --default-border-width: 1px;
 }
 
 @utility container {
@@ -96,10 +98,6 @@
       --ease-out-gentle: cubic-bezier(.17, 1.38, .35, .96);
     */ 
   }
-
-  *:focus-visible:not([disabled]) {
-    @apply outline-(length:--default-border-width) outline-solid outline-offset-3;
-  } 
     
   html {
     -webkit-text-size-adjust: 100%;
@@ -159,10 +157,10 @@
   ::selection {
     /* Set the background and text color for selected text */
   }
-  
-  *:focus-visible:not([disabled]) {
-    @apply outline outline-solid outline-black outline-offset-3;
-  }
+
+  *:focus-visible {
+    @apply outline-(length:--default-border-width) outline-solid outline-offset-3 outline-black;
+  }   
 
   /* Containers focused by script (Taxi navigation, skip link) aren't controls, so no ring */
   [tabindex="-1"]:focus-visible {

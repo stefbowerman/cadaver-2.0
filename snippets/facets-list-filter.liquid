@@ -1,0 +1,51 @@
+{% doc %}
+  Facets List Filter
+  ------------------------------------------------------------------------------
+  Renders every value of a 'list' or 'boolean' filter as a composable input.
+
+  @param {object} filter - The FilterDrop to render - required
+  @param {string} id_prefix - The id prefix to use for the form inputs - required
+
+  @example
+    {% render 'facets-list-filter', filter: filter, id_prefix: id_prefix %}
+{% enddoc %}
+
+{%- liquid
+  # Map Shopify's filter presentation to a composable-input display style
+  # Image filters are swatches with an image (filter_value.image is nil for other presentations)
+  assign display_style = 'checkbox'
+
+  case filter.presentation
+    when 'swatch', 'image'
+      assign display_style = 'swatch'
+  endcase
+-%}
+
+{%- for filter_value in filter.values -%}
+  {%- liquid
+    # Don't allow filtering for out of stock items (availability values: 1 = in stock, 0 = out of stock)
+    # Only show it if the filter is active (via url params)
+    if filter.param_name == 'filter.v.availability' and filter_value.value == '0' and filter_value.active == false
+      continue
+    endif
+
+    assign input_id = id_prefix | append: '-' | append: filter_value.param_name | append: '-' | append: forloop.index | handle | escape
+
+    assign is_disabled = false
+    if filter_value.count == 0 and filter_value.active == false
+      assign is_disabled = true
+    endif
+  -%}
+
+  {% render 'composable-input',
+            input_id: input_id,
+            name: filter_value.param_name,
+            value: filter_value.value,
+            label: filter_value.label,
+            is_checked: filter_value.active,
+            is_disabled: is_disabled,
+            display_style: display_style,
+            swatch: filter_value.swatch,
+            image: filter_value.image
+  %}
+{%- endfor -%}

@@ -1,8 +1,8 @@
-button:not([disabled]) {
+button:not([disabled], [aria-disabled="true"]) {
   @apply cursor-pointer;
 }
 
-button[disabled] {
+button:is([disabled], [aria-disabled="true"]) {
   @apply cursor-not-allowed;
 }
 
@@ -20,11 +20,11 @@ button[disabled] {
   transition-duration: 250ms;
   transition-timing-function: ease;
 
-  &[disabled] {
+  &:is([disabled], [aria-disabled="true"]) {
     @apply bg-[#222] border-[#111] text-[#DDD];
   }
 
-  &:not([disabled]) {
+  &:not([disabled], [aria-disabled="true"]) {
     @apply hover:bg-[#222] hover:border-black;
     @apply active:bg-black active:border-black;
   }

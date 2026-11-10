@@ -27,10 +27,8 @@ const KlaviyoAPI = {
       return success
     }
     catch (error) {
-      return {
-        message: 'Something went wrong',
-        errors: [error as string]
-      }
+      console.warn('[KlaviyoAPI] - Request failed', error)
+      return false
     }
   },
 

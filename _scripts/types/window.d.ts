@@ -55,6 +55,9 @@ declare global {
         companyId: string
         listId: string
       };
+      mailchimp?: {
+        formUrl: string
+      };
       breakpointsController?: BreakpointsController;
       lazyImageController?: LazyImageController;
     };

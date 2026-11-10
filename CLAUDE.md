@@ -162,6 +162,7 @@ Typed in `_scripts/types/window.d.ts`:
 - `window.app.routes` — Shopify route URLs (cart, search, account, etc.)
 - `window.app.strings` — localized UI strings (addToCart, soldOut, etc.)
 - `window.app.klaviyo` — Klaviyo config (companyId, listId)
+- `window.app.mailchimp` — Mailchimp config (formUrl); opt-in, see `snippets/head-scripts.liquid`
 
 ### Page Transition Events
 

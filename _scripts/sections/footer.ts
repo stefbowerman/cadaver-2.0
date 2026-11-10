@@ -26,7 +26,7 @@ export default class FooterSection extends BaseSection {
 
       this.ajaxForm = new AJAXKlaviyoForm(this.newsletterFormEl, {
         onSubmitStart: () => this.newsletterForm?.onSubmitStart(),
-        onSubmitFail: errors => this.newsletterForm?.onSubmitFail(errors),
+        onSubmitFail: () => this.newsletterForm?.onSubmitFail(),
         onSubscribeSuccess: () => this.newsletterForm?.onSubscribeSuccess(),
         onSubscribeFail: () => this.newsletterForm?.onSubscribeFail()
       })
