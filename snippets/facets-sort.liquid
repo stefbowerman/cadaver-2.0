@@ -3,27 +3,25 @@
   ------------------------------------------------------------------------------
 
   @param {object} results - The collection or search object - required
-  @param {string} id_prefix - The id prefix to use for the form inputs - required
+  @param {string} [id_prefix] - The id prefix to use for the form inputs - optional (but recommended)
+  @param {string} [selection_type] - 'radio' (default) or 'select'
 
   @example
     {% render 'facets-sort', results: collection %}
+    {% render 'facets-sort', results: collection, selection_type: 'select' %}
 {% enddoc %}
 
-{% assign sort_by = results.sort_by | default: results.default_sort_by %}
+{%- liquid
+  assign sort_by = results.sort_by | default: results.default_sort_by
+-%}
 
-{% comment %} @TODO - Would be good to make this adjustable so it could be a dropdown or a list of radio buttons {% endcomment %}
-<div>
+{% capture options_content %}
   {% for option in results.sort_options %}
     {% liquid
-      assign input_id = 'sort-' | append: option.value | handle | escape
-      if id_prefix != blank
-        assign input_id = id_prefix | append: '-' | append: input_id
-      endif
-      
-      assign is_checked = false
+      assign is_selected = false
 
       if option.value == sort_by
-        assign is_checked = true
+        assign is_selected = true
       endif
 
       assign label = option.name
@@ -37,13 +35,56 @@
       endif
     %}
 
-    {% render 'composable-input',
-              type: 'radio',
-              name: 'sort_by',
-              value: option.value,
-              input_id: input_id,
-              label: label,
-              is_checked: is_checked
-    %}
+    {% if selection_type == 'select' %}
+      <option
+        value="{{ option.value | escape }}"
+        {% if is_selected %}
+          selected
+        {% endif %}
+      >
+        {{- label | escape -}}
+      </option>
+    {% else %}
+      {%- liquid
+        assign input_id = 'sort-' | append: option.value | handle | escape
+
+        if id_prefix != blank
+          assign input_id = id_prefix | append: '-' | append: input_id
+        endif
+      %}
+
+      {% render 'composable-input',
+                type: 'radio',
+                name: 'sort_by',
+                value: option.value,
+                input_id: input_id,
+                label: label,
+                is_checked: is_selected
+      %}
+    {% endif %}
   {% endfor %}
-</div>
+{% endcapture %}
+
+{% if selection_type == 'select' %}
+  {%- liquid
+    assign select_id = 'sort-by'
+
+    if id_prefix != blank
+      assign select_id = id_prefix | append: '-' | append: select_id
+    endif
+  %}
+
+  <label for="{{ select_id }}" class="font-bold">{{ 'general.sort.sort' | t | escape }}</label>
+
+  <div class="form-control">
+    <select id="{{ select_id }}" name="sort_by">
+      {{ options_content }}
+    </select>
+
+    <span class="form-control__affix">
+      {{- 'icon-caret-down.svg' | inline_asset_content | replace: '<svg ', '<svg aria-hidden="true" focusable="false" ' -}}
+    </span>
+  </div>
+{% else %}
+  {{ options_content }}
+{% endif %}

@@ -993,7 +993,7 @@
     padding-block: calc(var(--spacing) * 2);
   }
 
-  .\[\&_legend\]\:font-bold legend {
+  .\[\&_label\]\:font-bold label, .\[\&_legend\]\:font-bold legend {
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
   }

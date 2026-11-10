@@ -1,5 +1,7 @@
 import BaseComponent from '@/components/base'
 
+export type FacetsFormInput = HTMLInputElement | HTMLSelectElement
+
 interface FacetsFormOptions {
   onInput?: (e: Event) => void
   onSubmit?: (e: SubmitEvent) => void
@@ -10,12 +12,12 @@ interface FacetsFormOptions {
 export default class FacetsForm extends BaseComponent {
   static TYPE = 'facets-form'
 
-  static getInputElements(el: HTMLFormElement): HTMLInputElement[] {
-    return Array.from(el.querySelectorAll('[name]')) as HTMLInputElement[]
+  static getInputElements(el: HTMLFormElement): FacetsFormInput[] {
+    return Array.from(el.querySelectorAll<FacetsFormInput>('input[name], select[name]'))
   }
 
   settings: FacetsFormOptions
-  inputs: HTMLInputElement[]
+  inputs: FacetsFormInput[]
 
   constructor(el: HTMLFormElement, options: FacetsFormOptions = {}) {
     super(el)
@@ -37,7 +39,7 @@ export default class FacetsForm extends BaseComponent {
       // input.addEventListener('pointerenter', () => this.settings.onInputPointerEnter?.(input))                                                                                                                    
       // input.addEventListener('pointerleave', () => this.settings.onInputPointerLeave?.(input))
 
-      if (label) {
+      if (label && input instanceof HTMLInputElement) {
         label.addEventListener('pointerenter', () => this.settings.onInputPointerEnter?.(input))                                                                                                                   
         label.addEventListener('pointerleave', () => this.settings.onInputPointerLeave?.(input))
       }
@@ -52,15 +54,13 @@ export default class FacetsForm extends BaseComponent {
     return new FormData(this.form)
   }
 
-  processInputs(callback: (el: HTMLInputElement) => void) {
+  processInputs(callback: (el: FacetsFormInput) => void) {
     this.inputs.forEach(callback)
   }
 
   getActiveFiltersCount() {
     const checkedCount = this.inputs.filter(input => {
-      if ((input.type === 'checkbox' || input.type === 'radio') && input.name !== 'sort_by') {
-        return input.checked
-      }
+      return (input.type === 'checkbox' || input.type === 'radio') && input.name !== 'sort_by' && input.checked
     }).length
 
     return checkedCount

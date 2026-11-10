@@ -7,6 +7,7 @@
   @param {string} [id_prefix] - The id prefix to use for the form inputs
   @param {boolean} [enable_filtering] - Whether to enable filtering - optional - default true
   @param {boolean} [enable_sorting] - Whether to enable sorting - optional - default true
+  @param {string} [sort_selection_type] - 'radio' (default) or 'select' - passed to facets-sort
 
   @example
     {% render 'facets-form', results: collection, id_prefix: 'facets-dropdown' %}
@@ -54,13 +55,18 @@
   {% endif %}
 
   {% if enable_sorting %}
-    <fieldset>
-      <legend>{{ 'general.sort.sort' | t | escape }}</legend>
-
+    {% if sort_selection_type == 'select' %}
       <div>
-        {% render 'facets-sort', results: results, id_prefix: id_prefix %}
+        {% render 'facets-sort', results: results, id_prefix: id_prefix, selection_type: 'select' %}
       </div>
-    </fieldset>
+    {% else %}
+      <fieldset>
+        <legend>{{ 'general.sort.sort' | t | escape }}</legend>
+        <div>
+          {% render 'facets-sort', results: results, id_prefix: id_prefix %}
+        </div>
+      </fieldset>
+    {% endif %}
   {% endif %}
 {% endcapture %}
 

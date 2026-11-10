@@ -1,8 +1,6 @@
 import BaseComponent from '@/components/base'
-import FacetsForm from '@/components/results/facetsForm'
+import FacetsForm, { type FacetsFormInput } from '@/components/results/facetsForm'
 import { isVisible } from '@/core/utils/dom'
-
-export type FacetFilters = Map<string, string[]>
 
 interface FacetsPanelOptions {
   onFiltersChange: (params: URLSearchParams) => void
@@ -81,32 +79,30 @@ export default class FacetsPanel extends BaseComponent {
     return searchParams
   }
 
-  buildFacetFilters(): FacetFilters {
-    const filters: FacetFilters = new Map()
-
-    this.facetsForms[0]?.processInputs((input: HTMLInputElement) => {
-      if ((input.type === 'checkbox' || input.type === 'radio') && input.checked) {
-        if (!filters.has(input.name)) filters.set(input.name, [])
-        filters.get(input.name)!.push(input.value)
-      }
-    })
-    return filters
-  }
-
-  processFacetsFormsInputs(callback: (el: HTMLInputElement) => void) {
+  processFacetsFormsInputs(callback: (el: FacetsFormInput) => void) {
     this.facetsForms.forEach(f => f.processInputs(callback))
   }
 
-  // Check exactly the inputs present in params, so the form matches the results on screen
+  // The default sort is left out of the URL, so fall back to it when sort_by is missing
+  #getParamValues(params: URLSearchParams, name: string): string[] {
+    if (name === 'sort_by') {
+      return [params.get('sort_by') ?? this.defaultSortBy]
+    }
+
+    return params.getAll(name)
+  }
+
+  // Set every input to match params, so the form matches the results on screen
   syncInputsToParams(params: URLSearchParams) {
-    const sortBy = params.get('sort_by') ?? this.defaultSortBy
-
     this.processFacetsFormsInputs(el => {
-      if (el.type !== 'checkbox' && el.type !== 'radio') return
+      const values = this.#getParamValues(params, el.name)
 
-      el.checked = el.name === 'sort_by'
-        ? el.value === sortBy
-        : params.getAll(el.name).includes(el.value)
+      if (el instanceof HTMLSelectElement) {
+        el.value = values[0] ?? ''
+      }
+      else if (el.type === 'checkbox' || el.type === 'radio') {
+        el.checked = values.includes(el.value)
+      }
     })
 
     this.updateActiveCountDisplay(this.activeFiltersCount)
@@ -155,7 +151,7 @@ export default class FacetsPanel extends BaseComponent {
     this.processFacetsFormsInputs(el => {
       if (el === target || el.name !== target.name) return
 
-      if (el.tagName === 'SELECT') {
+      if (el instanceof HTMLSelectElement) {
         el.value = target.value
       }
       else {

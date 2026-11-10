@@ -32,7 +32,8 @@
 
 <div data-component="facets-panel">
   <div>
-    Product Count: <span data-products-count-value>{{ results.products_count }}</span>
+    {% comment %} @NOTE: If this gets used on search, it will need to be adjusted since search uses results.results_count {% endcomment %}
+    {{ 'collections.general.product_count' | t }}: <span data-products-count-value>{{ results.products_count }}</span>
   </div>
 
   {% if results.filters.size > 0 %}
@@ -44,6 +45,7 @@
       <button
         type="button"
         data-clear-filters
+        aria-label="{{ 'collections.general.clear_filters' | t | escape }}"
         {% if active_filters_count == 0 %}hidden{% endif %}
       >
         {{ 'actions.clear' | t }}

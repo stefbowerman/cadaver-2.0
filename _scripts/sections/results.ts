@@ -114,6 +114,8 @@ export default class ResultsSection extends BaseSection {
 
         // Disable anything the server dropped or disabled, but never a checked input, so it can always be unchecked
         this.facetsPanel?.processFacetsFormsInputs(el => {
+          if (el instanceof HTMLSelectElement) return // never disable the sort select
+
           el.disabled = !el.checked && !available.has(`${el.name}=${el.value}`)
         })
       }

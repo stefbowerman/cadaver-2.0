@@ -47,7 +47,7 @@ export default class SearchInline extends BaseComponent {
     this.clearButton?.addEventListener('click', this.onClearButtonClick)
   }
 
-  private checkClearButton() {
+  #checkClearButton() {
     if (this.clearButton) {              
       this.clearButton.hidden = !this.input.value
     }
@@ -55,7 +55,7 @@ export default class SearchInline extends BaseComponent {
 
   reset() {
     this.input.value = ''
-    this.checkClearButton()
+    this.#checkClearButton()
   }
 
   onSubmit(e: SubmitEvent) {
@@ -87,12 +87,12 @@ export default class SearchInline extends BaseComponent {
 
 
   onKeyup(e: KeyboardEvent) {
-    this.checkClearButton()
+    this.#checkClearButton()
     this.settings.onKeyup?.(e)
   }
 
   onInput(e: InputEvent) {
-    this.checkClearButton()
+    this.#checkClearButton()
     this.settings.onInput?.(e)
   }
 

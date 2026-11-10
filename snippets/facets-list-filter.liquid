@@ -24,7 +24,8 @@
 {%- for filter_value in filter.values -%}
   {%- liquid
     # Don't allow filtering for out of stock items (availability values: 1 = in stock, 0 = out of stock)
-    if filter.param_name == 'filter.v.availability' and filter_value.value == '0'
+    # Only show it if the filter is active (via url params)
+    if filter.param_name == 'filter.v.availability' and filter_value.value == '0' and filter_value.active == false
       continue
     endif
 
