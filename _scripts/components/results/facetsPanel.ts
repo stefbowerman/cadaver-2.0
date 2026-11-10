@@ -1,5 +1,6 @@
 import BaseComponent from '@/components/base'
 import FacetsForm from '@/components/results/facetsForm'
+import { isVisible } from '@/core/utils/dom'
 
 export type FacetFilters = Map<string, string[]>
 
@@ -24,7 +25,7 @@ export default class FacetsPanel extends BaseComponent {
   productsCountValueEl: HTMLElement
   filtersActiveCountEls: HTMLElement[]
   filtersActiveCountValueEls: HTMLElement[]
-  clearFiltersButton: HTMLButtonElement | undefined
+  clearFiltersButton: HTMLButtonElement | null
 
   constructor(el: HTMLElement, options: FacetsPanelOptions) {
     super(el)
@@ -38,8 +39,8 @@ export default class FacetsPanel extends BaseComponent {
     this.filtersActiveCountEls = this.qsa(selectors.filtersActiveCount)
     this.filtersActiveCountValueEls = this.qsa(selectors.filtersActiveCountValue) 
     
-    this.clearFiltersButton = this.qs<HTMLButtonElement>(selectors.clearFilters) ?? undefined
-    this.clearFiltersButton?.addEventListener('click', this.onClearFiltersButtonClick.bind(this))
+    this.clearFiltersButton = this.qs<HTMLButtonElement>(selectors.clearFilters)
+    this.clearFiltersButton?.addEventListener('click', this.clearFilters.bind(this))
 
     this.facetsForms = this.qsa(FacetsForm.SELECTOR).map(el => new FacetsForm(el as HTMLFormElement, {
       onInput: this.onFacetsFormInput.bind(this),
@@ -129,7 +130,7 @@ export default class FacetsPanel extends BaseComponent {
     }
   }
 
-  onClearFiltersButtonClick() {
+  clearFilters() {
     if (this.activeFiltersCount === 0) return
 
     this.processFacetsFormsInputs(el => {
@@ -141,7 +142,9 @@ export default class FacetsPanel extends BaseComponent {
     })
 
     const params = this.buildUrlParams()
+
     this.updateActiveCountDisplay(0)
+    this.facetsForms.find(f => isVisible(f.el))?.inputs.find(input => !input.disabled)?.focus() // the clear control is about to be hidden or replaced, so keep focus in the first visible filter
     this.settings.onFiltersChange(params)
   }
 

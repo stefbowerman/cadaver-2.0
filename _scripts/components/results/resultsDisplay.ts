@@ -8,7 +8,8 @@ import A11yStatus from '@/components/a11y/a11yStatus'
 
 const selectors = {
   list: 'ul',
-  more: 'a[data-more]'
+  more: 'a[data-more]',
+  clearFilters: 'a[data-clear-filters]'
 }
 
 function parseProductsCount(el: HTMLElement) {
@@ -19,6 +20,7 @@ interface ResultsDisplayOptions {
   onMoreIntersection?: (entries: IntersectionObserverEntry[]) => void
   onReplaceStart?: (resultsDisplay: ResultsDisplay) => void
   onReplaceComplete?: (resultsDisplay: ResultsDisplay) => void
+  onClearFiltersClick?: (e: MouseEvent) => void
 }
 
 export default class ResultsDisplay extends BaseComponent {
@@ -32,6 +34,7 @@ export default class ResultsDisplay extends BaseComponent {
   list: HTMLUListElement | null
   a11yStatus: A11yStatus | null
   more: HTMLAnchorElement | null
+  clearFiltersLink: HTMLAnchorElement | null
 
   constructor(el: HTMLElement, options: ResultsDisplayOptions = {}) {
     super(el)
@@ -46,8 +49,10 @@ export default class ResultsDisplay extends BaseComponent {
     this.list = null
     this.a11yStatus = null
     this.more = null
+    this.clearFiltersLink = null
 
     this.onMoreIntersection = this.onMoreIntersection.bind(this)
+    this.onClearFiltersClick = this.onClearFiltersClick.bind(this)
 
     this.setup()
   }
@@ -57,6 +62,9 @@ export default class ResultsDisplay extends BaseComponent {
 
     this.list = this.qs<HTMLUListElement>(selectors.list)
     this.more = this.qs<HTMLAnchorElement>(selectors.more)
+
+    this.clearFiltersLink = this.qs<HTMLAnchorElement>(selectors.clearFilters)
+    this.clearFiltersLink?.addEventListener('click', this.onClearFiltersClick)
 
     if (this.more) {
       const more = this.more
@@ -85,6 +93,7 @@ export default class ResultsDisplay extends BaseComponent {
 
     this.list = null
     this.more = null
+    this.clearFiltersLink = null
 
     this.#moreObserver?.disconnect()
     this.#moreObserver = null
@@ -180,6 +189,10 @@ export default class ResultsDisplay extends BaseComponent {
     this.#moreObserver?.disconnect()
     this.#moreObserver = null
   }  
+
+  onClearFiltersClick(e: MouseEvent) {
+    this.settings.onClearFiltersClick?.(e)
+  }
 
   onMoreIntersection(entries: IntersectionObserverEntry[]) {
     if (!this.more) return // Prevent a race condition

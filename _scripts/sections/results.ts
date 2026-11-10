@@ -27,7 +27,8 @@ export default class ResultsSection extends BaseSection {
 
     this.resultsDisplay = new ResultsDisplay(this.qsRequired(ResultsDisplay.SELECTOR), {
       onMoreIntersection: this.onMoreIntersection.bind(this),
-      onReplaceComplete: this.onReplaceComplete.bind(this)
+      onReplaceComplete: this.onReplaceComplete.bind(this),
+      onClearFiltersClick: this.onClearFiltersClick.bind(this)
     })
 
     const facetsPanelEl = this.qs(FacetsPanel.SELECTOR)
@@ -36,7 +37,7 @@ export default class ResultsSection extends BaseSection {
       this.facetsPanel = new FacetsPanel(facetsPanelEl, {
         onFiltersChange: this.onFacetsFiltersChange.bind(this),
         onInputPointerEnter: this.debouncedFacetsFormInputTogglePrefetch,
-        onInputPointerLeave: () => this.debouncedFacetsFormInputTogglePrefetch.cancel(),        
+        onInputPointerLeave: () => this.debouncedFacetsFormInputTogglePrefetch.cancel(),
       })
     }
   }
@@ -180,6 +181,14 @@ export default class ResultsSection extends BaseSection {
     catch (e) {
       console.warn('something went wrong...', e)
     }       
+  }
+
+  onClearFiltersClick(e: MouseEvent) {
+    // Nothing the panel can clear (e.g. only a price range in the URL): let the link load the page
+    if (!this.facetsPanel?.activeFiltersCount) return
+
+    e.preventDefault()
+    this.facetsPanel.clearFilters()
   }
 
   onReplaceComplete(resultsDisplay: ResultsDisplay) {
