@@ -135,7 +135,7 @@ export default class ResultsDisplay extends BaseComponent {
         this.el.innerHTML = dom.innerHTML
         this.setup()
 
-        if (this.a11yStatus) this.a11yStatus.text = getAppString('resultsUpdated', 'Results updated.  Count: %count%').replace('%count%', count)
+        if (this.a11yStatus) this.a11yStatus.text = getAppString('resultsUpdated', 'Results updated. Count: %count%').replace('%count%', count)
 
         this.settings.onReplaceComplete?.(this)
       }
