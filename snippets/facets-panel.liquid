@@ -1,0 +1,60 @@
+{% doc %}
+  Facets Panel
+  ------------------------------------------------------------------------------
+  
+  @param {object} results - The collection or search object
+  @param {string} contents - The contents of the facets panel - contains the facets form(s)
+{% enddoc %}
+
+{%- liquid
+  assign active_filters_count = 0
+
+  for filter in results.filters
+    case filter.type
+      when 'price_range'
+        # Price range filters are not supported
+        # If later enabled, uncomment the code below
+
+        comment
+        if filter.min_value.value != null or filter.max_value.value != null
+          assign active_filters_count = active_filters_count | plus: 1
+        endif
+        endcomment
+      when 'boolean'
+        if filter.active_values[0].value
+          assign active_filters_count = active_filters_count | plus: 1
+        endif
+      else
+        assign active_filters_count = active_filters_count | plus: filter.active_values.size
+    endcase
+  endfor
+%}
+
+<div data-component="facets-panel">
+  <div>
+    {% comment %} @NOTE: If this gets used on search, it will need to be adjusted since search uses results.results_count {% endcomment %}
+    {{ 'collections.general.product_count' | t }}: <span data-products-count-value>{{ results.products_count }}</span>
+  </div>
+
+  {% if results.filters.size > 0 %}
+    <div>
+      <span data-filters-active-count {% if active_filters_count == 0 %}hidden{% endif %}>
+        (<span class="sr-only">{{ 'collections.general.active_filters' | t }}</span><span data-filters-active-count-value>{{ active_filters_count }}</span>)
+      </span>
+
+      <button
+        type="button"
+        data-clear-filters
+        aria-label="{{ 'collections.general.clear_filters' | t | escape }}"
+        {% if active_filters_count == 0 %}hidden{% endif %}
+      >
+        {{ 'actions.clear' | t }}
+      </button>
+    </div>
+  {% endif %}
+  
+
+  <div>
+    {{ contents }}
+  </div>
+</div>

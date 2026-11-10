@@ -3,7 +3,6 @@
   @supports (((-webkit-hyphens: none)) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
     *, :before, :after, ::backdrop {
       --tw-border-style: solid;
-      --tw-leading: initial;
       --tw-font-weight: initial;
       --tw-blur: initial;
       --tw-brightness: initial;
@@ -21,9 +20,11 @@
       --tw-outline-style: solid;
       --tw-border-spacing-x: 0;
       --tw-border-spacing-y: 0;
+      --tw-leading: initial;
       --tw-translate-x: 0;
       --tw-translate-y: 0;
       --tw-translate-z: 0;
+      --tw-content: "";
       --tw-duration: initial;
     }
   }
@@ -569,10 +570,6 @@
     display: inline;
   }
 
-  .inline-block {
-    display: inline-block;
-  }
-
   .table {
     display: table;
   }
@@ -642,10 +639,6 @@
     flex: 1;
   }
 
-  .cursor-pointer {
-    cursor: pointer;
-  }
-
   .grid-cols-1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
@@ -694,6 +687,10 @@
     column-gap: calc(var(--spacing) * 2);
   }
 
+  .gap-x-4 {
+    column-gap: calc(var(--spacing) * 4);
+  }
+
   .gap-x-5 {
     column-gap: calc(var(--spacing) * 5);
   }
@@ -736,17 +733,9 @@
     overflow-y: scroll;
   }
 
-  .rounded {
-    border-radius: .25rem;
-  }
-
   .border {
     border-style: var(--tw-border-style);
     border-width: 1px;
-  }
-
-  .border-black {
-    border-color: var(--color-black);
   }
 
   .bg-white {
@@ -767,10 +756,6 @@
 
   .px-6 {
     padding-inline: calc(var(--spacing) * 6);
-  }
-
-  .py-2 {
-    padding-block: calc(var(--spacing) * 2);
   }
 
   .py-3 {
@@ -819,11 +804,6 @@
   .text-xl {
     font-size: var(--text-xl);
     line-height: var(--tw-leading, var(--text-xl--line-height));
-  }
-
-  .leading-none {
-    --tw-leading: 1;
-    line-height: 1;
   }
 
   .font-bold {
@@ -952,10 +932,6 @@
       display: inline-block;
     }
 
-    .lg\:h-\(--h-lg\) {
-      height: var(--h-lg);
-    }
-
     .lg\:max-w-\[11em\] {
       max-width: 11em;
     }
@@ -1015,6 +991,11 @@
 
   .\[\&_a\]\:py-2 a {
     padding-block: calc(var(--spacing) * 2);
+  }
+
+  .\[\&_label\]\:font-bold label, .\[\&_legend\]\:font-bold legend {
+    --tw-font-weight: var(--font-weight-bold);
+    font-weight: var(--font-weight-bold);
   }
 }
 
@@ -1262,35 +1243,6 @@ button:is([disabled], [aria-disabled="true"]) {
   height: 100%;
   position: absolute;
   inset: 0;
-}
-
-input[type="checkbox"] + label .swatch, input[type="radio"] + label .swatch {
-  cursor: pointer;
-}
-
-input[type="checkbox"]:not(:disabled):not(:checked) + label:hover .swatch, input[type="radio"]:not(:disabled):not(:checked) + label:hover .swatch {
-  outline-style: var(--tw-outline-style);
-  outline-offset: 2px;
-  outline-width: 1px;
-  outline-color: var(--color-green);
-}
-
-input[type="checkbox"]:checked + label .swatch, input[type="radio"]:checked + label .swatch {
-  outline-style: var(--tw-outline-style);
-  outline-offset: 2px;
-  outline-width: 1px;
-  outline-color: var(--color-blue);
-}
-
-input[type="checkbox"]:focus-visible + label .swatch, input[type="radio"]:focus-visible + label .swatch {
-  outline-style: var(--tw-outline-style);
-  outline-offset: 2px;
-  outline-width: 1px;
-  outline-color: var(--color-red);
-}
-
-input[type="checkbox"]:disabled + label .swatch, input[type="radio"]:disabled + label .swatch {
-  cursor: not-allowed;
 }
 
 label {
@@ -1580,11 +1532,11 @@ input[type="number"] {
 }
 
 .composable-input label {
+  cursor: pointer;
   width: 100%;
-  position: relative;
 }
 
-.composable-input input[type="radio"], .composable-input input[type="checkbox"] {
+.composable-input input {
   clip-path: inset(50%);
   white-space: nowrap;
   border-width: 0;
@@ -1596,9 +1548,98 @@ input[type="number"] {
   overflow: hidden;
 }
 
-.composable-input:focus-visible {
-  --tw-outline-style: none;
-  outline-style: none;
+.composable-input input:focus-visible + label {
+  outline-style: var(--tw-outline-style);
+  outline-width: var(--default-border-width);
+  outline-offset: 3px;
+  outline-color: var(--color-black);
+  --tw-outline-style: solid;
+  outline-style: solid;
+}
+
+.composable-input input:disabled + label {
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.check-input:before {
+  margin-right: var(--spacing);
+  aspect-ratio: 1;
+  border-style: var(--tw-border-style);
+  --tw-content: "";
+  content: var(--tw-content);
+  border-width: 1px;
+  border-radius: 3.40282e38px;
+  width: 1em;
+  display: inline-block;
+}
+
+.composable-input input:checked + label .check-input:before {
+  background-color: currentColor;
+}
+
+@media (hover: hover) {
+  .composable-input input:enabled:not(:checked) + label:hover .check-input:before {
+    background-color: currentColor;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .composable-input input:enabled:not(:checked) + label:hover .check-input:before {
+      background-color: color-mix(in oklab, currentcolor 50%, transparent);
+    }
+  }
+}
+
+.chip-input {
+  border-style: var(--tw-border-style);
+  border-width: 1px;
+  border-color: var(--color-black);
+  padding-inline: calc(var(--spacing) * 4);
+  padding-block: calc(var(--spacing) * 2);
+  --tw-leading: 1;
+  border-radius: .25rem;
+  line-height: 1;
+  display: inline-block;
+}
+
+.composable-input input:checked + label .chip-input {
+  background-color: var(--color-black);
+  color: var(--color-white);
+}
+
+@media (hover: hover) {
+  .composable-input input:enabled:not(:checked) + label:hover .chip-input {
+    background-color: #0000001a;
+  }
+
+  @supports (color: color-mix(in lab, red, red)) {
+    .composable-input input:enabled:not(:checked) + label:hover .chip-input {
+      background-color: color-mix(in oklab, var(--color-black) 10%, transparent);
+    }
+  }
+}
+
+.composable-input input:checked + label .swatch {
+  outline-style: var(--tw-outline-style);
+  outline-offset: 2px;
+  outline-width: 1px;
+  outline-color: var(--color-blue);
+}
+
+@media (hover: hover) {
+  .composable-input input:enabled:not(:checked) + label:hover .swatch {
+    outline-style: var(--tw-outline-style);
+    outline-offset: 2px;
+    outline-width: 1px;
+    outline-color: var(--color-green);
+  }
+}
+
+.composable-input input:disabled + label .swatch:after {
+  content: "";
+  background: linear-gradient(to top right, transparent calc(50% - 2px), #fff calc(50% - 2px) calc(50% - 1px), var(--color-black) calc(50% - 1px) calc(50% + 1px), #fff calc(50% + 1px) calc(50% + 2px), transparent calc(50% + 2px));
+  position: absolute;
+  inset: 0;
 }
 
 .embla {
@@ -2202,11 +2243,6 @@ header.header nav a[aria-current="page"] {
   initial-value: solid;
 }
 
-@property --tw-leading {
-  syntax: "*";
-  inherits: false
-}
-
 @property --tw-font-weight {
   syntax: "*";
   inherits: false
@@ -2296,6 +2332,11 @@ header.header nav a[aria-current="page"] {
   initial-value: 0;
 }
 
+@property --tw-leading {
+  syntax: "*";
+  inherits: false
+}
+
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
@@ -2312,6 +2353,12 @@ header.header nav a[aria-current="page"] {
   syntax: "*";
   inherits: false;
   initial-value: 0;
+}
+
+@property --tw-content {
+  syntax: "*";
+  inherits: false;
+  initial-value: "";
 }
 
 @property --tw-duration {

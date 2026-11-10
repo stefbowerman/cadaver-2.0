@@ -34,6 +34,7 @@ export default class BaseSection {
 
   #settings: BaseSectionSettings;
   #intersectionObserver: IntersectionObserver | null;
+  #isUnloaded = false
 
   type: string
   container: HTMLElement
@@ -111,6 +112,10 @@ export default class BaseSection {
     return this.container.dataset
   }
 
+  get isUnloaded(): boolean {
+    return this.#isUnloaded
+  }
+
   /**
    * Query selector helper that returns the first matching element within the section container
    * @param {string} selector - CSS selector string
@@ -180,6 +185,8 @@ export default class BaseSection {
   }
 
   onUnload(e?: ThemeEditorSectionUnloadEvent) {
+    this.#isUnloaded = true
+
     window.removeEventListener('taxi.navigateOut', this.onNavigateOut)
     window.removeEventListener('taxi.navigateIn', this.onNavigateIn)
     window.removeEventListener('taxi.navigateEnd', this.onNavigateEnd)

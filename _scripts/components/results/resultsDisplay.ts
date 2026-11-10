@@ -1,5 +1,6 @@
 import { BREAKPOINTS } from '@/core/breakpointsController'
 import { swap } from '@/core/gsap'
+import { getAppString } from '@/core/utils/string'
 
 import BaseComponent from '@/components/base'
 import ProductCard from '@/components/product/productCard'
@@ -7,7 +8,8 @@ import A11yStatus from '@/components/a11y/a11yStatus'
 
 const selectors = {
   list: 'ul',
-  more: 'a[data-more]'
+  more: 'a[data-more]',
+  clearFilters: 'a[data-clear-filters]'
 }
 
 function parseProductsCount(el: HTMLElement) {
@@ -18,6 +20,7 @@ interface ResultsDisplayOptions {
   onMoreIntersection?: (entries: IntersectionObserverEntry[]) => void
   onReplaceStart?: (resultsDisplay: ResultsDisplay) => void
   onReplaceComplete?: (resultsDisplay: ResultsDisplay) => void
+  onClearFiltersClick?: (e: MouseEvent) => void
 }
 
 export default class ResultsDisplay extends BaseComponent {
@@ -31,6 +34,7 @@ export default class ResultsDisplay extends BaseComponent {
   list: HTMLUListElement | null
   a11yStatus: A11yStatus | null
   more: HTMLAnchorElement | null
+  clearFiltersLink: HTMLAnchorElement | null
 
   constructor(el: HTMLElement, options: ResultsDisplayOptions = {}) {
     super(el)
@@ -45,8 +49,10 @@ export default class ResultsDisplay extends BaseComponent {
     this.list = null
     this.a11yStatus = null
     this.more = null
+    this.clearFiltersLink = null
 
     this.onMoreIntersection = this.onMoreIntersection.bind(this)
+    this.onClearFiltersClick = this.onClearFiltersClick.bind(this)
 
     this.setup()
   }
@@ -56,6 +62,9 @@ export default class ResultsDisplay extends BaseComponent {
 
     this.list = this.qs<HTMLUListElement>(selectors.list)
     this.more = this.qs<HTMLAnchorElement>(selectors.more)
+
+    this.clearFiltersLink = this.qs<HTMLAnchorElement>(selectors.clearFilters)
+    this.clearFiltersLink?.addEventListener('click', this.onClearFiltersClick)
 
     if (this.more) {
       const more = this.more
@@ -84,6 +93,7 @@ export default class ResultsDisplay extends BaseComponent {
 
     this.list = null
     this.more = null
+    this.clearFiltersLink = null
 
     this.#moreObserver?.disconnect()
     this.#moreObserver = null
@@ -112,7 +122,8 @@ export default class ResultsDisplay extends BaseComponent {
     if (!dom || !this.validateDom(dom)) return
 
     // Update the products count from the entire component DOM because we only update the innerHTML of the results display
-    this.el.dataset.productsCount = parseProductsCount(dom).toString()
+    const count = parseProductsCount(dom).toString()
+    this.el.dataset.productsCount = count
 
     this.#swapTl?.kill()
     this.#swapTl = swap(this.el, {
@@ -124,7 +135,7 @@ export default class ResultsDisplay extends BaseComponent {
         this.el.innerHTML = dom.innerHTML
         this.setup()
 
-        if (this.a11yStatus) this.a11yStatus.text = 'Results updated'
+        if (this.a11yStatus) this.a11yStatus.text = getAppString('resultsUpdated', 'Results updated. Count: %count%').replace('%count%', count)
 
         this.settings.onReplaceComplete?.(this)
       }
@@ -159,7 +170,9 @@ export default class ResultsDisplay extends BaseComponent {
       const newMore = dom.querySelector<HTMLAnchorElement>(selectors.more)
 
       if (this.more && newMore) {
+        this.#moreObserver?.unobserve(this.more)
         this.more.href = newMore.href
+        this.#moreObserver?.observe(this.more)
       }
       else {
         this.onNoMoreResults()
@@ -176,6 +189,10 @@ export default class ResultsDisplay extends BaseComponent {
     this.#moreObserver?.disconnect()
     this.#moreObserver = null
   }  
+
+  onClearFiltersClick(e: MouseEvent) {
+    this.settings.onClearFiltersClick?.(e)
+  }
 
   onMoreIntersection(entries: IntersectionObserverEntry[]) {
     if (!this.more) return // Prevent a race condition

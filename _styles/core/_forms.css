@@ -272,17 +272,83 @@ input[type="number"] {
   position: relative;
 
   label {
-    position: relative;
-    width: 100%;
+    @apply w-full cursor-pointer;
   }
   
-  input[type="radio"],
-  input[type="checkbox"] {
+  input {
     @apply sr-only;
   }
 
-  /* Child (input) elements are responsible for focus-visible styles */
-  &:focus-visible {
-    @apply outline-none;
+  input:focus-visible + label {
+    /* This matches *:focus-visible styles in app.css */
+    @apply outline-(length:--default-border-width) outline-solid outline-offset-3 outline-black;
+  }
+
+  input:disabled + label {
+    cursor: not-allowed;
+    text-decoration: line-through;
+  }  
+}
+
+/* START - Check Input */
+.check-input {
+  &::before {
+    @apply content-[''] inline-block w-[1em] aspect-square mr-1 rounded-full border;
   }
 }
+
+.composable-input {
+  input:checked + label {
+    .check-input::before { @apply bg-current; }
+  }
+
+  @media (hover: hover) {
+    input:enabled:not(:checked) + label:hover {
+      .check-input::before { @apply bg-current/50; }
+    }
+  }
+}
+/* END - Check Input */
+
+/* START - Chip Input */
+.chip-input {
+  @apply inline-block py-2 px-4 border border-black rounded leading-none;
+}
+
+.composable-input input:checked + label .chip-input {
+  @apply bg-black text-white;
+}
+
+@media (hover: hover) {
+  .composable-input input:enabled:not(:checked) + label:hover .chip-input {
+    @apply bg-black/10;
+  }
+}
+/* END - Chip Input */
+
+/* START - Swatch Input */
+.composable-input {
+  input:checked + label .swatch {
+    @apply outline outline-blue outline-offset-2;
+  }
+
+  @media (hover: hover) {
+    input:enabled:not(:checked) + label:hover .swatch {
+      @apply outline outline-green outline-offset-2;
+    }
+  }
+
+  input:disabled + label .swatch::after {
+    content: '';
+    @apply absolute inset-0;
+    background: linear-gradient(
+      to top right,
+      transparent calc(50% - 2px),
+      #fff calc(50% - 2px) calc(50% - 1px),
+      var(--color-black) calc(50% - 1px) calc(50% + 1px),
+      #fff calc(50% + 1px) calc(50% + 2px),
+      transparent calc(50% + 2px)
+    );
+  }
+}
+/* END - Swatch Input */
