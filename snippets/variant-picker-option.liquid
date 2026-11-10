@@ -15,7 +15,7 @@
   assign option_parent_id = 'vpo-' | append: option_name_handle | append: '-' | append: product.id
   
   # Show each value's variant image in its swatch instead of the swatch color / image
-  assign use_variant_image = true
+  assign use_variant_image = false
   assign is_radio = false
 
   if selection_type == 'radio'

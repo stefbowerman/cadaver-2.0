@@ -318,6 +318,12 @@ input[type="number"] {
 .composable-input input:checked + label .chip-input {
   @apply bg-black text-white;
 }
+
+@media (hover: hover) {
+  .composable-input input:enabled:not(:checked) + label:hover .chip-input {
+    @apply bg-black/10;
+  }
+}
 /* END - Chip Input */
 
 /* START - Swatch Input */
