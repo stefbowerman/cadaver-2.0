@@ -30,38 +30,13 @@
   {% if enable_filtering %}
     {%- for filter in results.filters -%}
       {%- capture filter_contents -%}
-        {% comment %}
-        {% assign swatch_index = filter.values | find_index: 'swatch' %}
-        <div class="text-xs my-4">
-          Debug:
-          <div class="font-mono leading-none">
-            <span class="opacity-50">Type</span>: {{ filter.type }}<br />
-            <span class="opacity-50">Presentation</span>: {{ filter.presentation }}<br />
-            <span class="opacity-50">Swatch Index</span>: {{ swatch_index }}
-          </div>
-        </div>
-        {% endcomment %}
-
-        {% comment %}
-        @TODO - match the logic from Shopify Horizon
-          - https://github.com/Shopify/horizon/blob/main/blocks/filters.liquid
-          - https://github.com/Shopify/horizon/blob/main/snippets/list-filter.liquid
-          - https://github.com/Shopify/horizon/blob/main/snippets/price-filter.liquid
-        {% endcomment %}
-        {% comment %}
-        {%- case filter.type -%}
-          {% when 'price_range' %}
-            <div style="opacity: 0.5">DO PRICE RANGE STUFF HERE</div>
-          {% else %}
-            <div style="opacity: 0.5">DO OTHER STUFF HERE</div>
-        {%- endcase -%}
-        {% endcomment %}
-
         {%- case filter.type -%}
           {%- when 'list', 'boolean' -%}
             {%- render 'facets-list-filter', filter: filter, id_prefix: id_prefix -%}
           {%- when 'price_range' -%}
-            <div style="opacity: 0.5">DO PRICE RANGE STUFF HERE</div>
+            {% if request.design_mode %}
+              <script>console.warn('[facets-form.liquid] Price range filters are not supported');</script>
+            {% endif %}
         {%- endcase -%}
       {%- endcapture -%}
 

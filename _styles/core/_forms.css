@@ -309,3 +309,40 @@ input[type="number"] {
   }
 }
 /* END - Check Input */
+
+/* START - Chip Input */
+.chip-input {
+  @apply inline-block py-2 px-4 border border-black rounded leading-none;
+}
+
+.composable-input input:checked + label .chip-input {
+  @apply bg-black text-white;
+}
+/* END - Chip Input */
+
+/* START - Swatch Input */
+.composable-input {
+  input:checked + label .swatch {
+    @apply outline outline-blue outline-offset-2;
+  }
+
+  @media (hover: hover) {
+    input:enabled:not(:checked) + label:hover .swatch {
+      @apply outline outline-green outline-offset-2;
+    }
+  }
+
+  input:disabled + label .swatch::after {
+    content: '';
+    @apply absolute inset-0;
+    background: linear-gradient(
+      to top right,
+      transparent calc(50% - 2px),
+      #fff calc(50% - 2px) calc(50% - 1px),
+      var(--color-black) calc(50% - 1px) calc(50% + 1px),
+      #fff calc(50% + 1px) calc(50% + 2px),
+      transparent calc(50% + 2px)
+    );
+  }
+}
+/* END - Swatch Input */

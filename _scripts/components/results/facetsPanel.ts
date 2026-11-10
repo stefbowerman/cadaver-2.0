@@ -3,7 +3,7 @@ import FacetsForm from '@/components/results/facetsForm'
 
 export type FacetFilters = Map<string, string[]>
 
-interface FacetsPanelSettings {
+interface FacetsPanelOptions {
   onFiltersChange: (params: URLSearchParams) => void
   onInputPointerEnter?: (input: HTMLInputElement) => void
   onInputPointerLeave?: (input: HTMLInputElement) => void
@@ -19,14 +19,14 @@ const selectors = {
 export default class FacetsPanel extends BaseComponent {
   static TYPE = 'facets-panel'
 
-  settings: FacetsPanelSettings
+  settings: FacetsPanelOptions
   facetsForms: FacetsForm[]
   productsCountValueEl: HTMLElement
   filtersActiveCountEls: HTMLElement[]
   filtersActiveCountValueEls: HTMLElement[]
   clearFiltersButton: HTMLButtonElement | undefined
 
-  constructor(el: HTMLElement, options: FacetsPanelSettings) {
+  constructor(el: HTMLElement, options: FacetsPanelOptions) {
     super(el)
 
     this.settings = {

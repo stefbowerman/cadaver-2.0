@@ -1,6 +1,6 @@
 import BaseComponent from '@/components/base'
 
-export interface FacetsFormSettings {
+interface FacetsFormOptions {
   onInput?: (e: Event) => void
   onSubmit?: (e: SubmitEvent) => void
   onInputPointerEnter?: (input: HTMLInputElement) => void
@@ -14,10 +14,10 @@ export default class FacetsForm extends BaseComponent {
     return Array.from(el.querySelectorAll('[name]')) as HTMLInputElement[]
   }
 
-  settings: FacetsFormSettings
+  settings: FacetsFormOptions
   inputs: HTMLInputElement[]
 
-  constructor(el: HTMLFormElement, options: FacetsFormSettings = {}) {
+  constructor(el: HTMLFormElement, options: FacetsFormOptions = {}) {
     super(el)
 
     this.settings = {

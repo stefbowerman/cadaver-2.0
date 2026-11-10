@@ -1285,35 +1285,6 @@ button:is([disabled], [aria-disabled="true"]) {
   inset: 0;
 }
 
-input[type="checkbox"] + label .swatch, input[type="radio"] + label .swatch {
-  cursor: pointer;
-}
-
-input[type="checkbox"]:not(:disabled):not(:checked) + label:hover .swatch, input[type="radio"]:not(:disabled):not(:checked) + label:hover .swatch {
-  outline-style: var(--tw-outline-style);
-  outline-offset: 2px;
-  outline-width: 1px;
-  outline-color: var(--color-green);
-}
-
-input[type="checkbox"]:checked + label .swatch, input[type="radio"]:checked + label .swatch {
-  outline-style: var(--tw-outline-style);
-  outline-offset: 2px;
-  outline-width: 1px;
-  outline-color: var(--color-blue);
-}
-
-input[type="checkbox"]:focus-visible + label .swatch, input[type="radio"]:focus-visible + label .swatch {
-  outline-style: var(--tw-outline-style);
-  outline-offset: 2px;
-  outline-width: 1px;
-  outline-color: var(--color-red);
-}
-
-input[type="checkbox"]:disabled + label .swatch, input[type="radio"]:disabled + label .swatch {
-  cursor: not-allowed;
-}
-
 label {
   display: inline-block;
 }
@@ -1657,6 +1628,46 @@ input[type="number"] {
       background-color: color-mix(in oklab, currentcolor 50%, transparent);
     }
   }
+}
+
+.chip-input {
+  border-style: var(--tw-border-style);
+  border-width: 1px;
+  border-color: var(--color-black);
+  padding-inline: calc(var(--spacing) * 4);
+  padding-block: calc(var(--spacing) * 2);
+  --tw-leading: 1;
+  border-radius: .25rem;
+  line-height: 1;
+  display: inline-block;
+}
+
+.composable-input input:checked + label .chip-input {
+  background-color: var(--color-black);
+  color: var(--color-white);
+}
+
+.composable-input input:checked + label .swatch {
+  outline-style: var(--tw-outline-style);
+  outline-offset: 2px;
+  outline-width: 1px;
+  outline-color: var(--color-blue);
+}
+
+@media (hover: hover) {
+  .composable-input input:enabled:not(:checked) + label:hover .swatch {
+    outline-style: var(--tw-outline-style);
+    outline-offset: 2px;
+    outline-width: 1px;
+    outline-color: var(--color-green);
+  }
+}
+
+.composable-input input:disabled + label .swatch:after {
+  content: "";
+  background: linear-gradient(to top right, transparent calc(50% - 2px), #fff calc(50% - 2px) calc(50% - 1px), var(--color-black) calc(50% - 1px) calc(50% + 1px), #fff calc(50% + 1px) calc(50% + 2px), transparent calc(50% + 2px));
+  position: absolute;
+  inset: 0;
 }
 
 .embla {

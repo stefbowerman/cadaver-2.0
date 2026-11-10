@@ -12,13 +12,12 @@
 
 {%- liquid
   # Map Shopify's filter presentation to a composable-input display style
+  # Image filters are swatches with an image (filter_value.image is nil for other presentations)
   assign display_style = 'checkbox'
 
   case filter.presentation
-    when 'swatch'
+    when 'swatch', 'image'
       assign display_style = 'swatch'
-    when 'image'
-      assign display_style = 'image'
   endcase
 -%}
 

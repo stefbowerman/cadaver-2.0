@@ -12,9 +12,14 @@
   for filter in results.filters
     case filter.type
       when 'price_range'
+        # Price range filters are not supported
+        # If later enabled, uncomment the code below
+
+        comment
         if filter.min_value.value != null or filter.max_value.value != null
           assign active_filters_count = active_filters_count | plus: 1
         endif
+        endcomment
       when 'boolean'
         if filter.active_values[0].value
           assign active_filters_count = active_filters_count | plus: 1
