@@ -29,14 +29,17 @@
 {% capture form_contents %}
   {% if enable_filtering %}
     {%- for filter in results.filters -%}
+      {%- if filter.type == 'price_range' -%}
+        {%- if request.design_mode -%}
+          <script>console.warn('[facets-form.liquid] Price range filters are not supported');</script>
+        {%- endif -%}
+        {%- continue -%}
+      {%- endif -%}
+
       {%- capture filter_contents -%}
         {%- case filter.type -%}
           {%- when 'list', 'boolean' -%}
             {%- render 'facets-list-filter', filter: filter, id_prefix: id_prefix -%}
-          {%- when 'price_range' -%}
-            {% if request.design_mode %}
-              <script>console.warn('[facets-form.liquid] Price range filters are not supported');</script>
-            {% endif %}
         {%- endcase -%}
       {%- endcapture -%}
 
