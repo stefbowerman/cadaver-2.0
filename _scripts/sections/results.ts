@@ -13,7 +13,6 @@ export default class ResultsSection extends BaseSection {
 
   #isFetching: boolean
   #isFiltering: boolean
-  #isUnloaded = false
   #filterRequestId = 0
 
   resultsDisplay: ResultsDisplay
@@ -43,7 +42,6 @@ export default class ResultsSection extends BaseSection {
   }
 
   onUnload(e?: ThemeEditorSectionUnloadEvent): void {
-    this.#isUnloaded = true
     this.debouncedFacetsFormInputTogglePrefetch.cancel()
 
     super.onUnload(e)
@@ -94,7 +92,7 @@ export default class ResultsSection extends BaseSection {
 
       // Section unloaded mid-fetch: don't touch the DOM or the next page's URL.
       // Superseded by a newer filter change: its fetch aborted ours, so dom is undefined.
-      if (this.#isUnloaded || requestId !== this.#filterRequestId) return
+      if (this.isUnloaded || requestId !== this.#filterRequestId) return
 
       if (!dom) throw new Error('Failed to load results')
 
