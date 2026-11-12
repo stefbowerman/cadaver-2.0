@@ -1,10 +1,48 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
-      "type": "page-hero"
+      "type": "page-hero",
+      "settings": {
+        "image": "shopify://shop_images/Paradox-video-Mexico-City-Praxis-1-Francis-1997.webp",
+        "title": "Welcome to Cadavaer",
+        "url": "",
+        "dark_mode": false
+      }
+    },
+    "featured_products_8VTYfJ": {
+      "type": "featured-products",
+      "name": "Featured Products",
+      "settings": {
+        "title": "Featured Products",
+        "subtitle": "Shop the latest products on our store.",
+        "cta_title": "See All",
+        "cta_url": "shopify://collections/all",
+        "source": "product_list",
+        "collection": "frontpage",
+        "product_list": [
+          "brud-aditya-mandayam-the-ooze",
+          "bruce-nauman",
+          "aires-mateus-book-of-models",
+          "dan-graham-beyond-exhibition-catalogues-whitney-museum-of-american-art",
+          "cindy-sherman-specimens-art-random-65",
+          "clowns-neuauflage",
+          "claude-parent-loeuvre-construite-loeuvre-graphique",
+          "city-people"
+        ]
+      }
     }
   },
   "order": [
-    "hero"
+    "hero",
+    "featured_products_8VTYfJ"
   ]
 }
