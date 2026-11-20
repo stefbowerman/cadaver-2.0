@@ -96,7 +96,7 @@ export default class Drawer extends BaseComponent {
     }
   }
 
-  destroy() {
+  onDestroy() {
     this.focusTrap.destroy()
 
     document.body.classList.remove(classes.bodyIsOpen)
@@ -104,8 +104,6 @@ export default class Drawer extends BaseComponent {
     document.removeEventListener('keydown', this.onKeydown)
 
     this.ariaControlElements.forEach(el => el.removeAttribute('aria-haspopup'))
-
-    super.destroy()
   }
 
   get isOpen() {

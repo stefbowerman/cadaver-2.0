@@ -71,10 +71,8 @@ export default class QuantityAdjuster extends BaseComponent {
     this.validate()
   }
 
-  destroy() {
+  onDestroy() {
     this.#observer.disconnect()
-
-    super.destroy()
   }
 
   parseAttribute(value: string, defaultValue: number): number {

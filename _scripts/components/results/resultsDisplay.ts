@@ -103,13 +103,11 @@ export default class ResultsDisplay extends BaseComponent {
     this.a11yStatus = null
   }
 
-  destroy() {
+  onDestroy() {
     this.#swapTl?.kill()
     this.#swapTl = null
 
     this.teardown()
-
-    super.destroy()
   }
 
   // This is exposed so that the parent can update any related components - typically used with facets (that aren't yet implemented)

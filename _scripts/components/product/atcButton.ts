@@ -24,10 +24,8 @@ export default class ATCButton extends BaseComponent {
     this.label = this.qsRequired(selectors.label)
   }
 
-  destroy() {
+  onDestroy() {
     window.clearTimeout(this.successTimeoutId)
-
-    super.destroy()
   }
 
   /**
