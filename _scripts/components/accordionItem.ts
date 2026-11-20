@@ -43,7 +43,7 @@ export default class AccordionItem extends BaseComponent {
     // @NOTE: To expose panels as landmarks (ARIA accordion pattern), add `role="region"` + `aria-labelledby` (header id) to the body.
     // Only do this for accordions with ~6 or fewer panels (more clutters landmark navigation), and never for anchor headers.
 
-    this.body.hidden = true // Default Closed
+    this.body.hidden = 'until-found' // Default Closed, still findable with Ctrl+F
 
     if (!this.#isAnchor) {
       this.header.setAttribute('aria-controls', this.body.id)
@@ -51,6 +51,7 @@ export default class AccordionItem extends BaseComponent {
     }
 
     this.header.addEventListener('click', this.onHeaderClick.bind(this))
+    this.body.addEventListener('beforematch', this.onBodyBeforeMatch.bind(this))
   }
 
   onDestroy() {
@@ -90,7 +91,8 @@ export default class AccordionItem extends BaseComponent {
 
     slideUp(this.body, {
       onComplete: () => {
-        this.body.hidden = true
+        this.body.hidden = 'until-found'
+        this.body.style.display = '' // slideUp leaves display:none, which stops Ctrl+F from searching the panel
       }
     })
 
@@ -112,6 +114,13 @@ export default class AccordionItem extends BaseComponent {
     e.preventDefault()
 
     this.toggle()
+  }
+
+  // Fires before the browser removes `hidden`. Remove it now so slideDown skips the animation
+  // and the panel opens instantly, letting the browser scroll to the match.
+  onBodyBeforeMatch() {
+    this.body.hidden = false
+    this.open()
   }
 
   // Theme editor events
