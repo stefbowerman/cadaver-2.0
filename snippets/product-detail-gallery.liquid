@@ -12,9 +12,8 @@
 {%- liquid
   assign current_variant = current_variant | default: product.selected_or_first_available_variant
 
-  comment
-    This block of logic loops through all product images and checks if we have at least 1 with valid alt text for *each* color option.
-  endcomment
+  
+  # This block of logic loops through all product images and checks if we have at least 1 with valid alt text for *each* color option.
   assign color_galleries_possible = false
 
   for option in product.options_with_values
@@ -73,8 +72,14 @@
                 assign fetchpriority = 'high'
               endif
 
+              # The list is display:none on mobile, so an eager image there would download twice. Lazy + high skips the fetch when hidden.
+              assign list_loading = loading
+              if loading == 'eager'
+                assign list_loading = 'lazy'
+              endif
+
               capture list_item
-                render 'product-detail-gallery-item', image: image, loading: loading, fetchpriority: fetchpriority
+                render 'product-detail-gallery-item', image: image, loading: list_loading, fetchpriority: fetchpriority
               endcapture
 
               capture slide
@@ -125,8 +130,16 @@
         assign fetchpriority = 'high'
       endif
 
+      comment
+        The list is display:none on mobile, so an eager image there would download twice. Lazy + high skips the fetch when hidden.
+      endcomment
+      assign list_loading = loading
+      if loading == 'eager'
+        assign list_loading = 'lazy'
+      endif
+
       capture list_item
-        render 'product-detail-gallery-item', image: image, loading: loading, fetchpriority: fetchpriority
+        render 'product-detail-gallery-item', image: image, loading: list_loading, fetchpriority: fetchpriority
       endcapture
 
       capture slide
