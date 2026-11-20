@@ -44,6 +44,11 @@ export const isVisible = (element: Element): boolean => {
     return false
   }
 
+  // hidden="until-found" hides with content-visibility, so the element still has a box
+  if (element.closest('[hidden="until-found"]')) {
+    return false
+  }
+
   const elementIsVisible = getComputedStyle(element).getPropertyValue('visibility') === 'visible'
   // Handle `details` element as its content may falsie appear visible when it is closed
   const closedDetails = element.closest('details:not([open])')
