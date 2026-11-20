@@ -11,7 +11,7 @@
   /* Use this if you need to style inactive items when multi is not enabled */
   /* @apply transition-opacity duration-400; */
 
-  /* .accordion:not([data-multi="true"]).is-active &:not(:has([aria-expanded="true"])) {
+  /* .accordion:not([data-multi="true"]):has(.accordion-item__header[aria-expanded="true"]) &:not(:has(> .accordion-item__header[aria-expanded="true"])) {
     @apply opacity-50;
   } */
 }
