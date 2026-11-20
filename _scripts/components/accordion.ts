@@ -1,10 +1,6 @@
 import BaseComponent from '@/components/base'
 import AccordionItem from '@/components/accordionItem'
 
-const classes = {
-  isActive: 'is-active'
-}
-
 export default class Accordion extends BaseComponent {
   static TYPE = 'accordion'
 
@@ -27,10 +23,6 @@ export default class Accordion extends BaseComponent {
     })
   }
 
-  #syncActiveClass() {
-    this.el.classList.toggle(classes.isActive, this.#activeItems.length > 0)
-  }
-
   changeToItem(to: AccordionItem) {
     if (!this.items.includes(to)) return
 
@@ -51,13 +43,9 @@ export default class Accordion extends BaseComponent {
     if (!this.#activeItems.includes(item)) {
       this.#activeItems.push(item)
     }
-
-    this.#syncActiveClass()
   }
 
   onItemClose(item: AccordionItem) {
     this.#activeItems = this.#activeItems.filter(_itm => _itm !== item)
-
-    this.#syncActiveClass()
   }
 }
