@@ -46,28 +46,31 @@ type SlideOptions = {
   opacityTarget?: HTMLElement
 }
 
+// The latest slide timeline per element, so a new slide can stop it and continue from where it is
+const activeSlides = new WeakMap<HTMLElement, gsap.core.Timeline>()
+
 export const slideDown = (el: HTMLElement, options: SlideOptions = {}): gsap.core.Timeline => {
   const duration = prefersReducedMotion() ? 0.01 : (options.duration || 0.5)
-  const display = el.style.display
   const opacityTarget = options.opacityTarget || el
+  const isMidSlide = gsap.isTweening(el)
 
-  gsap.killTweensOf(el, 'height')
-  gsap.killTweensOf(opacityTarget, 'opacity')
+  activeSlides.get(el)?.kill()
 
   const tl = gsap.timeline({
     onStart: () => {
-      opacityTarget.style.opacity = '0'
-      el.style.height = '0'
+      // Mid-slide, continue from the current height/opacity instead of starting from closed
+      if (!isMidSlide) {
+        opacityTarget.style.opacity = '0'
+        el.style.height = '0'
+      }
+
       el.style.display = ''
 
       options.onStart?.()
     },
     onInterrupt: () => {
-      opacityTarget.style.opacity = ''
-      el.style.height = ''
-      el.style.display = display
       options.onInterrupt?.()
-    },    
+    },
     onComplete: () => {
       opacityTarget.style.opacity = ''
       el.style.height = ''
@@ -76,10 +79,12 @@ export const slideDown = (el: HTMLElement, options: SlideOptions = {}): gsap.cor
     }
   })
 
-  // If it's already visible, don't run the animation
-  if (isVisible(el)) {
+  // If it's already fully open, don't run the animation
+  if (!isMidSlide && isVisible(el)) {
     return tl
-  }   
+  }
+
+  activeSlides.set(el, tl)
 
   tl.to(el, {
     height: 'auto',
@@ -111,10 +116,10 @@ export const slideDown = (el: HTMLElement, options: SlideOptions = {}): gsap.cor
 export const slideUp = (el: HTMLElement, options: SlideOptions = {}): gsap.core.Timeline => {
   const duration = prefersReducedMotion() ? 0.01 : (options.duration || 0.5)
   const opacityTarget = options.opacityTarget || el
+  const isMidSlide = gsap.isTweening(el)
 
-  gsap.killTweensOf(el, 'height')
-  gsap.killTweensOf(opacityTarget, 'opacity')
-  
+  activeSlides.get(el)?.kill()
+
   const tl = gsap.timeline({
     onStart: () => {
       options.onStart?.()
@@ -128,9 +133,12 @@ export const slideUp = (el: HTMLElement, options: SlideOptions = {}): gsap.core.
     }
   })
 
-  if (!isVisible(el)) {
+  // If it's already fully closed, don't run the animation
+  if (!isMidSlide && !isVisible(el)) {
     return tl
-  } 
+  }
+
+  activeSlides.set(el, tl)
 
   tl.to(opacityTarget, {
     opacity: 0,

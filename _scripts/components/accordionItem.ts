@@ -70,14 +70,11 @@ export default class AccordionItem extends BaseComponent {
   open() {
     if (this.isOpen) return
     
+    this.isOpen = true
+
     slideDown(this.body, {
       onStart: () => {
-        this.isOpen = true
         this.body.hidden = false
-      },
-      onInterrupt: () => {
-        this.isOpen = false
-        this.body.hidden = true
       }
     })
 
@@ -87,13 +84,9 @@ export default class AccordionItem extends BaseComponent {
   close() {
     if (!this.isOpen) return
     
+    this.isOpen = false
+
     slideUp(this.body, {
-      onStart: () => {
-        this.isOpen = false
-      },
-      onInterrupt: () => {
-        this.isOpen = true
-      },
       onComplete: () => {
         this.body.hidden = true
       }
