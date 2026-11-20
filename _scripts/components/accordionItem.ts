@@ -40,7 +40,9 @@ export default class AccordionItem extends BaseComponent {
     this.header.id = `${id}-header`
     this.body.id = `${id}-body`
 
-    this.body.setAttribute('aria-labelledby', this.header.id)
+    // @NOTE: To expose panels as landmarks (ARIA accordion pattern), add `role="region"` + `aria-labelledby` (header id) to the body.
+    // Only do this for accordions with ~6 or fewer panels (more clutters landmark navigation), and never for anchor headers.
+
     this.body.hidden = true // Default Closed
 
     if (!this.#isAnchor) {
