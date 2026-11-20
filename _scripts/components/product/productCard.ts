@@ -1,5 +1,4 @@
 import BaseComponent from '@/components/base'
-import { prefersPointer } from '@/core/utils'
 
 const selectors = {
   mediaSecondary: '[data-media-secondary]'
@@ -13,32 +12,33 @@ export default class ProductCard extends BaseComponent {
   static TYPE = 'product-card'
 
   mediaSecondary: HTMLElement | null
-  
+
   constructor(el: HTMLElement) {
-    super(el, {
-      watchIntersection: true,
-    })
+    super(el)
 
     this.mediaSecondary = this.qs(selectors.mediaSecondary)
+
+    // The secondary image is only revealed on hover / focus, so don't request it until then
+    if (this.mediaSecondary) {
+      this.el.addEventListener('pointerenter', this.loadMediaSecondary, { once: true })
+      this.el.addEventListener('focusin', this.loadMediaSecondary, { once: true })
+    }
   }
 
-  onIntersection(entries: IntersectionObserverEntry[]) {
-    if (entries[0].isIntersecting) {
-      if (this.mediaSecondary instanceof HTMLElement && prefersPointer()) {
-        const img = this.qs<HTMLImageElement>('img', this.mediaSecondary)
+  loadMediaSecondary = () => {
+    if (!this.mediaSecondary) return
 
-        if (img) {
-          img.onload = () => this.mediaSecondary?.classList.add(classes.mediaSecondaryReady)
+    const img = this.mediaSecondary.querySelector('img')
 
-          if (img.dataset.src) img.src = img.dataset.src;
-          if (img.dataset.srcset) img.srcset = img.dataset.srcset;
-  
-          img.removeAttribute('data-src')
-          img.removeAttribute('data-srcset')
-        }
-      }
+    // Already loaded by the other event
+    if (!img || (!img.dataset.src && !img.dataset.srcset)) return
 
-      this.killIntersectionObserver()
-    }
-  }  
+    img.onload = () => this.mediaSecondary?.classList.add(classes.mediaSecondaryReady)
+
+    if (img.dataset.src) img.src = img.dataset.src
+    if (img.dataset.srcset) img.srcset = img.dataset.srcset
+
+    img.removeAttribute('data-src')
+    img.removeAttribute('data-srcset')
+  }
 }
