@@ -45,5 +45,16 @@ export default defineConfig([
     rules: {
       "no-undef": "off" // TypeScript compiler handles this
     }
+  },
+  {
+    // BaseComponent.destroy() always runs base cleanup; subclasses hook in via onDestroy()
+    files: ["_scripts/components/**/*.ts"],
+    ignores: ["_scripts/components/base.ts"],
+    rules: {
+      "no-restricted-syntax": ["error", {
+        selector: "ClassDeclaration[superClass] > ClassBody > :matches(MethodDefinition, PropertyDefinition)[key.name='destroy']",
+        message: "Don't override destroy(). Override onDestroy() instead (see CLAUDE.md)."
+      }]
+    }
   }
 ]);

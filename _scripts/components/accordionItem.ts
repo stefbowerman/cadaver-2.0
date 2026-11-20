@@ -51,10 +51,8 @@ export default class AccordionItem extends BaseComponent {
     this.header.addEventListener('click', this.onHeaderClick.bind(this))
   }
 
-  destroy() {
+  onDestroy() {
     gsap.killTweensOf(this.body)
-
-    super.destroy()
   }
 
   get isAnchor() {

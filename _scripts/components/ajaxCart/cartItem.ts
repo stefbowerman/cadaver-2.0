@@ -67,10 +67,8 @@ export default class CartItem extends BaseComponent {
     this.remove.addEventListener('click', this.onRemoveClick.bind(this))
   }
 
-  destroy() {
+  onDestroy() {
     this.debouncedOnQuantityAdjusterChange.cancel() // Prevent a pending quantity change from firing after the item is removed
-
-    super.destroy()
   }
 
   get key() {

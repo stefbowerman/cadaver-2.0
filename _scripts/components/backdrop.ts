@@ -51,10 +51,8 @@ export default class Backdrop extends BaseComponent {
     }
   }
 
-  destroy() {
+  onDestroy() {
     this.el.remove()
-
-    super.destroy()
   }
 
   show() {

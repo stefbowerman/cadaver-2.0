@@ -29,9 +29,7 @@ export default class A11yStatus extends BaseComponent {
     }, 100)
   }
 
-  destroy() {
+  onDestroy() {
     clearTimeout(this.#timeoutId)
-
-    super.destroy()
   }
 }

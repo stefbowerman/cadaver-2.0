@@ -77,7 +77,7 @@ export default class AJAXCart extends BaseComponent {
     }
   }
 
-  destroy() {
+  onDestroy() {
     this.focusTrap.destroy()
 
     document.body.classList.remove(classes.bodyCartOpen)
@@ -85,8 +85,6 @@ export default class AJAXCart extends BaseComponent {
     document.removeEventListener('keydown', this.onKeydown)
 
     this.ariaControlElements.forEach(el => el.removeAttribute('aria-haspopup'))
-
-    super.destroy()
   }
 
   get isOpen() {

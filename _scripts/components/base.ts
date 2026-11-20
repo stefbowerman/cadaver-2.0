@@ -94,6 +94,8 @@ export default class BaseComponent {
   }
 
   destroy() {
+    this.onDestroy() // subclass cleanup runs first
+
     if (this.#resizeObserver) {
       this.#resizeObserver.disconnect()
       this.#resizeObserver = null
@@ -213,6 +215,15 @@ export default class BaseComponent {
 
     console.warn(`[${this.type}] Invalid DOM: Must be an Element matching the component selector`)
     return false
+  }
+
+  /**
+   * Called at the start of destroy(). Override for cleanup the base can't handle
+   * (observers, GSAP timelines, third-party instances, listeners outside this.el).
+   * No super call needed when extending BaseComponent directly.
+   */
+  onDestroy() {
+    // override in subclass
   }
 
   onResize(entries: ResizeObserverEntry[]) {

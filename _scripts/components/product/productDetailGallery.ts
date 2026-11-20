@@ -70,10 +70,8 @@ export default class ProductDetailGallery extends BaseComponent {
     setAriaCurrent(this.el, value ? 'true' : undefined)
   }
 
-  destroy() {
+  onDestroy() {
     this.emblaApi.destroy()
-
-    super.destroy()
   }
 
   activate() {

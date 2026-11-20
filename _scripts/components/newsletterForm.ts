@@ -32,10 +32,8 @@ export default class NewsletterForm extends BaseComponent {
     this.formMessage = this.qsRequired(selectors.formMessage, this.form)
   }
 
-  destroy() {
+  onDestroy() {
     window.clearTimeout(this.timeoutId)
-
-    super.destroy()
   }
 
   /**

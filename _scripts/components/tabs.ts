@@ -95,10 +95,8 @@ export default class Tabs extends BaseComponent {
     }
   }
 
-  destroy() {
+  onDestroy() {
     this.#transitionTl?.kill()
-    
-    super.destroy()
   }
 
   setTabActive(tab: HTMLElement, active: boolean) {
