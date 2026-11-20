@@ -11,13 +11,15 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite build --watch --mode development",
     "build": "npm run lint && vite build",
-    "lint": "eslint ./_scripts --ext .js,.ts"
+    "lint": "eslint ./_scripts --ext .js,.ts",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@eslint/js": "^9.37.0",
     "@tailwindcss/vite": "^4.3.3",
     "eslint": "^9.37.0",
     "globals": "^16.4.0",
+    "husky": "^9.1.7",
     "rollup-plugin-visualizer": "^6.0.4",
     "tailwindcss": "^4.3.3",
     "terser": "^5.44.0",

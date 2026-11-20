@@ -1,0 +1,2 @@
+npm run build
+git add assets/app.bundle.js assets/app.bundle.css
