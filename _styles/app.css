@@ -172,6 +172,7 @@
     *,
     *::before,
     *::after {
+      /* 0.01ms, not 0/none: keeps transitionend firing (#226) */
       transition-duration: 0.01ms !important;
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;

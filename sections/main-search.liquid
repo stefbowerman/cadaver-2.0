@@ -5,16 +5,16 @@
 
 {% endcomment -%}
 
-{%- capture actions -%}
-  <div style="max-width: 625px; margin: 0 auto 40px">
-    {% render 'search-inline', id_prefix: section.id, include_terms: true %}
-  </div>   
-{%- endcapture -%}
-
 {% paginate search.results by 12 %}
 
 <div data-section-id="{{ section.id }}" data-section-type="search">
   <div class="container">
+    {%- capture actions -%}
+      <div style="max-width: 625px; margin: 0 auto 40px">
+        {% render 'search-inline', id_prefix: section.id, include_terms: true %}
+      </div>   
+    {%- endcapture -%}
+
     {% render 'section-header',
               title: 'Search Our Site',
               actions: actions,
