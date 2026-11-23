@@ -12,8 +12,8 @@ export default class ResultsSection extends BaseSection {
   static TYPE = 'results'
 
   #isFetching: boolean
-  #isFiltering: boolean
-  #filterRequestId = 0
+  #isUpdating: boolean
+  #updateRequestId = 0
 
   resultsDisplay: ResultsDisplay
   facetsPanel: FacetsPanel | undefined
@@ -22,7 +22,7 @@ export default class ResultsSection extends BaseSection {
     super(container, { cacheOnLoad: true })
 
     this.#isFetching = false
-    this.#isFiltering = false
+    this.#isUpdating = false
 
     this.resultsDisplay = new ResultsDisplay(this.qsRequired(ResultsDisplay.SELECTOR), {
       onMoreIntersection: this.onMoreIntersection.bind(this),
@@ -34,7 +34,7 @@ export default class ResultsSection extends BaseSection {
 
     if (facetsPanelEl) {
       this.facetsPanel = new FacetsPanel(facetsPanelEl, {
-        onFiltersChange: this.onFacetsFiltersChange.bind(this),
+        onFiltersChange: this.updateResults.bind(this),
         onInputPointerEnter: this.debouncedFacetsFormInputTogglePrefetch,
         onInputPointerLeave: () => this.debouncedFacetsFormInputTogglePrefetch.cancel(),
       })
@@ -78,21 +78,22 @@ export default class ResultsSection extends BaseSection {
     this.facetsFormInputTogglePrefetch(target)
   }, 200)
 
-  async onFacetsFiltersChange(params: URLSearchParams) {
-    const requestId = ++this.#filterRequestId
+  // Shared by filters and search: a newer call supersedes an older one, and load-more stays paused until it lands
+  async updateResults(params: URLSearchParams) {
+    const requestId = ++this.#updateRequestId
 
     const fetchUrl = new URL(window.location.href)
           fetchUrl.search = params.toString()
 
     const searchParamsString = params.toString()
 
-    this.#isFiltering = true
+    this.#isUpdating = true
     try {
       const dom = await sectionRenderService.getSectionDom(this.id, fetchUrl)
 
       // Section unloaded mid-fetch: don't touch the DOM or the next page's URL.
-      // Superseded by a newer filter change: its fetch aborted ours, so dom is undefined.
-      if (this.isUnloaded || requestId !== this.#filterRequestId) return
+      // Superseded by a newer search or filter change: its fetch aborted ours, so dom is undefined.
+      if (this.isUnloaded || requestId !== this.#updateRequestId) return
 
       if (!dom) throw new Error('Failed to load results')
 
@@ -138,7 +139,7 @@ export default class ResultsSection extends BaseSection {
     }
     finally {
       // Only the latest request clears the flag, so infinite scroll stays paused until it lands
-      if (requestId === this.#filterRequestId) this.#isFiltering = false
+      if (requestId === this.#updateRequestId) this.#isUpdating = false
     }
   }
 
@@ -168,7 +169,7 @@ export default class ResultsSection extends BaseSection {
   async onMoreIntersection(entries: IntersectionObserverEntry[]) {
     const entry = entries[0]
 
-    if (!entry.isIntersecting || this.#isFiltering) return
+    if (!entry.isIntersecting || this.#isUpdating) return
 
     try {
       const target = entry.target as HTMLAnchorElement
