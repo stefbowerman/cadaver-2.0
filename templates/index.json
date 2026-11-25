@@ -13,6 +13,7 @@
       "type": "page-hero",
       "settings": {
         "image": "shopify://shop_images/Paradox-video-Mexico-City-Praxis-1-Francis-1997.webp",
+        "video": "shopify://files/videos/Comp_TheLand-vf72030.mp4",
         "title": "Welcome to Cadavaer",
         "url": "",
         "dark_mode": false
