@@ -24,3 +24,7 @@
     }
   }  
 }
+
+.graphic-cover-video-toggle {
+  @apply absolute bottom-4 right-4 z-3 pointer-events-auto;
+}
