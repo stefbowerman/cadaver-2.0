@@ -13,7 +13,8 @@
   endif
 -%}
 
-<div data-section-id="{{ section.id }}" data-section-type="page-hero">
+{% comment %} Relative is needed for the graphic cover video a11y button placement {% endcomment %}
+<div class="relative" data-section-id="{{ section.id }}" data-section-type="page-hero">
   {% if section.index0 == 0 and section.settings.title == blank %}
     <h1 class="sr-only">{{ shop.name }}</h1>
   {% endif %}
