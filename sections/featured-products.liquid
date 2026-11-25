@@ -1,13 +1,16 @@
 {%- liquid
   assign product_count = 0
   assign product_source = section.settings.collection.products
+  assign product_limit = section.settings.product_limit | default: 8
 
   if section.settings.source == 'product_list'
     assign product_source = section.settings.product_list
+    # No limit needed for product lists
+    assign product_limit = 999
   endif
 
   capture product_grid_items
-    for product in product_source
+    for product in product_source limit: product_limit
       render 'product-card', product: product
 
       assign product_count = product_count | plus: 1
@@ -102,7 +105,18 @@
       "type": "product_list",
       "id": "product_list",
       "label": "Product List"
-    }
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "min": 4,
+      "max": 48,
+      "step": 1,
+      "unit": "ps",
+      "label": "Product Limit",
+      "default": 8,
+      "visible_if": "{{ section.settings.source == 'collection' }}"
+    },    
   ],
   "presets": [
     {
