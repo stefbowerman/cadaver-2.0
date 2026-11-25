@@ -75,9 +75,7 @@ Always provide defaults and validate parameters:
 {%- liquid
   assign current_variant = current_variant | default: product.selected_or_first_available_variant
 
-  comment
-    Template Vars
-  endcomment
+  # Template Vars
   assign has_compare = false
   assign current_variant_on_sale = false
 

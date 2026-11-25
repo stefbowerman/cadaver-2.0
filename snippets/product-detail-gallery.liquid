@@ -113,9 +113,7 @@
   {% endfor %}
 {% else %}
   {%- liquid
-    comment
-      Make one gallery for all colors ....
-    endcomment
+    # Make one gallery for all colors ....
 
     assign list_items = ''
     assign slides = ''
@@ -130,9 +128,7 @@
         assign fetchpriority = 'high'
       endif
 
-      comment
-        The list is display:none on mobile, so an eager image there would download twice. Lazy + high skips the fetch when hidden.
-      endcomment
+      # The list is display:none on mobile, so an eager image there would download twice. Lazy + high skips the fetch when hidden.      
       assign list_loading = loading
       if loading == 'eager'
         assign list_loading = 'lazy'

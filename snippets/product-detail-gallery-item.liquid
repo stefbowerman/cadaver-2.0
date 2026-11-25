@@ -22,9 +22,7 @@
 
     assign image_class = 'size-full object-contain'
 
-    comment
-      Skip the '.lazy-image' fade for high-priority images so it doesn't delay LCP
-    endcomment
+    # Skip the '.lazy-image' fade for high-priority images so it doesn't delay LCP
     if loading == 'lazy' and fetchpriority != 'high'
       assign image_class = image_class | append: ' lazy-image'
     endif
